@@ -676,20 +676,12 @@ value sml_makestring_of_string(value arg)
   return res;
 }
 
-/* The following must agree with timebase in exsmllib/Time.sml: */
-
-#define TIMEBASE (-1073741824)
-
 value sml_getrealtime(value UNUSED(v))
 {
-  value res;
   struct timeval tp;
 
   gettimeofday(&tp, NULL);
-  res = alloc (2, 0);
-  Field (res, 0) = LONG_TO_VAL (tp.tv_sec+TIMEBASE);
-  Field (res, 1) = LONG_TO_VAL (tp.tv_usec);
-  return res;
+  return copy_double(tp.tv_sec * 1000000.0 + (double)tp.tv_usec);
 }
 
 value sml_getrutime(value UNUSED(v))

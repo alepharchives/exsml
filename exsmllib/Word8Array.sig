@@ -13,9 +13,10 @@ val fromList : elem list -> array
 val length   : array -> int
 val sub      : array * int -> elem
 val update   : array * int * elem -> unit
+val vector   : array -> vector
 val extract  : array * int * int option -> vector
 
-val copy     : {src: array,  si: int, len: int option,
+val copy     : {src: array,  si: int, len: int option, 
                 dst: array, di: int} -> unit
 val copyVec  : {src: vector, si: int, len: int option, 
                 dst: array, di: int} -> unit
