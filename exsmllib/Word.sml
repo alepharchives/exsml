@@ -1,5 +1,5 @@
-(* Word -- SML Basis Library 1994-11-01, 1995-04-06, 1995-07-12,
-   1996-04-01, 1999-08-05 *)
+(* Word -- SML Basis Library 1994-11-01, 1995-04-06, 1995-07-12, 
+   1996-04-01, 1999-08-05, 2000-10-24 *)
 
 (* This unit relies on two's complement representation *)
 
@@ -34,7 +34,7 @@ in
     fun xorb (x, y) = xorb_ x y;
     fun notb x      = xorb_ x (fromInt ~1);
 
-    fun ~ i = (notb i) + 0wx1
+    val ~ = fn w => fromInt(~(toInt w))
 
     fun << (w, k) =
 	if toInt k >= wordSize orelse toInt k < 0 then fromInt 0

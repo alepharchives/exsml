@@ -1,4 +1,4 @@
-(* Word8Array -- as of 1994-12-21 *)
+(* Word8Array -- SML Basis Library, PS 1994-12-21, 2000-10-24 *)
 
 type elem   = Word8.word;
 type vector = Word8Vector.vector;
@@ -51,11 +51,16 @@ fun sub(ref a, i) =
   else sub_ a i;
 
 fun update(ref a, i, v) =
-  if i < 0 orelse i >= length_ a then raise Subscript
+  if i < 0 orelse i >= length_ a then raise Subscript 
   else update_ a i v;
 
+fun vector (ref a) =
+    let val n = length_ a
+	val newvec = vector_ n 
+    in blitav_ a 0 newvec 0 n; newvec end;
+
 fun extract (ref a, i, slicelen) =
-    let val n = case slicelen of NONE => length_ a - i | SOME n => n
+    let val n = case slicelen of NONE => length_ a - i | SOME n => n 
 	val newvec = if i<0 orelse n<0 orelse i+n > length_ a then
 	                     raise Subscript
 			 else
