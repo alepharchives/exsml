@@ -8,7 +8,8 @@ Word8Array.uo: Word8Array.ui List.ui Word8.ui Architecture.ui \
 Postgres.uo: Postgres.ui String.ui Real.ui Dynlib.ui StringCvt.ui Msp.ui \
     List.ui Date.ui Option.ui Word8Array.ui Vector.ui Substring.ui Int.ui \
     Bool.ui 
-Array2.uo: Array2.ui List.ui Vector.ui Array.ui ArraySlice.ui 
+Array2.uo: Array2.ui List.ui Vector.ui Array.ui VectorSlice.ui \
+    ArraySlice.ui 
 Word8Vector.ui: Word8.ui 
 Signal.uo: Signal.ui Word.ui 
 CharVector.ui: Char.ui 
@@ -17,7 +18,7 @@ Mysql.uo: Mysql.ui String.ui Real.ui Dynlib.ui StringCvt.ui Msp.ui List.ui \
 Bool.uo: Bool.ui StringCvt.ui Char.ui 
 Array.ui: Vector.ui 
 Nonstdio.ui: BasicIO.ui CharArray.ui Char.ui 
-ArraySlice.uo: ArraySlice.ui Vector.ui Array.ui 
+ArraySlice.uo: ArraySlice.ui Vector.ui Array.ui VectorSlice.ui 
 Int.uo: Int.ui String.ui StringCvt.ui Architecture.ui Char.ui 
 Math.uo: Math.ui 
 Susp.uo: Susp.ui 
@@ -25,7 +26,7 @@ Splaymap.uo: Splaymap.ui Splaytree.ui
 Nonstdio.uo: Nonstdio.ui BasicIO.ui CharArray.ui 
 Misc.ui: Array.ui 
 Array2.ui: Vector.ui 
-ArraySlice.ui: Vector.ui Array.ui 
+ArraySlice.ui: Vector.ui Array.ui VectorSlice.ui 
 Splaytree.uo: Splaytree.ui 
 OS.uo: OS.ui 
 List.uo: List.ui 
@@ -42,7 +43,9 @@ Unix.uo: Unix.ui Signal.ui Word.ui Dynlib.ui Option.ui Vector.ui Process.ui \
     TextIO.ui Obj.uo 
 CommandLine.uo: CommandLine.ui Vector.ui 
 Lexing.uo: Lexing.ui CharArray.ui Obj.uo 
+VectorSlice.uo: VectorSlice.ui Vector.ui 
 Socket.ui: Word8Array.ui Word8Vector.ui Time.ui 
+VectorSlice.ui: Vector.ui 
 Process.uo: Process.ui List.ui BasicIO.ui 
 Mysql.ui: Msp.ui Date.ui Vector.ui 
 Byte.ui: String.ui Word8Array.ui Word8.ui Substring.ui Word8Vector.ui \

@@ -21,6 +21,7 @@ val map      : ('a -> 'b) -> 'a vector -> 'b vector
 val foldl    : ('a * 'b -> 'b) -> 'b -> 'a vector -> 'b
 val foldr    : ('a * 'b -> 'b) -> 'b -> 'a vector -> 'b
 
+val findi    : (int * 'a -> bool) -> 'a vector -> (int * 'a) option
 val appi     : (int * 'a -> unit) -> 'a vector * int * int option -> unit
 val mapi     : (int * 'a -> 'b) -> 'a vector * int * int option -> 'b vector
 val foldli   : (int * 'a * 'b -> 'b) -> 'b -> 'a vector*int*int option -> 'b
@@ -105,11 +106,15 @@ val collate  : ('a * 'a -> order) -> 'a vector * 'a vector -> order
        (v, 0, NONE)      the whole vector             v[0..len-1]
        (v, 0, SOME n)    a left subvector (prefix)    v[0..n-1]
        (v, i, NONE)      a right subvector (suffix)   v[i..len-1]
-       (v, i, SOME n)    a general slice              v[i..i+n-1]
+       (v, i, SOME n)    a general slice              v[i..i+n-1] 
+
+   [findi p a] applies f to successive pairs (j, a[j]) for j=0,1,...,n-1, 
+   until p(j, a[j]) evaluates to true; returns SOME (j, a[j]) if such
+   a pair exists, otherwise NONE.
 
    [foldli f e (v, i, SOME n)] folds function f over the subvector
-   v[i..i+n-1] from left to right.  That is, computes
-   f(i+n-1, v[i+n-1], f(..., f(i+1, v[i+1], f(i, v[i], e)) ...)).
+   v[i..i+n-1] from left to right.  That is, computes 
+   f(i+n-1, v[i+n-1], f(..., f(i+1, v[i+1], f(i, v[i], e)) ...)).  
    Raises Subscript if i<0 or n<0 or i+n > length v.
 
    [foldli f e (v, i, NONE)] folds function f over the subvector

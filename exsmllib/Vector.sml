@@ -108,7 +108,15 @@ fun map (f : 'a -> 'b) (a : 'a vector) : 'b vector =
 		   else ()
     in lr 0; newvec end
 
-fun sliceend (a, i, NONE) =
+fun findi (p : int * 'a -> bool) (a : 'a vector) : (int * 'a) option = 
+    let val stop = length a
+	fun lr j = 
+	    if j < stop then 
+		if p (j, sub_ a j) then SOME (j, sub_ a j) else lr (j+1)
+	    else NONE
+    in lr 0 end
+
+fun sliceend (a, i, NONE) = 
         if i<0 orelse i>length a then raise Subscript
 	else length a
   | sliceend (a, i, SOME n) =
