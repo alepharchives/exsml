@@ -1,4 +1,4 @@
-(* ArraySlice -- SML Basis Library 
+(* ArraySlice -- SML Basis Library
    sestoft@dina.kvl.dk 2000-10-18
 *)
 
@@ -23,24 +23,24 @@ in
 type 'a slice = 'a array * int * int
 
 (* Invariant on values (a, i, n) of type 'a slice:
- *                  0 <= i <= i+n <= Array.length a, 
- * or equivalently, 0 <= i and 0 <= n and i+n <= Array.length a.  
+ *                  0 <= i <= i+n <= Array.length a,
+ * or equivalently, 0 <= i and 0 <= n and i+n <= Array.length a.
  *)
 
 fun length (a, i, n) = n;
 
-fun sub((a', i', n'), i) = 
+fun sub((a', i', n'), i) =
     if i<0 orelse i >= n' then raise Subscript
     else sub_ (from_array a') (i'+i);
 
 fun update ((a', i', n'), i, v)  =
-    if i<0 orelse i>=n' then raise Subscript 
+    if i<0 orelse i>=n' then raise Subscript
     else update_ (from_array a') (i'+i) v;
 
 fun slice (a, i, len) =
     let val alen = Array.length a
-    in 
-	case len of 
+    in
+	case len of
 	    NONE   => if 0<=i andalso i<=alen then (a, i, alen - i)
 		      else raise Subscript
 	  | SOME n => if 0<=i andalso 0<=n andalso n<=alen-i then (a, i, n)
@@ -55,13 +55,13 @@ fun subslice ((a, i, n), i', NONE) =
   | subslice ((a, i, n), i', SOME n') =
     if 0<=i' andalso 0<=n' andalso n'<=n-i' then (a, i+i', n')
     else raise Subscript;
-		      
+
 fun base sli = sli;
 
-fun vector (a : 'a array, i, n) = 
-    let val a = from_array a : 'a array_ 
+fun vector (a : 'a array, i, n) =
+    let val a = from_array a : 'a array_
 	val newvec = vector_ n () : 'a vector
-	fun copy j = 
+	fun copy j =
 	    if j<n then
 		(updatev newvec j (sub_ a (i+j)); copy (j+1))
 	    else
@@ -74,13 +74,13 @@ fun copy {src=(a1,i1,n) : 'a slice, dst=a2: 'a array, di=i2} =
     in
 	if i2<0 orelse i2+n > length_ a2 then raise Subscript
 	else if i1 < i2 then		(* copy from high to low *)
-	         let fun hi2lo j = 
+	         let fun hi2lo j =
 		     if j >= 0 then
 			 (update_ a2 (i2+j) (sub_ a1 (i1+j)); hi2lo (j-1))
 		     else ()
 		 in hi2lo (n-1) end
 	     else                       (* i1 >= i2, copy from low to high *)
-		 let fun lo2hi j = 
+		 let fun lo2hi j =
 		     if j < n then
 			 (update_ a2 (i2+j) (sub_ a1 (i1+j)); lo2hi (j+1))
 		     else ()
@@ -92,7 +92,7 @@ fun copyVec {src : 'a VectorSlice.slice, dst=a2: 'a array, di=i2} =
 	val a2 = from_array a2
     in
 	if i2<0 orelse i2+n > length_ a2 then raise Subscript
-	else 
+	else
 	    let fun lo2hi j = if j < n then
 		(update_ a2 (i2+j) (subv_ a1 (i1+j)); lo2hi (j+1))
 			      else ()
@@ -104,35 +104,35 @@ fun isEmpty (_, _, n) = n=0;
 fun getItem (a, i, 0) = NONE
   | getItem (a, i, n) = SOME(sub_ (from_array a) i, (a, i+1, n-1));
 
-fun find (p : 'a -> bool) ((a,i,n) : 'a slice) : 'a option = 
+fun find (p : 'a -> bool) ((a,i,n) : 'a slice) : 'a option =
     let val a = from_array a
 	val stop = i+n
-	fun lr j = 
-	    if j < stop then 
+	fun lr j =
+	    if j < stop then
 		if p (sub_ a j) then SOME (sub_ a j) else lr (j+1)
 	    else NONE
     in lr i end;
 
-fun exists (p : 'a -> bool) ((a,i,n) : 'a slice) : bool = 
+fun exists (p : 'a -> bool) ((a,i,n) : 'a slice) : bool =
     let val a = from_array a
 	val stop = i+n
 	fun lr j = j < stop andalso (p (sub_ a j) orelse lr (j+1))
     in lr i end;
 
-fun all (p : 'a -> bool) ((a,i,n) : 'a slice) : bool = 
+fun all (p : 'a -> bool) ((a,i,n) : 'a slice) : bool =
     let val a = from_array a
 	val stop = i+n
 	fun lr j = j >= stop orelse (p (sub_ a j) andalso lr (j+1))
     in lr i end;
 
-fun app f (a, i, n) = 
+fun app f (a, i, n) =
     let val a = from_array a
 	val stop = i+n
 	fun lr j = if j < stop then (f(sub_ a j); lr (j+1))
 		   else ()
     in lr i end;
 
-fun foldl f e (a, i, n) = 
+fun foldl f e (a, i, n) =
     let val a = from_array a
 	val stop = i+n
 	fun lr j res = if j < stop then lr (j+1) (f(sub_ a j, res))
@@ -145,49 +145,49 @@ fun foldr f e (a, i, n) =
 		       else res
     in rl (i+n-1) e end;
 
-fun modify f (a, i, n) = 
+fun modify f (a, i, n) =
     let val a = from_array a
 	val stop = i+n
 	fun lr j = if j < stop then (update_ a j (f(sub_ a j)); lr (j+1))
 		   else ()
     in lr i end;
 
-fun findi (p : int * 'a -> bool) ((a,i,n) : 'a slice) : (int * 'a) option = 
+fun findi (p : int * 'a -> bool) ((a,i,n) : 'a slice) : (int * 'a) option =
     let val a = from_array a
 	val stop = i+n
-	fun lr j = 
-	    if j < stop then 
+	fun lr j =
+	    if j < stop then
 		if p (j, sub_ a j) then SOME (j, sub_ a j) else lr (j+1)
 	    else NONE
     in lr i end;
 
-fun appi f (a, i, n) = 
+fun appi f (a, i, n) =
     let val a = from_array a
 	val stop = i+n
-	fun lr j = 
-	    if j < stop then (f(j, sub_ a j); lr (j+1)) 
+	fun lr j =
+	    if j < stop then (f(j, sub_ a j); lr (j+1))
 	    else ()
     in lr i end;
 
-fun foldli f e (a, i, n) = 
+fun foldli f e (a, i, n) =
     let val a = from_array a
 	val stop = i+n
-	fun lr j res = 
+	fun lr j res =
 	    if j < stop then lr (j+1) (f(j, sub_ a j, res))
 	    else res
     in lr i e end;
 
-fun foldri f e (a, i, n) = 
+fun foldri f e (a, i, n) =
     let val a = from_array a
-	fun rl j res = 
+	fun rl j res =
 	    if j >= i then rl (j-1) (f(j, sub_ a j, res))
 	    else res
     in rl (i+n-1) e end;
 
-fun modifyi f (a, i, n) = 
+fun modifyi f (a, i, n) =
     let val a = from_array a
 	val stop = i+n
-	fun lr j = 
+	fun lr j =
 	    if j < stop then (update_ a j (f(j, sub_ a j)); lr (j+1))
 	    else ()
     in lr i end;
