@@ -1,0 +1,48 @@
+Source: mosml
+Section: multiverse/devel
+Priority: optional
+Maintainer: Sebastian Dröge <slomo@ubuntu.com>
+Build-Depends: cdbs (>= 0.4.20), debhelper (>= 4.1.0)
+Standards-Version: 3.6.2
+
+Package: mosml
+Architecture: any
+Section: devel
+Depends: ${shlibs:Depends}, camlrunm (= ${Source-Version})
+Description: a light-weight implementation of Standard ML (SML)
+ Moscow ML is a light-weight implementation of Standard ML (SML),
+ a strict functional language widely used in teaching and research.
+ Version 2.01 implements the full SML language, including SML Modules,
+ and much of the SML Basis Library.
+ .
+ http://www.dina.kvl.dk/~sestoft/mosml.html
+
+Package: mosml-doc
+Architecture: any
+Section: doc
+Recommends: mosml (= ${Source-Version})
+Description: a light-weight implementation of Standard ML (SML) (Documentation)
+ Moscow ML is a light-weight implementation of Standard ML (SML),
+ a strict functional language widely used in teaching and research.
+ Version 2.01 implements the full SML language, including SML Modules,
+ and much of the SML Basis Library.
+ .
+ http://www.dina.kvl.dk/~sestoft/mosml.html
+ .
+ This package contains the documentation for the mosml library
+
+Package: camlrunm
+Architecture: any
+Section: devel
+Depends: ${shlibs:Depends}
+Description: runtime environment for running Caml Light bytecode
+ Moscow ML is a light-weight implementation of Standard ML (SML),
+ a strict functional language widely used in teaching and research.
+ Version 2.01 implements the full SML language, including SML Modules,
+ and much of the SML Basis Library.
+ .
+ http://www.dina.kvl.dk/~sestoft/mosml.html
+ .
+ This package contains the INRIA licensed camlrunm runtime for running
+ Caml Light bytecode.
+

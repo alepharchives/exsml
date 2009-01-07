@@ -1,0 +1,6 @@
+debian/tmp/usr/bin/mosml /usr/bin
+debian/tmp/usr/bin/mosmlc /usr/bin
+debian/tmp/usr/bin/mosmllex /usr/bin
+debian/tmp/usr/bin/mosmlyac /usr/bin
+debian/tmp/usr/lib /usr
+debian/tmp/usr/share/doc/mosml /usr/share/doc

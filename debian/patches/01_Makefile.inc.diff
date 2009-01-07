@@ -1,0 +1,26 @@
+--- mosml/src/Makefile.inc.old	2005-08-21 16:27:42.917430904 +0200
++++ mosml/src/Makefile.inc	2005-08-21 16:32:52.999291296 +0200
+@@ -2,7 +2,7 @@
+ 
+ # Where to install stuff
+ 
+-MOSMLHOME=${HOME}/mosml
++MOSMLHOME=/usr
+ 
+ # Various utility programs
+ INSTALL_PROGRAM=cp
+@@ -114,10 +114,10 @@
+ # DOCDIR contains documentation
+ 
+ BINDIR=${MOSMLHOME}/bin
+-LIBDIR=${MOSMLHOME}/lib
+-INCDIR=${MOSMLHOME}/include
+-DOCDIR=${MOSMLHOME}/doc
+-TOOLDIR=${MOSMLHOME}/tools
++LIBDIR=${MOSMLHOME}/lib/mosml
++INCDIR=${MOSMLHOME}/include/mosml
++DOCDIR=${MOSMLHOME}/share/doc/mosml-doc
++TOOLDIR=${MOSMLHOME}/lib/mosml/tools
+ # LIBDIR=${MOSMLHOME}/lib/moscow_ml
+ # TOOLDIR=${MOSMLHOME}/libexec/moscow_ml
+ 
