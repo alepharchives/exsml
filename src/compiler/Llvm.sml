@@ -525,26 +525,42 @@ struct
 			 ty
 		       end))
 		end
-	      (* E_String *)
-              (* E_Stringz *)
+	      | E_String str =>
+		(fn ty =>
+		    let val len = String.size str
+		    in case ty of
+			 Type.T_Array {length = l,
+				       ty = Type.T_I8} =>
+			   if l = len then ty
+			   else raise TypeError ("Type mismatch on string")
+		       | _ => raise TypeError ("Type mismatch on string")
+		    end)
+	      | E_Stringz str =>
+		(fn ty =>
+		    let val len = String.size str + 1
+		    in case ty of
+			 Type.T_Array {length, ty = Type.T_I8} =>
+			 if length = len then ty
+			   else raise TypeError ("Type mismatch on string")
+		       | _ => raise TypeError ("Type mismatch on string")
+		    end)
 	      | E_Struct elements =>
 		let
-		  fun coerce [] [] = []
-		    | coerce (ty:: types) (exp :: expressions) =
-		      let val ty' = (type_check vtable exp)
-		      in if ty = ty' then ty :: (coerce types expressions)
-			 else raise TypeError "Mismatch in struct"
-		      end
+		  fun coerce (Type.T_Struct ts) elements =
+		      let fun coerce' [] [] = []
+			    | coerce' (ty:: types) (exp :: expressions) =
+			      let val ty' = (type_check vtable exp)
+			      in if ty = ty' then ty :: (coerce' types expressions)
+				 else raise TypeError "Mismatch in struct"
+			      end
+			    | coerce' _ _ = raise (Internal_Error "Error in E_Struct coerce'.")
+		      in coerce' ts elements end
+		    | coerce _ _ = raise (Internal_Error "Error in type assumption E_Struct coerce.")
 		in
 		  (fn ty =>
 		      if Type.is_struct_type ty
-		      then
-			let val Type.T_Struct ts = ty
-			in
-			  Type.T_Struct (coerce ts elements)
-			end
-		      else
-			raise TypeError "Not a struct type.")
+		      then Type.T_Struct (coerce ty elements)
+		      else raise TypeError "Not a struct type.")
 		end
 	      | E_True => (fn _ => Type.T_I1)
 	      | E_Undef => (fn ty => ty) (* We trust the type *)
@@ -860,11 +876,13 @@ struct
 		       Type.to_output ty,
 		       Value.to_output lhs, str ", ",
 		       Value.to_output rhs]
+	  | S_Unop {unop, ty, op1, ret, ...} =>
+	      seq_space [Value.to_output ret, str " = ",
+			      Op.unop_to_output unop,
+			      Type.to_output ty,
+			      Value.to_output op1]
 (*	  | S_Unop {unop, ty, op1, ret, ...} =>
-	      Output.seq_list [Value.to_string ret, " = ",
-			      Op.unop_to_string unop,
-			      Type.to_string ty,
-			      Value.to_string op1]
+	      Output.seq_list [
 	  | S_Call {func, args, tail, call_conv, ty, ret, ...} =>
 	     Output.seq_list [Value.to_string ret, " = ",
 			      if tail then "tail" else "",
