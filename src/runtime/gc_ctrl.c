@@ -1,3 +1,7 @@
+/* mosml/src/runtime/gc_ctrl.c
+   Updated 2008-03-05 to prevent malloc from using mmap() 
+*/
+#include <malloc.h>
 #include "alloc.h"
 #include "debugger.h"
 #include "gc.h"
@@ -191,6 +195,8 @@ void init_gc (long minor_size, long major_incr, int percent_fr, int verb)
   gc_message ("*** camlrunm: debug mode ***\n", 0);
 #endif
   verb_gc = verb;
+  /* Added 2008-03-05 to prevent malloc from using mmap() */
+  mallopt(M_MMAP_MAX, 0);
   set_minor_heap_size (Bsize_wsize (norm_minsize (minor_size)));
   major_heap_increment = Bsize_wsize (norm_heapincr (major_incr));
   percent_free = norm_pfree (percent_fr);
