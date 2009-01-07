@@ -19,7 +19,7 @@ COMP_OBJS = \
     Emitcode.uo Emit_phr.uo Sigmtch.uo Compiler.uo
 
 LLVM_OBJS = \
-    Llvm.uo LlvmOutput.uo LlvmSymtable.uo
+    LlvmOutput.ui LlvmOutput.uo LlvmSymtable.ui LlvmSymtable.uo Llvm.ui Llvm.uo
 
 C_LIBOBJS= \
     List.uo Strbase.uo Char.uo String.uo BasicIO.uo TextIO.uo \
