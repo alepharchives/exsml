@@ -75,6 +75,15 @@ struct
 	| T_Integer _ => true
 	| _ => false
 
+    fun is_float_type ty =
+	case ty of
+	  T_Float => true
+	| T_Double => true
+	| T_X86fp80 => true
+	| T_FP128 => true
+	| T_PPC_FP128 => true
+	| _ => false
+
     fun is_array_type ty =
 	case ty of
 	  T_Array _ => true
@@ -474,7 +483,10 @@ struct
 			 raise TypeError "Idx out of bounds"
 		     end))
 	      | E_False => (fn _ => Type.T_I1)
-	      (* E_Float *)
+	      | E_Float f => (fn ty =>
+			       (* TODO: Check for range validity *)
+			       if Type.is_float_type ty then ty
+			       else raise TypeError "Non-float type given")
               (* E_GetElementPtr *)
 	      | E_InsertElem {value, elt, idx} =>
 		let val elt_ty_asserter = check_const_expr elt
