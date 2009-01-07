@@ -200,7 +200,3 @@ void init_gc (long minor_size, long major_incr, int percent_fr, int verb)
   gc_message ("Initial heap increment: %ldk\n", major_heap_increment / 1024);
   gc_message ("Initial minor heap size: %ldk\n", minor_heap_size / 1024);
 }
-itial space overhead: %d%%\n", percent_free);
-  gc_message ("Initial heap increment: %ldk\n", major_heap_increment / 1024);
-  gc_message ("Initial minor heap size: %ldk\n", minor_heap_size / 1024);
-}
