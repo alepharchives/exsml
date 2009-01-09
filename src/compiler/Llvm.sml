@@ -809,7 +809,19 @@ struct
 	case bb of
 	  S_Free {ty, value} =>
 	  (Type.assert_ptr ty;
-	   Value.coerce vtable value ty)
+	   Value.coerce vtable value ty;
+	  vtable)
+	| S_Unwind => vtable
+	| S_Unreachable => vtable
+	| S_Seq instructions =>
+	  let
+	    fun process_instructions [] vtable = vtable
+	      | process_instructions (i::is) vtable =
+		process_instructions is (check vtable i)
+	  in
+	    process_instructions instructions vtable
+	  end
+	| S_Conc (u,v) => check vtable (S_Seq [u, v])
 
     fun check2 vtable bb =
 	case bb of
