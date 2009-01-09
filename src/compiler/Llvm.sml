@@ -853,6 +853,9 @@ struct
 	| S_Malloc {result, ty, num_elems, align} =>
 	  (Type.assert_sized ty;
 	   LlvmSymtable.enter result (Type.T_Pointer ty) vtable)
+	| S_Alloca {result, ty, num_elems, align} =>
+	  (Type.assert_sized ty;
+	   LlvmSymtable.enter result (Type.T_Pointer ty) vtable)
 	| S_Unwind => vtable
 	| S_Unreachable => vtable
 	| S_Seq instructions =>
