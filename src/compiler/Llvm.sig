@@ -50,7 +50,7 @@ sig
 	      type t
 	      type vtable = (Identifier.t, Type.t) LlvmSymtable.t
 	      val to_output : t -> LlvmOutput.t
-	      val type_check : vtable -> t -> Type.t
+	      (* val type_check : vtable -> t -> (Type.t -> Type.t) *)
 	    end
 
 end

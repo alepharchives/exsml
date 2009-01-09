@@ -20,6 +20,20 @@ struct
     fun mk align = align
   end
 
+  structure ParamAttr =
+  struct
+    datatype t = PA_ZEROEXT | PA_SIGNEXT
+	       | PA_INREG | PA_BYVAL | PA_SRET
+	       | PA_NOALIAS | PA_NORETURN | PA_NOUNWIND
+	       | PA_NEST | PA_READONLY | PA_READNONE
+  end
+
+  structure FunctionAttr =
+  struct
+    datatype t = FA_ALWAYSINLINE | FA_NOINLINE | FA_OPTSIZE | FA_NORETURN
+	       | FA_NOUNWIND | FA_READNONE | FA_READONLY | FA_SSP | FA_SSPREQ
+  end
+
   structure Type =
   struct
     datatype t =
@@ -50,14 +64,16 @@ struct
 	     (* Label type *)
 	   | T_Label
 
+    fun is_integer_range_valid bits integer =
+	raise Not_Implemented
 
-    fun is_pointer_type ty =
+    fun is_pointer ty =
 	case ty of
 	  T_Pointer _ => true
 	| _ => false
 
     fun assert_pointer_type ty =
-	if is_pointer_type ty then ()
+	if is_pointer ty then ()
 	else raise TypeError "Type is not of pointer type."
 
     fun is_struct_type ty =
@@ -65,7 +81,7 @@ struct
 	  T_Struct _ => true
 	| _ => false
 
-    fun is_integer_type ty =
+    fun is_integer ty =
 	case ty of
 	  T_I1 => true
 	| T_I8 => true
@@ -75,7 +91,7 @@ struct
 	| T_Integer _ => true
 	| _ => false
 
-    fun is_float_type ty =
+    fun is_float ty =
 	case ty of
 	  T_Float => true
 	| T_Double => true
@@ -89,13 +105,28 @@ struct
 	  T_Array _ => true
 	| _ => false
 
-    fun is_vector_type ty =
+    fun is_int_vector ty =
+	case ty of
+	  T_Vector {length, ty} => is_integer ty
+	| _ => false
+
+    fun is_float_vector ty =
+	case ty of
+	  T_Vector {length, ty} => is_float ty
+	| _ => false
+
+    fun is_int_float_vector ty =
+	case ty of
+	  T_Vector {length, ty} => is_integer ty orelse is_float ty
+	| _ => false
+
+    fun is_vector ty =
 	case ty of
 	  T_Vector _ => true
 	| _ => false
 
     fun assert_vector_type ty =
-	if is_vector_type ty then ()
+	if is_vector ty then ()
 	else raise TypeError "Type is not of vector type"
 
     fun extract_base_type ty =
@@ -281,6 +312,7 @@ struct
 
     datatype binop = ADD | SUB | MUL | UDIV | SDIV | FDIV | UREM
 		   | SREM | FREM | SHL | LSHR | ASHR | AND | OR | XOR
+
     datatype conversion = TRUNC | ZEXT | SEXT | FPTRUNC | FPEXT | FPTOUI
 			| FPTOSI | UITOFP | SITOFP | PTRTOINT | INTTOPTR
 			| BITCAST
@@ -337,6 +369,9 @@ struct
 	   | C_Select (* Split this out *)
 	   | C_VFcmp of Op.fcmp
 
+    type element_ptr_idx = {ty: Type.t,
+			    idx: int}
+
     datatype exp = E_Array of exp list
 		 | E_Binop of {binop: Op.binop,
 			       lhs: exp,
@@ -351,7 +386,7 @@ struct
 				     idx: int}
 		 | E_False
 	         | E_Float of real
-		 | E_GetElementPtr of exp * (unit list) (* TODO: Indexes *)
+		 | E_GetElementPtr of exp * element_ptr_idx list (* TODO: ConstExpr? *)
 
 		 | E_InsertElem  of {value: exp,
 				     elt: exp,
@@ -368,28 +403,22 @@ struct
 		 | E_Undef
 		 | E_Vector of exp list (* Perhaps merge with E_Array *)
 		 | E_Zeroinit
-
-    and t = V_Identifier of {ty: Type.t,
-			     id: Identifier.t}
-	  | V_ConstExpr of {ty: Type.t,
-			    exp: exp}
+    and t = V_Identifier of Identifier.t
+	  | V_ConstExpr of exp
 
     type vtable = (Identifier.t, Type.t) LlvmSymtable.t
 
+    fun check e = Type.T_I1
+
     fun type_check vtable v =
 	let
-          (*
-	   Check if an integer lies inside the range for a given
-           number of bits
-	   *)
-	  fun integer_range_valid bits integer = raise Not_Implemented
-          (* Type check an identifier *)
-	  fun check_identifier id =
-	      case LlvmSymtable.lookup id vtable of
-		NONE => raise TypeError "Identifier is not matching its type"
-	      | SOME id_ty => id_ty
           (* Conversions have many special rules, so we handle them separately *)
-	  fun check_conversion conversion exp target_ty = raise Not_Implemented
+	  fun check_conversion conversion exp target_ty =
+	      (* TODO: Fix this! *)
+	      (fn ty =>
+		  case conversion of
+		    _ => ty)
+
 	      (* case conversion of *)
 	      (* 	      Op.TRUNC => true *)
 	      (* 	    | Op.ZEXT  => true *)
@@ -406,7 +435,7 @@ struct
           (* Type check a constant expression
 	   This function will return an assertion checker which, when invoked will assert
 	   that the type is correct and will coerce it if necessary *)
-	  fun check_const_expr (e : exp) : (Type.t -> Type.t) =
+	  fun check_const_expr (e : exp) =
 	      case e of
 		E_Array elements =>
 		(fn ty =>
@@ -443,9 +472,9 @@ struct
 	      | E_Compare {compare, lhs, rhs} =>
 		let
 		  fun type_valid ty =
-		      if Type.is_integer_type ty orelse
-			 Type.is_pointer_type ty orelse
-			 Type.is_vector_type ty
+		      if Type.is_integer ty orelse
+			 Type.is_pointer ty orelse
+			 Type.is_vector ty
 		      then
 			()
 		      else
@@ -457,7 +486,7 @@ struct
 		      (type_valid ty;
 		       if lhs_asserter ty = rhs_asserter ty
 		       then
-			 if Type.is_vector_type ty
+			 if Type.is_vector ty
 			 then
 			   (* Vector return *)
 			   Type.T_Vector {ty = Type.T_I1,
@@ -485,9 +514,10 @@ struct
 	      | E_False => (fn _ => Type.T_I1)
 	      | E_Float f => (fn ty =>
 			       (* TODO: Check for range validity *)
-			       if Type.is_float_type ty then ty
+			       if Type.is_float ty then ty
 			       else raise TypeError "Non-float type given")
-              (* E_GetElementPtr *)
+	      (* TODO: Fix cheating here *)
+	      | E_GetElementPtr (exp, indexes) => (fn ty => ty)
 	      | E_InsertElem {value, elt, idx} =>
 		let val elt_ty_asserter = check_const_expr elt
 		in
@@ -509,8 +539,8 @@ struct
 		end
 	      | E_Int i =>
 		(fn ty =>
-		    if Type.is_integer_type ty
-		    then if integer_range_valid (Type.bit_size ty) i
+		    if Type.is_integer ty
+		    then if Type.is_integer_range_valid (Type.bit_size ty) i
 			 then ty
 			 else raise TypeError ("The range of the integer " ^
 					       "is not valid according to " ^
@@ -556,30 +586,14 @@ struct
 			   else raise TypeError ("Type mismatch on string")
 		       | _ => raise TypeError ("Type mismatch on string")
 		    end)
-	      | E_Struct elements =>
-		let
-		  fun coerce (Type.T_Struct ts) elements =
-		      let fun coerce' [] [] = []
-			    | coerce' (ty:: types) (exp :: expressions) =
-			      let val ty' = (type_check vtable exp)
-			      in if ty = ty' then ty :: (coerce' types expressions)
-				 else raise TypeError "Mismatch in struct"
-			      end
-			    | coerce' _ _ = raise (Internal_Error "Error in E_Struct coerce'.")
-		      in coerce' ts elements end
-		    | coerce _ _ = raise (Internal_Error "Error in type assumption E_Struct coerce.")
-		in
-		  (fn ty =>
-		      if Type.is_struct_type ty
-		      then Type.T_Struct (coerce ty elements)
-		      else raise TypeError "Not a struct type.")
-		end
+		| E_Struct element =>
+		  (fn ty => ty) (* TODO: Fix *)
 	      | E_True => (fn _ => Type.T_I1)
 	      | E_Undef => (fn ty => ty) (* We trust the type *)
 	      | E_Vector elements =>
 		(* Consider a merge with the E_Array case. Identical *)
 		(fn ty =>
-		    if Type.is_vector_type ty
+		    if Type.is_vector ty
 		    then
 		      let
 			val base_type = Type.extract_base_type ty
@@ -598,56 +612,27 @@ struct
 
 	in
 	  case v of
-	    V_Identifier {ty, id} =>
-	    let val id_ty = check_identifier id
-	    in
-	      if id_ty = ty
-	      then ty
-	      else raise TypeError ("Identifier has wrong type")
-	    end
-	  | V_ConstExpr  {ty, exp} =>
-	    let
-	      val ty_asserter = check_const_expr exp
-	      val coerced_ty = ty_asserter ty
-	    in
-	      if coerced_ty = ty
-	      then ty (* TODO: You should do much more here to provide proper errors *)
-	      else raise TypeError ("Expression has wrong type")
-	    end
+	    V_Identifier id => (fn ty => LlvmSymtable.find id vtable) (* TODO: Coerce *)
+	  | V_ConstExpr exp => check_const_expr exp
 	end
 
     local
       open LlvmOutput
     in
-      fun to_output (V_ConstExpr {ty, exp}) =
+      fun to_output (V_ConstExpr exp) =
 	(case exp of
-	     E_Float r => seq_space [Type.to_output ty,real r]
-	   | E_String s => seq_space [Type.to_output ty, str "\"", str s, str "\""]
+	     E_Float r => real r
+	   | E_String s => seq_space [str "\"", str s, str "\""]
 	   | _ => raise Not_Implemented)
-      | to_output (V_Identifier {ty, id}) =
-	seq_space [Type.to_output ty, Identifier.to_output id]
+	| to_output (V_Identifier id) = Identifier.to_output id
     end
 
     fun is_constant (V_ConstExpr _) = true
       | is_constant _             = false
 
-    fun const_float ty r =
-	V_ConstExpr {ty = ty, exp = E_Float r}
-
-    fun const_string str =
-	let val l = String.size str
-	in {ty = Type.T_Array {length = l,
-			       ty = Type.T_I8},
-	    exp = (E_String str)}
-	end
-
-    fun const_stringz str =
-	let val l = String.size str
-	in {ty = Type.T_Array {length = l+1,
-			       ty = Type.T_I8},
-	    exp = (E_Stringz str)}
-	end
-
+    fun const_float r = E_Float r
+    fun const_string str = E_String str
+    fun const_stringz str = E_Stringz str
   end
 
   structure BasicBlock =
@@ -666,8 +651,8 @@ struct
 			    ret: Value.t,
 			    name: string option}
 	       (* Branch operations *)
-	       | S_Ret of (Type.t * Value.t) list
-	       | S_Branch of {conf: Value.t, (* Has boolean type *)
+	       | S_Ret of (Type.t * Value.t) option
+	       | S_Branch of {cond: Value.t, (* Has boolean type *)
 			      label_t: Label.t,
 			      label_f: Label.t}
 	       | S_UBranch of Label.t
@@ -675,11 +660,12 @@ struct
 			      value: Value.t,
 			      default: Label.t,
 			      cases: switch_case list}
-
 	       | S_Invoke of {callconv: CallConv.t,
-			      ty: Type.t,
+			      ty_attrs: ParamAttr.t list,
 			      func: Value.t,
+			      func_ty: Type.t,
 			      args: Value.t list,
+			      func_attrs: FunctionAttr.t,
 			      label_cont: Label.t,
 			      label_unwind: Label.t}
 	       | S_Unwind
@@ -792,6 +778,211 @@ struct
 			    label: Label.t}
     type t = Label.t * u
 
+    fun check vtable bb =
+	case bb of
+	  S_BinOp {binop: Op.binop, ty, lhs, rhs, ret, ...} =>
+	  let
+	    val ty1 = Value.check lhs
+	    val ty2 = Value.check rhs
+	  in
+	    if ty1 <> ty2 then raise TypeError "Type mismatch in binop"
+	    else
+	      case binop of
+		Op.ADD => if (Type.is_integer ty1
+			      orelse Type.is_vector ty1
+			      orelse Type.is_float ty1)
+			  then ()
+			  else raise TypeError "Wrong type in addition."
+	      | Op.SUB => if (Type.is_integer ty1
+			      orelse Type.is_vector ty1
+			      orelse Type.is_float ty1)
+			  then ()
+			  else raise TypeError "Wrong type in subtraction."
+	      | Op.MUL => if (Type.is_integer ty1
+			      orelse Type.is_vector ty1
+			      orelse Type.is_float ty1)
+			  then ()
+			  else raise TypeError "Wrong type in multiplication."
+	      | Op.UDIV => if (Type.is_integer ty1 orelse Type.is_int_vector ty1)
+			   then ()
+			   else raise TypeError "Wrong type in Udiv."
+	      | Op.SDIV => if (Type.is_integer ty1 orelse Type.is_int_vector ty1)
+			   then ()
+			   else raise TypeError "Wrong type in Sdiv."
+	      | Op.FDIV => if (Type.is_float ty1 orelse Type.is_float_vector ty1)
+			   then ()
+			   else raise TypeError "Wrong type in FDiv."
+	      | Op.UREM => if (Type.is_integer ty1 orelse Type.is_int_vector ty1)
+			   then ()
+			   else raise TypeError "Wrong type in URem."
+	      | Op.SREM => if (Type.is_integer ty1 orelse Type.is_int_vector ty1)
+			   then ()
+			   else raise TypeError "Wrong type in SRem."
+	      | Op.FREM => if (Type.is_float ty1 orelse Type.is_float_vector ty1)
+			   then ()
+			   else raise TypeError "Wrong type in FRem."
+	      | Op.SHL => if (Type.is_integer ty1 orelse Type.is_int_vector ty1)
+			  then ()
+			  else raise TypeError "Wrong type in shl."
+	      | Op.LSHR => if (Type.is_integer ty1 orelse Type.is_int_vector ty1)
+			   then ()
+			   else raise TypeError "Wrong type in lshr."
+	      | Op.ASHR => if (Type.is_integer ty1 orelse Type.is_int_vector ty1)
+			   then ()
+			   else raise TypeError "Wrong type in ashr."
+	      | Op.AND =>  if (Type.is_integer ty1 orelse Type.is_int_vector ty1)
+			   then ()
+			   else raise TypeError "Wrong type in and."
+	      | Op.OR =>   if (Type.is_integer ty1 orelse Type.is_int_vector ty1)
+			   then ()
+			   else raise TypeError "Wrong type in or."
+	      | Op.XOR =>  if (Type.is_integer ty1 orelse Type.is_int_vector ty1)
+			   then ()
+			   else raise TypeError "Wrong type in xor."
+	  end
+	| S_Unop {ty, op1, ret, ...} =>
+	  let
+	    val ty1 = Value.check op1
+	  in
+	    if ty <> ty1
+	    then raise TypeError "Mismatching types."
+	    else ()
+	  end
+	| S_Ret NONE => ()
+	| S_Ret (SOME (ty, v)) =>
+	  let
+	    val ty1 = Value.check v
+	  in
+	    if ty <> ty1
+	    then raise TypeError "Mismatching types."
+	    else ()
+	  end
+	| S_Branch {cond, label_t, label_f} =>
+	  let
+	    val ty1 = Value.check cond
+	  in
+	    if ty1 = Type.T_I1 then ()
+	    else raise TypeError "Cond type is not T_I1"
+	  end
+	| S_UBranch _ => ()
+	| S_Switch {ty, value, default, cases} =>
+	  let
+	    val ty1 = Value.check value
+	    fun check_constants seen [] = ()
+	      | check_constants seen ({ty, value, label}::rest) =
+		if Type.is_integer ty
+		then if Type.is_integer_range_valid ty value
+		     then if not (List.exists (fn x => x = value) seen)
+			  then check_constants (value::seen) rest
+			  else raise TypeError "Constant already used in Switch"
+		     else raise TypeError "Integer range invalid in Switch"
+		else raise TypeError "Not an Integer type in Switch"
+	  in
+	    if Type.is_integer_range_valid ty value
+	    then check_constants [] cases
+	    else raise TypeError "Type mismatch: Integer range invalid."
+	  end
+	| S_Invoke {callconv, ty_attrs, func_ty, func, args,
+		    label_cont, label_unwind, func_attrs} =>
+	  let
+	    fun check_return_attr_values attrs =
+		List.all
+		  (fn attr => case attr of
+				ParamAttr.PA_ZEROEXT => true
+			      | ParamAttr.PA_SIGNEXT => true
+			      | ParamAttr.PA_INREG   => true
+			      | _ => raise TypeError "Wrong Attribute value")
+		  attrs
+	    fun check_function_attributes func_attr =
+		case func_attr of
+		  FunctionAttr.FA_NORETURN => true
+		| FunctionAttr.FA_READONLY => true
+		| FunctionAttr.FA_NOUNWIND => true
+		| FunctionAttr.FA_READNONE => true
+		| _ => raise TypeError "Wrong Function Attribute value"
+	    fun check_function_ptr_ty func_ty = () (* TODO: Implement *)
+	    fun check_function_ptr_val ptr_ty func =
+		let
+		  val ty1 = Value.check func
+		in
+		  if ty1 = ptr_ty
+		  then ()
+		  else raise TypeError "Wrong function value type."
+		end
+	    fun check_argument_types func_ty args = () (* TODO: Implement *)
+	  in
+	    check_function_ptr_ty func_ty;
+	    check_function_ptr_val func_ty func;
+	    check_argument_types func_ty args;
+	    check_function_attributes func_attrs;
+	    ()
+	  end
+	| S_Unwind => ()
+	| S_Unreachable => ()
+	| S_ExtractElement {result, ty, value, idx} =>
+	  let
+	    fun check_idx () =
+		let val idx_ty = Value.check idx
+		in if idx_ty <> Type.T_I32
+		   then raise TypeError "Wrong idx type."
+		   else ()
+		end
+	    fun check_ty () =
+		let val val_ty = Value.check value
+		in if val_ty <> ty
+		   then raise TypeError "Wrong val type."
+		   else ()
+		end
+	  in
+	    check_idx ();
+	    check_ty ()
+	  end
+	| S_InsertElement {ty, value, elem_ty, elem_value, idx} =>
+	  let
+	    fun check_idx () =
+		let val idx_ty = Value.check idx
+		in if idx_ty <> Type.T_I32
+		   then raise TypeError "Worng idx type."
+		   else ()
+		end
+	    fun check_ty () =
+		let val val_ty = Value.check value
+		in if val_ty <> ty
+		   then raise TypeError "Wrong val type."
+		   else ()
+		end
+	    fun check_elem_ty () =
+		let val elem_ty' = Type.extract_base_type ty
+		in if elem_ty' <> elem_ty
+		   then raise TypeError "Wrong element type."
+		   else ()
+		end
+	  in
+	    check_idx ();
+	    check_ty ();
+	    check_elem_ty ()
+	  end
+	| S_ShuffleVector {result, v1_ty, v1, v2_ty, v2, mask_ty, mask} => () (* TODO *)
+	| S_ExtractValue {result, ty, value, idxs} => ()
+	| S_InsertValue {ty, value, elem_ty, elem_value, idx} => ()
+	| S_Malloc { result, ty, num_elems, align} => ()
+	| S_Free {ty, value} => ()
+	| S_Alloca {result, ty, num_elems, align} => ()
+	| S_Load {result, volatile, ty, value, align} => ()
+	| S_Store {volatile, ty, value, align} => ()
+	| S_GetElementPtr {result, ty, value, idxs} => ()
+	| S_Conversion {result, conversion, src_ty, value, dst_ty} => ()
+	| S_Icmp {result, cond, ty, lhs, rhs} => ()
+	| S_Fcmp {result, cond, ty, lhs, rhs} => ()
+	| S_VIcmp {result, cond, ty, lhs, rhs} => ()
+	| S_VFcmp {result, cond, ty, lhs, rhs} => ()
+	| S_Phi {result, ty, predecs} => ()
+	| S_Select {result, ty, cond, true_ty, true_value, false_ty, false_value} => ()
+	| S_Call {func, tail, call_conv, ty, args, ret, name} => ()
+	| S_Getresult {result, ty, value, idx} => ()
+	| S_Seq instructions => List.app (check vtable) instructions (* Fold needed *)
+	| S_Conc (u, v) => (check vtable u; check vtable v)
+
     local
 	fun con_binop binop ty ret op1 op2 = S_BinOp {binop = binop,
 						      ty = ty,
@@ -808,8 +999,8 @@ struct
 		     name = SOME str}
     in
 
-    fun ret ty v = S_Ret [(ty, v)]
-    val ret_void = S_Ret []
+    fun ret ty v = S_Ret (SOME (ty, v))
+    val ret_void = S_Ret NONE
 
     val add = con_binop Op.ADD
     val add_n = con_binop_n Op.ADD
@@ -873,15 +1064,9 @@ struct
 
     fun to_output operation =
 	case operation of
-	    S_Ret [] => str "ret void"
-	  | S_Ret [(ty, v)] =>
+	    S_Ret NONE => str "ret void"
+	  | S_Ret (SOME (ty, v)) =>
 	    seq_space [str "ret", Type.to_output ty, Value.to_output v]
-	  | S_Ret retvals =>
-	    commas (List.map
-		      (fn (ty, v) =>
-			  seq_space [Type.to_output ty,
-				     Value.to_output v])
-		      retvals)
 	  | S_BinOp {binop, ty, lhs, rhs, ret, ...} =>
 	    seq_space [Value.to_output ret, str " = ",
 		       Op.binop_to_output binop,
@@ -945,13 +1130,6 @@ struct
 
   end
 
-  structure ParamAttr =
-  struct
-    datatype t = PA_ZEROEXT | PA_SIGNEXT
-	       | PA_INREG | PA_BYVAL | PA_SRET
-	       | PA_NOALIAS | PA_NORETURN | PA_NOUNWIND
-	       | PA_NEST | PA_READONLY | PA_READNONE
-  end
 
   structure Module =
   struct

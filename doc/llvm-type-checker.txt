@@ -1,0 +1,48 @@
+* The LLVM Type checker
+
+This is a description on how I think the type checker should work. I
+am not sure that it is the right way to do it, but then I'll update
+the document later on.
+
+** The problem
+
+LLVM is not easy to type check. First of all, there is no inference
+rule system you can look up and use for implementing the type
+check. Second, the documentation of the language reference is pretty
+imprecise on the point of getting the types right. At this point in
+time I am not even sure I got the datatypes right, so getting the type
+check right proves to be a lot harder than I initially thought.
+
+The solution is to write several functions:
+
+BasicBlock type checking: Check a basic block and keep track of
+variable types in a symbol table. To do this, one must call a type
+checker of values.
+
+Value type checking. This type checker uses a coercion step. It
+returns a function which will be given the most general type that is
+being accepted. Then the checker will run and keep updating the most
+general type accepted on sub-expressions in values. The reason we need
+coercion is that there are multiple types available. Take for instance
+the value of 37. This is a number, but it is a valid constant number
+for 6-bit integers and up. So it is possible to coerce this to a
+32-bit integer, but not to a 1-bit integer.
+
+Coercion is most logically handled by writing an auxilliary function
+in the type checker able to do most of the coercions
+automatically. Then the value checker just need to generate the most
+constrained type and send this to the type coercer.
+
+We will also need several simple assertions to check that certain
+things are fulfilled at the instruction level. As an example, a 'free'
+instruction must be given a pointer type. So we must be able to assert
+that. But in a call
+
+free [4 x i32]* null;
+
+we have a no-op by definition of the LangRef, so when we have checked
+[4 x i32]* is a pointer type (it is), we should coerce null with [4 x
+i32]*. The 'null' constant is coercible to any pointer type, so this
+succeeds.
+
+These are the ideas behind the current type checker.

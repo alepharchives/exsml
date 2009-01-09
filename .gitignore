@@ -32,4 +32,20 @@ src/runtime/camlrunm
 src/runtime/jumptbl.h
 src/runtime/primitives
 src/runtime/prims.c
+src/launch/camlexec
+src/launch/camlexec.c
+src/launch/mosml
+src/launch/mosmlc
+src/launch/mosmllex
+src/launch/testprog
+src/lex/Grammar.sig
+src/lex/Grammar.sml
+src/lex/Scanner.sml
+src/lex/mosmllex
+src/toolssrc/Deplex.sml
+src/toolssrc/Deppars.sig
+src/toolssrc/Deppars.sml
+src/toolssrc/Mosmldep.sml
+src/toolssrc/cutdeps
+src/toolssrc/mosmldep
 
