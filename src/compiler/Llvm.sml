@@ -64,6 +64,8 @@ struct
 	     (* Label type *)
 	   | T_Label
 
+    fun coerce ty_src ty_dst = ty_dst
+
     fun is_integer_range_valid bits integer =
 	raise Not_Implemented
 
@@ -72,7 +74,7 @@ struct
 	  T_Pointer _ => true
 	| _ => false
 
-    fun assert_pointer_type ty =
+    fun assert_ptr ty =
 	if is_pointer ty then ()
 	else raise TypeError "Type is not of pointer type."
 
@@ -410,6 +412,31 @@ struct
 
     fun check e = Type.T_I1
 
+    fun coerce vtable (term: t) : Type.t -> Type.t =
+	let
+	  fun coerce_exp e : Type.t -> Type.t =
+	      case e of
+		E_Null =>
+		let
+		  fun coerce t =
+		      (Type.assert_ptr t;
+		       t)
+		in
+		  coerce
+		end
+	  fun coerce_identifier id : Type.t -> Type.t =
+	      let
+		val id_ty = LlvmSymtable.find id vtable
+	      in
+		(fn ty =>
+		    Type.coerce ty id_ty)
+	      end
+	in
+	  case term of
+	    V_Identifier id => coerce_identifier id
+	  | V_ConstExpr e   => coerce_exp e
+	end
+
     fun type_check vtable v =
 	let
           (* Conversions have many special rules, so we handle them separately *)
@@ -548,7 +575,7 @@ struct
 		    else raise TypeError ("Integer is not of integer type"))
 	      | E_Null  =>
 		(fn ty =>
-		    (Type.assert_pointer_type ty;
+		    (Type.assert_ptr ty;
 		     ty))
 	      | E_ShuffleVector {vec1, vec2, idxmask} =>
 		let
@@ -780,6 +807,12 @@ struct
 
     fun check vtable bb =
 	case bb of
+	  S_Free {ty, value} =>
+	  (Type.assert_ptr ty;
+	   Value.coerce vtable value ty)
+
+    fun check2 vtable bb =
+	case bb of
 	  S_BinOp {binop: Op.binop, ty, lhs, rhs, ret, ...} =>
 	  let
 	    val ty1 = Value.check lhs
@@ -980,8 +1013,8 @@ struct
 	| S_Select {result, ty, cond, true_ty, true_value, false_ty, false_value} => ()
 	| S_Call {func, tail, call_conv, ty, args, ret, name} => ()
 	| S_Getresult {result, ty, value, idx} => ()
-	| S_Seq instructions => List.app (check vtable) instructions (* Fold needed *)
-	| S_Conc (u, v) => (check vtable u; check vtable v)
+(*	| S_Seq instructions => List.app (check vtable) instructions (* Fold needed *) *)
+(*	| S_Conc (u, v) => (check vtable u; check vtable v) *)
 
     local
 	fun con_binop binop ty ret op1 op2 = S_BinOp {binop = binop,
