@@ -78,6 +78,8 @@ struct
 	if is_pointer ty then ()
 	else raise TypeError "Type is not of pointer type."
 
+    fun assert_sized ty = () (* TODO: Only accept type with specified sizes *)
+
     fun is_struct_type ty =
 	case ty of
 	  T_Struct _ => true
@@ -811,6 +813,9 @@ struct
 	  (Type.assert_ptr ty;
 	   Value.coerce vtable value ty;
 	  vtable)
+	| S_Malloc {result, ty, num_elems, align} =>
+	  (Type.assert_sized ty;
+	   LlvmSymtable.enter result (Type.T_Pointer ty) vtable)
 	| S_Unwind => vtable
 	| S_Unreachable => vtable
 	| S_Seq instructions =>
