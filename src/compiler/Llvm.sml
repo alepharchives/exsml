@@ -64,7 +64,6 @@ struct
 	     (* Label type *)
 	   | T_Label
 
-    fun coerce ty_src ty_dst = ty_dst
 
     fun is_integer_range_valid bits integer =
 	raise Not_Implemented
@@ -210,6 +209,41 @@ struct
 	   | T_Void => (str "void")
 	   | T_Label => (str "label")
     end
+
+    fun coercion_error ty_s ty_d =
+	TypeError "Coercion error. FIXME: Print out coercion problem"
+
+    fun coerce ty_src ty_dst =
+	(* Try to coerce something of value ty_src into something of value ty_dst *)
+	case (ty_src, ty_dst) of
+	  (T_I1, T_I1) => T_I1
+	| (T_Integer i, T_I1) => if i = 1 then T_I1
+				 else raise (coercion_error (T_Integer i) T_I1)
+	| (T_I1, T_I8) => T_I8
+	| (T_I8, T_I8) => T_I8
+	| (T_Integer i, T_I8) => if i <= 8 then T_I8
+				 else raise (coercion_error (T_Integer i) T_I8)
+	| (T_I1, T_I16) => T_I16
+	| (T_I8, T_I16) => T_I16
+	| (T_I16, T_I16) => T_I16
+	| (T_Integer i, T_I16) => if i <= 16 then T_I16
+				  else raise (coercion_error (T_Integer i) T_I16)
+	| (T_I1, T_I32) => T_I32
+	| (T_I8, T_I32) => T_I32
+	| (T_I16, T_I32) => T_I32
+	| (T_I32, T_I32) => T_I32
+	| (T_Integer i, T_I32) => if i <= 32 then T_I32
+				  else raise (coercion_error (T_Integer i) T_I32)
+	| (T_I1, T_I64) => T_I64
+	| (T_I8, T_I64) => T_I64
+	| (T_I16, T_I64) => T_I64
+	| (T_I32, T_I64) => T_I64
+	| (T_I64, T_I64) => T_I64
+	| (T_Integer i, T_I64) => if i <= 64 then T_I64
+				  else raise (coercion_error (T_Integer i) T_I64)
+	| (ty_src, ty_dst) => raise (coercion_error ty_src ty_dst)
+
+
   end
 
   structure CallConv =
@@ -418,7 +452,8 @@ struct
 	let
 	  fun coerce_exp e : Type.t -> Type.t =
 	      case e of
-		E_Null =>
+	        E_False => (fn ty => Type.coerce Type.T_I1 ty)
+	      | E_Null =>
 		let
 		  fun coerce t =
 		      (Type.assert_ptr t;
@@ -426,12 +461,14 @@ struct
 		in
 		  coerce
 		end
+
+	      | E_True => (fn ty => Type.coerce Type.T_I1 ty)
 	  fun coerce_identifier id : Type.t -> Type.t =
 	      let
 		val id_ty = LlvmSymtable.find id vtable
 	      in
 		(fn ty =>
-		    Type.coerce ty id_ty)
+		    Type.coerce id_ty ty)
 	      end
 	in
 	  case term of
