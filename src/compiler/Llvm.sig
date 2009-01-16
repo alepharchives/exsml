@@ -12,7 +12,7 @@ sig
 		 *)
 
 		val assert_ptr : t -> unit
-		val assert_vector_type  : t -> unit
+		val assert_vector : t -> unit
                 (* Predicates for matching certain type structure *)
 
 		val to_output : t -> LlvmOutput.t

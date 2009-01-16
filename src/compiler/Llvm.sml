@@ -65,7 +65,7 @@ struct
 	   | T_Label
 
 
-    fun is_integer_range_valid bits integer =
+    fun is_int_range_valid bits integer =
 	raise Not_Implemented
 
     fun is_pointer ty =
@@ -80,12 +80,18 @@ struct
 
     fun assert_sized ty = () (* TODO: Only accept type with specified sizes *)
 
+    fun assert_select_ty ty =
+	case ty of
+	  T_I1 => true
+	| T_Vector {ty = T_I1, ...} => true
+	| _ => false
+
     fun is_struct_type ty =
 	case ty of
 	  T_Struct _ => true
 	| _ => false
 
-    fun is_integer ty =
+    fun is_int ty =
 	case ty of
 	  T_I1 => true
 	| T_I8 => true
@@ -94,6 +100,10 @@ struct
 	| T_I64 => true
 	| T_Integer _ => true
 	| _ => false
+
+    fun assert_int ty =
+	if is_int ty then ()
+	else raise TypeError "Type is not of integer type."
 
     fun is_float ty =
 	case ty of
@@ -104,6 +114,14 @@ struct
 	| T_PPC_FP128 => true
 	| _ => false
 
+    fun assert_float ty =
+	if is_float ty then ()
+	else raise TypeError "Float type expected."
+
+    fun assert_int_float ty =
+	if is_int ty orelse is_float ty then ()
+	else raise TypeError "Number expected."
+
     fun is_array_type ty =
 	case ty of
 	  T_Array _ => true
@@ -111,7 +129,7 @@ struct
 
     fun is_int_vector ty =
 	case ty of
-	  T_Vector {length, ty} => is_integer ty
+	  T_Vector {length, ty} => is_int ty
 	| _ => false
 
     fun is_float_vector ty =
@@ -121,7 +139,7 @@ struct
 
     fun is_int_float_vector ty =
 	case ty of
-	  T_Vector {length, ty} => is_integer ty orelse is_float ty
+	  T_Vector {length, ty} => is_int ty orelse is_float ty
 	| _ => false
 
     fun is_vector ty =
@@ -129,15 +147,26 @@ struct
 	  T_Vector _ => true
 	| _ => false
 
-    fun assert_vector_type ty =
+    fun assert_vector ty =
 	if is_vector ty then ()
 	else raise TypeError "Type is not of vector type"
 
-    fun extract_base_type ty =
+
+    fun extract_base ty =
 	case ty of
 	  T_Array {ty, ...} => ty
 	| T_Vector {ty, ...} => ty
 	| _ => raise Internal_Error "Extracting from a non-extractible"
+
+
+    (* TODO: Consider fixing assert_eq
+     * Rather than having assert_eq assert raw equality, it could
+     * try a type unification instead where it will attempt to coerce the
+     * two values *)
+    fun assert_eq ty1 ty2 =
+	if ty1 <> ty2
+	then raise TypeError "Types must be equal."
+	else ()
 
     fun extract_size ty =
 	case ty of
@@ -146,7 +175,7 @@ struct
 	| _ => raise Internal_Error "Extracting from a nen-extractible"
 
     fun is_first_class ty =
-	is_integer ty orelse is_float ty orelse
+	is_int ty orelse is_float ty orelse
 	(case ty of
 	   T_Pointer ty' => is_first_class ty'
 	 | T_Vector {ty, ...} => is_first_class ty
@@ -446,6 +475,7 @@ struct
 				     idx: int}
 		 | E_Int of int
 		 | E_Null
+		 (* TODO: This instruction is wrong! *)
 		 | E_ShuffleVector of {vec1: exp,
 				       vec2: exp,
 				       idxmask: exp}
@@ -466,6 +496,8 @@ struct
     fun coerce vtable (term: t) : Type.t -> Type.t =
 	let
 	  fun coerce_exp e : Type.t -> Type.t =
+	      fn ty => Type.T_I1
+(*
 	      case e of
 	        E_False => (fn ty => Type.coerce Type.T_I1 ty)
 	      | E_Null =>
@@ -478,6 +510,7 @@ struct
 		end
 
 	      | E_True => (fn ty => Type.coerce Type.T_I1 ty)
+*)
 	  fun coerce_identifier id : Type.t -> Type.t =
 	      let
 		val id_ty = LlvmSymtable.find id vtable
@@ -490,6 +523,15 @@ struct
 	    V_Identifier id => coerce_identifier id
 	  | V_ConstExpr e   => coerce_exp e
 	end
+
+    fun is_idx_list vtable [] = true
+      | is_idx_list vtable (idx::rest) =
+	(coerce vtable idx Type.T_I32;
+	 is_idx_list vtable rest) handle TypeError e => false
+
+    fun assert_idx_list vtable lst =
+	if is_idx_list vtable lst then ()
+	else raise TypeError "Index list is not a list of i32 values."
 
     fun type_check vtable v =
 	let
@@ -523,7 +565,7 @@ struct
 		    if Type.is_array_type ty
 		    then
 		      let
-			val base_type = Type.extract_base_type ty
+			val base_type = Type.extract_base ty
 			val size = Type.extract_size ty
 			fun check_elems [] = ty
 			  | check_elems (e :: es) =
@@ -553,7 +595,7 @@ struct
 	      | E_Compare {compare, lhs, rhs} =>
 		let
 		  fun type_valid ty =
-		      if Type.is_integer ty orelse
+		      if Type.is_int ty orelse
 			 Type.is_pointer ty orelse
 			 Type.is_vector ty
 		      then
@@ -582,13 +624,13 @@ struct
 		check_conversion conversion exp target_ty
 	      | E_ExtractElem {value, idx} =>
 		(fn ty =>
-		    (Type.assert_vector_type ty;
+		    (Type.assert_vector ty;
 		     let
 		       val size = Type.extract_size ty
 		     in
 		       if idx >= 0 andalso idx < size
 		       then
-			 Type.extract_base_type ty
+			 Type.extract_base ty
 		       else
 			 raise TypeError "Idx out of bounds"
 		     end))
@@ -603,10 +645,10 @@ struct
 		let val elt_ty_asserter = check_const_expr elt
 		in
 		  (fn ty =>
-		      (Type.assert_vector_type ty;
+		      (Type.assert_vector ty;
 		       let
 			 val size = Type.extract_size ty
-			 val base_ty = Type.extract_base_type ty
+			 val base_ty = Type.extract_base ty
 			 val elt_ty = elt_ty_asserter base_ty
 		       in
 			 if idx >= 0 andalso idx < size
@@ -620,8 +662,8 @@ struct
 		end
 	      | E_Int i =>
 		(fn ty =>
-		    if Type.is_integer ty
-		    then if Type.is_integer_range_valid (Type.bit_size ty) i
+		    if Type.is_int ty
+		    then if Type.is_int_range_valid (Type.bit_size ty) i
 			 then ty
 			 else raise TypeError ("The range of the integer " ^
 					       "is not valid according to " ^
@@ -638,7 +680,7 @@ struct
 		  val mask_asserter = check_const_expr idxmask
 		in
 		  (fn ty =>
-		      (Type.assert_vector_type ty;
+		      (Type.assert_vector ty;
 		       let val size = Type.extract_size ty
 		       in
 			 vec1_asserter ty;
@@ -677,7 +719,7 @@ struct
 		    if Type.is_vector ty
 		    then
 		      let
-			val base_type = Type.extract_base_type ty
+			val base_type = Type.extract_base ty
 			val size = Type.extract_size ty
 			fun check_elems [] = ty
 			  | check_elems (e :: es) =
@@ -724,13 +766,8 @@ struct
 			     ty: Type.t,
 			     lhs: Value.t,
 			     rhs: Value.t,
-			     ret: Value.t,
+			     ret: Identifier.t,
 			     name: string option}
-	       | S_Unop of {unop: Op.unop,
-			    ty: Type.t,
-			    op1: Value.t,
-			    ret: Value.t,
-			    name: string option}
 	       (* Branch operations *)
 	       | S_Ret of (Type.t * Value.t) option
 	       | S_Branch of {cond: Value.t, (* Has boolean type *)
@@ -746,9 +783,10 @@ struct
 			      func: Value.t,
 			      func_ty: Type.t,
 			      args: Value.t list,
-			      func_attrs: FunctionAttr.t,
+			      func_attrs: FunctionAttr.t list,
 			      label_cont: Label.t,
-			      label_unwind: Label.t}
+			      label_unwind: Label.t,
+			      result: Identifier.t}
 	       | S_Unwind
 	       | S_Unreachable
                (* Vector operations *)
@@ -766,7 +804,7 @@ struct
 				     v1: Value.t,
 				     v2_ty: Type.t,
 				     v2: Value.t,
-				     mask_ty: Type.t,
+				     mask_len: int,
 				     mask: Value.t}
 	       (* Aggregate operations *)
                | S_ExtractValue of {result: Identifier.t,
@@ -844,15 +882,13 @@ struct
 	       | S_Call of {func: Value.t,
 			    tail: bool, (* Tail call optim. applicable *)
 			    call_conv: CallConv.t option,
+			    param_attrs: ParamAttr.t list,
+			    fn_attrs: FunctionAttr.t list,
 			    ty: Type.t,
+			    fnty: Type.t option,
 			    args: Value.t list,
-			    ret: Value.t,
+			    ret: Identifier.t,
 			    name: string} (* Maybe Identifier *)
-	       (* TODO: Va_arg is not implemented *)
-	       | S_Getresult of {result: Identifier.t,
-				 ty: Type.t,
-				 value: Value.t,
-				 idx: int}
                (* Basic Block sequencing *)
 	       | S_Seq of u list
 	       | S_Conc of u * u
@@ -866,11 +902,163 @@ struct
 	  S_Alloca {result, ty, num_elems, align} =>
 	  (Type.assert_sized ty;
 	   LlvmSymtable.enter result (Type.T_Pointer ty) vtable)
+	| S_BinOp {binop, ty, lhs, rhs, ret, ...} =>
+	  let
+	    fun bin_coerce ty lhs rhs =
+		let
+		  val lhs_ty = Value.coerce vtable lhs ty
+		in
+		  Value.coerce vtable rhs lhs_ty
+		end
+	  in case binop of
+	       Op.ADD => (Type.assert_int_float ty;
+			  LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	     | Op.SUB => (Type.assert_int_float ty;
+			  LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	     | Op.MUL => (Type.assert_int_float ty;
+			  LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	     | Op.UDIV => (Type.assert_int ty;
+			   LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	     | Op.SDIV => (Type.assert_int ty;
+			   LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	     | Op.FDIV => (Type.assert_float ty;
+			   LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	     | Op.UREM => (Type.assert_int ty;
+			   LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	     | Op.SREM => (Type.assert_int ty;
+			   LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	     | Op.FREM => (Type.assert_float ty;
+			   LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+
+	     | Op.SHL => (Type.assert_int ty;
+			  LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	     | Op.LSHR => (Type.assert_int ty;
+			   LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	     | Op.ASHR => (Type.assert_int ty;
+			   LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	     | Op.AND => (Type.assert_int ty;
+			  LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	     | Op.OR => (Type.assert_int ty;
+			  LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	     | Op.XOR => (Type.assert_int ty;
+			  LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	  end
+	| S_Branch {cond, label_t, label_f} =>
+	  (Value.coerce vtable cond Type.T_I1;
+	   vtable)
+	| S_Call {func, tail, call_conv, ty, args, ret, name, param_attrs, fnty, fn_attrs} =>
+	  (* Rules:
+	     1. Of the param attributes, only 'zeroext, signext and inreg' are valid.
+	     2. 'ty' is the return type of the function.
+             3. fnty is the function type but it is only needed when playing with function
+	        pointer returns and varargs. Sigh.
+             4. func is the 'fnptrval' containing the function being invoked.
+             5. args should match the function signature args.
+             6. All args are firstclass.
+             7. Function attributes are optional.
+             8. Only function attributes of the kinds 'noreturn', 'nounwind',
+                'readonly' and 'readnone' are valid attribute kinds here
+	   *)
+	  (* TODO! *)
+	  LlvmSymtable.enter ret ty vtable
 	| S_Conc (u,v) => check vtable (S_Seq [u, v])
+	| S_ExtractElement {result, ty, value, idx} =>
+	  (* Rules:
+             1. idx must be a I32
+             2. ty must be a vector type.
+             3. value must coerce to the vector type *)
+	  (Type.assert_vector ty;
+	   Value.coerce vtable value Type.T_I32;
+	   let
+	     val r_ty = Value.coerce vtable value ty
+	   in
+	     LlvmSymtable.enter result r_ty vtable
+	   end)
 	| S_Free {ty, value} =>
 	  (Type.assert_ptr ty;
 	   Value.coerce vtable value ty;
 	  vtable)
+	| S_InsertElement {ty, value, elem_ty, elem_value, idx} =>
+	  (* Rules:
+	     1. Ty must be a vector type.
+             2. Value must coerce to ty
+	     3. elem_ty must be the extract of the vector type
+             4. elem_value must coerce to elem_ty
+	     5. idx must coerce to T_I32.
+	     Function is void'ed
+          *)
+	  (Type.assert_vector ty;
+	   Value.coerce vtable value ty;
+	   Type.assert_eq (Type.extract_base ty) elem_ty;
+	   Value.coerce vtable elem_value elem_ty;
+	   Value.coerce vtable idx Type.T_I32;
+	   vtable)
+	| S_Invoke {callconv, ty_attrs, func, func_ty, args, func_attrs, label_cont,
+		    label_unwind, result} =>
+	  (* Rules:
+             1. ty_attrs are parameter attributes. Only 'zeroext','signext' and 'inreg' are valid.
+             2. func_ty is the signature of the function being invoked.
+	     3. func is the value of the function in question.
+             4. args are the function arguments. They must match the function signature type.
+             5. Of the function attributes list, only 'noreturn', 'nounwind', 'readonly'
+                and 'readnone' are valid.
+           *)
+	  (* TODO! *)
+	  LlvmSymtable.enter result func_ty vtable (* Wrong, should extract ret-ty from func_ty *)
+	| S_ShuffleVector {result, v1_ty, v1, v2_ty, v2, mask_len, mask} =>
+	  (* Rules:
+	     1. v1_ty and v2_ty must agree
+	     2. v1 and v2 must coerce to their respective types
+             3. mask must coerce to mask_ty
+             4. mask_ty must be a valid mask type
+	     must update result to have the type of v1_ty *)
+	  let
+	    val v1_ty' = Value.coerce vtable v1 v1_ty
+	    val v2_ty' = Value.coerce vtable v2 v2_ty
+	    val mask_ty = Type.T_Vector {length = mask_len, ty = Type.T_I32}
+	    val mask_ty' = Value.coerce vtable mask mask_ty
+	  in
+	    Type.assert_eq v1_ty' v2_ty';
+	    LlvmSymtable.enter result v1_ty' vtable
+	  end
+	| S_ExtractValue {result, ty, value, idxs} =>
+	  (* Rules:
+	     1. value and ty must coerce.
+             2. idxs must be a list of T_I32's *)
+	  let
+	    val ty' = Value.coerce vtable value ty
+	  in
+	    Value.assert_idx_list vtable idxs;
+	    LlvmSymtable.enter result ty' vtable
+	  end
+	| S_InsertValue {ty, value, elem_ty, elem_value, idx} =>
+	  (* Rules:
+	     1. Value and ty must coerce
+             2. Elem and elem_ty must coerce
+             3. idx is a T_I32.
+             4. extract-type of ty and elem_ty agrees
+             return is void *)
+	  let
+	    val ty' = Value.coerce vtable value ty
+	    val elem_ty' = Value.coerce vtable elem_value elem_ty
+	  in
+	    Value.coerce vtable idx Type.T_I32;
+	    Type.assert_eq (Type.extract_base ty') elem_ty';
+	    vtable
+	  end
+	| S_Phi {result, ty, predecs} =>
+	  (* Check the all predecessors are valid *)
+	  let
+	    fun check_predecs [] = ()
+	      | check_predecs ((v, l)::rest) =
+		 (Value.coerce vtable v ty;
+		  check_predecs rest)
+		(* TODO: Also check label uniqueness *)
+	  in
+	    Type.assert_first_class ty;
+	    check_predecs predecs;
+	    LlvmSymtable.enter result ty vtable
+	  end
 	| S_Malloc {result, ty, num_elems, align} =>
 	  (Type.assert_sized ty;
 	   LlvmSymtable.enter result (Type.T_Pointer ty) vtable)
@@ -882,6 +1070,45 @@ struct
 	   in
 	     LlvmSymtable.enter result v_ty vtable
 	   end)
+	| S_Ret NONE => vtable
+	| S_Ret (SOME (ty, value)) =>
+	  (Value.coerce vtable value ty;
+	   vtable)
+	| S_Select {result, ty, cond,
+		    true_ty, true_value,
+		    false_ty, false_value} =>
+	  (* Rules:
+	     1. true_ty and false_ty must agree
+             2. Values must coerce to their types
+	     3. The cond must coerce to the select type
+ 	     4. The select ty must be the valid types, either I1 or a Vector
+                of I1's
+	   *)
+	  if true_ty <> false_ty
+	  then raise TypeError "True and False type branches disagree."
+	  else (Value.coerce vtable true_value true_ty;
+		Value.coerce vtable false_value false_ty;
+		Value.coerce vtable cond ty;
+		Type.assert_select_ty ty;
+		LlvmSymtable.enter result true_ty vtable)
+	| S_GetElementPtr {result, ty, value, idxs} =>
+	  (* This is a bitch to implement *)
+	  raise Not_Implemented
+	| S_Icmp {result, cond, ty, lhs, rhs} =>
+	  (* Comparator of integers. Rules:
+	     1. Ty must be one of 'integer', 'pointer', or 'vector integer' type.
+	     2. Both lhs and rhs must coerce to ty.
+	     3. Types of lhs and rhs must agree.
+             4. The result is always either i1 or vector i1. *)
+	  raise Not_Implemented
+	| S_Conversion {result, conversion, src_ty, value, dst_ty} =>
+	  raise Not_Implemented
+	| S_Fcmp {result, cond, ty, lhs, rhs} =>
+	  raise Not_Implemented
+	| S_VIcmp {result, cond, ty, lhs, rhs} =>
+	  raise Not_Implemented
+	| S_VFcmp {result, cond, ty, lhs, rhs} =>
+	  raise Not_Implemented
 	| S_Seq instructions =>
 	  let
 	    fun process_instructions [] vtable = vtable
@@ -895,6 +1122,22 @@ struct
 	   Value.coerce vtable value ty;
 	   Value.coerce vtable ptr ptr_ty;
 	   vtable)
+	| S_Switch {ty, value, default, cases} =>
+	  let
+	    fun assert_cases_unique seen [] = ()
+	      | assert_cases_unique seen ({ty, value, label} :: rest) =
+		(Type.assert_int ty;
+		 Value.coerce vtable value ty;
+		 if List.exists (fn x => x = value) seen
+		 then raise TypeError "Switch cases not unique"
+		 else assert_cases_unique (value::seen) rest)
+	  in
+	    Type.assert_int ty;
+	    Value.coerce vtable value ty;
+	    assert_cases_unique [] cases;
+	   vtable
+	  end
+	| S_UBranch lbl => vtable
 	| S_Unwind => vtable
 	| S_Unreachable => vtable
 
@@ -983,16 +1226,11 @@ struct
 	  | S_Ret (SOME (ty, v)) =>
 	    seq_space [str "ret", Type.to_output ty, Value.to_output v]
 	  | S_BinOp {binop, ty, lhs, rhs, ret, ...} =>
-	    seq_space [Value.to_output ret, str " = ",
+	    seq_space [Identifier.to_output ret, str " = ",
 		       Op.binop_to_output binop,
 		       Type.to_output ty,
 		       Value.to_output lhs, str ", ",
 		       Value.to_output rhs]
-	  | S_Unop {unop, ty, op1, ret, ...} =>
-	      seq_space [Value.to_output ret, str " = ",
-			      Op.unop_to_output unop,
-			      Type.to_output ty,
-			      Value.to_output op1]
 (*	  | S_Unop {unop, ty, op1, ret, ...} =>
 	      Output.seq_list [
 	  | S_Call {func, args, tail, call_conv, ty, ret, ...} =>
