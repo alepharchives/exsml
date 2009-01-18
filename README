@@ -2,6 +2,12 @@ Moscow ML 2.01 source code with Llvm backend.
 
   Jesper Louis Andersen - 2008.
 
+This is the beginning of a new backend for Moscow ML. I have made very
+few decisions at the moment, but I am sure I want to use LLVM as the
+backend for the software. The first hurdle is to create a way to
+interface with LLVM. Then it must be decided how we can interface the
+frontend on top of this. The ZINC-machine is really good, so I want to
+be smart if possible.
 
 This is file README for Moscow ML 2.00 for Linux/Unix (June 2000)
 

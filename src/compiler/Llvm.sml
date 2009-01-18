@@ -68,14 +68,14 @@ struct
     fun is_int_range_valid bits integer =
 	raise Not_Implemented
 
-    fun is_pointer ty =
+    fun is_ptr ty =
 	case ty of
 	  T_Pointer _ => true
 	| _ => false
 
 
     fun assert_ptr ty =
-	if is_pointer ty then ()
+	if is_ptr ty then ()
 	else raise TypeError "Type is not of pointer type."
 
     fun assert_sized ty = () (* TODO: Only accept type with specified sizes *)
@@ -137,6 +137,14 @@ struct
 	  T_Vector {length, ty} => is_float ty
 	| _ => false
 
+    fun assert_float_or_vec ty =
+	if is_float ty orelse is_float_vector ty then ()
+	else raise TypeError "Not Float Scalar nor Vector"
+
+    fun assert_int_or_vec ty =
+	if is_int ty orelse is_int_vector ty then ()
+	else raise TypeError "Not Int Scalar nor Vector"
+
     fun is_int_float_vector ty =
 	case ty of
 	  T_Vector {length, ty} => is_int ty orelse is_float ty
@@ -151,6 +159,24 @@ struct
 	if is_vector ty then ()
 	else raise TypeError "Type is not of vector type"
 
+    fun assert_float_vector ty =
+	if is_float_vector ty then ()
+	else raise TypeError "Type is not a float vector type"
+
+    fun assert_int_vector ty =
+	if is_int_vector ty then ()
+	else raise TypeError "Type is not a float vector type"
+
+    fun is_icmp ty =
+	is_int_vector ty orelse is_int ty orelse is_ptr ty
+
+    fun assert_icmp ty =
+	if is_icmp ty then ()
+	else raise TypeError "Type is not of Icmp Type"
+
+    fun assert_fcmp ty =
+	if is_float ty orelse is_float_vector ty then ()
+	else raise TypeError "Type is not of fcmp type."
 
     fun extract_base ty =
 	case ty of
@@ -184,12 +210,25 @@ struct
 	 | T_Label => true
 	 | _ => false)
 
+    fun assert_both_vec_or_scalar x y =
+	let
+	  fun is_vector_or_scalar x y =
+	      case (x, y) of
+		(T_Vector _, T_Vector _) => true
+	      | (T_Vector _, _) => false
+	      | (_, T_Vector _) => false
+	      | _ => true
+	in
+	  if is_vector_or_scalar x y then ()
+	  else raise TypeError "Types are not both vectors or scalars"
+	end
+
     fun assert_first_class ty =
 	if is_first_class ty then ()
 	else raise TypeError "Type is not of first class type"
 
     fun bit_size ty =
-	(* Precondition: ty is an integer or floating point type *)
+	(* TODO: Handle vectors and arrays etc *)
 	case ty of
 	  T_I1 => 1
 	| T_I8 => 8
@@ -202,7 +241,22 @@ struct
 	| T_X86fp80 => 80
 	| T_FP128 => 128
 	| T_PPC_FP128 => 128
-	| _ => raise Internal_Error "Precondition of size_bits violated"
+	| _ => raise Not_Implemented
+
+    fun assert_same_bit_size x y =
+	if bit_size x = bit_size y then ()
+	else raise TypeError "Bit sizes do not agree"
+
+    fun assert_int_size_gt x y =
+	let
+	  val xs = bit_size x
+	  val ys = bit_size y
+	in
+	  if xs > ys then ()
+	  else raise TypeError "Sizes are wrong!"
+	end
+
+    val assert_float_size_gt = assert_int_size_gt
 
     local
       open LlvmOutput
@@ -596,7 +650,7 @@ struct
 		let
 		  fun type_valid ty =
 		      if Type.is_int ty orelse
-			 Type.is_pointer ty orelse
+			 Type.is_ptr ty orelse
 			 Type.is_vector ty
 		      then
 			()
@@ -1100,15 +1154,118 @@ struct
 	     2. Both lhs and rhs must coerce to ty.
 	     3. Types of lhs and rhs must agree.
              4. The result is always either i1 or vector i1. *)
-	  raise Not_Implemented
+	  let
+	    val ty' = Value.coerce vtable lhs ty
+	    val ty'' = Value.coerce vtable rhs ty'
+	  in
+	    Type.assert_icmp ty'';
+	    LlvmSymtable.enter
+	      result
+	      (if Type.is_vector ty''
+	       then
+		  let val v_len = Type.extract_size ty''
+		  in Type.T_Vector {length = v_len, ty = Type.T_I1}
+		  end
+	       else Type.T_I1)
+	      vtable
+	  end
 	| S_Conversion {result, conversion, src_ty, value, dst_ty} =>
-	  raise Not_Implemented
+	  (* Rules dependent on conversion type *)
+	  (Value.coerce vtable value src_ty;
+	   (case conversion of
+	      Op.TRUNC =>
+	        (Type.assert_int src_ty;
+		 Type.assert_int dst_ty;
+		 Type.assert_int_size_gt src_ty dst_ty)
+	    | Op.ZEXT =>
+	        (Type.assert_int src_ty;
+		 Type.assert_int dst_ty;
+		 Type.assert_int_size_gt dst_ty src_ty)
+	    | Op.SEXT =>
+	        (Type.assert_int src_ty;
+		 Type.assert_int dst_ty;
+		 Type.assert_int_size_gt dst_ty src_ty)
+	    | Op.FPTRUNC =>
+	        (Type.assert_float src_ty;
+		 Type.assert_float dst_ty;
+		 Type.assert_float_size_gt src_ty dst_ty)
+	    | Op.FPEXT =>
+	        (Type.assert_float src_ty;
+		 Type.assert_float dst_ty;
+		 Type.assert_float_size_gt dst_ty src_ty)
+	    | Op.FPTOUI =>
+	        (Type.assert_float_or_vec src_ty;
+		 Type.assert_int_or_vec dst_ty;
+		 Type.assert_both_vec_or_scalar src_ty dst_ty)
+	    | Op.FPTOSI =>
+	        (Type.assert_float_or_vec src_ty;
+		 Type.assert_int_or_vec dst_ty;
+		 Type.assert_both_vec_or_scalar src_ty dst_ty)
+	    | Op.UITOFP =>
+	        (Type.assert_int_or_vec src_ty;
+		 Type.assert_float_or_vec dst_ty;
+		 Type.assert_both_vec_or_scalar src_ty dst_ty)
+	    | Op.SITOFP =>
+	        (Type.assert_int_or_vec src_ty;
+		 Type.assert_float_or_vec dst_ty;
+		 Type.assert_both_vec_or_scalar src_ty dst_ty)
+	    | Op.PTRTOINT =>
+	        (Type.assert_ptr src_ty;
+		 Type.assert_int dst_ty)
+	    | Op.INTTOPTR =>
+	        (Type.assert_int src_ty;
+		 Type.assert_ptr dst_ty)
+	    | Op.BITCAST =>
+	        (Type.assert_first_class src_ty;
+		 Type.assert_first_class dst_ty;
+		 Type.assert_same_bit_size src_ty dst_ty));
+	     LlvmSymtable.enter
+	       result
+	       dst_ty
+	       vtable)
 	| S_Fcmp {result, cond, ty, lhs, rhs} =>
-	  raise Not_Implemented
+	  (* Comparator for integers. Rules:
+	     1. ty must be one of float or vector float.
+             2. Both lhs and rhs must coerce.
+	     3. Types of phs and rhs must agree
+             4. The result is i1 or vector i1 *)
+	  let
+	    val ty' = Value.coerce vtable lhs ty
+	    val ty'' = Value.coerce vtable rhs ty'
+	  in
+	    Type.assert_fcmp ty'';
+	    LlvmSymtable.enter
+	      result
+	      (if Type.is_vector ty''
+	       then
+		 let val v_len = Type.extract_size ty''
+		 in Type.T_Vector {length = v_len, ty = Type.T_I1}
+		 end
+	       else Type.T_I1)
+	    vtable
+	  end
 	| S_VIcmp {result, cond, ty, lhs, rhs} =>
-	  raise Not_Implemented
+	  (* Rules:
+	     1. ty is always an intger vector.
+             2. lhs and rhs must coerce.
+             3. result type is ty.
+           *)
+          let
+	    val ty' = Value.coerce vtable lhs ty
+	    val ty'' = Value.coerce vtable rhs ty'
+	  in
+	    Type.assert_int_vector ty;
+	    LlvmSymtable.enter result ty'' vtable
+	  end
 	| S_VFcmp {result, cond, ty, lhs, rhs} =>
-	  raise Not_Implemented
+	  (* Rules similar to VIcmp *)
+	  let
+	    val ty' = Value.coerce vtable lhs ty
+	    val ty'' = Value.coerce vtable rhs ty'
+	  in
+	    Type.assert_float_vector ty;
+	    LlvmSymtable.enter result ty'' vtable
+	  end
 	| S_Seq instructions =>
 	  let
 	    fun process_instructions [] vtable = vtable
