@@ -26,12 +26,31 @@ struct
 	       | PA_INREG | PA_BYVAL | PA_SRET
 	       | PA_NOALIAS | PA_NORETURN | PA_NOUNWIND
 	       | PA_NEST | PA_READONLY | PA_READNONE
+
+    fun assert_funcall_valid [] = ()
+      | assert_funcall_valid (pattr :: xs) =
+	(case pattr of
+	  PA_ZEROEXT => assert_funcall_valid xs
+	| PA_SIGNEXT => assert_funcall_valid xs
+	| PA_INREG   => assert_funcall_valid xs
+	| _          => raise TypeError "Invalid Param Attribute in Funcall")
+
   end
 
   structure FunctionAttr =
   struct
     datatype t = FA_ALWAYSINLINE | FA_NOINLINE | FA_OPTSIZE | FA_NORETURN
 	       | FA_NOUNWIND | FA_READNONE | FA_READONLY | FA_SSP | FA_SSPREQ
+
+    fun assert_funcall_valid [] = ()
+      | assert_funcall_valid (fnattr :: rest) =
+	(case fnattr of
+	   FA_NORETURN => assert_funcall_valid rest
+	 | FA_NOUNWIND => assert_funcall_valid rest
+	 | FA_READONLY => assert_funcall_valid rest
+	 | FA_READNONE => assert_funcall_valid rest
+	 | _           => raise TypeError "Invalid Function Attribute in funcall")
+
   end
 
   structure Type =
@@ -227,21 +246,31 @@ struct
 	if is_first_class ty then ()
 	else raise TypeError "Type is not of first class type"
 
+    fun assert_first_class_lst args =
+	List.app assert_first_class args
+
     fun bit_size ty =
-	(* TODO: Handle vectors and arrays etc *)
-	case ty of
-	  T_I1 => 1
-	| T_I8 => 8
-	| T_I16 => 16
-	| T_I32 => 32
-	| T_I64 => 64
-	| T_Integer i => i
-	| T_Float => 32
-	| T_Double => 64
-	| T_X86fp80 => 80
-	| T_FP128 => 128
-	| T_PPC_FP128 => 128
-	| _ => raise Not_Implemented
+	let
+	  fun sum xs = List.foldr (op+) 0 xs
+	in
+	  (* TODO: Handle vectors and arrays etc *)
+	  case ty of
+	    T_I1 => 1
+	  | T_I8 => 8
+	  | T_I16 => 16
+	  | T_I32 => 32
+	  | T_I64 => 64
+	  | T_Integer i => i
+	  | T_Float => 32
+	  | T_Double => 64
+	  | T_X86fp80 => 80
+	  | T_FP128 => 128
+	  | T_PPC_FP128 => 128
+	  | T_Vector {length, ty} => length * (bit_size ty)
+	  | T_Array {length, ty} => length * (bit_size ty)
+	  | T_Struct ts => sum (List.map bit_size ts)
+	  | _ => raise Not_Implemented
+	end
 
     fun assert_same_bit_size x y =
 	if bit_size x = bit_size y then ()
@@ -347,15 +376,13 @@ struct
   structure CallConv =
   struct
     (** Calling conventions in LLVM *)
-    datatype t = CC_C | CC_Fast | CC_Cold | CC_x86_stdcall | CC_x86_fastcall
+    datatype t = CC_C | CC_Fast | CC_Cold
 
     fun to_string cc =
 	case cc of
 	    CC_C => "ccc"
 	  | CC_Fast => "fastcc"
 	  | CC_Cold => "coldcc"
-	  | CC_x86_stdcall => raise Not_Implemented
-	  | CC_x86_fastcall => raise Not_Implemented
 
     fun to_output cc =
 	LlvmOutput.str (to_string cc)
@@ -1000,21 +1027,39 @@ struct
 	| S_Branch {cond, label_t, label_f} =>
 	  (Value.coerce vtable cond Type.T_I1;
 	   vtable)
-	| S_Call {func, tail, call_conv, ty, args, ret, name, param_attrs, fnty, fn_attrs} =>
+	| S_Call {func, tail, ty, call_conv, args, ret, name, param_attrs, fnty, fn_attrs} =>
 	  (* Rules:
+	     DONE:
 	     1. Of the param attributes, only 'zeroext, signext and inreg' are valid.
-	     2. 'ty' is the return type of the function.
-             3. fnty is the function type but it is only needed when playing with function
-	        pointer returns and varargs. Sigh.
-             4. func is the 'fnptrval' containing the function being invoked.
-             5. args should match the function signature args.
-             6. All args are firstclass.
-             7. Function attributes are optional.
              8. Only function attributes of the kinds 'noreturn', 'nounwind',
                 'readonly' and 'readnone' are valid attribute kinds here
+	     2. 'ty' is the return type of the function.
+             7. Function attributes are optional.
+
+             NEEDS ATTENTION:
+             3. fnty is the function type but it is only needed when playing with function
+	        pointer returns and varargs. Sigh.
+                (What is the problem here?? We need to se an example or two to figure this
+                 guy out. It is probably somehting simple)
+
+             SOLVED:
+             4. func is the 'fnptrval' containing the function being invoked.
+                (this is usually an identifier (always?? doesn't matter. It will work)
+
+             5. args should match the function signature args.
+                (Can be tested by coercion of the type signature and a constructed
+                 signature for the funcall)
+
+             6. All args are firstclass.
+                (Can be checked by walking the types in the args, which has to be there
+                 or else we can't figure out the types of the crap. Coerce the values to the
+                 types)       
 	   *)
-	  (* TODO! *)
-	  LlvmSymtable.enter ret ty vtable
+	  (* TODO: The S_Call is wrong. Fix it! *)
+	  (ParamAttr.assert_funcall_valid param_attrs;
+	   FunctionAttr.assert_funcall_valid fn_attrs;
+	   (* Type.assert_first_class_lst args; *) (* TODO: Figure out what we really need here *)
+	   LlvmSymtable.enter ret ty vtable)
 	| S_Conc (u,v) => check vtable (S_Seq [u, v])
 	| S_ExtractElement {result, ty, value, idx} =>
 	  (* Rules:

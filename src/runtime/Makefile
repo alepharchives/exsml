@@ -1,6 +1,6 @@
 # Makefile for the Moscow ML 2.00 version of the Caml Light runtime system
 
-OPTS=-fno-defer-pop -fomit-frame-pointer -DTHREADED
+OPTS=-Wall -DTHREADED
 BASECFLAGS= -Dunix -O2 $(OPTS)
 
 BASELIBS=-lm
