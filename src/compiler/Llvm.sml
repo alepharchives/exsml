@@ -549,7 +549,8 @@ struct
 				     idx: int}
 		 | E_False
 	         | E_Float of real
-		 | E_GetElementPtr of exp * element_ptr_idx list (* TODO: ConstExpr? *)
+		 (* TODO: ConstExpr? *)
+		 | E_GetElementPtr of exp * element_ptr_idx list
 
 		 | E_InsertElem  of {value: exp,
 				     elt: exp,
@@ -576,8 +577,42 @@ struct
 
     fun coerce vtable (term: t) : Type.t -> Type.t =
 	let
+	  fun coerce_conversion conversion exp ty target_ty =
+	      raise Not_Implemented
 	  fun coerce_exp e : Type.t -> Type.t =
-	      fn ty => Type.T_I1
+	      case e of
+		E_False   => (fn ty => Type.coerce Type.T_I1 ty)
+	      | E_True    => (fn ty => Type.coerce Type.T_I1 ty)
+	      | E_Null    => (fn ty =>
+				 (Type.assert_ptr ty;
+			         ty))
+	      | E_Int n   => (fn ty =>
+				 (Type.assert_int ty;
+				  ty))
+	      | E_Float n => (fn ty =>
+				 (Type.assert_float ty;
+				  ty))
+	      | E_Binop {binop, lhs, rhs} =>
+		(fn ty =>
+		    (coerce_exp lhs ty;
+		     coerce_exp rhs ty))
+	      | E_Compare {compare, lhs, rhs} =>
+		(fn ty =>
+		    (coerce_exp lhs ty;
+		     coerce_exp rhs ty))
+	      | E_Conversion {conversion, exp, target_ty} =>
+		(fn ty =>
+		    coerce_conversion conversion exp ty target_ty)
+	      | E_ExtractElem {value, idx} =>
+		(fn ty =>
+		    let
+		      val base_ty = Type.extract_base ty
+		    in
+		      coerce_exp value ty;
+		      base_ty
+		    end)
+(*	      | E_Array elst => *)
+		
 (*
 	      case e of
 	        E_False => (fn ty => Type.coerce Type.T_I1 ty)
@@ -1053,7 +1088,7 @@ struct
              6. All args are firstclass.
                 (Can be checked by walking the types in the args, which has to be there
                  or else we can't figure out the types of the crap. Coerce the values to the
-                 types)       
+                 types)
 	   *)
 	  (* TODO: The S_Call is wrong. Fix it! *)
 	  (ParamAttr.assert_funcall_valid param_attrs;

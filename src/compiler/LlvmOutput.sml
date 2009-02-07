@@ -1,6 +1,10 @@
 (* Implementation of Llvm output structure *)
 exception LlvmOutputICE
 
+(* Datatype for output. We use an intermediate type for outputting since it
+ * is a lot easier to work with. Outputting goes from Llvm to this intermediate
+ * type and then to real output.
+ *)
 datatype t = O_Str of string
 	   | O_Seq of t list
 	   | O_Int of int (* FIXME: 32 bit *)
@@ -8,6 +12,9 @@ datatype t = O_Str of string
 	   | O_Conc of t * t (* Redundant, O_Conc (a,b) == O_Seq [a, b] *)
 	   | O_Null (* Redundant, exists in O_Seq [] *)
 
+(* Simplification of the intermediate structure. Certain intermediate constructs
+ * are transformed down to a more canonical form so there is less to work with.
+ *)
 fun simplify t =
     case t of
       O_Seq ts => O_Seq (List.map simplify ts)
@@ -23,6 +30,14 @@ fun to_string t =
     | O_Seq ks => String.concat (List.map to_string ks)
     | O_Int i => Int.toString i
     | _ => raise LlvmOutputICE
+
+(* Output to a stream.
+ * TODO: Improve the performance of this function
+ *)
+fun to_stream t outstream =
+    let val str = to_string t
+    in  TextIO.output (outstream, str)
+    end
 
 (* We use O_Seq [] to play the role of a 'Null' element in type t *)
 fun intersperse delimiter ts =
