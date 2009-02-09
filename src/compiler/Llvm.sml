@@ -1,6 +1,5 @@
 structure Llvm :> Llvm =
 struct
-
   exception Not_Implemented
   (** Global exception. Raised for things that are not implemented yet *)
 
@@ -18,6 +17,8 @@ struct
     type t = int
 
     fun mk align = align
+
+    fun output n = LlvmOutput.integer n
   end
 
   structure ParamAttr =
@@ -35,6 +36,22 @@ struct
 	| PA_INREG   => assert_funcall_valid xs
 	| _          => raise TypeError "Invalid Param Attribute in Funcall")
 
+    fun to_string pa =
+	case pa of
+	  PA_ZEROEXT => "zeroext"
+	| PA_SIGNEXT => "signext"
+	| PA_INREG   => "inreg"
+	| PA_BYVAL   => "byval"
+	| PA_SRET    => "sret"
+	| PA_NOALIAS => "noalias"
+	| PA_NORETURN => "noreturn"
+	| PA_NOUNWIND => "nounwind"
+	| PA_NEST     => "nest"
+	| PA_READONLY => "readonly"
+	| PA_READNONE => "readnone"
+
+    fun output pa = LlvmOutput.str (to_string pa)
+
   end
 
   structure FunctionAttr =
@@ -51,6 +68,19 @@ struct
 	 | FA_READNONE => assert_funcall_valid rest
 	 | _           => raise TypeError "Invalid Function Attribute in funcall")
 
+    fun to_string fa =
+	case fa of
+	  FA_ALWAYSINLINE => "alwaysinline"
+	| FA_NOINLINE => "noinline"
+	| FA_OPTSIZE => "optsize"
+	| FA_NORETURN => "noreturn"
+	| FA_NOUNWIND => "nounwind"
+	| FA_READNONE => "readnone"
+	| FA_READONLY => "readonly"
+	| FA_SSP => "ssp"
+	| FA_SSPREQ => "sspreq"
+
+    fun output fa = LlvmOutput.str (to_string fa)
   end
 
   structure Type =
@@ -290,7 +320,7 @@ struct
     local
       open LlvmOutput
     in
-      fun to_output ty : LlvmOutput.t =
+      fun output ty : LlvmOutput.t =
 	  case ty of
 	    T_I1 => (str "i1")
 	  | T_I8 => (str "i8")
@@ -305,33 +335,33 @@ struct
 	  | T_PPC_FP128 => (str "ppc_fp128")
 	  | T_Fun {return, params} =>
 	    let
-	      val r_t = to_output return
-	      val params_t = conc (List.map to_output params)
+	      val r_t = output return
+	      val params_t = conc (List.map output params)
 	    in
 	      seq_space [r_t, parens params_t]
 	    end
 	  | T_FunVarArg {return, params} =>
 	    let
-	      val r_t = to_output return
-	      val params_t = conc (List.map to_output params)
+	      val r_t = output return
+	      val params_t = conc (List.map output params)
 	    in
 	      seq_space [r_t, parens (conc [params_t, str "..."])]
 	    end
 	   | T_Struct elements =>
-	     braces (conc (List.map to_output elements))
+	     braces (conc (List.map output elements))
 	   | T_PackedStruct elements =>
 	     sorround (str "< {") (str "} >")
-		      (conc (List.map to_output elements))
+		      (conc (List.map output elements))
 	   | T_Array {ty, length} =>
-	     brackets (conc [integer length, str " x ", to_output ty])
-	   | T_Pointer ty => conc [to_output ty, str " *"]
+	     brackets (conc [integer length, str " x ", output ty])
+	   | T_Pointer ty => conc [output ty, str " *"]
 	   | T_QualifiedPointer {ty, address_space} =>
-	       conc [to_output ty,
+	       conc [output ty,
 		     str " addrspace(", integer address_space, str ")"]
 	   | T_Vector {ty, length} =>
 	     sorround (str "< ") (str " >")
 		      (conc [integer length, str " x ",
-			     to_output ty])
+			     output ty])
 	   | T_Opaque => (str "opaque")
 	   | T_Void => (str "void")
 	   | T_Label => (str "label")
@@ -384,37 +414,38 @@ struct
 	  | CC_Fast => "fastcc"
 	  | CC_Cold => "coldcc"
 
-    fun to_output cc =
+    fun output cc =
 	LlvmOutput.str (to_string cc)
   end
 
   structure Identifier =
   struct
     datatype visibility = Global | Local
-    datatype name = Named of visibility * string | Unnamed of int
+    datatype t = Named of visibility * string | Unnamed of int
 
     val count = ref 0;
 
-    fun gensym prefix =
+    fun gensym () =
 	let val v = (!count)
 	in
 	    count := (!count) + 1;
-	    v
+	    Unnamed v
 	end
 
-    type t = visibility * name
-
-    fun to_output (vis, name) =
-    let
-	fun visibility_to_string Local = "%"
-	  | visibility_to_string Global = "@"
-	fun namer n =
-	    case n of
-	      Named (vis, s) => (visibility_to_string vis) ^ s
-	    | Unnamed i => "%" ^ (Int.toString i)
-    in
-      LlvmOutput.str (namer name)
-    end
+    fun output id =
+	let
+	  fun visibility_to_string Local = "%"
+	    | visibility_to_string Glbal = "@"
+	  fun namer (Named (vis, s)) = (visibility_to_string vis) ^ s
+	    | namer (Unnamed i) =
+	      let
+		val str = "SYM_" ^ Int.toString i
+	      in
+		namer (Named (Local, str))
+	      end
+	in
+	  LlvmOutput.str (namer id)
+	end
   end
 
   structure Label =
@@ -423,7 +454,7 @@ struct
 
     fun mk lbl = lbl
     fun to_string lbl = lbl
-    fun to_output x = LlvmOutput.str (to_string x)
+    fun output x = LlvmOutput.str (to_string x)
   end
 
   structure Op =
@@ -445,7 +476,7 @@ struct
 	| IC_SLT => "slt"
 	| IC_SLE => "sle"
 
-    fun icmp_to_output s = LlvmOutput.str (icmp_to_string s)
+    fun icmp_output s = LlvmOutput.str (icmp_to_string s)
 
     (** Floating Point compares *)
     datatype fcmp = FC_FALSE | FC_OEQ | FC_OGT | FC_OGE | FC_OLT | FC_OLE
@@ -471,7 +502,7 @@ struct
 	| FC_UNE   => "une"
 	| FC_TRUE  => "true"
 
-    fun fcmp_to_output x = LlvmOutput.str (fcmp_to_string x)
+    fun fcmp_output x = LlvmOutput.str (fcmp_to_string x)
 
     datatype binop = ADD | SUB | MUL | UDIV | SDIV | FDIV | UREM
 		   | SREM | FREM | SHL | LSHR | ASHR | AND | OR | XOR
@@ -499,11 +530,11 @@ struct
 	  | OR => "or"
 	  | XOR => "xor"
 
-    fun binop_to_output s = LlvmOutput.str (binop_to_string s)
+    fun binop_output s = LlvmOutput.str (binop_to_string s)
 
     fun unop_to_string NEG = "neg"
 
-    fun unop_to_output s =  LlvmOutput.str (unop_to_string s)
+    fun unop_output s =  LlvmOutput.str (unop_to_string s)
 
     fun conversion_to_string conv =
 	case conv of
@@ -519,7 +550,7 @@ struct
 	| PTRTOINT => "ptrtoint"
 	| INTTOPTR => "inttoptr"
 	| bitcast  => "bitcast"
-    fun conversion_to_output x = LlvmOutput.str (conversion_to_string x)
+    fun conversion_output x = LlvmOutput.str (conversion_to_string x)
 
   end
 
@@ -612,7 +643,6 @@ struct
 		      base_ty
 		    end)
 (*	      | E_Array elst => *)
-		
 (*
 	      case e of
 	        E_False => (fn ty => Type.coerce Type.T_I1 ty)
@@ -858,12 +888,11 @@ struct
     local
       open LlvmOutput
     in
-      fun to_output (V_ConstExpr exp) =
+      fun output (V_ConstExpr exp) =
 	(case exp of
 	     E_Float r => real r
-	   | E_String s => seq_space [str "\"", str s, str "\""]
-	   | _ => raise Not_Implemented)
-	| to_output (V_Identifier id) = Identifier.to_output id
+	   | E_String s => seq_space [str "\"", str s, str "\""])
+	| output (V_Identifier id) = Identifier.output id
     end
 
     fun is_constant (V_ConstExpr _) = true
@@ -884,6 +913,12 @@ struct
 			     rhs: Value.t,
 			     ret: Identifier.t,
 			     name: string option}
+	       (* Unary operations *)
+	       | S_Unop of {unop: Op.unop,
+			    ty: Type.t,
+			    ret: Identifier.t,
+			    value: Value.t,
+			    name: string option}
 	       (* Branch operations *)
 	       | S_Ret of (Type.t * Value.t) option
 	       | S_Branch of {cond: Value.t, (* Has boolean type *)
@@ -1457,31 +1492,120 @@ struct
       open LlvmOutput
     in
 
-    fun to_output operation =
-	case operation of
-	    S_Ret NONE => str "ret void"
-	  | S_Ret (SOME (ty, v)) =>
-	    seq_space [str "ret", Type.to_output ty, Value.to_output v]
-	  | S_BinOp {binop, ty, lhs, rhs, ret, ...} =>
-	    seq_space [Identifier.to_output ret, str " = ",
-		       Op.binop_to_output binop,
-		       Type.to_output ty,
-		       Value.to_output lhs, str ", ",
-		       Value.to_output rhs]
-(*	  | S_Unop {unop, ty, op1, ret, ...} =>
-	      Output.seq_list [
-	  | S_Call {func, args, tail, call_conv, ty, ret, ...} =>
-	     Output.seq_list [Value.to_string ret, " = ",
-			      if tail then "tail" else "",
-			      case call_conv of
-				  NONE => ""
-				| SOME cc => CallConv.to_string cc,
-			      Type.to_string ty,
-			      Value.to_string func
-			        ^ Output.parens (List.map Value.to_string args)]
-	  | S_Seq ops =>
-	      Output.seq (List.map to_string ops)*)
-	  | _ => raise Not_Implemented
+    fun output (label, operation) =
+	let
+	  fun output_op operation =
+	      case operation of
+		S_Ret NONE => str "ret void"
+	      | S_Ret (SOME (ty, v)) =>
+		seq_space [str "ret", Type.output ty, Value.output v]
+	      | S_BinOp {binop, ty, lhs, rhs, ret, ...} =>
+		seq_space [Identifier.output ret, str "=",
+			   Op.binop_output binop,
+			   Type.output ty,
+			   Value.output lhs, str ",",
+			   Value.output rhs]
+	      | S_Unop {unop, ty, value, ret, ...} =>
+		  seq_space [
+		    Identifier.output ret, str "=",
+		    Op.unop_output unop,
+		    Type.output ty,
+		    Value.output value]
+	      | S_Branch {cond, label_t, label_f} =>
+		  seq_space [
+		    str "br", str "i1", Value.output cond,
+		    str ", label", Label.output label_t,
+		    str ", label", Label.output label_f]
+	      | S_UBranch lbl =>
+		  seq_space [str "br", Label.output label]
+	      | S_Switch {ty, value, default, cases} =>
+		let
+		  fun output_case {ty, value, label} =
+		      seq_space [
+		        Type.output ty, Value.output value, str ",",
+			str "label", Label.output label]
+		  fun output_cases cases =
+		      seq_space (List.map output_case cases)
+		in
+		  seq_space [str "switch", Type.output ty, Value.output value,
+			     str ", label", Label.output default, output_cases cases]
+		end
+		(* S_Invoke ... *)
+	      | S_Unwind => str "unwind"
+	      | S_Unreachable => str "unreachable"
+	      | S_ExtractElement {result, ty, value, idx} =>
+		seq_space [Identifier.output result, str "= extractelement",
+			   Type.output ty, Value.output value, str ", i32",
+			   Value.output idx]
+	      | S_InsertElement {ty, value, elem_ty, elem_value, idx} =>
+		seq_space [str "insertelement",
+			   Type.output ty, Value.output value, str ",",
+			   Type.output elem_ty, Value.output elem_value,
+			   str ", i32", Value.output idx]
+	      | S_ShuffleVector {result, v1_ty, v1, v2_ty, v2, mask_len, mask} =>
+		seq_space [Identifier.output result, str "= shufflevector",
+			   Type.output v1_ty, Value.output v1,
+			   Type.output v2_ty, Value.output v2,
+			   Type.output (Type.T_Vector {ty = Type.T_I32, length = mask_len}),
+			   Value.output mask]
+	      | S_ExtractValue {result, ty, value, idxs} =>
+		let
+		  fun output_idx idx = seq_space [str "i32",
+						  Value.output idx]
+		  val output_idxs = intersperse (str ",") (List.map output_idx idxs)
+		in
+		  seq_space [Identifier.output result, str "= extractvalue",
+			     Type.output ty, Value.output value, str ", ",
+			     output_idxs]
+		end
+	      | S_InsertValue {ty, value, elem_ty, elem_value, idx} =>
+		seq_space [str "insertvalue", Type.output ty, Value.output value,
+			   str ",", Type.output elem_ty, Value.output elem_value,
+			   str ", i32", Value.output idx]
+
+(*
+               (* Memory Access *)
+	       | S_Malloc of {result: Identifier.t,
+			      ty: Type.t,
+			      num_elems: int,
+			      align: Align.t option}
+	       | S_Free of {ty: Type.t,
+			    value: Value.t}
+	       | S_Alloca of {result: Identifier.t,
+			      ty: Type.t,
+			      num_elems: int,
+			      align: Align.t option}
+	       | S_Load of {result: Identifier.t,
+			    volatile: bool,
+			    ty: Type.t,
+			    value: Value.t,
+			    align: Align.t option}
+	       | S_Store of {volatile: bool,
+			     ty: Type.t,
+			     value: Value.t,
+			     ptr_ty: Type.t,
+			     ptr: Value.t,
+			     align: Align.t option}
+
+
+*)
+(*
+	      | S_Call {func, args, tail, call_conv, ty, ret, ...} =>
+		Output.seq_list [Value.to_string ret, " = ",
+				 if tail then "tail" else "",
+				 case call_conv of
+				   NONE => ""
+				 | SOME cc => CallConv.to_string cc,
+				 Type.to_string ty,
+				 Value.to_string func
+			         ^ Output.parens (List.map Value.to_string args)]
+	      | S_Seq ops =>
+		Output.seq (List.map to_string ops)*)
+	in
+	  LlvmOutput.conc
+	    [Label.output label, LlvmOutput.str ":\n",
+	     output_op operation]
+	end
     end
 
     (* Simplify term-rewrites a BB until it is canonical to the LLVM system *)
@@ -1509,6 +1633,8 @@ struct
 	    Link_External => "external"
 	  | Link_Internal => "internal"
 	  | _ => raise Not_Implemented
+
+    fun output linkage = LlvmOutput.str (to_string linkage)
   end
 
   structure Visibility =
@@ -1556,4 +1682,5 @@ struct
 
 
   exception IoError of string
+
 end

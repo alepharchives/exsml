@@ -29,6 +29,7 @@ fun to_string t =
       O_Str s => s
     | O_Seq ks => String.concat (List.map to_string ks)
     | O_Int i => Int.toString i
+    | O_Real r => Real.toString r
     | _ => raise LlvmOutputICE
 
 (* Output to a stream.

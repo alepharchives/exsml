@@ -44,3 +44,9 @@ val real : real -> t
 
 val conc : t list -> t
 (* Concatenate a list of t's *)
+
+val to_string : t -> string
+(* Convert a output to a string *)
+
+val to_stream : t -> TextIO.outstream -> unit
+(* Output to a stream *)
