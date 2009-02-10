@@ -45,6 +45,9 @@ val real : real -> t
 val conc : t list -> t
 (* Concatenate a list of t's *)
 
+val null : t
+(* Null value *)
+
 val to_string : t -> string
 (* Convert a output to a string *)
 

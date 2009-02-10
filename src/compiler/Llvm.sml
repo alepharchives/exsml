@@ -1562,31 +1562,90 @@ struct
 		seq_space [str "insertvalue", Type.output ty, Value.output value,
 			   str ",", Type.output elem_ty, Value.output elem_value,
 			   str ", i32", Value.output idx]
+	      | S_Malloc {result, ty, num_elems, align} =>
+		seq_space [Identifier.output result, str "=", Type.output ty,
+			   str ", i32", integer num_elems, case align of
+							     NONE => null
+							   | SOME a => seq_space [str ", align",
+										  Align.output a]]
+	      | S_Free {ty, value} =>
+		seq_space [str "free", Type.output ty, Value.output value]
+	      | S_Alloca {result, ty, num_elems, align} =>
+		commas [seq_space [Identifier.output result, str "=", Type.output ty],
+			seq_space [str "i32", integer num_elems],
+			case align of NONE => null | SOME a =>
+						       seq_space [str "align", Align.output a]]
 
+	      | S_Load {result, volatile, ty, value, align} =>
+		commas [seq_space [Identifier.output result, str "=",
+				   if volatile then str "volatile" else null,
+				   str "load", Type.output ty, Value.output value],
+			case align of
+			  NONE => null
+			| SOME a => seq_space [str "align", Align.output a]]
+	      | S_Store {volatile, ty, value, ptr_ty, ptr, align} =>
+		commas [seq_space [if volatile then str "volatile" else null,
+				   str "store", Type.output ty, Value.output value],
+			seq_space [Type.output ptr_ty, Value.output ptr],
+			case align of
+			  NONE => null
+			| SOME a => seq_space [str "align", Align.output a]]
 (*
-               (* Memory Access *)
-	       | S_Malloc of {result: Identifier.t,
-			      ty: Type.t,
-			      num_elems: int,
-			      align: Align.t option}
-	       | S_Free of {ty: Type.t,
-			    value: Value.t}
-	       | S_Alloca of {result: Identifier.t,
-			      ty: Type.t,
-			      num_elems: int,
-			      align: Align.t option}
-	       | S_Load of {result: Identifier.t,
-			    volatile: bool,
+	       | S_GetElementPtr of {result: Identifier.t,
+				     ty: Type.t,
+				     value: Value.t,
+				     idxs: (Type.t * int) list}
+*)
+(*
+	       | S_Conversion of {result: Identifier.t,
+				  conversion: Op.conversion,
+				  src_ty: Type.t,
+				  value: Value.t,
+				  dst_ty: Type.t}
+               (* Other operations *)
+	       | S_Icmp of {result: Identifier.t,
+			    cond: Op.icmp,
 			    ty: Type.t,
-			    value: Value.t,
-			    align: Align.t option}
-	       | S_Store of {volatile: bool,
+			    lhs: Value.t,
+			    rhs: Value.t}
+	       | S_Fcmp of {result: Identifier.t,
+			    cond: Op.fcmp,
+			    ty: Type.t,
+			    lhs: Value.t,
+			    rhs: Value.t}
+	       | S_VIcmp of {result: Identifier.t,
+			     cond: Op.icmp,
 			     ty: Type.t,
-			     value: Value.t,
-			     ptr_ty: Type.t,
-			     ptr: Value.t,
-			     align: Align.t option}
-
+			     lhs: Value.t,
+			     rhs: Value.t}
+	       | S_VFcmp of {result: Identifier.t,
+			     cond: Op.fcmp,
+			     ty: Type.t,
+			     lhs: Value.t,
+			     rhs: Value.t}
+	       | S_Phi of {result: Identifier.t,
+			   ty: Type.t,
+			   predecs: (Value.t * Label.t) list}
+	       | S_Select of {result: Identifier.t,
+			      ty: Type.t,
+			      cond: Value.t,
+			      true_ty: Type.t,
+			      true_value: Value.t,
+			      false_ty: Type.t,
+			      false_value: Value.t}
+	       | S_Call of {func: Value.t,
+			    tail: bool, (* Tail call optim. applicable *)
+			    call_conv: CallConv.t option,
+			    param_attrs: ParamAttr.t list,
+			    fn_attrs: FunctionAttr.t list,
+			    ty: Type.t,
+			    fnty: Type.t option,
+			    args: Value.t list,
+			    ret: Identifier.t,
+			    name: string} (* Maybe Identifier *)
+               (* Basic Block sequencing *)
+	       | S_Seq of u list
+	       | S_Conc of u * u
 
 *)
 (*
