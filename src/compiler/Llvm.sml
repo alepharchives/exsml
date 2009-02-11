@@ -476,7 +476,8 @@ struct
 	| IC_SLT => "slt"
 	| IC_SLE => "sle"
 
-    fun icmp_output s = LlvmOutput.str (icmp_to_string s)
+    fun output_icmp s = LlvmOutput.str (icmp_to_string s)
+    fun output_vicmp s = LlvmOutput.str (icmp_to_string s)
 
     (** Floating Point compares *)
     datatype fcmp = FC_FALSE | FC_OEQ | FC_OGT | FC_OGE | FC_OLT | FC_OLE
@@ -502,7 +503,8 @@ struct
 	| FC_UNE   => "une"
 	| FC_TRUE  => "true"
 
-    fun fcmp_output x = LlvmOutput.str (fcmp_to_string x)
+    fun output_fcmp x = LlvmOutput.str (fcmp_to_string x)
+    fun output_vfcmp x = LlvmOutput.str (fcmp_to_string x)
 
     datatype binop = ADD | SUB | MUL | UDIV | SDIV | FDIV | UREM
 		   | SREM | FREM | SHL | LSHR | ASHR | AND | OR | XOR
@@ -551,6 +553,13 @@ struct
 	| INTTOPTR => "inttoptr"
 	| bitcast  => "bitcast"
     fun conversion_output x = LlvmOutput.str (conversion_to_string x)
+
+    local open LlvmOutput
+    in
+
+    fun conversion_output conv src dst =
+	seq_space [str (conversion_to_string conv), src, str "to", dst]
+    end
 
   end
 
@@ -930,7 +939,7 @@ struct
 			      default: Label.t,
 			      cases: switch_case list}
 	       | S_Invoke of {callconv: CallConv.t,
-			      ty_attrs: ParamAttr.t list,
+			      ret_attrs: ParamAttr.t list,
 			      func: Value.t,
 			      func_ty: Type.t,
 			      args: Value.t list,
@@ -1162,7 +1171,7 @@ struct
 	   Value.coerce vtable elem_value elem_ty;
 	   Value.coerce vtable idx Type.T_I32;
 	   vtable)
-	| S_Invoke {callconv, ty_attrs, func, func_ty, args, func_attrs, label_cont,
+	| S_Invoke {callconv, ret_attrs, func, func_ty, args, func_attrs, label_cont,
 		    label_unwind, result} =>
 	  (* Rules:
              1. ty_attrs are parameter attributes. Only 'zeroext','signext' and 'inreg' are valid.
@@ -1530,7 +1539,24 @@ struct
 		  seq_space [str "switch", Type.output ty, Value.output value,
 			     str ", label", Label.output default, output_cases cases]
 		end
-		(* S_Invoke ... *)
+	      | S_Invoke {callconv, ret_attrs, func, func_ty, args, func_attrs,
+			  label_cont, label_unwind, result} =>
+		let
+		  fun process_args args = commas (List.map Value.output args)
+		in
+		  seq_space [Identifier.output result, str "= invoke",
+			     CallConv.output callconv,
+			     case ret_attrs of
+			       [] => null
+			     | attrs => seq_space (List.map ParamAttr.output attrs),
+			     Type.output func_ty,
+			     seq [Value.output func, parens (process_args args)],
+			     case func_attrs of
+			       [] => null
+			     | attrs => seq_space (List.map FunctionAttr.output attrs),
+			     str "to label", Label.output label_cont,
+			     str "unwind label", Label.output label_unwind]
+		end
 	      | S_Unwind => str "unwind"
 	      | S_Unreachable => str "unreachable"
 	      | S_ExtractElement {result, ty, value, idx} =>
@@ -1590,76 +1616,84 @@ struct
 			case align of
 			  NONE => null
 			| SOME a => seq_space [str "align", Align.output a]]
-(*
-	       | S_GetElementPtr of {result: Identifier.t,
-				     ty: Type.t,
-				     value: Value.t,
-				     idxs: (Type.t * int) list}
-*)
-(*
-	       | S_Conversion of {result: Identifier.t,
-				  conversion: Op.conversion,
-				  src_ty: Type.t,
-				  value: Value.t,
-				  dst_ty: Type.t}
-               (* Other operations *)
-	       | S_Icmp of {result: Identifier.t,
-			    cond: Op.icmp,
-			    ty: Type.t,
-			    lhs: Value.t,
-			    rhs: Value.t}
-	       | S_Fcmp of {result: Identifier.t,
-			    cond: Op.fcmp,
-			    ty: Type.t,
-			    lhs: Value.t,
-			    rhs: Value.t}
-	       | S_VIcmp of {result: Identifier.t,
-			     cond: Op.icmp,
-			     ty: Type.t,
-			     lhs: Value.t,
-			     rhs: Value.t}
-	       | S_VFcmp of {result: Identifier.t,
-			     cond: Op.fcmp,
-			     ty: Type.t,
-			     lhs: Value.t,
-			     rhs: Value.t}
-	       | S_Phi of {result: Identifier.t,
-			   ty: Type.t,
-			   predecs: (Value.t * Label.t) list}
-	       | S_Select of {result: Identifier.t,
-			      ty: Type.t,
-			      cond: Value.t,
-			      true_ty: Type.t,
-			      true_value: Value.t,
-			      false_ty: Type.t,
-			      false_value: Value.t}
-	       | S_Call of {func: Value.t,
-			    tail: bool, (* Tail call optim. applicable *)
-			    call_conv: CallConv.t option,
-			    param_attrs: ParamAttr.t list,
-			    fn_attrs: FunctionAttr.t list,
-			    ty: Type.t,
-			    fnty: Type.t option,
-			    args: Value.t list,
-			    ret: Identifier.t,
-			    name: string} (* Maybe Identifier *)
-               (* Basic Block sequencing *)
-	       | S_Seq of u list
-	       | S_Conc of u * u
-
-*)
-(*
-	      | S_Call {func, args, tail, call_conv, ty, ret, ...} =>
-		Output.seq_list [Value.to_string ret, " = ",
-				 if tail then "tail" else "",
-				 case call_conv of
-				   NONE => ""
-				 | SOME cc => CallConv.to_string cc,
-				 Type.to_string ty,
-				 Value.to_string func
-			         ^ Output.parens (List.map Value.to_string args)]
-	      | S_Seq ops =>
-		Output.seq (List.map to_string ops)*)
+	      | S_GetElementPtr {result, ty, value, idxs} =>
+		let
+		  fun process_idxs idxs = commas (List.map (fn (ty, i) =>
+							       seq_space [Type.output ty,
+									  integer i])
+							   idxs)
+		in
+		  seq_space [Identifier.output result, str "=",
+			     Type.output ty, Value.output value,
+			     process_idxs idxs]
+		end
+	      | S_Conversion {result, conversion, src_ty, value, dst_ty} =>
+		let
+		  val src_line = seq_space [Type.output src_ty, Value.output value]
+		  val dst_line = Type.output dst_ty
+		in
+		  seq_space [Identifier.output result, str "=",
+			     Op.conversion_output conversion src_line dst_line]
+		end
+	      | S_Icmp {result, cond, ty, lhs, rhs} =>
+		seq_space [Identifier.output result, str "= icmp", Op.output_icmp cond,
+			   Type.output ty,
+			   commas [Value.output lhs, Value.output rhs]]
+	      | S_Fcmp {result, cond, ty, lhs, rhs} =>
+		seq_space [Identifier.output result, str "= fcmp", Op.output_fcmp cond,
+			   Type.output ty,
+			   commas [Value.output lhs, Value.output rhs]]
+	      | S_VIcmp {result, cond, ty, lhs, rhs} =>
+		seq_space [Identifier.output result, str "= vicmp", Op.output_vicmp cond,
+			   Type.output ty,
+			   commas [Value.output lhs, Value.output rhs]]
+	      | S_VFcmp {result, cond, ty, lhs, rhs} =>
+		seq_space [Identifier.output result, str "= vfcmp", Op.output_vfcmp cond,
+			   Type.output ty,
+			   commas [Value.output lhs, Value.output rhs]]
+	      | S_Phi {result, ty, predecs} =>
+		let
+		  fun output_predecs predecs =
+		      commas (List.map (fn (value, label) =>
+					   commas [Value.output value, Label.output label])
+				       predecs)
+		in
+		  seq_space [Identifier.output result, str "= phi",
+			     Type.output ty,
+			     output_predecs predecs]
+		end
+	      | S_Select {result, ty, cond,
+			  true_ty, true_value,
+			  false_ty, false_value} =>
+		commas [seq_space [Identifier.output result, str "= select",
+				   Type.output ty, Value.output cond],
+			seq_space [Type.output true_ty, Value.output true_value],
+			seq_space [Type.output false_ty, Value.output false_value]]
+	      | S_Call {func, tail, call_conv, param_attrs, ty, fnty, args, ret, name, fn_attrs} =>
+		let
+		  fun process_args args = commas (List.map Value.output args)
+		in
+		  seq_space [Identifier.output ret, str "=",
+			     if tail then str "tail" else null,
+			     str "call",
+			     case call_conv of
+			       NONE => null
+			     | SOME cconv => CallConv.output cconv,
+			     case param_attrs of
+			       [] => null
+			     | p_attrs => seq_space (List.map ParamAttr.output p_attrs),
+			     Type.output ty,
+			     case fnty of
+			       NONE => null
+			     | SOME t => Type.output t,
+			     seq [Value.output func, parens (process_args args)],
+			     case fn_attrs of
+			       [] => null
+			     | attr => seq_space (List.map FunctionAttr.output attr)]
+		end
+	      | S_Seq us =>
+		intersperse (str "\n") (List.map output_op us)
+	      | S_Conc (u, t) => output_op (S_Seq [u, t])
 	in
 	  LlvmOutput.conc
 	    [Label.output label, LlvmOutput.str ":\n",
