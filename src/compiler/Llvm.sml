@@ -575,12 +575,20 @@ struct
 
     fun compare_output cmp =
 	(* TODO: Fix this one, it is currently wrong *)
-	case cmp of
-	  C_Icmp icmp => Op.output_icmp icmp
-	| C_Fcmp fcmp => Op.output_fcmp fcmp
-	| C_VIcmp vicmp => Op.output_vicmp vicmp
-	| C_VFcmp vfcmp => Op.output_vfcmp vfcmp
-	| C_Select => raise Not_Implemented
+	let
+	  fun cmp_output cmp =
+	      case cmp of
+		C_Icmp icmp => ("icmp", Op.output_icmp icmp)
+	      | C_Fcmp fcmp => ("fcmp", Op.output_fcmp fcmp)
+	      | C_VIcmp vicmp => ("vicmp", Op.output_vicmp vicmp)
+	      | C_VFcmp vfcmp => ("vfcmp", Op.output_vfcmp vfcmp)
+	      (* TODO: Figure this beast out *)
+	      | C_Select => raise Not_Implemented
+	  val (s, cmp_t) = cmp_output cmp
+	  open LlvmOutput
+	in
+	  seq_space [str s, cmp_t]
+	end
 
     type element_ptr_idx = {ty: Type.t,
 			    idx: int}
