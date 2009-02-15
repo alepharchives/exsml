@@ -132,8 +132,6 @@ struct
 	     (* Label type *)
 	   | T_Label
 
-
-
     fun is_ptr ty =
 	case ty of
 	  T_Pointer _ => true
@@ -1811,10 +1809,21 @@ struct
   structure Visibility =
   struct
     (** Describes visibility of linked modules *)
-  datatype t = Vis_Default
-	     | Vis_Hidden
-	     | Vis_Protected
+    datatype t = Vis_Default
+	       | Vis_Hidden
+	       | Vis_Protected
 
+    fun output vis =
+	let
+	  fun to_string vis =
+	      case vis of
+		Vis_Default   => "default"
+	      | Vis_Hidden    => "hidden"
+	      | Vis_Protected => "protected"
+	  open LlvmOutput
+	in
+	  str (to_string vis)
+	end
   end
 
 
