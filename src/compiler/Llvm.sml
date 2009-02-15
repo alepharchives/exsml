@@ -1836,18 +1836,18 @@ struct
 			ret_ty: Type.t,
 			arg_tys: Type.t list}
 	   | G_Func of
-	       {id: Identifier.t,
-		linkage: Linkage.t option,
-		visibility: Visibility.t option,
-		callconv: CallConv.t option,
-		ret_attrs: ParamAttr.t list,
-		ret_ty: Type.t,
-		args: (Type.t * Identifier.t) list,
-		fn_attrs: FunctionAttr.t list,
-		section: string option,
-		align: int option,
-		gc: string option,
-		body: BasicBlock.t list ref}
+	     {id: Identifier.t,
+	      linkage: Linkage.t option,
+	      visibility: Visibility.t option,
+	      callconv: CallConv.t option,
+	      ret_attrs: ParamAttr.t list,
+	      ret_ty: Type.t,
+	      args: (Type.t * Identifier.t) list,
+	      fn_attrs: FunctionAttr.t list,
+	      section: string option,
+	      align: int option,
+	      gc: string option,
+	      body: BasicBlock.t list ref}
     fun mk_func id ret_ty args =
 	G_Func { id = id, linkage = NONE, visibility = NONE,
 		 callconv = NONE,
