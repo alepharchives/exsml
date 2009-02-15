@@ -424,13 +424,14 @@ struct
   structure CallConv =
   struct
     (** Calling conventions in LLVM *)
-    datatype t = CC_C | CC_Fast | CC_Cold
+    datatype t = CC_C | CC_Fast | CC_Cold | CC_Numbered of int
 
     fun to_string cc =
 	case cc of
 	    CC_C => "ccc"
 	  | CC_Fast => "fastcc"
 	  | CC_Cold => "coldcc"
+	  | CC_Numbered i => "cc " ^ Int.toString i
 
     fun output cc =
 	LlvmOutput.str (to_string cc)
