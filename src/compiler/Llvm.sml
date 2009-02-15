@@ -558,7 +558,7 @@ struct
     local open LlvmOutput
     in
 
-    fun conversion_output conv src dst =
+    fun conversion_output_plug conv src dst =
 	seq_space [str (conversion_to_string conv), src, str "to", dst]
     end
 
@@ -612,7 +612,6 @@ struct
 				     idx: int}
 		 | E_Int of int
 		 | E_Null
-		 (* TODO: This instruction is wrong! *)
 		 | E_Select of {cond: exp,
 				val1: exp,
 				val2: exp}
@@ -670,21 +669,6 @@ struct
 		      base_ty
 		    end)
 	      | _ => raise Not_Implemented
-(*	      | E_Array elst => *)
-(*
-	      case e of
-	        E_False => (fn ty => Type.coerce Type.T_I1 ty)
-	      | E_Null =>
-		let
-		  fun coerce t =
-		      (Type.assert_ptr t;
-		       t)
-		in
-		  coerce
-		end
-
-	      | E_True => (fn ty => Type.coerce Type.T_I1 ty)
-*)
 	  fun coerce_identifier id : Type.t -> Type.t =
 	      let
 		val id_ty = LlvmSymtable.find id vtable
@@ -921,7 +905,6 @@ struct
       fun output_id id =
 	   Identifier.output id
       fun output_exp exp =
-	  (* TODO: Some of these are wrong, atm *)
 	  case exp of
 	    E_Array el => brackets (commas (List.map output_exp el))
 	  | E_Binop {binop, lhs, rhs} =>
@@ -931,9 +914,8 @@ struct
 	    seq_space [compare_output compare, parens (commas [output_exp lhs,
 							       output_exp rhs])]
 	  | E_Conversion {conversion, exp, target_ty} =>
-	    Op.conversion_output conversion
-				 (output exp)
-				 (Type.output target_ty)
+	    seq_space [Op.conversion_output conversion,
+		       parens (seq_space [output exp, str "to", Type.output target_ty])]
 	  | E_ExtractElem {value, idx} =>
 	    seq [str "extractelement", parens (commas [output_exp value, integer idx])]
 	  | E_False => str "false"
@@ -1700,7 +1682,7 @@ struct
 		  val dst_line = Type.output dst_ty
 		in
 		  seq_space [Identifier.output result, str "=",
-			     Op.conversion_output conversion src_line dst_line]
+			     Op.conversion_output_plug conversion src_line dst_line]
 		end
 	      | S_Icmp {result, cond, ty, lhs, rhs} =>
 		seq_space [Identifier.output result, str "= icmp", Op.output_icmp cond,
