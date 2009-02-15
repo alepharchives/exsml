@@ -70,6 +70,9 @@ fun parens elems = sorround (str "(") (str ")") elems
 fun braces elems = sorround (str "{") (str "}") elems
 fun brackets elems = sorround (str "[") (str "]") elems
 
+(* LLVM uses a rather special vector designation *)
+fun vector elems = sorround (str "<") (str ">") elems
+
 fun seq_space es = intersperse (str " ") es
 fun seq es = intersperse (str "\n") es
 fun conc es = O_Seq es

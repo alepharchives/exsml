@@ -24,6 +24,9 @@ val braces : t -> t
 val brackets : t -> t
 (* Sorround some output with brackets, '[', ']' *)
 
+val vector : t -> t
+(* Sorround some output with vector elements, '<', '>' *)
+
 val seq_space : t list -> t
 (* Print a sequence of t's with space between them *)
 

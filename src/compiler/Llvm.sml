@@ -533,7 +533,7 @@ struct
 	  | OR => "or"
 	  | XOR => "xor"
 
-    fun binop_output s = LlvmOutput.str (binop_to_string s)
+    fun output_binop s = LlvmOutput.str (binop_to_string s)
 
     fun unop_to_string NEG = "neg"
 
@@ -572,6 +572,15 @@ struct
 	   | C_VIcmp of Op.icmp
 	   | C_Select (* Split this out *)
 	   | C_VFcmp of Op.fcmp
+
+    fun compare_output cmp =
+	(* TODO: Fix this one, it is currently wrong *)
+	case cmp of
+	  C_Icmp icmp => Op.output_icmp icmp
+	| C_Fcmp fcmp => Op.output_fcmp fcmp
+	| C_VIcmp vicmp => Op.output_vicmp vicmp
+	| C_VFcmp vfcmp => Op.output_vfcmp vfcmp
+	| C_Select => raise Not_Implemented
 
     type element_ptr_idx = {ty: Type.t,
 			    idx: int}
@@ -652,6 +661,7 @@ struct
 		      coerce_exp value ty;
 		      base_ty
 		    end)
+	      | _ => raise Not_Implemented
 (*	      | E_Array elst => *)
 (*
 	      case e of
@@ -899,10 +909,53 @@ struct
     local
       open LlvmOutput
     in
-      fun output (V_ConstExpr exp) =
-	(case exp of
-	     E_Float r => real r
-	   | E_String s => seq_space [str "\"", str s, str "\""])
+      fun output_id id =
+	   Identifier.output id
+      fun output_exp exp =
+	  (* TODO: Some of these are wrong, atm *)
+	  case exp of
+	    E_Array el => brackets (commas (List.map output_exp el))
+	  | E_Binop {binop, lhs, rhs} =>
+	    seq_space [Op.output_binop binop, parens (commas [output_exp lhs,
+							      output_exp rhs])]
+	  | E_Compare {compare, lhs, rhs} =>
+	    seq_space [compare_output compare, parens (commas [output_exp lhs,
+							       output_exp rhs])]
+	  | E_Conversion {conversion, exp, target_ty} =>
+	    Op.conversion_output conversion
+				 (output exp)
+				 (Type.output target_ty)
+	  | E_ExtractElem {value, idx} =>
+	    seq [str "extractelement", parens (commas [output_exp value, integer idx])]
+	  | E_False => str "false"
+	  | E_Float r => real r
+	  | E_GetElementPtr (exp, indexes) =>
+	    let
+	      fun output_idxs {ty, idx} = integer idx
+	    in
+	      seq [str "getelementptr", parens (commas
+						  [output_exp exp,
+						   commas (List.map output_idxs indexes)])]
+	    end
+	  | E_InsertElem {value, elt, idx} =>
+	    seq [str "insertelement", parens (commas [output_exp value,
+						      output_exp elt,
+						      integer idx])]
+	  | E_Int i => integer i
+	  | E_Null => str "null"
+	  | E_ShuffleVector {vec1, vec2, idxmask} =>
+	    seq [str "shufflevector", parens (commas [output_exp vec1,
+						      output_exp vec2,
+						      output_exp idxmask])]
+	  | E_String s => seq_space [str "\"", str s, str "\""]
+	  | E_Stringz s => str (s ^ "\000") (* Ugly, hopefully it is right *)
+	  | E_Struct ts => braces (commas (List.map output ts))
+	  | E_True => str "true"
+	  | E_Undef => str "undef"
+	  | E_Vector el => vector (commas (List.map output_exp el))
+	  | E_Zeroinit => str "zeroinitializer"
+
+      and output (V_ConstExpr exp) = output_exp exp
 	| output (V_Identifier id) = Identifier.output id
     end
 
@@ -1423,7 +1476,7 @@ struct
 	| S_UBranch lbl => vtable
 	| S_Unwind => vtable
 	| S_Unreachable => vtable
-
+	| _ => raise Not_Implemented
     local
 	fun con_binop binop ty ret op1 op2 = S_BinOp {binop = binop,
 						      ty = ty,
@@ -1512,7 +1565,7 @@ struct
 		seq_space [str "ret", Type.output ty, Value.output v]
 	      | S_BinOp {binop, ty, lhs, rhs, ret, ...} =>
 		seq_space [Identifier.output ret, str "=",
-			   Op.binop_output binop,
+			   Op.output_binop binop,
 			   Type.output ty,
 			   Value.output lhs, str ",",
 			   Value.output rhs]
