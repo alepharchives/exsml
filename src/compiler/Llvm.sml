@@ -297,7 +297,7 @@ struct
 	  | T_Vector {length, ty} => length * (bit_size ty)
 	  | T_Array {length, ty} => length * (bit_size ty)
 	  | T_Struct ts => sum (List.map bit_size ts)
-	  | _ => raise Not_Implemented
+	  | _ => raise (Internal_Error "Bit size called with somehting odd")
 	end
 
     fun is_int_range_valid bits integer =
