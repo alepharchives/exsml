@@ -58,6 +58,9 @@ val commas : t list -> t
 val str : string -> t
 (* Make a string into a t *)
 
+val quoted_str : string -> t
+(* Make a string foobarbaz into a quoted "foobarbaz" string *)
+
 val integer : int -> t
 (* Make an integer into a t *)
 

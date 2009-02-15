@@ -591,7 +591,6 @@ struct
 	   | C_VFcmp of Op.fcmp
 
     fun compare_output cmp =
-	(* TODO: Fix this one, it is currently wrong *)
 	let
 	  fun cmp_output cmp =
 	      case cmp of
@@ -1814,19 +1813,17 @@ struct
 	       | Vis_Hidden
 	       | Vis_Protected
 
-    fun output vis =
+    fun output (vis : t) : LlvmOutput.t =
 	let
-	  fun to_string vis =
-	      case vis of
-		Vis_Default   => "default"
-	      | Vis_Hidden    => "hidden"
-	      | Vis_Protected => "protected"
 	  open LlvmOutput
 	in
-	  str (to_string vis)
+	  str (case vis of
+		 Vis_Default   => "default"
+	       | Vis_Hidden    => "hidden"
+	       | Vis_Protected => "protected")
+
 	end
   end
-
 
   structure Module =
   struct
@@ -1834,6 +1831,7 @@ struct
     datatype global =
 	     G_Value of {id: Identifier.t,
 			 value: Value.t}
+	   (* TODO: Update G_Decl *)
 	   | G_Decl of {id: Identifier.t,
 			ret_ty: Type.t,
 			arg_tys: Type.t list}
@@ -1842,12 +1840,22 @@ struct
 		linkage: Linkage.t option,
 		visibility: Visibility.t option,
 		callconv: CallConv.t option,
-		ret_ty: Type.t * (ParamAttr.t option),
-		args: (Type.t * Identifier.t * ParamAttr.t option) list,
+		ret_attrs: ParamAttr.t list,
+		ret_ty: Type.t,
+		args: (Type.t * Identifier.t) list,
+		fn_attrs: FunctionAttr.t list,
+		section: string option,
+		align: int option,
+		gc: string option,
 		body: BasicBlock.t list ref}
     fun mk_func id ret_ty args =
 	G_Func { id = id, linkage = NONE, visibility = NONE,
 		 callconv = NONE,
+		 ret_attrs = [],
+		 fn_attrs = [],
+		 align = NONE,
+		 gc = NONE,
+		 section = NONE,
 		 ret_ty = ret_ty, args = args, body = ref [] }
     fun bb_push (G_Func { body, ...}) bb =
 	body := bb :: (!body)
@@ -1855,6 +1863,58 @@ struct
 	    (Internal_Error "Trying to push a basic block to a non-function")
 
     type t = global list
+
+    fun output_global gbl =
+	let
+	  open LlvmOutput
+	in
+	  case gbl of
+	    G_Value {id, value} =>
+	      seq_space [Identifier.output id, str "=", Value.output value]
+	  | G_Decl  {id, ret_ty, arg_tys} =>
+	      seq_space [Type.output ret_ty, Identifier.output id,
+			 parens (commas (List.map Type.output arg_tys))]
+	  | G_Func {id, linkage, visibility, callconv, ret_ty, args, body,
+		    ret_attrs, fn_attrs, section, align, gc} =>
+	    let
+	      fun output_args args =
+		  commas (List.map (fn (ty, id) => seq_space [Type.output ty,
+							      Identifier.output id])
+			           args)
+	      fun output_bodies bodies =
+		  seq (List.map BasicBlock.output bodies)
+	    in
+	      seq_space [str "define",
+			 case linkage of
+			   NONE => null
+			 | SOME l => Linkage.output l,
+			 case visibility of
+			   NONE => null
+			 | SOME v => Visibility.output v,
+			 case callconv of
+			   NONE => null
+			 | SOME cc => CallConv.output cc,
+			 case ret_attrs of
+			   [] => null
+			 | lst => seq_space (List.map ParamAttr.output lst),
+			 Type.output ret_ty,
+			 seq [str "@", Identifier.output id],
+			 parens (output_args args),
+			 case fn_attrs of
+			   [] => null
+			 | lst => seq_space (List.map FunctionAttr.output lst),
+			 case section of
+			   NONE => null
+			 | SOME name => seq_space [str "section", quoted_str name],
+			 case align of
+			   NONE => null
+			 | SOME n => seq_space [str "align", integer n],
+			 case gc of
+			   NONE => null
+			 | SOME gc => seq_space [str "gc", str gc],
+			 braces (output_bodies (!body))]
+	    end
+	end
   end
 
   type llbasicblock = unit

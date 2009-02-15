@@ -74,6 +74,7 @@ fun intersperse delimiter ts =
 
 
 fun str x = O_Str x
+fun quoted_str x = O_Str ("\"" ^ x ^ "\"")
 fun integer i = O_Int i
 fun real r = O_Real r
 val null = O_Null
