@@ -114,8 +114,6 @@ struct
 	   | T_Label
 
 
-    fun is_int_range_valid bits integer =
-	raise Not_Implemented
 
     fun is_ptr ty =
 	case ty of
@@ -301,6 +299,9 @@ struct
 	  | T_Struct ts => sum (List.map bit_size ts)
 	  | _ => raise Not_Implemented
 	end
+
+    fun is_int_range_valid bits integer =
+	  bits >= bit_size integer
 
     fun assert_same_bit_size x y =
 	if bit_size x = bit_size y then ()
@@ -818,7 +819,8 @@ struct
 	      | E_Int i =>
 		(fn ty =>
 		    if Type.is_int ty
-		    then if Type.is_int_range_valid (Type.bit_size ty) i
+		    then if Type.is_int_range_valid (Type.bit_size ty)
+			      (Type.T_Integer i)
 			 then ty
 			 else raise TypeError ("The range of the integer " ^
 					       "is not valid according to " ^
