@@ -570,7 +570,6 @@ struct
 	     C_Icmp of Op.icmp
 	   | C_Fcmp of Op.fcmp
 	   | C_VIcmp of Op.icmp
-	   | C_Select (* Split this out *)
 	   | C_VFcmp of Op.fcmp
 
     fun compare_output cmp =
@@ -582,8 +581,6 @@ struct
 	      | C_Fcmp fcmp => ("fcmp", Op.output_fcmp fcmp)
 	      | C_VIcmp vicmp => ("vicmp", Op.output_vicmp vicmp)
 	      | C_VFcmp vfcmp => ("vfcmp", Op.output_vfcmp vfcmp)
-	      (* TODO: Figure this beast out *)
-	      | C_Select => raise Not_Implemented
 	  val (s, cmp_t) = cmp_output cmp
 	  open LlvmOutput
 	in
@@ -616,6 +613,9 @@ struct
 		 | E_Int of int
 		 | E_Null
 		 (* TODO: This instruction is wrong! *)
+		 | E_Select of {cond: exp,
+				val1: exp,
+				val2: exp}
 		 | E_ShuffleVector of {vec1: exp,
 				       vec2: exp,
 				       idxmask: exp}
@@ -848,6 +848,7 @@ struct
 		(fn ty =>
 		    (Type.assert_ptr ty;
 		     ty))
+	      | E_Select _ => raise Not_Implemented
 	      | E_ShuffleVector {vec1, vec2, idxmask} =>
 		let
 		  val vec1_asserter = check_const_expr vec1
@@ -951,6 +952,9 @@ struct
 						      integer idx])]
 	  | E_Int i => integer i
 	  | E_Null => str "null"
+	  | E_Select {cond, val1, val2} =>
+	    seq [str "select", parens (commas (List.map output_exp
+					         [cond, val1, val2]))]
 	  | E_ShuffleVector {vec1, vec2, idxmask} =>
 	    seq [str "shufflevector", parens (commas [output_exp vec1,
 						      output_exp vec2,
