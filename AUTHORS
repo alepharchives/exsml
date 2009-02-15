@@ -1,0 +1,31 @@
+Moscow ML was written by
+    Sergei Romanenko (roman@keldysh.ru)
+    Keldysh Institute of Applied Mathematics, Russian Academy of Sciences
+    Miusskaya Pl. 4, 125047 Moscow, Russia
+and Claudio V. Russo (Claudio.Russo@cl.cam.ac.uk), University of Cambridge.
+    Thanks to Don Sannella at LFCS, Division of Informatics,
+    University of Edinburgh for funding under EPSRC grant GR/K63795
+and Peter Sestoft (sestoft@dina.kvl.dk),
+    Department of Mathematics and Physics, Royal Veterinary and
+    Agricultural University, Thorvaldsensvej 40, DK-1871 Frederiksberg C,
+    Denmark.  Much of the work was done at the Technical University of
+    Denmark, and while visiting AT&T Bell Laboratories, New Jersey, USA.
+
+The LLVM backend was written by
+    Jesper Louis Andersen (jesper.louis.andersen@gmail.com)
+
+Moscow ML owes much to:
+    * the CAML Light implementation by Xavier Leroy and Damien Doligez
+      (INRIA, Rocquencourt, France); especially the Caml Light bytecode
+      generator and the runtime system;
+    * the ML Kit by Lars Birkedal, Nick Rothwell, Mads Tofte and David Turner
+      (Copenhagen University, Denmark, and Edinburgh University, Scotland);
+    * inspiration from the SML/NJ compiler developed at Princeton
+      University and AT&T Bell Laboratories, New Jersey, USA;
+    * the good work by Doug Currie, Flavors Technology, USA, on the
+      MacOS port and many improvements; and
+    * feedback, contributions, and useful suggestions, in particular
+      from Ken Friis Larsen, but also from Jonas Barklund, Mike Gordon,
+      Michael Norrish, Konrad Slind, Jakob Lichtenberg, Hans Molin, and
+      numerous other people.
+

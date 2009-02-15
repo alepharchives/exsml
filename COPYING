@@ -1,8 +1,38 @@
+Moscow ML - a lightweight implementation of Standard ML.
+Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999, 2000
+Sergei Romanenko, Moscow, Russia and Peter Sestoft, Copenhagen, Denmark.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License in copyrght/gpl2 for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+Note that a number of source files are derived from the Caml Light
+distribution, copyright (C) 1993 INRIA, Rocquencourt, France.  Thus
+charging money for redistributing Moscow ML may require prior
+permission from INRIA; see the INRIA copyright notice in file
+copyrght/copyrght.cl.  The Caml Light system itself can be obtained
+from ftp.inria.fr:lang/caml-light.
+
+The rest of this file contains:
+  * The GPLv2 License
+  * The INRIA Caml Light License
+  * The AT&T License
+----------------------------------------------------------------------
 		    GNU GENERAL PUBLIC LICENSE
 		       Version 2, June 1991
 
- Copyright (C) 1989, 1991 Free Software Foundation, Inc.
-                          675 Mass Ave, Cambridge, MA 02139, USA
+ Copyright (C) 1989, 1991 Free Software Foundation, Inc.,
+ 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  Everyone is permitted to copy and distribute verbatim copies
  of this license document, but changing it is not allowed.
 
@@ -15,7 +45,7 @@ software--to make sure the software is free for all its users.  This
 General Public License applies to most of the Free Software
 Foundation's software and to any other program whose authors commit to
 using it.  (Some other Free Software Foundation software is covered by
-the GNU Library General Public License instead.)  You can apply it to
+the GNU Lesser General Public License instead.)  You can apply it to
 your programs, too.
 
   When we speak of free software, we are referring to freedom, not
@@ -55,7 +85,7 @@ patent must be licensed for everyone's free use or not licensed at all.
 
   The precise terms and conditions for copying, distribution and
 modification follow.
-
+
 		    GNU GENERAL PUBLIC LICENSE
    TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
@@ -110,7 +140,7 @@ above, provided that you also meet all of these conditions:
     License.  (Exception: if the Program itself is interactive but
     does not normally print such an announcement, your work based on
     the Program is not required to print an announcement.)
-
+
 These requirements apply to the modified work as a whole.  If
 identifiable sections of that work are not derived from the Program,
 and can be reasonably considered independent and separate works in
@@ -168,7 +198,7 @@ access to copy from a designated place, then offering equivalent
 access to copy the source code from the same place counts as
 distribution of the source code, even though third parties are not
 compelled to copy the source along with the object code.
-
+
   4. You may not copy, modify, sublicense, or distribute the Program
 except as expressly provided under this License.  Any attempt
 otherwise to copy, modify, sublicense or distribute the Program is
@@ -225,7 +255,7 @@ impose that choice.
 
 This section is intended to make thoroughly clear what is believed to
 be a consequence of the rest of this License.
-
+
   8. If the distribution and/or use of the Program is restricted in
 certain countries either by patents or by copyrighted interfaces, the
 original copyright holder who places the Program under this License
@@ -278,3 +308,85 @@ PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGES.
 
 		     END OF TERMS AND CONDITIONS
+----------------------------------------------------------------------
+LEGAL NOTICE
+
+Software: CAML Light, version 0.6 of September 1993, hereinafter
+referred to as "the software".
+
+The software has been designed and produced by Xavier Leroy and
+Damien Doligez, research workers for the Formel and Para projects,
+two research projects of Institut National de Recherche en
+Informatique et en Automatique (INRIA) - Domaine de Voluceau -
+Rocquencourt - 78153 Le Chesnay Cedex - France.
+
+INRIA holds all ownership rights to CAML Light version 0.6.
+
+The software has been registered at Agence pour la Protection
+des Programmes (APP).
+
+Preamble:
+
+The software is currently being developed and INRIA desires
+that it be used by the scientific community so as to test, evaluate
+and develop it.  To this end, INRIA has decided to have a prototype of
+the software distributed by FTP.
+
+a- Extent of the rights granted by the INRIA to the user of the software:
+
+INRIA freely grants the right to use, modify and integrate the
+software in another software, provided that all derivative works are
+distributed under the same conditions as the software.
+
+b- Reproduction of the software:
+
+INRIA grants any user of the software the right to reproduce it so as
+to circulate it in accordance with the same purposes and conditions as
+those defined at point a- above.  Any copy of the software and/or relevant
+documentation must comprise reference to the ownership of INRIA and
+the present file.
+
+The user undertakes not to carry out any paying distribution of the
+software. However, he is authorized to bill any person or body for the
+cost of reproduction of said software. As regards any other type of
+distribution, the user undertakes to apply to obtain the express
+approval of INRIA.
+
+c- Guarantees:
+
+Please note that the software is a product currently being developed.
+INRIA shall not be responsible in any way concerning conformity, and in
+particular shall not be liable should the software not comply with the
+requirements of the user, INRIA not being obliged to repair any
+possible direct or indirect damage.
+----------------------------------------------------------------------
+
+This copyright notice applies to some of the standard utility
+libraries found in directories mosml/lib and mosml/src/mosmllib; in
+particular to the Arraysort, Binarymap, Binaryset, Dynamicarray,
+Polyhash, Intmap, Intset, Splaymap, and Splayset structures which are
+from the Standard ML of New Jersey library.
+
+----------------------------------------------------------------------
+STANDARD ML OF NEW JERSEY COPYRIGHT NOTICE, LICENSE AND DISCLAIMER.
+
+Copyright 1993 by AT&T Bell Laboratories
+
+Permission to use, copy, modify, and distribute this software and its
+documentation for any purpose and without fee is hereby granted,
+provided that the above copyright notice appear in all copies and that
+both the copyright notice and this permission notice and warranty
+disclaimer appear in supporting documentation, and that the name of
+AT&T Bell Laboratories or any AT&T entity not be used in advertising
+or publicity pertaining to distribution of the software without
+specific, written prior permission.
+
+AT&T disclaims all warranties with regard to this software, including
+all implied warranties of merchantability and fitness.  In no event
+shall AT&T be liable for any special, indirect or consequential
+damages or any damages whatsoever resulting from loss of use, data or
+profits, whether in an action of contract, negligence or other
+tortious action, arising out of or in connection with the use or
+performance of this software.
+----------------------------------------------------------------------
+
