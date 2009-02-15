@@ -1704,30 +1704,40 @@ struct
     end
 
     (* Simplify term-rewrites a BB until it is canonical to the LLVM system *)
-    fun simplify bb = raise Not_Implemented
+    fun simplify bb = bb
 
   end
 
   structure Linkage =
   struct
     (** Linkage describes the linkage used for an IR Module *)
-    datatype t = Link_External
-	       | Link_Once
+    datatype t = Link_Private
+	       | Link_Internal
+	       | Link_Linkonce
+	       | Link_Common
 	       | Link_Weak
 	       | Link_Appending
-	       | Link_Internal
+	       | Link_Extern_Weak
+	       | Link_Extern_Visible
+	       (* Microsoft link types *)
 	       | Link_Dllimport
 	       | Link_Dllexport
-	       | Link_External_Weak
-	       | Link_Ghost
 
+    (* Convenience shortcuts *)
     val internal = Link_Internal
 
     fun to_string linkage =
 	case linkage of
-	    Link_External => "external"
-	  | Link_Internal => "internal"
-	  | _ => raise Not_Implemented
+	  Link_Private        => "private"
+	| Link_Internal       => "internal"
+	| Link_Linkonce       => "linkonce"
+	| Link_Common         => "common"
+	| Link_Weak           => "weak"
+	| Link_Appending      => "appending"
+	| Link_Extern_Weak    => "extern_weak"
+	| Link_Extern_Visible => "externally_visible"
+	| Link_Dllimport      => "dllimport"
+	| Link_Dllexport      => "dllexprt"
 
     fun output linkage = LlvmOutput.str (to_string linkage)
   end
