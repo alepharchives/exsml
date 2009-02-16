@@ -1825,6 +1825,17 @@ struct
 	end
   end
 
+  structure GarbageCollector =
+  struct
+    datatype t = GC_OCaml
+
+    fun output (gc : t) : LlvmOutput.t =
+	let fun to_string (GC_OCaml) = "ocaml"
+        in
+	  LlvmOutput.str (to_string gc)
+	end
+  end
+
   structure Module =
   struct
     datatype options = Constant
@@ -1841,7 +1852,7 @@ struct
 			fn_attrs: FunctionAttr.t list,
 			section: string option,
 			align: int option,
-			gc: string option}
+			gc: GarbageCollector.t option}
 	   | G_Func of
 	     {id: Identifier.t,
 	      linkage: Linkage.t option,
@@ -1853,7 +1864,7 @@ struct
 	      fn_attrs: FunctionAttr.t list,
 	      section: string option,
 	      align: int option,
-	      gc: string option,
+	      gc: GarbageCollector.t option,
 	      body: BasicBlock.t list ref}
     fun mk_func id ret_ty args =
 	G_Func { id = id, linkage = NONE, visibility = NONE,
@@ -1915,7 +1926,7 @@ struct
 			 | SOME n => seq_space [str "align", integer n],
 			 case gc of
 			   NONE => null
-			 | SOME gc => seq_space [str "gc", str gc]]
+			 | SOME gc => seq_space [str "gc", GarbageCollector.output gc]]
 	    end
 
 	  | G_Func {id, linkage, visibility, callconv, ret_ty, args, body,
@@ -1955,7 +1966,7 @@ struct
 			 | SOME n => seq_space [str "align", integer n],
 			 case gc of
 			   NONE => null
-			 | SOME gc => seq_space [str "gc", str gc],
+			 | SOME gc => seq_space [str "gc", GarbageCollector.output gc],
 			 braces (output_bodies (!body))]
 	    end
 	end
