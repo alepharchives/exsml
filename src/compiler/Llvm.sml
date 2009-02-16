@@ -45,7 +45,7 @@ struct
     datatype t = PA_ZEROEXT | PA_SIGNEXT
 	       | PA_INREG | PA_BYVAL | PA_SRET
 	       | PA_NOALIAS | PA_NORETURN | PA_NOUNWIND
-	       | PA_NEST | PA_READONLY | PA_READNONE
+	       | PA_NEST
 
     fun assert_funcall_valid [] = ()
       | assert_funcall_valid (pattr :: xs) =
@@ -66,8 +66,6 @@ struct
 	| PA_NORETURN => "noreturn"
 	| PA_NOUNWIND => "nounwind"
 	| PA_NEST     => "nest"
-	| PA_READONLY => "readonly"
-	| PA_READNONE => "readnone"
 
     fun output pa = LlvmOutput.str (to_string pa)
 

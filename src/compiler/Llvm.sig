@@ -36,7 +36,7 @@ structure ParamAttr :
 	    datatype t = PA_ZEROEXT | PA_SIGNEXT
 		       | PA_INREG | PA_BYVAL | PA_SRET
 		       | PA_NOALIAS | PA_NORETURN | PA_NOUNWIND
-		       | PA_NEST | PA_READONLY | PA_READNONE
+		       | PA_NEST
 
 	    val assert_funcall_valid : t list -> unit
             (* Assert that our parameter attributes are valid for
