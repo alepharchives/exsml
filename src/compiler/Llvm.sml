@@ -1834,6 +1834,43 @@ struct
 	end
   end
 
+  structure Layout =
+  struct
+    datatype u = L_Big
+	       | L_Little
+	       | L_Pointer of size
+	       | L_Integer of size
+	       | L_Vector  of size
+	       | L_Float   of size
+	       | L_Aggregate of size
+    withtype size = {size: int, abi: int, pref: int option}
+
+    type t = u list
+
+    fun stringify l =
+	let
+	  fun output_size {size, abi, pref} =
+	      String.concat [Int.toString size, ":", Int.toString abi,
+			     case pref of
+			       NONE => ""
+			     | SOME n => ":" ^ Int.toString n]
+	in
+	  case l of
+	    L_Big => "E"
+	  | L_Little => "e"
+	  | L_Pointer sz => "p" ^ output_size sz
+	  | L_Integer sz => "i" ^ output_size sz
+	  | L_Vector  sz => "v" ^ output_size sz
+	  | L_Float   sz => "f" ^ output_size sz
+	  | L_Aggregate sz => "a" ^ output_size sz
+	end
+
+    fun output layout_spec =
+	let open LlvmOutput in
+	  intersperse (str "-") (List.map (fn l => str (stringify l)) layout_spec)
+	end
+  end
+
   structure Module =
   struct
     datatype options = Constant
@@ -1847,6 +1884,7 @@ struct
 			 visibility: Visibility.t option,
 			 alias_ty: Type.t,
 			 aliasee: Identifier.t}
+	   | G_Layout of Layout.t
 	   | G_Decl of {id: Identifier.t,
 			linkage: Linkage.t option,
 			visibility: Visibility.t option,
@@ -1912,6 +1950,8 @@ struct
 		       | SOME v => Visibility.output v,
 		       Type.output alias_ty,
 		       Identifier.output aliasee]
+	  | G_Layout l =>
+	    seq_space [str "target layout =", Layout.output l]
 	  | G_Decl {id, linkage, visibility, callconv, ret_ty, args,
 		    ret_attrs, fn_attrs, section, align, gc} =>
 	    seq_space [str "define",
