@@ -1851,7 +1851,7 @@ struct
 			args: (Type.t * Identifier.t * ParamAttr.t list) list,
 			fn_attrs: FunctionAttr.t list,
 			section: string option,
-			align: int option,
+			align: Align.t option,
 			gc: GarbageCollector.t option}
 	   | G_Func of
 	     {id: Identifier.t,
@@ -1863,7 +1863,7 @@ struct
 	      args: (Type.t * Identifier.t * ParamAttr.t list) list,
 	      fn_attrs: FunctionAttr.t list,
 	      section: string option,
-	      align: int option,
+	      align: Align.t option,
 	      gc: GarbageCollector.t option,
 	      body: BasicBlock.t list ref}
     fun mk_func id ret_ty args =
@@ -1921,7 +1921,7 @@ struct
 		       | SOME name => seq_space [str "section", quoted_str name],
 		       case align of
 			 NONE => null
-		       | SOME n => seq_space [str "align", integer n],
+		       | SOME n => seq_space [str "align", Align.output n],
 		       case gc of
 			 NONE => null
 		       | SOME gc => seq_space [str "gc", GarbageCollector.output gc]]
@@ -1955,7 +1955,7 @@ struct
 			 | SOME name => seq_space [str "section", quoted_str name],
 			 case align of
 			   NONE => null
-			 | SOME n => seq_space [str "align", integer n],
+			 | SOME n => seq_space [str "align", Align.output n],
 			 case gc of
 			   NONE => null
 			 | SOME gc => seq_space [str "gc", GarbageCollector.output gc],
@@ -1963,12 +1963,4 @@ struct
 	    end
 	end
   end
-
-  type llbasicblock = unit
-  type llbuilder = unit
-
-
-
-  exception IoError of string
-
 end
