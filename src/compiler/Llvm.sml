@@ -1842,6 +1842,13 @@ struct
     datatype global =
 	     G_Value of {id: Identifier.t,
 			 value: Value.t}
+	   | G_NamedType of {id: Identifier.t,
+			     ty: Type.t}
+	   | G_Alias of {id: Identifier.t,
+			 linkage: Linkage.t option,
+			 visibility: Visibility.t option,
+			 alias_ty: Type.t,
+			 aliasee: Identifier.t}
 	   | G_Decl of {id: Identifier.t,
 			linkage: Linkage.t option,
 			visibility: Visibility.t option,
@@ -1895,6 +1902,18 @@ struct
 	  case gbl of
 	    G_Value {id, value} =>
 	      seq_space [Identifier.output id, str "=", Value.output value]
+	  | G_NamedType {id, ty} =>
+	      seq_space [Identifier.output id, str "= type", Type.output ty]
+	  | G_Alias {id, linkage, visibility, alias_ty, aliasee} =>
+	    seq_space [Identifier.output id, str "= alias",
+		       case linkage of
+			 NONE => null
+		       | SOME l => Linkage.output l,
+		       case visibility of
+			 NONE => null
+		       | SOME v => Visibility.output v,
+		       Type.output alias_ty,
+		       Identifier.output aliasee]
 	  | G_Decl {id, linkage, visibility, callconv, ret_ty, args,
 		    ret_attrs, fn_attrs, section, align, gc} =>
 	    seq_space [str "define",
