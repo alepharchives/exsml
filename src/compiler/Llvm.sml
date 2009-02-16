@@ -1848,7 +1848,7 @@ struct
 			callconv: CallConv.t option,
 			ret_attrs: ParamAttr.t list,
 			ret_ty: Type.t,
-			args: (Type.t * Identifier.t) list,
+			args: (Type.t * Identifier.t * ParamAttr.t list) list,
 			fn_attrs: FunctionAttr.t list,
 			section: string option,
 			align: int option,
@@ -1860,7 +1860,7 @@ struct
 	      callconv: CallConv.t option,
 	      ret_attrs: ParamAttr.t list,
 	      ret_ty: Type.t,
-	      args: (Type.t * Identifier.t) list,
+	      args: (Type.t * Identifier.t * ParamAttr.t list) list,
 	      fn_attrs: FunctionAttr.t list,
 	      section: string option,
 	      align: int option,
@@ -1885,57 +1885,49 @@ struct
     fun output_global gbl =
 	let
 	  open LlvmOutput
+	  fun output_args args =
+	      commas (List.map (fn (ty, id, pattrs) =>
+				   seq_space [Type.output ty,
+					      seq_space (List.map ParamAttr.output pattrs),
+					      Identifier.output id])
+			       args)
 	in
 	  case gbl of
 	    G_Value {id, value} =>
 	      seq_space [Identifier.output id, str "=", Value.output value]
 	  | G_Decl {id, linkage, visibility, callconv, ret_ty, args,
 		    ret_attrs, fn_attrs, section, align, gc} =>
-	    let
-	      fun output_args args =
-		  commas (List.map (fn (ty, id) => seq_space [Type.output ty,
-							      Identifier.output id])
-			           args)
-	      fun output_bodies bodies =
-		  seq (List.map BasicBlock.output bodies)
-	    in
-	      seq_space [str "define",
-			 case linkage of
-			   NONE => null
-			 | SOME l => Linkage.output l,
-			 case visibility of
-			   NONE => null
+	    seq_space [str "define",
+		       case linkage of
+			 NONE => null
+		       | SOME l => Linkage.output l,
+		       case visibility of
+			 NONE => null
 			 | SOME v => Visibility.output v,
-			 case callconv of
-			   NONE => null
-			 | SOME cc => CallConv.output cc,
-			 case ret_attrs of
-			   [] => null
-			 | lst => seq_space (List.map ParamAttr.output lst),
-			 Type.output ret_ty,
-			 seq [str "@", Identifier.output id],
-			 parens (output_args args),
-			 case fn_attrs of
-			   [] => null
-			 | lst => seq_space (List.map FunctionAttr.output lst),
-			 case section of
-			   NONE => null
-			 | SOME name => seq_space [str "section", quoted_str name],
-			 case align of
-			   NONE => null
-			 | SOME n => seq_space [str "align", integer n],
-			 case gc of
-			   NONE => null
-			 | SOME gc => seq_space [str "gc", GarbageCollector.output gc]]
-	    end
-
+		       case callconv of
+			 NONE => null
+		       | SOME cc => CallConv.output cc,
+		       case ret_attrs of
+			 [] => null
+		       | lst => seq_space (List.map ParamAttr.output lst),
+		       Type.output ret_ty,
+		       seq [str "@", Identifier.output id],
+		       parens (output_args args),
+		       case fn_attrs of
+			 [] => null
+		       | lst => seq_space (List.map FunctionAttr.output lst),
+		       case section of
+			 NONE => null
+		       | SOME name => seq_space [str "section", quoted_str name],
+		       case align of
+			 NONE => null
+		       | SOME n => seq_space [str "align", integer n],
+		       case gc of
+			 NONE => null
+		       | SOME gc => seq_space [str "gc", GarbageCollector.output gc]]
 	  | G_Func {id, linkage, visibility, callconv, ret_ty, args, body,
-		    ret_attrs, fn_attrs, section, align, gc} =>
+		ret_attrs, fn_attrs, section, align, gc} =>
 	    let
-	      fun output_args args =
-		  commas (List.map (fn (ty, id) => seq_space [Type.output ty,
-							      Identifier.output id])
-			           args)
 	      fun output_bodies bodies =
 		  seq (List.map BasicBlock.output bodies)
 	    in
