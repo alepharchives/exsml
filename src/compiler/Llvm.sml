@@ -146,17 +146,13 @@ struct
 	| _ => false
 
     (* TODO: Test this *)
-    fun smallest_int_type_fitting n =
+    fun int_fits_in n k =
 	let
-	  fun log2 r = Math.log10 r / Math.log10 2.0
-	  val size = Real.floor (log2 (Real.fromInt n))
+	  fun pow2 (0, i) = i
+	    | pow2 (n, i) = pow2 (n-1, i*2)
 	in
-	  T_Integer size
+	  n <= pow2 (k, 1)
 	end
-
-    fun smallest_real_type_fitting r =
-	(* All ML-Reals are 64bit IEEEs *)
-	T_Double
 
     fun assert_ptr ty =
 	if is_ptr ty then ()
@@ -399,6 +395,10 @@ struct
     fun coercion_error ty_s ty_d =
 	TypeError "Coercion error. FIXME: Print out coercion problem"
 
+    (* Type coercion: We are given two types and need to coerce them into
+     * being equal types. That is, we need to make sure that the two types
+     * are matching, and to generalize the result as much as possible. *)
+    (* TODO: Update this function *)
     fun coerce ty_src ty_dst =
 	(* Try to coerce something of value ty_src into something of value ty_dst *)
 	case (ty_src, ty_dst) of
@@ -599,9 +599,6 @@ struct
 		 | E_Binop of {binop: Op.binop,
 			       lhs: exp,
 			       rhs: exp}
-		 | E_Compare of {compare: compare,
-				 lhs: exp,
-				 rhs: exp}
 		 | E_Conversion of {conversion: Op.conversion,
 				    exp: t,
 				    target_ty: Type.t}
@@ -624,7 +621,7 @@ struct
 				       idxmask: exp}
 		 | E_String of string
 		 | E_Stringz of string
-		 | E_Struct of t list
+		 | E_Struct of exp list
 		 | E_True
 		 | E_Undef
 		 | E_Vector of exp list (* Perhaps merge with E_Array *)
@@ -634,296 +631,100 @@ struct
 
     type vtable = (Identifier.t, Type.t) LlvmSymtable.t
 
-    fun check e = Type.T_I1
-
-    fun check vtable (term: t) : Type.t =
+    fun check vtable (ty: Type.t) (term: t) : Type.t =
 	let
 	  fun check_id id = raise Not_Implemented
-	  fun check_exp e =
-	      case e of
-		E_True => Type.T_I1
-	      | E_False => Type.T_I1
-	      | E_Undef => Type.T_Top
-	      | E_Zeroinit => Type.T_Top
-	      | E_String str => Type.T_Array { length = String.size str,
-					       ty = Type.T_I8 }
-	      | E_Stringz str => Type.T_Array { length = String.size str + 1,
-						ty = Type.T_I8 }
-	      | E_Int n => Type.smallest_int_type_fitting n
-	      | E_Float r => Type.smallest_real_type_fitting r
-	      | E_Null => Type.T_Pointer (Type.T_Top)
-	      | _ => raise Not_Implemented
+	  open Type
+	  fun check_conversion conversion exp target_ty ty =
+	      target_ty (* TODO: Write this function *)
+	  fun check_exp (ty: Type.t) (e: exp) : Type.t =
+	      case (ty, e) of
+		(typ as T_Array {length, ty}, E_Array exp_list) =>
+		let
+		  fun sametype ty [] = typ
+		    | sametype ty (x :: xs) =
+		      (check_exp ty x;
+		       sametype ty xs)
+		in
+		  if List.length exp_list <> length
+		  then raise TypeError "Array length/type length mismatch"
+		  else sametype ty exp_list
+		end
+	      | (ty, E_Binop {lhs, rhs, ...}) =>
+		(check_exp ty lhs;
+		 check_exp ty rhs;
+		 ty)
+	      | (ty, E_Conversion {conversion, exp, target_ty}) =>
+		check_conversion conversion exp target_ty ty
+	      | (ty, E_ExtractElem {value, idx}) =>
+		(* TODO: Punt this for now.
+		 * The problem with this call is that we do not
+		 * know the type of value. We know that it must have vector
+		 * type with ty as the base type contents, but we don't
+		 * know the length of the vector. The only way to figure that
+		 * out is by doing inference on the constant.
+		 *
+		 * More reading is required ... *)
+		ty
+	      | (T_Integer 1, E_False) => T_I1
+	      | (T_Double, E_Float real) => T_Double
+	        (* TODO: Several other FP Types *)
+	      | (ty, E_GetElementPtr (exp, idx_list)) =>
+		(* TODO: Punt this for now. Complex instruction *)
+		ty
+	      | (ty, E_InsertElem {value, elt, idx}) =>
+		(* TODO: Punt for now. Must check several things *)
+		ty
+	      | (T_Integer k, E_Int n) =>
+		if int_fits_in n k then T_Integer k
+		else raise TypeError "Integer does not fit into type"
+	      | (T_Pointer ty, E_Null) => T_Pointer ty
+	      | (ty, E_Select {cond, val1, val2}) =>
+		  (check_exp ty val1;
+		   check_exp ty val2;
+		   check_exp Type.T_I1 cond;
+		   ty)
+	      (* TODO: E_Shufllevector *)
+	      | (ty as T_Array {length, ty = T_Integer 8}, E_String str) =>
+		if String.size str <> length
+		then raise TypeError "String has wrong size"
+		else ty
+	      | (ty as T_Array {length, ty = T_Integer 8}, E_Stringz str) =>
+		if String.size str + 1 <> length
+		then raise TypeError "Stringz has wrong size"
+		else ty
+	      | (T_Struct ts, E_Struct es) =>
+		let
+		  fun check_struct [] [] = T_Struct ts
+		    | check_struct (t::ts) (e::es) =
+		      (check_exp t e;
+		       check_struct ts es)
+		    | check_struct _ _ =
+		      raise TypeError "Type/Exp len mismatch in struct"
+		in
+		  check_struct ts es
+		end
+	      | (ty as T_Integer 1, T_True) => ty
+	      | (ty, E_Undef) => ty
+	      | (typ as T_Vector {length, ty}, E_Vector elist) =>
+		let
+		  fun sametype [] = ()
+		    | sametype (e :: es) =
+		      (check_exp ty e;
+		       sametype es)
+		in
+		  if List.length elist <> length
+		  then raise TypeError "Vector arity mismatch"
+		  else (sametype elist;
+			typ)
+		end
+	      | (ty, E_Zeroinit) => ty
+	      | (ty, exp) =>
+		raise TypeError "Type/Exp mismatch (Alter me to print out the types!)"
 	in
 	  case term of
 	    V_Identifier id => check_id id
-	  | V_ConstExpr e => check_exp e
-	end
-
-    fun coerce vtable (term: t) : Type.t -> Type.t =
-	let
-	  fun coerce_conversion conversion exp ty target_ty =
-	      raise Not_Implemented
-	  fun coerce_exp e : Type.t -> Type.t =
-	      case e of
-		E_False   => (fn ty => Type.coerce Type.T_I1 ty)
-	      | E_True    => (fn ty => Type.coerce Type.T_I1 ty)
-	      | E_Null    => (fn ty =>
-				 (Type.assert_ptr ty;
-			         ty))
-	      | E_Int n   => (fn ty =>
-				 (Type.assert_int ty;
-				  ty))
-	      | E_Float n => (fn ty =>
-				 (Type.assert_float ty;
-				  ty))
-	      | E_Binop {binop, lhs, rhs} =>
-		(fn ty =>
-		    (coerce_exp lhs ty;
-		     coerce_exp rhs ty))
-	      | E_Compare {compare, lhs, rhs} =>
-		(fn ty =>
-		    (coerce_exp lhs ty;
-		     coerce_exp rhs ty))
-	      | E_Conversion {conversion, exp, target_ty} =>
-		(fn ty =>
-		    coerce_conversion conversion exp ty target_ty)
-	      | E_ExtractElem {value, idx} =>
-		(fn ty =>
-		    let
-		      val base_ty = Type.extract_base ty
-		    in
-		      coerce_exp value ty;
-		      base_ty
-		    end)
-	      | _ => raise Not_Implemented
-	  fun coerce_identifier id : Type.t -> Type.t =
-	      let
-		val id_ty = LlvmSymtable.find id vtable
-	      in
-		(fn ty =>
-		    Type.coerce id_ty ty)
-	      end
-	in
-	  case term of
-	    V_Identifier id => coerce_identifier id
-	  | V_ConstExpr e   => coerce_exp e
-	end
-
-    fun is_idx_list vtable [] = true
-      | is_idx_list vtable (idx::rest) =
-	(coerce vtable idx Type.T_I32;
-	 is_idx_list vtable rest) handle TypeError e => false
-
-    fun assert_idx_list vtable lst =
-	if is_idx_list vtable lst then ()
-	else raise TypeError "Index list is not a list of i32 values."
-
-    fun type_check vtable v =
-	let
-          (* Conversions have many special rules, so we handle them separately *)
-	  fun check_conversion conversion exp target_ty =
-	      (* TODO: Fix this! *)
-	      (fn ty =>
-		  case conversion of
-		    _ => ty)
-
-	      (* case conversion of *)
-	      (* 	      Op.TRUNC => true *)
-	      (* 	    | Op.ZEXT  => true *)
-	      (* 	    | Op.SEXT  => true *)
-	      (* 	    | Op.FPTRUNC => true *)
-	      (* 	    | Op.FPEXT   => true *)
-	      (* 	    | Op.FPTOUI  => true *)
-	      (* 	    | Op.FPTOSI  => true *)
-	      (* 	    | Op.UITOFP  => true *)
-	      (* 	    | Op.SITOFP  => true *)
-	      (* 	    | Op.PTRTOINT => true *)
-	      (* 	    | Op.INTTOPTR => true *)
-	      (* 	    | Op.BITCAST => true *)
-          (* Type check a constant expression
-	   This function will return an assertion checker which, when invoked will assert
-	   that the type is correct and will coerce it if necessary *)
-	  fun check_const_expr (e : exp) =
-	      case e of
-		E_Array elements =>
-		(fn ty =>
-		    if Type.is_array_type ty
-		    then
-		      let
-			val base_type = Type.extract_base ty
-			val size = Type.extract_size ty
-			fun check_elems [] = ty
-			  | check_elems (e :: es) =
-			    (check_const_expr e base_type ;
-			     check_elems es)
-		      in
-			if List.length elements = size
-			then check_elems elements
-			else raise TypeError "Array size differs from type size"
-		      end
-		    else raise TypeError "Array is not of array-type")
-	      | E_Binop {binop, lhs, rhs} =>
-		  let
-		    val lhs_ty_asserter = check_const_expr lhs
-		    val rhs_ty_asserter = check_const_expr rhs
-		  in
-		    (fn ty =>
-			let
-			  val lhs_ty = lhs_ty_asserter ty
-			  val rhs_ty = rhs_ty_asserter ty
-			in
-			  if lhs_ty = rhs_ty
-			  then lhs_ty
-			  else raise TypeError "Type mismatch in binop"
-			end)
-		  end
-	      | E_Compare {compare, lhs, rhs} =>
-		let
-		  fun type_valid ty =
-		      if Type.is_int ty orelse
-			 Type.is_ptr ty orelse
-			 Type.is_vector ty
-		      then
-			()
-		      else
-			raise TypeError "Type is not a valid comparator-type"
-		  val lhs_asserter = check_const_expr lhs
-		  val rhs_asserter = check_const_expr rhs
-		in
-		  (fn ty =>
-		      (type_valid ty;
-		       if lhs_asserter ty = rhs_asserter ty
-		       then
-			 if Type.is_vector ty
-			 then
-			   (* Vector return *)
-			   Type.T_Vector {ty = Type.T_I1,
-					  length = Type.extract_size ty}
-			 else
-			   (* Non-Vector return *)
-			   Type.T_I1
-		       else
-			 raise TypeError "Compared types does not match"))
-		end
-	      | E_Conversion {conversion, exp, target_ty} =>
-		check_conversion conversion exp target_ty
-	      | E_ExtractElem {value, idx} =>
-		(fn ty =>
-		    (Type.assert_vector ty;
-		     let
-		       val size = Type.extract_size ty
-		     in
-		       if idx >= 0 andalso idx < size
-		       then
-			 Type.extract_base ty
-		       else
-			 raise TypeError "Idx out of bounds"
-		     end))
-	      | E_False => (fn _ => Type.T_I1)
-	      | E_Float f => (fn ty =>
-			       (* TODO: Check for range validity *)
-			       if Type.is_float ty then ty
-			       else raise TypeError "Non-float type given")
-	      (* TODO: Fix cheating here *)
-	      | E_GetElementPtr (exp, indexes) => (fn ty => ty)
-	      | E_InsertElem {value, elt, idx} =>
-		let val elt_ty_asserter = check_const_expr elt
-		in
-		  (fn ty =>
-		      (Type.assert_vector ty;
-		       let
-			 val size = Type.extract_size ty
-			 val base_ty = Type.extract_base ty
-			 val elt_ty = elt_ty_asserter base_ty
-		       in
-			 if idx >= 0 andalso idx < size
-			 then if elt_ty = base_ty
-			      then ty
-			      else raise TypeError
-				   ("Inserted type mismatches vector base type")
-			 else
-			   raise TypeError "Idx out of bounds"
-		       end))
-		end
-	      | E_Int i =>
-		(fn ty =>
-		    if Type.is_int ty
-		    then if Type.is_int_range_valid (Type.bit_size ty)
-			      (Type.T_Integer i)
-			 then ty
-			 else raise TypeError ("The range of the integer " ^
-					       "is not valid according to " ^
-					       "the type")
-		    else raise TypeError ("Integer is not of integer type"))
-	      | E_Null  =>
-		(fn ty =>
-		    (Type.assert_ptr ty;
-		     ty))
-	      | E_Select _ => raise Not_Implemented
-	      | E_ShuffleVector {vec1, vec2, idxmask} =>
-		let
-		  val vec1_asserter = check_const_expr vec1
-		  val vec2_asserter = check_const_expr vec2
-		  val mask_asserter = check_const_expr idxmask
-		in
-		  (fn ty =>
-		      (Type.assert_vector ty;
-		       let val size = Type.extract_size ty
-		       in
-			 vec1_asserter ty;
-			 vec2_asserter ty;
-			 mask_asserter (Type.T_Vector {length = size,
-						     ty = Type.T_I32});
-			 ty
-		       end))
-		end
-	      | E_String str =>
-		(fn ty =>
-		    let val len = String.size str
-		    in case ty of
-			 Type.T_Array {length = l, ty} =>
-			   if l = len andalso (Type.is_i 8 ty)
-			   then ty
-			   else raise TypeError ("Type mismatch on string")
-		       | _ => raise TypeError ("Type mismatch on string")
-		    end)
-	      | E_Stringz str =>
-		(fn ty =>
-		    let val len = String.size str + 1
-		    in case ty of
-			 Type.T_Array {length, ty} =>
-			 if length = len andalso (Type.is_i 8 ty) then ty
-			   else raise TypeError ("Type mismatch on string")
-		       | _ => raise TypeError ("Type mismatch on string")
-		    end)
-		| E_Struct element =>
-		  (fn ty => ty) (* TODO: Fix *)
-	      | E_True => (fn _ => Type.T_I1)
-	      | E_Undef => (fn ty => ty) (* We trust the type *)
-	      | E_Vector elements =>
-		(* Consider a merge with the E_Array case. Identical *)
-		(fn ty =>
-		    if Type.is_vector ty
-		    then
-		      let
-			val base_type = Type.extract_base ty
-			val size = Type.extract_size ty
-			fun check_elems [] = ty
-			  | check_elems (e :: es) =
-			    (check_const_expr e base_type ;
-			     check_elems es)
-		      in
-			if List.length elements = size
-			then check_elems elements
-			else raise TypeError "Vector size differs from type size"
-		      end
-		    else raise TypeError "Vector is not of array-type")
-	      | E_Zeroinit => (fn ty => ty) (* This *always* succeeds acc. to the spec *)
-
-	in
-	  case v of
-	    V_Identifier id => (fn ty => LlvmSymtable.find id vtable) (* TODO: Coerce *)
-	  | V_ConstExpr exp => check_const_expr exp
+	  | V_ConstExpr e => check_exp ty e
 	end
 
     local
@@ -937,9 +738,6 @@ struct
 	  | E_Binop {binop, lhs, rhs} =>
 	    seq_space [Op.output_binop binop, parens (commas [output_exp lhs,
 							      output_exp rhs])]
-	  | E_Compare {compare, lhs, rhs} =>
-	    seq_space [compare_output compare, parens (commas [output_exp lhs,
-							       output_exp rhs])]
 	  | E_Conversion {conversion, exp, target_ty} =>
 	    seq_space [Op.conversion_output conversion,
 		       parens (seq_space [output exp, str "to", Type.output target_ty])]
@@ -970,7 +768,7 @@ struct
 						      output_exp idxmask])]
 	  | E_String s => seq_space [str "\"", str s, str "\""]
 	  | E_Stringz s => str (s ^ "\000") (* Ugly, hopefully it is right *)
-	  | E_Struct ts => braces (commas (List.map output ts))
+	  | E_Struct ts => braces (commas (List.map output_exp ts))
 	  | E_True => str "true"
 	  | E_Undef => str "undef"
 	  | E_Vector el => vector (commas (List.map output_exp el))
@@ -1142,9 +940,9 @@ struct
 	  let
 	    fun bin_coerce ty lhs rhs =
 		let
-		  val lhs_ty = Value.coerce vtable lhs ty
+		  val lhs_ty = Value.check vtable ty lhs
 		in
-		  Value.coerce vtable rhs lhs_ty
+		  Value.check vtable ty rhs
 		end
 	  in case binop of
 	       Op.ADD => (Type.assert_int_float ty;
@@ -1180,7 +978,7 @@ struct
 			  LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
 	  end
 	| S_Branch {cond, label_t, label_f} =>
-	  (Value.coerce vtable cond Type.T_I1;
+	  (Value.check vtable Type.T_I1 cond;
 	   vtable)
 	| S_Call {func, tail, ty, call_conv, args, ret, name, param_attrs, fnty, fn_attrs} =>
 	  (* Rules:
@@ -1222,15 +1020,15 @@ struct
              2. ty must be a vector type.
              3. value must coerce to the vector type *)
 	  (Type.assert_vector ty;
-	   Value.coerce vtable value Type.T_I32;
+	   Value.check vtable Type.T_I32 value;
 	   let
-	     val r_ty = Value.coerce vtable value ty
+	     val r_ty = Value.check vtable ty value
 	   in
 	     LlvmSymtable.enter result r_ty vtable
 	   end)
 	| S_Free {ty, value} =>
 	  (Type.assert_ptr ty;
-	   Value.coerce vtable value ty;
+	   Value.check vtable ty value;
 	  vtable)
 	| S_InsertElement {ty, value, elem_ty, elem_value, idx} =>
 	  (* Rules:
@@ -1242,10 +1040,10 @@ struct
 	     Function is void'ed
           *)
 	  (Type.assert_vector ty;
-	   Value.coerce vtable value ty;
+	   Value.check vtable ty value;
 	   Type.assert_eq (Type.extract_base ty) elem_ty;
-	   Value.coerce vtable elem_value elem_ty;
-	   Value.coerce vtable idx Type.T_I32;
+	   Value.check vtable elem_ty elem_value;
+	   Value.check vtable Type.T_I32 idx;
 	   vtable)
 	| S_Invoke {callconv, ret_attrs, func, func_ty, args, func_attrs, label_cont,
 		    label_unwind, result} =>
@@ -1267,10 +1065,10 @@ struct
              4. mask_ty must be a valid mask type
 	     must update result to have the type of v1_ty *)
 	  let
-	    val v1_ty' = Value.coerce vtable v1 v1_ty
-	    val v2_ty' = Value.coerce vtable v2 v2_ty
+	    val v1_ty' = Value.check vtable v1_ty v1
+	    val v2_ty' = Value.check vtable v2_ty v2
 	    val mask_ty = Type.T_Vector {length = mask_len, ty = Type.T_I32}
-	    val mask_ty' = Value.coerce vtable mask mask_ty
+	    val mask_ty' = Value.check vtable mask_ty mask
 	  in
 	    Type.assert_eq v1_ty' v2_ty';
 	    LlvmSymtable.enter result v1_ty' vtable
@@ -1280,9 +1078,10 @@ struct
 	     1. value and ty must coerce.
              2. idxs must be a list of T_I32's *)
 	  let
-	    val ty' = Value.coerce vtable value ty
+	    val ty' = Value.check vtable ty value
 	  in
-	    Value.assert_idx_list vtable idxs;
+	    (* TODO: Reinstate this! *)
+	    (* Value.assert_idx_list vtable idxs; *)
 	    LlvmSymtable.enter result ty' vtable
 	  end
 	| S_InsertValue {ty, value, elem_ty, elem_value, idx} =>
@@ -1293,10 +1092,10 @@ struct
              4. extract-type of ty and elem_ty agrees
              return is void *)
 	  let
-	    val ty' = Value.coerce vtable value ty
-	    val elem_ty' = Value.coerce vtable elem_value elem_ty
+	    val ty' = Value.check vtable ty value
+	    val elem_ty' = Value.check vtable elem_ty elem_value
 	  in
-	    Value.coerce vtable idx Type.T_I32;
+	    Value.check vtable Type.T_I32 idx;
 	    Type.assert_eq (Type.extract_base ty') elem_ty';
 	    vtable
 	  end
@@ -1305,7 +1104,7 @@ struct
 	  let
 	    fun check_predecs [] = ()
 	      | check_predecs ((v, l)::rest) =
-		 (Value.coerce vtable v ty;
+		 (Value.check vtable ty v;
 		  check_predecs rest)
 		(* TODO: Also check label uniqueness *)
 	  in
@@ -1320,13 +1119,13 @@ struct
 	  (Type.assert_ptr ty;
 	   Type.assert_first_class ty;
 	   let
-	     val v_ty = Value.coerce vtable value ty
+	     val v_ty = Value.check vtable ty value
 	   in
 	     LlvmSymtable.enter result v_ty vtable
 	   end)
 	| S_Ret NONE => vtable
 	| S_Ret (SOME (ty, value)) =>
-	  (Value.coerce vtable value ty;
+	  (Value.check vtable ty value;
 	   vtable)
 	| S_Select {result, ty, cond,
 		    true_ty, true_value,
@@ -1340,9 +1139,9 @@ struct
 	   *)
 	  if true_ty <> false_ty
 	  then raise TypeError "True and False type branches disagree."
-	  else (Value.coerce vtable true_value true_ty;
-		Value.coerce vtable false_value false_ty;
-		Value.coerce vtable cond ty;
+	  else (Value.check vtable true_ty true_value;
+		Value.check vtable false_ty false_value;
+		Value.check vtable ty cond;
 		Type.assert_select_ty ty;
 		LlvmSymtable.enter result true_ty vtable)
 	| S_GetElementPtr {result, ty, value, idxs} =>
@@ -1355,8 +1154,8 @@ struct
 	     3. Types of lhs and rhs must agree.
              4. The result is always either i1 or vector i1. *)
 	  let
-	    val ty' = Value.coerce vtable lhs ty
-	    val ty'' = Value.coerce vtable rhs ty'
+	    val ty' = Value.check vtable ty lhs
+	    val ty'' = Value.check vtable ty' rhs
 	  in
 	    Type.assert_icmp ty'';
 	    LlvmSymtable.enter
@@ -1371,7 +1170,7 @@ struct
 	  end
 	| S_Conversion {result, conversion, src_ty, value, dst_ty} =>
 	  (* Rules dependent on conversion type *)
-	  (Value.coerce vtable value src_ty;
+	  (Value.check vtable src_ty value;
 	   (case conversion of
 	      Op.TRUNC =>
 	        (Type.assert_int src_ty;
@@ -1430,8 +1229,8 @@ struct
 	     3. Types of phs and rhs must agree
              4. The result is i1 or vector i1 *)
 	  let
-	    val ty' = Value.coerce vtable lhs ty
-	    val ty'' = Value.coerce vtable rhs ty'
+	    val ty' = Value.check vtable ty lhs
+	    val ty'' = Value.check vtable ty' rhs
 	  in
 	    Type.assert_fcmp ty'';
 	    LlvmSymtable.enter
@@ -1451,8 +1250,8 @@ struct
              3. result type is ty.
            *)
           let
-	    val ty' = Value.coerce vtable lhs ty
-	    val ty'' = Value.coerce vtable rhs ty'
+	    val ty' = Value.check vtable ty lhs
+	    val ty'' = Value.check vtable ty' rhs
 	  in
 	    Type.assert_int_vector ty;
 	    LlvmSymtable.enter result ty'' vtable
@@ -1460,8 +1259,8 @@ struct
 	| S_VFcmp {result, cond, ty, lhs, rhs} =>
 	  (* Rules similar to VIcmp *)
 	  let
-	    val ty' = Value.coerce vtable lhs ty
-	    val ty'' = Value.coerce vtable rhs ty'
+	    val ty' = Value.check vtable ty lhs
+	    val ty'' = Value.check vtable ty' rhs
 	  in
 	    Type.assert_float_vector ty;
 	    LlvmSymtable.enter result ty'' vtable
@@ -1476,21 +1275,21 @@ struct
 	  end
 	| S_Store {volatile, ty, value, ptr_ty, ptr, align} =>
 	  (Type.assert_ptr ptr_ty;
-	   Value.coerce vtable value ty;
-	   Value.coerce vtable ptr ptr_ty;
+	   Value.check vtable ty value;
+	   Value.check vtable ptr_ty ptr;
 	   vtable)
 	| S_Switch {ty, value, default, cases} =>
 	  let
 	    fun assert_cases_unique seen [] = ()
 	      | assert_cases_unique seen ({ty, value, label} :: rest) =
 		(Type.assert_int ty;
-		 Value.coerce vtable value ty;
+		 Value.check vtable ty value;
 		 if List.exists (fn x => x = value) seen
 		 then raise TypeError "Switch cases not unique"
 		 else assert_cases_unique (value::seen) rest)
 	  in
 	    Type.assert_int ty;
-	    Value.coerce vtable value ty;
+	    Value.check vtable ty value;
 	    assert_cases_unique [] cases;
 	   vtable
 	  end
