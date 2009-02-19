@@ -45,6 +45,13 @@ structure ParamAttr :
 	    val output : t -> LlvmOutput.t
 	  end
 
+structure CallConv :
+	  sig
+	    type t
+
+	    val output : t -> LlvmOutput.t
+	  end
+
 structure FunctionAttr :
 	  sig
 	    datatype t = FA_ALWAYSINLINE | FA_NOINLINE | FA_OPTSIZE | FA_NORETURN

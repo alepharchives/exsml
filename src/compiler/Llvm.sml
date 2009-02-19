@@ -104,7 +104,7 @@ struct
   struct
     datatype t =
 	     (* Integer types *)
-	     T_I1 | T_I8 | T_I16 | T_I32 | T_I64 | T_Integer of int
+	     T_Integer of int
              (* Floating Point types *)
 	   | T_Float | T_Double | T_X86fp80 | T_FP128 | T_PPC_FP128
              (* Function types *)
@@ -129,12 +129,34 @@ struct
 	   | T_Void
 	     (* Label type *)
 	   | T_Label
+	     (* Top type *)
+	   | T_Top
+
+    (* Convenience definitions for easy work on Integer types *)
+    val T_I1 = T_Integer 1
+    val T_I8 = T_Integer 8
+    val T_I16 = T_Integer 16
+    val T_I32 = T_Integer 32
+    val T_I64 = T_Integer 64
+    val T_I128 = T_Integer 128
 
     fun is_ptr ty =
 	case ty of
 	  T_Pointer _ => true
 	| _ => false
 
+    (* TODO: Test this *)
+    fun smallest_int_type_fitting n =
+	let
+	  fun log2 r = Math.log10 r / Math.log10 2.0
+	  val size = Real.floor (log2 (Real.fromInt n))
+	in
+	  T_Integer size
+	end
+
+    fun smallest_real_type_fitting r =
+	(* All ML-Reals are 64bit IEEEs *)
+	T_Double
 
     fun assert_ptr ty =
 	if is_ptr ty then ()
@@ -144,7 +166,7 @@ struct
 
     fun assert_select_ty ty =
 	case ty of
-	  T_I1 => true
+	  T_Integer 1 => true
 	| T_Vector {ty = T_I1, ...} => true
 	| _ => false
 
@@ -155,12 +177,12 @@ struct
 
     fun is_int ty =
 	case ty of
-	  T_I1 => true
-	| T_I8 => true
-	| T_I16 => true
-	| T_I32 => true
-	| T_I64 => true
-	| T_Integer _ => true
+	  T_Integer _ => true
+	| _ => false
+
+    fun is_i n ty =
+	case ty of
+	  T_Integer n => true
 	| _ => false
 
     fun assert_int ty =
@@ -298,12 +320,7 @@ struct
 	in
 	  (* TODO: Handle vectors and arrays etc *)
 	  case ty of
-	    T_I1 => 1
-	  | T_I8 => 8
-	  | T_I16 => 16
-	  | T_I32 => 32
-	  | T_I64 => 64
-	  | T_Integer i => i
+	    T_Integer i => i
 	  | T_Float => 32
 	  | T_Double => 64
 	  | T_X86fp80 => 80
@@ -338,12 +355,7 @@ struct
     in
       fun output ty : LlvmOutput.t =
 	  case ty of
-	    T_I1 => (str "i1")
-	  | T_I8 => (str "i8")
-	  | T_I16 => (str "i16")
-	  | T_I32 => (str "i32")
-	  | T_I64 => (str "i64")
-	  | T_Integer i => (conc [str "i", integer i])
+	    T_Integer i => (conc [str "i", integer i])
 	  | T_Float => (str "float")
 	  | T_Double => (str "double")
 	  | T_X86fp80 => (str "x86fp80")
@@ -381,6 +393,7 @@ struct
 	   | T_Opaque => (str "opaque")
 	   | T_Void => (str "void")
 	   | T_Label => (str "label")
+	   | T_Top => raise (Internal_Error "T_Top is not valid for output")
     end
 
     fun coercion_error ty_s ty_d =
@@ -389,34 +402,11 @@ struct
     fun coerce ty_src ty_dst =
 	(* Try to coerce something of value ty_src into something of value ty_dst *)
 	case (ty_src, ty_dst) of
-	  (T_I1, T_I1) => T_I1
-	| (T_Integer i, T_I1) => if i = 1 then T_I1
-				 else raise (coercion_error (T_Integer i) T_I1)
-	| (T_I1, T_I8) => T_I8
-	| (T_I8, T_I8) => T_I8
-	| (T_Integer i, T_I8) => if i <= 8 then T_I8
-				 else raise (coercion_error (T_Integer i) T_I8)
-	| (T_I1, T_I16) => T_I16
-	| (T_I8, T_I16) => T_I16
-	| (T_I16, T_I16) => T_I16
-	| (T_Integer i, T_I16) => if i <= 16 then T_I16
-				  else raise (coercion_error (T_Integer i) T_I16)
-	| (T_I1, T_I32) => T_I32
-	| (T_I8, T_I32) => T_I32
-	| (T_I16, T_I32) => T_I32
-	| (T_I32, T_I32) => T_I32
-	| (T_Integer i, T_I32) => if i <= 32 then T_I32
-				  else raise (coercion_error (T_Integer i) T_I32)
-	| (T_I1, T_I64) => T_I64
-	| (T_I8, T_I64) => T_I64
-	| (T_I16, T_I64) => T_I64
-	| (T_I32, T_I64) => T_I64
-	| (T_I64, T_I64) => T_I64
-	| (T_Integer i, T_I64) => if i <= 64 then T_I64
-				  else raise (coercion_error (T_Integer i) T_I64)
+	  (T_Integer i, T_Integer k) =>
+	  if i <= k
+	  then T_Integer k
+	  else raise (coercion_error (T_Integer i) (T_Integer k))
 	| (ty_src, ty_dst) => raise (coercion_error ty_src ty_dst)
-
-
   end
 
   structure CallConv =
@@ -619,7 +609,6 @@ struct
 				     idx: int}
 		 | E_False
 	         | E_Float of real
-		 (* TODO: ConstExpr? *)
 		 | E_GetElementPtr of exp * element_ptr_idx list
 
 		 | E_InsertElem  of {value: exp,
@@ -646,6 +635,29 @@ struct
     type vtable = (Identifier.t, Type.t) LlvmSymtable.t
 
     fun check e = Type.T_I1
+
+    fun check vtable (term: t) : Type.t =
+	let
+	  fun check_id id = raise Not_Implemented
+	  fun check_exp e =
+	      case e of
+		E_True => Type.T_I1
+	      | E_False => Type.T_I1
+	      | E_Undef => Type.T_Top
+	      | E_Zeroinit => Type.T_Top
+	      | E_String str => Type.T_Array { length = String.size str,
+					       ty = Type.T_I8 }
+	      | E_Stringz str => Type.T_Array { length = String.size str + 1,
+						ty = Type.T_I8 }
+	      | E_Int n => Type.smallest_int_type_fitting n
+	      | E_Float r => Type.smallest_real_type_fitting r
+	      | E_Null => Type.T_Pointer (Type.T_Top)
+	      | _ => raise Not_Implemented
+	in
+	  case term of
+	    V_Identifier id => check_id id
+	  | V_ConstExpr e => check_exp e
+	end
 
     fun coerce vtable (term: t) : Type.t -> Type.t =
 	let
@@ -869,9 +881,9 @@ struct
 		(fn ty =>
 		    let val len = String.size str
 		    in case ty of
-			 Type.T_Array {length = l,
-				       ty = Type.T_I8} =>
-			   if l = len then ty
+			 Type.T_Array {length = l, ty} =>
+			   if l = len andalso (Type.is_i 8 ty)
+			   then ty
 			   else raise TypeError ("Type mismatch on string")
 		       | _ => raise TypeError ("Type mismatch on string")
 		    end)
@@ -879,8 +891,8 @@ struct
 		(fn ty =>
 		    let val len = String.size str + 1
 		    in case ty of
-			 Type.T_Array {length, ty = Type.T_I8} =>
-			 if length = len then ty
+			 Type.T_Array {length, ty} =>
+			 if length = len andalso (Type.is_i 8 ty) then ty
 			   else raise TypeError ("Type mismatch on string")
 		       | _ => raise TypeError ("Type mismatch on string")
 		    end)
@@ -1486,6 +1498,7 @@ struct
 	| S_Unwind => vtable
 	| S_Unreachable => vtable
 	| _ => raise Not_Implemented
+
     local
 	fun con_binop binop ty ret op1 op2 = S_BinOp {binop = binop,
 						      ty = ty,
