@@ -5,7 +5,7 @@
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+   (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -684,6 +684,15 @@ struct
 		   check_exp ty val2;
 		   check_exp Type.T_I1 cond;
 		   ty)
+	      | (ty, E_ShuffleVector {vec1, vec2, idxmask}) =>
+		let
+		  val ty' = Type.T_Vector {length = Type.extract_size ty,
+					   ty = Type.T_I1}
+		in
+		  check_exp ty vec1;
+		  check_exp ty vec2;
+		  check_exp ty' idxmask
+		end
 	      (* TODO: E_Shufllevector *)
 	      | (ty as T_Array {length, ty = T_Integer 8}, E_String str) =>
 		if String.size str <> length
