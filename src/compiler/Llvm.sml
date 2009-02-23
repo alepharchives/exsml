@@ -604,7 +604,6 @@ struct
 				      target_ty: Type.t}
 		   | E_ExtractElem of {value: typed_value,
 				       idx: int}
-		   | E_False
 	           | E_Float of real
 		   | E_GetElementPtr of value * element_ptr_idx list
 		   | E_InsertElem  of {value: typed_value,
@@ -621,7 +620,6 @@ struct
 		   | E_String of string
 		   | E_Stringz of string
 		   | E_Struct of value list
-		   | E_True
 		   | E_Undef
 		   | E_Vector of typed_value list (* Perhaps merge with E_Array *)
 		   | E_Zeroinit
@@ -630,6 +628,11 @@ struct
     withtype typed_value = {value : value, ty : Type.t}
 
     type vtable = (Identifier.t, Type.t) LlvmSymtable.t
+
+    val E_true = E_Int 1
+    val E_false = E_Int 0
+    val E_typed_true = {ty = Type.T_I1, value = true}
+    val E_typed_false = {ty = Type.T_I1, value = false}
 
     fun check vtable (check_ty: Type.t) (term: t) : Type.t =
 	let
@@ -669,7 +672,6 @@ struct
 		 *
 		 * More reading is required ... *)
 		ty
-	      | (T_Integer 1, E_False) => T_I1
 	      | (T_Double, E_Float real) => T_Double
 	        (* TODO: Several other FP Types *)
 	      | (ty, E_GetElementPtr (exp, idx_list)) =>
@@ -730,7 +732,6 @@ struct
 		in
 		  check_struct ts es
 		end
-	      | (ty as T_Integer 1, T_True) => ty
 	      | (ty, E_Undef) => ty
 	      | (typ as T_Vector {length, ty = check_ty}, E_Vector elist) =>
 		let
@@ -773,7 +774,6 @@ struct
 				       parens (seq_space [output_exp exp, str "to", Type.output target_ty])]
 	      | E_ExtractElem {value, idx} =>
 		seq [str "extractelement", parens (commas [output_typed_exp value, integer idx])]
-	      | E_False => str "false"
 	      | E_Float r => real r
 	      | E_GetElementPtr (exp, indexes) =>
 		let
@@ -799,7 +799,6 @@ struct
 	      | E_String s => seq_space [str "\"", str s, str "\""]
 	      | E_Stringz s => str (s ^ "\000") (* Ugly, hopefully it is right *)
 	      | E_Struct ts => braces (commas (List.map output_exp ts))
-	      | E_True => str "true"
 	      | E_Undef => str "undef"
 	      | E_Vector el => vector (commas (List.map output_typed_exp el))
 	      | E_Zeroinit => str "zeroinitializer"
