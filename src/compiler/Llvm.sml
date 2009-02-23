@@ -595,67 +595,70 @@ struct
     type element_ptr_idx = {ty: Type.t,
 			    idx: int}
 
-    datatype exp = E_Array of exp list
-		 | E_Binop of {binop: Op.binop,
-			       lhs: exp,
-			       rhs: exp}
-		 | E_Conversion of {conversion: Op.conversion,
-				    exp: t,
-				    target_ty: Type.t}
-		 | E_ExtractElem of {value: exp,
-				     idx: int}
-		 | E_False
-	         | E_Float of real
-		 | E_GetElementPtr of exp * element_ptr_idx list
-
-		 | E_InsertElem  of {value: exp,
-				     elt: exp,
-				     idx: int}
-		 | E_Int of int
-		 | E_Null
-		 | E_Select of {cond: exp,
-				val1: exp,
-				val2: exp}
-		 | E_ShuffleVector of {vec1: exp,
-				       vec2: exp,
-				       idxmask: exp}
-		 | E_String of string
-		 | E_Stringz of string
-		 | E_Struct of exp list
-		 | E_True
-		 | E_Undef
-		 | E_Vector of exp list (* Perhaps merge with E_Array *)
-		 | E_Zeroinit
+    datatype value = E_Array of typed_value list
+		   | E_Binop of {binop: Op.binop,
+				 lhs: typed_value,
+				 rhs: typed_value}
+		   | E_Conversion of {conversion: Op.conversion,
+				      value: t,
+				      target_ty: Type.t}
+		   | E_ExtractElem of {value: typed_value,
+				       idx: int}
+		   | E_False
+	           | E_Float of real
+		   | E_GetElementPtr of value * element_ptr_idx list
+		   | E_InsertElem  of {value: typed_value,
+				       elt: typed_value,
+				       idx: int}
+		   | E_Int of int
+		   | E_Null
+		   | E_Select of {cond: typed_value, (* i1 or <N x i1> *)
+				  val1: typed_value,
+				  val2: typed_value}
+		   | E_ShuffleVector of {vec1: value,
+					 vec2: value,
+					 idxmask: value}
+		   | E_String of string
+		   | E_Stringz of string
+		   | E_Struct of value list
+		   | E_True
+		   | E_Undef
+		   | E_Vector of typed_value list (* Perhaps merge with E_Array *)
+		   | E_Zeroinit
     and t = V_Identifier of Identifier.t
-	  | V_ConstExpr of exp
+	  | V_ConstExpr of value
+    withtype typed_value = {value : value, ty : Type.t}
 
     type vtable = (Identifier.t, Type.t) LlvmSymtable.t
 
-    fun check vtable (ty: Type.t) (term: t) : Type.t =
+    fun check vtable (check_ty: Type.t) (term: t) : Type.t =
 	let
 	  fun check_id id = raise Not_Implemented
 	  open Type
-	  fun check_conversion conversion exp target_ty ty =
+	  fun check_conversion conversion value target_ty check_ty =
 	      target_ty (* TODO: Write this function *)
-	  fun check_exp (ty: Type.t) (e: exp) : Type.t =
+	  fun check_exp (ty : Type.t) (e : value) : Type.t =
 	      case (ty, e) of
 		(typ as T_Array {length, ty}, E_Array exp_list) =>
 		let
-		  fun sametype ty [] = typ
-		    | sametype ty (x :: xs) =
-		      (check_exp ty x;
-		       sametype ty xs)
+		  fun sametype _ [] = typ
+		    | sametype check_ty ({value, ty} :: xs) =
+		      if check_ty = ty then
+			(check_exp check_ty value;
+			 sametype check_ty xs)
+		      else
+			raise TypeError "Wrong type in array"
 		in
 		  if List.length exp_list <> length
 		  then raise TypeError "Array length/type length mismatch"
 		  else sametype ty exp_list
 		end
-	      | (ty, E_Binop {lhs, rhs, ...}) =>
+(*	      | (ty, E_Binop {lhs, rhs, ...}) =>
 		(check_exp ty lhs;
 		 check_exp ty rhs;
-		 ty)
-	      | (ty, E_Conversion {conversion, exp, target_ty}) =>
-		check_conversion conversion exp target_ty ty
+		 ty) *)
+	      | (ty, E_Conversion {conversion, value, target_ty}) =>
+		check_conversion conversion value target_ty ty
 	      | (ty, E_ExtractElem {value, idx}) =>
 		(* TODO: Punt this for now.
 		 * The problem with this call is that we do not
@@ -680,10 +683,24 @@ struct
 		else raise TypeError "Integer does not fit into type"
 	      | (T_Pointer ty, E_Null) => T_Pointer ty
 	      | (ty, E_Select {cond, val1, val2}) =>
-		  (check_exp ty val1;
-		   check_exp ty val2;
-		   check_exp Type.T_I1 cond;
-		   ty)
+		let
+		  val {value = val1_value, ty = val1_ty} = val1
+		  val {value = val2_value, ty = val2_ty} = val2
+		  val {value = cond_value, ty = cond_ty} = cond
+		in
+		  (* TODO: Assertions! *)
+		  if val1_ty = val2_ty
+		  then if val1_ty = ty
+		       then
+			 (check_exp ty val1_value;
+			  check_exp ty val2_value;
+			  check_exp Type.T_I1 cond_value;
+			  ty)
+		       else
+			 raise TypeError "Binop operand/return type mismatch"
+		  else
+		    raise TypeError "Binop types mismatch"
+		end
 	      | (ty, E_ShuffleVector {vec1, vec2, idxmask}) =>
 		let
 		  val ty' = Type.T_Vector {length = Type.extract_size ty,
@@ -715,12 +732,15 @@ struct
 		end
 	      | (ty as T_Integer 1, T_True) => ty
 	      | (ty, E_Undef) => ty
-	      | (typ as T_Vector {length, ty}, E_Vector elist) =>
+	      | (typ as T_Vector {length, ty = check_ty}, E_Vector elist) =>
 		let
 		  fun sametype [] = ()
-		    | sametype (e :: es) =
-		      (check_exp ty e;
-		       sametype es)
+		    | sametype ({value, ty} :: es) =
+		      if ty = check_ty then
+			(check_exp check_ty value;
+			 sametype es)
+		      else
+			raise TypeError "Vector type is wrong"
 		in
 		  if List.length elist <> length
 		  then raise TypeError "Vector arity mismatch"
@@ -733,59 +753,61 @@ struct
 	in
 	  case term of
 	    V_Identifier id => check_id id
-	  | V_ConstExpr e => check_exp ty e
+	  | V_ConstExpr value => check_exp check_ty value
 	end
 
-    local
-      open LlvmOutput
-    in
-      fun output_id id =
-	   Identifier.output id
-      fun output_exp exp =
-	  case exp of
-	    E_Array el => brackets (commas (List.map output_exp el))
-	  | E_Binop {binop, lhs, rhs} =>
-	    seq_space [Op.output_binop binop, parens (commas [output_exp lhs,
-							      output_exp rhs])]
-	  | E_Conversion {conversion, exp, target_ty} =>
-	    seq_space [Op.conversion_output conversion,
-		       parens (seq_space [output exp, str "to", Type.output target_ty])]
-	  | E_ExtractElem {value, idx} =>
-	    seq [str "extractelement", parens (commas [output_exp value, integer idx])]
-	  | E_False => str "false"
-	  | E_Float r => real r
-	  | E_GetElementPtr (exp, indexes) =>
-	    let
-	      fun output_idxs {ty, idx} = integer idx
-	    in
-	      seq [str "getelementptr", parens (commas
-						  [output_exp exp,
-						   commas (List.map output_idxs indexes)])]
-	    end
-	  | E_InsertElem {value, elt, idx} =>
-	    seq [str "insertelement", parens (commas [output_exp value,
-						      output_exp elt,
-						      integer idx])]
-	  | E_Int i => integer i
-	  | E_Null => str "null"
-	  | E_Select {cond, val1, val2} =>
-	    seq [str "select", parens (commas (List.map output_exp
-					         [cond, val1, val2]))]
-	  | E_ShuffleVector {vec1, vec2, idxmask} =>
-	    seq [str "shufflevector", parens (commas [output_exp vec1,
-						      output_exp vec2,
-						      output_exp idxmask])]
-	  | E_String s => seq_space [str "\"", str s, str "\""]
-	  | E_Stringz s => str (s ^ "\000") (* Ugly, hopefully it is right *)
-	  | E_Struct ts => braces (commas (List.map output_exp ts))
-	  | E_True => str "true"
-	  | E_Undef => str "undef"
-	  | E_Vector el => vector (commas (List.map output_exp el))
-	  | E_Zeroinit => str "zeroinitializer"
-
-      and output (V_ConstExpr exp) = output_exp exp
-	| output (V_Identifier id) = Identifier.output id
-    end
+    fun output (term : t) : LlvmOutput.t =
+	let
+	  open LlvmOutput
+	  fun output_typed_exp {ty, value} =
+	      seq_space [Type.output ty, output_exp value]
+	  and output_exp (exp : value) =
+	      case exp of
+		E_Array el => brackets (commas (List.map output_typed_exp el))
+	      | E_Binop {binop, lhs, rhs} =>
+		seq_space [Op.output_binop binop,
+			   parens (commas [output_typed_exp lhs,
+					   output_typed_exp rhs])]
+	      | E_Conversion {conversion, value, target_ty} =>
+			    seq_space [Op.conversion_output conversion,
+				       parens (seq_space [output_exp exp, str "to", Type.output target_ty])]
+	      | E_ExtractElem {value, idx} =>
+		seq [str "extractelement", parens (commas [output_typed_exp value, integer idx])]
+	      | E_False => str "false"
+	      | E_Float r => real r
+	      | E_GetElementPtr (exp, indexes) =>
+		let
+		  fun output_idxs {ty, idx} = integer idx
+		in
+		  seq [str "getelementptr", parens (commas
+						      [output_exp exp,
+						       commas (List.map output_idxs indexes)])]
+		end
+	      | E_InsertElem {value, elt, idx} =>
+		seq [str "insertelement", parens (commas [output_typed_exp value,
+							  output_typed_exp elt,
+							  integer idx])]
+	      | E_Int i => integer i
+	      | E_Null => str "null"
+	      | E_Select {cond, val1, val2} =>
+		seq [str "select", parens (commas (List.map output_typed_exp
+							    [cond, val1, val2]))]
+	      | E_ShuffleVector {vec1, vec2, idxmask} =>
+		seq [str "shufflevector", parens (commas [output_exp vec1,
+							  output_exp vec2,
+							  output_exp idxmask])]
+	      | E_String s => seq_space [str "\"", str s, str "\""]
+	      | E_Stringz s => str (s ^ "\000") (* Ugly, hopefully it is right *)
+	      | E_Struct ts => braces (commas (List.map output_exp ts))
+	      | E_True => str "true"
+	      | E_Undef => str "undef"
+	      | E_Vector el => vector (commas (List.map output_typed_exp el))
+	      | E_Zeroinit => str "zeroinitializer"
+	in
+	  case term of
+	    V_ConstExpr v => output_exp v
+	  | V_Identifier id => Identifier.output id
+	end
 
     fun is_constant (V_ConstExpr _) = true
       | is_constant _             = false
