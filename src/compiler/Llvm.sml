@@ -141,6 +141,27 @@ struct
     val T_I64 = T_Integer 64
     val T_I128 = T_Integer 128
 
+    fun bit_size ty =
+	let
+	  fun sum xs = List.foldr (op+) 0 xs
+	  fun float_sizes fty =
+	      case fty of
+		Float => 32
+	      | Double => 64
+	      | X86fp80 => 80
+	      | FP128 => 128
+	      | PPC_FP128 => 128
+	in
+	  (* TODO: Handle vectors and arrays etc *)
+	  case ty of
+	    T_Integer i => i
+	  | T_Real fty => float_sizes fty
+	  | T_Vector {length, ty} => length * (bit_size ty)
+	  | T_Array {length, ty} => length * (bit_size ty)
+	  | T_Struct ts => sum (List.map bit_size ts)
+	  | _ => raise (Internal_Error "Bit size called with somehting odd")
+	end
+
     local
       open LlvmOutput
     in
@@ -190,6 +211,21 @@ struct
 	   | T_Label => (str "label")
 	   | T_Top => raise (Internal_Error "T_Top is not valid for output")
     end
+
+    fun eq ty1 ty2 =
+	if ty1 <> ty2
+	then
+	  let
+	    val ty1_t = output ty1
+	    val ty2_t = output ty2
+	    val msg = LlvmOutput.seq_space [LlvmOutput.str "Type mismatch:",
+					    ty1_t,
+					    LlvmOutput.str "does not match",
+					    ty2_t]
+	  in
+	    raise TypeError (LlvmOutput.to_string msg)
+	  end
+	else ()
 
     (* Type checking helper code *)
     (* The datatype of type checking. Either a checking is ok, or it is wrong because
@@ -259,6 +295,9 @@ struct
     (* Checks constructed from combinators *)
     val assert_icmp = or assert_pointer (or assert_int (vectorized assert_int))
     val assert_fcmp = or assert_float (vectorized assert_float)
+    val assert_select_ty = or assert_bool (vectorized assert_bool)
+    val assert_int_float = or assert_int assert_float
+    val assert_float_vectorized = or assert_float (vectorized assert_float)
 
     fun extract_size ty =
 	case ty of
@@ -293,33 +332,6 @@ struct
 
     fun assert_sized ty = () (* TODO: Only accept type with specified sizes *)
 
-    fun assert_select_ty ty =
-	case ty of
-	  T_Integer 1 => true
-	| T_Vector {ty = T_I1, ...} => true
-	| _ => false
-
-
-    fun assert_int_float ty =
-	(assert_int ty;
-	 assert_float ty)
-
-
-    fun assert_float_or_vec ty = run (or assert_float (vectorized assert_float))
-
-    fun assert_both_vec_or_scalar x y =
-	let
-	  fun is_vector_or_scalar x y =
-	      case (x, y) of
-		(T_Vector _, T_Vector _) => true
-	      | (T_Vector _, _) => false
-	      | (_, T_Vector _) => false
-	      | _ => true
-	in
-	  if is_vector_or_scalar x y then ()
-	  else raise TypeError "Types are not both vectors or scalars"
-	end
-
     fun assert_first_class ty =
 	if is_first_class ty then ()
 	else raise TypeError "Type is not of first class type"
@@ -327,26 +339,6 @@ struct
     fun assert_first_class_lst args =
 	List.app assert_first_class args
 
-    fun bit_size ty =
-	let
-	  fun sum xs = List.foldr (op+) 0 xs
-	  fun float_sizes fty =
-	      case fty of
-		Float => 32
-	      | Double => 64
-	      | X86fp80 => 80
-	      | FP128 => 128
-	      | PPC_FP128 => 128
-	in
-	  (* TODO: Handle vectors and arrays etc *)
-	  case ty of
-	    T_Integer i => i
-	  | T_Real fty => float_sizes fty
-	  | T_Vector {length, ty} => length * (bit_size ty)
-	  | T_Array {length, ty} => length * (bit_size ty)
-	  | T_Struct ts => sum (List.map bit_size ts)
-	  | _ => raise (Internal_Error "Bit size called with somehting odd")
-	end
 
     fun is_int_range_valid bits integer =
 	  bits >= bit_size integer
@@ -366,21 +358,6 @@ struct
 
     val assert_float_size_gt = assert_int_size_gt
 
-
-    fun assert_eq ty1 ty2 =
-	if ty1 <> ty2
-	then
-	  let
-	    val ty1_t = output ty1
-	    val ty2_t = output ty2
-	    val msg = LlvmOutput.seq_space [LlvmOutput.str "Type mismatch:",
-					    ty1_t,
-					    LlvmOutput.str "does not match",
-					    ty2_t]
-	  in
-	    raise TypeError (LlvmOutput.to_string msg)
-	  end
-	else ()
   end
 
   structure CallConv =
@@ -620,7 +597,7 @@ struct
 		let
 		  fun sametype [] = typ
 		    | sametype ((x as {value, ty}) :: xs) =
-		      (assert_eq ty base_ty;
+		      (Type.eq ty base_ty;
 		       check_exp x;
 		       sametype xs)
 		in
@@ -1054,7 +1031,7 @@ struct
           *)
 	  (Type.assert_vector ty;
 	   Value.check vtable ty value;
-	   Type.assert_eq (Type.extract_base ty) elem_ty;
+	   Type.eq (Type.extract_base ty) elem_ty;
 	   Value.check vtable elem_ty elem_value;
 	   Value.check vtable Type.T_I32 idx;
 	   vtable)
@@ -1083,7 +1060,7 @@ struct
 	    val mask_ty = Type.T_Vector {length = mask_len, ty = Type.T_I32}
 	    val mask_ty' = Value.check vtable mask_ty mask
 	  in
-	    Type.assert_eq v1_ty' v2_ty';
+	    Type.eq v1_ty' v2_ty';
 	    LlvmSymtable.enter result v1_ty' vtable
 	  end
 	| S_ExtractValue {result, ty, value, idxs} =>
@@ -1109,7 +1086,7 @@ struct
 	    val elem_ty' = Value.check vtable elem_ty elem_value
 	  in
 	    Value.check vtable Type.T_I32 idx;
-	    Type.assert_eq (Type.extract_base ty') elem_ty';
+	    Type.eq (Type.extract_base ty') elem_ty';
 	    vtable
 	  end
 	| S_Phi {result, ty, predecs} =>
