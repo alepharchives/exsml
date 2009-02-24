@@ -758,18 +758,18 @@ struct
 	      | (ty, E_Undef) => ty
 	      | (typ as Type.T_Vector {length, ty = check_ty}, E_Vector elist) =>
 		let
-		  fun sametype [] = ()
-		    | sametype ({value, ty} :: es) =
-		      if ty = check_ty then
-			(check_exp { ty = check_ty, value = value};
-			 sametype es)
-		      else
-			raise TypeError "Vector type is wrong"
+		  fun sametype [] = typ
+		    | sametype (e :: es) =
+		      let
+			val e_ty = check_exp e
+		      in
+			Type.eq check_ty e_ty;
+			sametype es
+		      end
 		in
 		  if List.length elist <> length
 		  then raise TypeError "Vector arity mismatch"
-		  else (sametype elist;
-			typ)
+		  else sametype elist
 		end
 	      | (ty, E_Zeroinit) => ty
 	      | (ty, exp) =>
