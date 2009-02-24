@@ -102,11 +102,12 @@ struct
 
   structure Type =
   struct
+    datatype float_ty = Float | Double | X86fp80 | FP128 | PPC_FP128
     datatype t =
 	     (* Integer types *)
 	     T_Integer of int
              (* Floating Point types *)
-	   | T_Float | T_Double | T_X86fp80 | T_FP128 | T_PPC_FP128
+	   | T_Real of float_ty
              (* Function types *)
 	   | T_Fun of {return: t,
 		       params: t list}
@@ -143,14 +144,18 @@ struct
     local
       open LlvmOutput
     in
+      fun output_float_ty fty =
+	  case fty of
+	    Float => (str "float")
+	  | Double => (str "double")
+	  | X86fp80 => (str "x86fp80")
+	  | FP128 => (str "fp128")
+	  | PPC_FP128 => (str "ppc_fp128")
+
       fun output ty : LlvmOutput.t =
 	  case ty of
 	    T_Integer i => (conc [str "i", integer i])
-	  | T_Float => (str "float")
-	  | T_Double => (str "double")
-	  | T_X86fp80 => (str "x86fp80")
-	  | T_FP128 => (str "fp128")
-	  | T_PPC_FP128 => (str "ppc_fp128")
+	  | T_Real fty => output_float_ty fty
 	  | T_Fun {return, params} =>
 	    let
 	      val r_t = output return
@@ -192,26 +197,16 @@ struct
 	| T_Vector {length, ...} => length
 	| _ => raise Internal_Error "Extracting from a nen-extractible"
 
-
-    fun is_float ty =
-	case ty of
-	  T_Float => true
-	| T_Double => true
-	| T_X86fp80 => true
-	| T_FP128 => true
-	| T_PPC_FP128 => true
-	| _ => false
-
     fun is_first_class ty =
-	is_float ty orelse
-	(case ty of
+	case ty of
 	   T_Pointer ty' => is_first_class ty'
 	 | T_Vector {ty, ...} => is_first_class ty
 	 | T_Struct ts => List.all is_first_class ts
 	 | T_Array {ty, ...} => is_first_class ty
 	 | T_Integer _ => true
+	 | T_Real _ => true
 	 | T_Label => true
-	 | _ => false)
+	 | _ => false
 
     fun int_fits_in n k =
 	let
@@ -254,12 +249,16 @@ struct
 
     fun is_float_vector ty =
 	case ty of
-	  T_Vector {length, ty} => is_float ty
+	  T_Vector {length, ty = T_Real _} => true
 	| _ => false
 
     fun is_int_float_vector ty =
 	case ty of
-	  T_Vector {length, ty} => is_int ty orelse is_float ty
+	  T_Vector {length, ty} =>
+	  (case ty of
+	     T_Integer _ => true
+	   | T_Real _ => true
+	   | _ => false)
 	| _ => false
 
     fun is_vector ty =
@@ -293,16 +292,13 @@ struct
 	else raise TypeError "Type is not of integer type."
 
     fun assert_float ty =
-	if is_float ty then ()
-	else raise TypeError "Float type expected."
+	case ty of
+	  T_Real _ => ()
+	| _ => raise TypeError "Float type expected."
 
     fun assert_int_float ty =
-	if is_int ty orelse is_float ty then ()
-	else raise TypeError "Number expected."
-
-    fun assert_float_or_vec ty =
-	if is_float ty orelse is_float_vector ty then ()
-	else raise TypeError "Not Float Scalar nor Vector"
+	(assert_int ty;
+	 assert_float ty)
 
     fun assert_int_or_vec ty =
 	if is_int ty orelse is_int_vector ty then ()
@@ -316,6 +312,9 @@ struct
 	if is_float_vector ty then ()
 	else raise TypeError "Type is not a float vector type"
 
+    fun assert_float_or_vec ty =
+	assert_float ty handle TypeError _ => assert_float_vector ty
+
     fun assert_int_vector ty =
 	if is_int_vector ty then ()
 	else raise TypeError "Type is not a float vector type"
@@ -323,12 +322,6 @@ struct
     fun assert_icmp ty =
 	if is_icmp ty then ()
 	else raise TypeError "Type is not of Icmp Type"
-
-    fun assert_fcmp ty =
-	if is_float ty orelse is_float_vector ty then ()
-	else raise TypeError "Type is not of fcmp type."
-
-
 
     fun assert_both_vec_or_scalar x y =
 	let
@@ -353,15 +346,18 @@ struct
     fun bit_size ty =
 	let
 	  fun sum xs = List.foldr (op+) 0 xs
+	  fun float_sizes fty =
+	      case fty of
+		Float => 32
+	      | Double => 64
+	      | X86fp80 => 80
+	      | FP128 => 128
+	      | PPC_FP128 => 128
 	in
 	  (* TODO: Handle vectors and arrays etc *)
 	  case ty of
 	    T_Integer i => i
-	  | T_Float => 32
-	  | T_Double => 64
-	  | T_X86fp80 => 80
-	  | T_FP128 => 128
-	  | T_PPC_FP128 => 128
+	  | T_Real fty => float_sizes fty
 	  | T_Vector {length, ty} => length * (bit_size ty)
 	  | T_Array {length, ty} => length * (bit_size ty)
 	  | T_Struct ts => sum (List.map bit_size ts)
@@ -1256,7 +1252,8 @@ struct
 	    val ty' = Value.check vtable ty lhs
 	    val ty'' = Value.check vtable ty' rhs
 	  in
-	    Type.assert_fcmp ty'';
+	    (* TODO: Fix this part *)
+(*	    Type.assert_fcmp ty''; *)
 	    LlvmSymtable.enter
 	      result
 	      (if Type.is_vector ty''
