@@ -140,12 +140,79 @@ struct
     val T_I64 = T_Integer 64
     val T_I128 = T_Integer 128
 
-    fun is_ptr ty =
+    local
+      open LlvmOutput
+    in
+      fun output ty : LlvmOutput.t =
+	  case ty of
+	    T_Integer i => (conc [str "i", integer i])
+	  | T_Float => (str "float")
+	  | T_Double => (str "double")
+	  | T_X86fp80 => (str "x86fp80")
+	  | T_FP128 => (str "fp128")
+	  | T_PPC_FP128 => (str "ppc_fp128")
+	  | T_Fun {return, params} =>
+	    let
+	      val r_t = output return
+	      val params_t = conc (List.map output params)
+	    in
+	      seq_space [r_t, parens params_t]
+	    end
+	  | T_FunVarArg {return, params} =>
+	    let
+	      val r_t = output return
+	      val params_t = conc (List.map output params)
+	    in
+	      seq_space [r_t, parens (conc [params_t, str "..."])]
+	    end
+	   | T_Struct elements =>
+	     braces (conc (List.map output elements))
+	   | T_PackedStruct elements =>
+	     sorround (str "< {") (str "} >")
+		      (conc (List.map output elements))
+	   | T_Array {ty, length} =>
+	     brackets (conc [integer length, str " x ", output ty])
+	   | T_Pointer ty => conc [output ty, str " *"]
+	   | T_QualifiedPointer {ty, address_space} =>
+	       conc [output ty,
+		     str " addrspace(", integer address_space, str ")"]
+	   | T_Vector {ty, length} =>
+	     sorround (str "< ") (str " >")
+		      (conc [integer length, str " x ",
+			     output ty])
+	   | T_Opaque => (str "opaque")
+	   | T_Void => (str "void")
+	   | T_Label => (str "label")
+	   | T_Top => raise (Internal_Error "T_Top is not valid for output")
+    end
+
+    fun extract_size ty =
 	case ty of
-	  T_Pointer _ => true
+	  T_Array {length, ...} => length
+	| T_Vector {length, ...} => length
+	| _ => raise Internal_Error "Extracting from a nen-extractible"
+
+
+    fun is_float ty =
+	case ty of
+	  T_Float => true
+	| T_Double => true
+	| T_X86fp80 => true
+	| T_FP128 => true
+	| T_PPC_FP128 => true
 	| _ => false
 
-    (* TODO: Test this *)
+    fun is_first_class ty =
+	is_float ty orelse
+	(case ty of
+	   T_Pointer ty' => is_first_class ty'
+	 | T_Vector {ty, ...} => is_first_class ty
+	 | T_Struct ts => List.all is_first_class ts
+	 | T_Array {ty, ...} => is_first_class ty
+	 | T_Integer _ => true
+	 | T_Label => true
+	 | _ => false)
+
     fun int_fits_in n k =
 	let
 	  fun pow2 (0, i) = i
@@ -154,6 +221,10 @@ struct
 	  n <= pow2 (k, 1)
 	end
 
+    fun is_ptr ty =
+	case ty of
+	  T_Pointer _ => true
+	| _ => false
 
     fun is_struct_type ty =
 	case ty of
@@ -170,15 +241,6 @@ struct
 	  T_Integer n => true
 	| _ => false
 
-
-    fun is_float ty =
-	case ty of
-	  T_Float => true
-	| T_Double => true
-	| T_X86fp80 => true
-	| T_FP128 => true
-	| T_PPC_FP128 => true
-	| _ => false
 
     fun is_array_type ty =
 	case ty of
@@ -267,21 +329,6 @@ struct
 	else raise TypeError "Type is not of fcmp type."
 
 
-    fun extract_size ty =
-	case ty of
-	  T_Array {length, ...} => length
-	| T_Vector {length, ...} => length
-	| _ => raise Internal_Error "Extracting from a nen-extractible"
-
-    fun is_first_class ty =
-	is_int ty orelse is_float ty orelse
-	(case ty of
-	   T_Pointer ty' => is_first_class ty'
-	 | T_Vector {ty, ...} => is_first_class ty
-	 | T_Struct ts => List.all is_first_class ts
-	 | T_Array {ty, ...} => is_first_class ty
-	 | T_Label => true
-	 | _ => false)
 
     fun assert_both_vec_or_scalar x y =
 	let
@@ -339,51 +386,6 @@ struct
 
     val assert_float_size_gt = assert_int_size_gt
 
-    local
-      open LlvmOutput
-    in
-      fun output ty : LlvmOutput.t =
-	  case ty of
-	    T_Integer i => (conc [str "i", integer i])
-	  | T_Float => (str "float")
-	  | T_Double => (str "double")
-	  | T_X86fp80 => (str "x86fp80")
-	  | T_FP128 => (str "fp128")
-	  | T_PPC_FP128 => (str "ppc_fp128")
-	  | T_Fun {return, params} =>
-	    let
-	      val r_t = output return
-	      val params_t = conc (List.map output params)
-	    in
-	      seq_space [r_t, parens params_t]
-	    end
-	  | T_FunVarArg {return, params} =>
-	    let
-	      val r_t = output return
-	      val params_t = conc (List.map output params)
-	    in
-	      seq_space [r_t, parens (conc [params_t, str "..."])]
-	    end
-	   | T_Struct elements =>
-	     braces (conc (List.map output elements))
-	   | T_PackedStruct elements =>
-	     sorround (str "< {") (str "} >")
-		      (conc (List.map output elements))
-	   | T_Array {ty, length} =>
-	     brackets (conc [integer length, str " x ", output ty])
-	   | T_Pointer ty => conc [output ty, str " *"]
-	   | T_QualifiedPointer {ty, address_space} =>
-	       conc [output ty,
-		     str " addrspace(", integer address_space, str ")"]
-	   | T_Vector {ty, length} =>
-	     sorround (str "< ") (str " >")
-		      (conc [integer length, str " x ",
-			     output ty])
-	   | T_Opaque => (str "opaque")
-	   | T_Void => (str "void")
-	   | T_Label => (str "label")
-	   | T_Top => raise (Internal_Error "T_Top is not valid for output")
-    end
 
     fun assert_eq ty1 ty2 =
 	if ty1 <> ty2
@@ -399,22 +401,6 @@ struct
 	    raise TypeError (LlvmOutput.to_string msg)
 	  end
 	else ()
-
-    fun coercion_error ty_s ty_d =
-	TypeError "Coercion error. FIXME: Print out coercion problem"
-
-    (* Type coercion: We are given two types and need to coerce them into
-     * being equal types. That is, we need to make sure that the two types
-     * are matching, and to generalize the result as much as possible. *)
-    (* TODO: Update this function *)
-    fun coerce ty_src ty_dst =
-	(* Try to coerce something of value ty_src into something of value ty_dst *)
-	case (ty_src, ty_dst) of
-	  (T_Integer i, T_Integer k) =>
-	  if i <= k
-	  then T_Integer k
-	  else raise (coercion_error (T_Integer i) (T_Integer k))
-	| (ty_src, ty_dst) => raise (coercion_error ty_src ty_dst)
   end
 
   structure CallConv =
