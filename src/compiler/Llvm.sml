@@ -630,14 +630,14 @@ struct
 	  open Type
 	  fun check_conversion conversion value target_ty check_ty =
 	      target_ty (* TODO: Write this function *)
-	  fun check_exp (ty : Type.t) (e : value) : Type.t =
-	      case (ty, e) of
+	  fun check_exp {ty, value}: Type.t =
+	      case (ty, value) of
 		(typ as T_Array {length, ty = base_ty}, E_Array exp_list) =>
 		let
 		  fun sametype [] = typ
 		    | sametype ({value, ty} :: xs) =
 		      (assert_eq ty base_ty;
-		       check_exp ty value;
+		       check_exp {ty = ty, value = value};
 		       sametype xs)
 		in
 		  if List.length exp_list <> length
@@ -682,9 +682,9 @@ struct
 		  if val1_ty = val2_ty
 		  then if val1_ty = ty
 		       then
-			 (check_exp ty val1_value;
-			  check_exp ty val2_value;
-			  check_exp Type.T_I1 cond_value;
+			 (check_exp {ty = ty, value = val1_value};
+			  check_exp {ty = ty, value = val2_value};
+			  check_exp {ty = Type.T_I1, value = cond_value};
 			  ty)
 		       else
 			 raise TypeError "Binop operand/return type mismatch"
@@ -696,9 +696,9 @@ struct
 		  val ty' = Type.T_Vector {length = Type.extract_size ty,
 					   ty = Type.T_I1}
 		in
-		  check_exp ty vec1;
-		  check_exp ty vec2;
-		  check_exp ty' idxmask
+		  check_exp {ty = ty, value = vec1};
+		  check_exp {ty = ty, value = vec2};
+		  check_exp {ty = ty', value = idxmask}
 		end
 	      (* TODO: E_Shufllevector *)
 	      | (ty as T_Array {length, ty = T_Integer 8}, E_String str) =>
@@ -713,7 +713,7 @@ struct
 		let
 		  fun check_struct [] [] = T_Struct ts
 		    | check_struct (t::ts) (e::es) =
-		      (check_exp t e;
+		      (check_exp {ty = t, value = e};
 		       check_struct ts es)
 		    | check_struct _ _ =
 		      raise TypeError "Type/Exp len mismatch in struct"
@@ -726,7 +726,7 @@ struct
 		  fun sametype [] = ()
 		    | sametype ({value, ty} :: es) =
 		      if ty = check_ty then
-			(check_exp check_ty value;
+			(check_exp { ty = check_ty, value = value};
 			 sametype es)
 		      else
 			raise TypeError "Vector type is wrong"
@@ -742,7 +742,7 @@ struct
 	in
 	  case term of
 	    V_Identifier id => check_id id
-	  | V_ConstExpr value => check_exp check_ty value
+	  | V_ConstExpr value => check_exp {ty = check_ty, value = value }
 	end
 
     fun output (term : t) : LlvmOutput.t =
