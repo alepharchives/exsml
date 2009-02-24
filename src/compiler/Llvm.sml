@@ -630,20 +630,27 @@ struct
 	  open Type
 	  fun check_conversion conversion value target_ty check_ty =
 	      target_ty (* TODO: Write this function *)
-	  fun check_exp {ty, value}: Type.t =
+	  fun check_exp {ty, value} =
 	      case (ty, value) of
 		(typ as T_Array {length, ty = base_ty}, E_Array exp_list) =>
 		let
 		  fun sametype [] = typ
-		    | sametype ({value, ty} :: xs) =
+		    | sametype ((x as {value, ty}) :: xs) =
 		      (assert_eq ty base_ty;
-		       check_exp {ty = ty, value = value};
+		       check_exp x;
 		       sametype xs)
 		in
 		  if List.length exp_list <> length
 		  then raise TypeError "Array length/type length mismatch"
 		  else sametype exp_list
 		end
+(*	      | (ty, E_Binop {lhs, rhs, ...}) =>
+		let
+		  val ty1 = check_exp lhs
+		  val ty2 = check_exp rhs
+		in
+		  assert_eq ty1 ty2;
+*)		  
 (*	      | (ty, E_Binop {lhs, rhs, ...}) =>
 		(check_exp ty lhs;
 		 check_exp ty rhs;
