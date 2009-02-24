@@ -154,17 +154,6 @@ struct
 	  n <= pow2 (k, 1)
 	end
 
-    fun assert_ptr ty =
-	if is_ptr ty then ()
-	else raise TypeError "Type is not of pointer type."
-
-    fun assert_sized ty = () (* TODO: Only accept type with specified sizes *)
-
-    fun assert_select_ty ty =
-	case ty of
-	  T_Integer 1 => true
-	| T_Vector {ty = T_I1, ...} => true
-	| _ => false
 
     fun is_struct_type ty =
 	case ty of
@@ -181,9 +170,6 @@ struct
 	  T_Integer n => true
 	| _ => false
 
-    fun assert_int ty =
-	if is_int ty then ()
-	else raise TypeError "Type is not of integer type."
 
     fun is_float ty =
 	case ty of
@@ -193,14 +179,6 @@ struct
 	| T_FP128 => true
 	| T_PPC_FP128 => true
 	| _ => false
-
-    fun assert_float ty =
-	if is_float ty then ()
-	else raise TypeError "Float type expected."
-
-    fun assert_int_float ty =
-	if is_int ty orelse is_float ty then ()
-	else raise TypeError "Number expected."
 
     fun is_array_type ty =
 	case ty of
@@ -217,14 +195,6 @@ struct
 	  T_Vector {length, ty} => is_float ty
 	| _ => false
 
-    fun assert_float_or_vec ty =
-	if is_float ty orelse is_float_vector ty then ()
-	else raise TypeError "Not Float Scalar nor Vector"
-
-    fun assert_int_or_vec ty =
-	if is_int ty orelse is_int_vector ty then ()
-	else raise TypeError "Not Int Scalar nor Vector"
-
     fun is_int_float_vector ty =
 	case ty of
 	  T_Vector {length, ty} => is_int ty orelse is_float ty
@@ -234,6 +204,47 @@ struct
 	case ty of
 	  T_Vector _ => true
 	| _ => false
+
+    fun is_icmp ty =
+	is_int_vector ty orelse is_int ty orelse is_ptr ty
+
+    fun extract_base ty =
+	case ty of
+	  T_Array {ty, ...} => ty
+	| T_Vector {ty, ...} => ty
+	| _ => raise Internal_Error "Extracting from a non-extractible"
+
+    fun assert_ptr ty =
+	if is_ptr ty then ()
+	else raise TypeError "Type is not of pointer type."
+
+    fun assert_sized ty = () (* TODO: Only accept type with specified sizes *)
+
+    fun assert_select_ty ty =
+	case ty of
+	  T_Integer 1 => true
+	| T_Vector {ty = T_I1, ...} => true
+	| _ => false
+
+    fun assert_int ty =
+	if is_int ty then ()
+	else raise TypeError "Type is not of integer type."
+
+    fun assert_float ty =
+	if is_float ty then ()
+	else raise TypeError "Float type expected."
+
+    fun assert_int_float ty =
+	if is_int ty orelse is_float ty then ()
+	else raise TypeError "Number expected."
+
+    fun assert_float_or_vec ty =
+	if is_float ty orelse is_float_vector ty then ()
+	else raise TypeError "Not Float Scalar nor Vector"
+
+    fun assert_int_or_vec ty =
+	if is_int ty orelse is_int_vector ty then ()
+	else raise TypeError "Not Int Scalar nor Vector"
 
     fun assert_vector ty =
 	if is_vector ty then ()
@@ -247,9 +258,6 @@ struct
 	if is_int_vector ty then ()
 	else raise TypeError "Type is not a float vector type"
 
-    fun is_icmp ty =
-	is_int_vector ty orelse is_int ty orelse is_ptr ty
-
     fun assert_icmp ty =
 	if is_icmp ty then ()
 	else raise TypeError "Type is not of Icmp Type"
@@ -258,21 +266,6 @@ struct
 	if is_float ty orelse is_float_vector ty then ()
 	else raise TypeError "Type is not of fcmp type."
 
-    fun extract_base ty =
-	case ty of
-	  T_Array {ty, ...} => ty
-	| T_Vector {ty, ...} => ty
-	| _ => raise Internal_Error "Extracting from a non-extractible"
-
-
-    (* TODO: Consider fixing assert_eq
-     * Rather than having assert_eq assert raw equality, it could
-     * try a type unification instead where it will attempt to coerce the
-     * two values *)
-    fun assert_eq ty1 ty2 =
-	if ty1 <> ty2
-	then raise TypeError "Types must be equal."
-	else ()
 
     fun extract_size ty =
 	case ty of
@@ -391,6 +384,21 @@ struct
 	   | T_Label => (str "label")
 	   | T_Top => raise (Internal_Error "T_Top is not valid for output")
     end
+
+    fun assert_eq ty1 ty2 =
+	if ty1 <> ty2
+	then
+	  let
+	    val ty1_t = output ty1
+	    val ty2_t = output ty2
+	    val msg = LlvmOutput.seq_space [LlvmOutput.str "Type mismatch:",
+					    ty1_t,
+					    LlvmOutput.str "does not match",
+					    ty2_t]
+	  in
+	    raise TypeError (LlvmOutput.to_string msg)
+	  end
+	else ()
 
     fun coercion_error ty_s ty_d =
 	TypeError "Coercion error. FIXME: Print out coercion problem"
