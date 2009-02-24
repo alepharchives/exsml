@@ -280,20 +280,9 @@ struct
 	  T_Struct _ => true
 	| _ => false
 
-    fun is_i n ty =
-	case ty of
-	  T_Integer n => true
-	| _ => false
-
-
     fun is_array_type ty =
 	case ty of
 	  T_Array _ => true
-	| _ => false
-
-    fun is_float_vector ty =
-	case ty of
-	  T_Vector {length, ty = T_Real _} => true
 	| _ => false
 
     fun is_int_float_vector ty =
@@ -334,9 +323,6 @@ struct
 	if is_vector ty then ()
 	else raise TypeError "Type is not of vector type"
 
-    fun assert_float_vector ty =
-	if is_float_vector ty then ()
-	else raise TypeError "Type is not a float vector type"
 
     fun assert_float_or_vec ty = run (or assert_float (vectorized assert_float))
 
@@ -1312,8 +1298,9 @@ struct
 	  let
 	    val ty' = Value.check vtable ty lhs
 	    val ty'' = Value.check vtable ty' rhs
+	    open Type
 	  in
-	    Type.assert_float_vector ty;
+	    run (vectorized assert_float) ty;
 	    LlvmSymtable.enter result ty'' vtable
 	  end
 	| S_Seq instructions =>
