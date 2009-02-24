@@ -230,10 +230,25 @@ struct
 	  T_Integer _ => Ok
 	| _ => type_fail "Type is not of integer type."
 
+    fun assert_int_sized n ty =
+	case ty of
+	  T_Integer k => if k = n then Ok else type_fail "Integer size mismatch"
+	| _ => type_fail "Type is not of integer type."
+
+    fun assert_bool ty = assert_int_sized 1 ty
+
     fun assert_float ty =
 	case ty of
 	  T_Real _ => Ok
 	| _ => type_fail "Type is not of real type"
+    
+    fun assert_pointer ty =
+	case ty of
+	  T_Pointer _ => Ok
+	| _ => type_fail "Type is not of pointer type"
+
+    (* Checks constructed from combinators *)
+    val assert_icmp = or assert_pointer (or assert_bool (vectorized assert_bool))
 
     fun extract_size ty =
 	case ty of
@@ -270,11 +285,6 @@ struct
 	  T_Struct _ => true
 	| _ => false
 
-    fun is_int ty =
-	case ty of
-	  T_Integer _ => true
-	| _ => false
-
     fun is_i n ty =
 	case ty of
 	  T_Integer n => true
@@ -284,11 +294,6 @@ struct
     fun is_array_type ty =
 	case ty of
 	  T_Array _ => true
-	| _ => false
-
-    fun is_int_vector ty =
-	case ty of
-	  T_Vector {length, ty} => is_int ty
 	| _ => false
 
     fun is_float_vector ty =
@@ -309,9 +314,6 @@ struct
 	case ty of
 	  T_Vector _ => true
 	| _ => false
-
-    fun is_icmp ty =
-	is_int_vector ty orelse is_int ty orelse is_ptr ty
 
     fun extract_base ty =
 	case ty of
@@ -336,9 +338,6 @@ struct
 	(assert_int ty;
 	 assert_float ty)
 
-    fun assert_int_or_vec ty =
-	if is_int ty orelse is_int_vector ty then ()
-	else raise TypeError "Not Int Scalar nor Vector"
 
     fun assert_vector ty =
 	if is_vector ty then ()
@@ -348,16 +347,7 @@ struct
 	if is_float_vector ty then ()
 	else raise TypeError "Type is not a float vector type"
 
-    fun assert_float_or_vec ty =
-	run (or assert_float (vectorized assert_float))
-
-    fun assert_int_vector ty =
-	if is_int_vector ty then ()
-	else raise TypeError "Type is not a float vector type"
-
-    fun assert_icmp ty =
-	if is_icmp ty then ()
-	else raise TypeError "Type is not of Icmp Type"
+    fun assert_float_or_vec ty = run (or assert_float (vectorized assert_float))
 
     fun assert_both_vec_or_scalar x y =
 	let
@@ -1217,8 +1207,9 @@ struct
 	  let
 	    val ty' = Value.check vtable ty lhs
 	    val ty'' = Value.check vtable ty' rhs
+	    open Type
 	  in
-	    Type.assert_icmp ty'';
+	    run assert_icmp ty'';
 	    LlvmSymtable.enter
 	      result
 	      (if Type.is_vector ty''
@@ -1316,8 +1307,9 @@ struct
           let
 	    val ty' = Value.check vtable ty lhs
 	    val ty'' = Value.check vtable ty' rhs
+	    open Type
 	  in
-	    Type.assert_int_vector ty;
+	    run (vectorized assert_int) ty;
 	    LlvmSymtable.enter result ty'' vtable
 	  end
 	| S_VFcmp {result, cond, ty, lhs, rhs} =>
