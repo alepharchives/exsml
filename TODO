@@ -1,0 +1,13 @@
+TODO List for Mosml-llvm
+
+* Write the type checker for LLVM function calls.
+   This will take some time, but it is doable with some hard work.
+   You just need to be aware of the little details in the game.
+* Begin figuring out how to fix, mix, and match Lambda with LLVM
+* Get benchmarks from MLton added
+* Get the test suite from MLton added
+* We need a way to run regressions
+* Lambda seems to be compilable down to code
+* Check the ocaml system. Code and documentation!
+* Upgrade make system and fix it.
+
