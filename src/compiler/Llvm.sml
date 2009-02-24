@@ -632,19 +632,17 @@ struct
 	      target_ty (* TODO: Write this function *)
 	  fun check_exp (ty : Type.t) (e : value) : Type.t =
 	      case (ty, e) of
-		(typ as T_Array {length, ty}, E_Array exp_list) =>
+		(typ as T_Array {length, ty = base_ty}, E_Array exp_list) =>
 		let
-		  fun sametype _ [] = typ
-		    | sametype check_ty ({value, ty} :: xs) =
-		      if check_ty = ty then
-			(check_exp check_ty value;
-			 sametype check_ty xs)
-		      else
-			raise TypeError "Wrong type in array"
+		  fun sametype [] = typ
+		    | sametype ({value, ty} :: xs) =
+		      (assert_eq ty base_ty;
+		       check_exp ty value;
+		       sametype xs)
 		in
 		  if List.length exp_list <> length
 		  then raise TypeError "Array length/type length mismatch"
-		  else sametype ty exp_list
+		  else sametype exp_list
 		end
 (*	      | (ty, E_Binop {lhs, rhs, ...}) =>
 		(check_exp ty lhs;
