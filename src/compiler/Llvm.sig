@@ -75,10 +75,10 @@ structure Type :
             (* Return the number of bits a given type takes. Not implemented for all types,
 	     * but for those where it makes sense *)
 
-	    val 'a run : ('a -> t_check) -> 'a -> unit
+	    val run : (t -> t_check) -> t -> unit
 
 	    val assert_pointer : t -> t_check
-	    val assert_vector : t -> unit
+	    val assert_vector : t -> t_check
             (* Predicates for matching certain type structure *)
 
 	    val output : t -> LlvmOutput.t

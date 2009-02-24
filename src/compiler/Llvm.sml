@@ -210,6 +210,11 @@ struct
 	    raise TypeError (to_string msg)
 	  end
 
+    (* Run a typecheck, but convert it into a boolean *)
+    fun run_bool checker_fun ty =
+	(run checker_fun ty;
+	 true) handle TypeError _ => false
+
     (* Logical or for types, consider monadizing *)
     fun or checker1 checker2 ty =
 	case checker1 ty of
@@ -247,8 +252,13 @@ struct
 	  T_Pointer _ => Ok
 	| _ => type_fail "Type is not of pointer type"
 
+    fun assert_vector ty = case ty of
+			     T_Vector _ => Ok
+			   | _ => type_fail "Type is not of vector type"
+
     (* Checks constructed from combinators *)
-    val assert_icmp = or assert_pointer (or assert_bool (vectorized assert_bool))
+    val assert_icmp = or assert_pointer (or assert_int (vectorized assert_int))
+    val assert_fcmp = or assert_float (vectorized assert_float)
 
     fun extract_size ty =
 	case ty of
@@ -275,30 +285,6 @@ struct
 	  n <= pow2 (k, 1)
 	end
 
-    fun is_struct_type ty =
-	case ty of
-	  T_Struct _ => true
-	| _ => false
-
-    fun is_array_type ty =
-	case ty of
-	  T_Array _ => true
-	| _ => false
-
-    fun is_int_float_vector ty =
-	case ty of
-	  T_Vector {length, ty} =>
-	  (case ty of
-	     T_Integer _ => true
-	   | T_Real _ => true
-	   | _ => false)
-	| _ => false
-
-    fun is_vector ty =
-	case ty of
-	  T_Vector _ => true
-	| _ => false
-
     fun extract_base ty =
 	case ty of
 	  T_Array {ty, ...} => ty
@@ -317,11 +303,6 @@ struct
     fun assert_int_float ty =
 	(assert_int ty;
 	 assert_float ty)
-
-
-    fun assert_vector ty =
-	if is_vector ty then ()
-	else raise TypeError "Type is not of vector type"
 
 
     fun assert_float_or_vec ty = run (or assert_float (vectorized assert_float))
@@ -1047,13 +1028,15 @@ struct
              1. idx must be a I32
              2. ty must be a vector type.
              3. value must coerce to the vector type *)
-	  (Type.assert_vector ty;
-	   Value.check vtable Type.T_I32 value;
-	   let
-	     val r_ty = Value.check vtable ty value
-	   in
-	     LlvmSymtable.enter result r_ty vtable
-	   end)
+	  let open Type in
+	    run assert_vector ty;
+	    Value.check vtable Type.T_I32 value;
+	    let
+	      val r_ty = Value.check vtable ty value
+	    in
+	      LlvmSymtable.enter result r_ty vtable
+	    end
+	  end
 	| S_Free {ty, value} =>
 	  let open Type in
 	    (run assert_pointer ty;
@@ -1193,7 +1176,7 @@ struct
 	    run assert_icmp ty'';
 	    LlvmSymtable.enter
 	      result
-	      (if Type.is_vector ty''
+	      (if run_bool assert_vector ty''
 	       then
 		  let val v_len = Type.extract_size ty''
 		  in Type.T_Vector {length = v_len, ty = Type.T_I1}
@@ -1266,12 +1249,13 @@ struct
 	  let
 	    val ty' = Value.check vtable ty lhs
 	    val ty'' = Value.check vtable ty' rhs
+	    open Type
 	  in
 	    (* TODO: Fix this part *)
-(*	    Type.assert_fcmp ty''; *)
+	    run assert_fcmp ty'';
 	    LlvmSymtable.enter
 	      result
-	      (if Type.is_vector ty''
+	      (if run_bool assert_vector ty''
 	       then
 		 let val v_len = Type.extract_size ty''
 		 in Type.T_Vector {length = v_len, ty = Type.T_I1}
