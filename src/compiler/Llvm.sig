@@ -68,11 +68,16 @@ structure Type :
 	    type t
 	    (* The type of LLVM types *)
 
+	    type t_check
+	    (* The type of type check assertions *)
+
 	    val bit_size : t -> int
             (* Return the number of bits a given type takes. Not implemented for all types,
 	     * but for those where it makes sense *)
 
-	    val assert_ptr : t -> unit
+	    val 'a run : ('a -> t_check) -> 'a -> unit
+
+	    val assert_pointer : t -> t_check
 	    val assert_vector : t -> unit
             (* Predicates for matching certain type structure *)
 

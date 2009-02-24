@@ -275,11 +275,6 @@ struct
 	  n <= pow2 (k, 1)
 	end
 
-    fun is_ptr ty =
-	case ty of
-	  T_Pointer _ => true
-	| _ => false
-
     fun is_struct_type ty =
 	case ty of
 	  T_Struct _ => true
@@ -320,10 +315,6 @@ struct
 	  T_Array {ty, ...} => ty
 	| T_Vector {ty, ...} => ty
 	| _ => raise Internal_Error "Extracting from a non-extractible"
-
-    fun assert_ptr ty =
-	if is_ptr ty then ()
-	else raise TypeError "Type is not of pointer type."
 
     fun assert_sized ty = () (* TODO: Only accept type with specified sizes *)
 
@@ -1078,9 +1069,11 @@ struct
 	     LlvmSymtable.enter result r_ty vtable
 	   end)
 	| S_Free {ty, value} =>
-	  (Type.assert_ptr ty;
-	   Value.check vtable ty value;
-	  vtable)
+	  let open Type in
+	    (run assert_pointer ty;
+	     Value.check vtable ty value;
+	     vtable)
+	  end
 	| S_InsertElement {ty, value, elem_ty, elem_value, idx} =>
 	  (* Rules:
 	     1. Ty must be a vector type.
@@ -1167,13 +1160,15 @@ struct
 	  (Type.assert_sized ty;
 	   LlvmSymtable.enter result (Type.T_Pointer ty) vtable)
 	| S_Load {result, volatile, ty, value, align} =>
-	  (Type.assert_ptr ty;
-	   Type.assert_first_class ty;
-	   let
-	     val v_ty = Value.check vtable ty value
-	   in
-	     LlvmSymtable.enter result v_ty vtable
-	   end)
+	  let open Type in
+	    (run assert_pointer ty;
+	     Type.assert_first_class ty;
+	     let
+	       val v_ty = Value.check vtable ty value
+	     in
+	       LlvmSymtable.enter result v_ty vtable
+	     end)
+	  end
 	| S_Ret NONE => vtable
 	| S_Ret (SOME (ty, value)) =>
 	  (Value.check vtable ty value;
@@ -1330,10 +1325,12 @@ struct
 	    process_instructions instructions vtable
 	  end
 	| S_Store {volatile, ty, value, ptr_ty, ptr, align} =>
-	  (Type.assert_ptr ptr_ty;
-	   Value.check vtable ty value;
-	   Value.check vtable ptr_ty ptr;
-	   vtable)
+	  let open Type in
+	    (run assert_pointer ptr_ty;
+	     Value.check vtable ty value;
+	     Value.check vtable ptr_ty ptr;
+	     vtable)
+	  end
 	| S_Switch {ty, value, default, cases} =>
 	  let
 	    fun assert_cases_unique seen [] = ()
