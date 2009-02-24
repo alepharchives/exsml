@@ -191,6 +191,50 @@ struct
 	   | T_Top => raise (Internal_Error "T_Top is not valid for output")
     end
 
+    (* Type checking helper code *)
+    (* The datatype of type checking. Either a checking is ok, or it is wrong because
+     * a list of tests failed *)
+    datatype t_check = Ok | Wrong of string list
+    fun type_fail str = Wrong [str]
+
+    (* Run a type-check *)
+    fun run checker_fun ty =
+	case checker_fun ty of
+	  Ok => ()
+	| Wrong errors =>
+	  let
+	    open LlvmOutput
+	    val msg = seq [str "Check failed:\n",
+			   intersperse (str "\n") (List.map str errors)]
+	  in
+	    raise TypeError (to_string msg)
+	  end
+
+    (* Logical or for types, consider monadizing *)
+    fun or checker1 checker2 ty =
+	case checker1 ty of
+	  Ok => Ok
+	| Wrong err1 => case checker2 ty of
+			  Ok => Ok
+			| Wrong err2 => Wrong (List.concat [err1, err2])
+
+    (* Compound checks *)
+    fun vectorized checker1 vty =
+	case vty of
+	  T_Vector {ty, ...} => checker1 ty
+	| _ => type_fail "Checked type is not a vector type"
+
+    (* Primitive, atomic checks *)
+    fun assert_int ty =
+	case ty of
+	  T_Integer _ => Ok
+	| _ => type_fail "Type is not of integer type."
+
+    fun assert_float ty =
+	case ty of
+	  T_Real _ => Ok
+	| _ => type_fail "Type is not of real type"
+
     fun extract_size ty =
 	case ty of
 	  T_Array {length, ...} => length
@@ -287,14 +331,6 @@ struct
 	| T_Vector {ty = T_I1, ...} => true
 	| _ => false
 
-    fun assert_int ty =
-	if is_int ty then ()
-	else raise TypeError "Type is not of integer type."
-
-    fun assert_float ty =
-	case ty of
-	  T_Real _ => ()
-	| _ => raise TypeError "Float type expected."
 
     fun assert_int_float ty =
 	(assert_int ty;
@@ -313,7 +349,7 @@ struct
 	else raise TypeError "Type is not a float vector type"
 
     fun assert_float_or_vec ty =
-	assert_float ty handle TypeError _ => assert_float_vector ty
+	run (or assert_float (vectorized assert_float))
 
     fun assert_int_vector ty =
 	if is_int_vector ty then ()
@@ -1201,7 +1237,8 @@ struct
 	        (Type.assert_int src_ty;
 		 Type.assert_int dst_ty;
 		 Type.assert_int_size_gt src_ty dst_ty)
-	    | Op.ZEXT =>
+	    | _ => raise Not_Implemented
+(*	    | Op.ZEXT =>
 	        (Type.assert_int src_ty;
 		 Type.assert_int dst_ty;
 		 Type.assert_int_size_gt dst_ty src_ty)
@@ -1242,7 +1279,8 @@ struct
 	    | Op.BITCAST =>
 	        (Type.assert_first_class src_ty;
 		 Type.assert_first_class dst_ty;
-		 Type.assert_same_bit_size src_ty dst_ty));
+		 Type.assert_same_bit_size src_ty dst_ty)
+*));
 	     LlvmSymtable.enter
 	       result
 	       dst_ty
