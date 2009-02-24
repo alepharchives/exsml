@@ -570,7 +570,7 @@ struct
 		   | E_ExtractElem of {value: typed_value,
 				       idx: int}
 	           | E_Float of real
-		   | E_GetElementPtr of value * element_ptr_idx list
+		   | E_GetElementPtr of typed_value * int list
 		   | E_InsertElem  of {value: typed_value,
 				       elt: typed_value,
 				       idx: int}
@@ -620,10 +620,10 @@ struct
 	      | E_Float r => real r
 	      | E_GetElementPtr (exp, indexes) =>
 		let
-		  fun output_idxs {ty, idx} = integer idx
+		  fun output_idxs idx = integer idx
 		in
 		  seq [str "getelementptr", parens (commas
-						      [output_exp exp,
+						      [output_typed_exp exp,
 						       commas (List.map output_idxs indexes)])]
 		end
 	      | E_InsertElem {value, elt, idx} =>
@@ -694,9 +694,44 @@ struct
 		end
 	      | (Type.T_Real f, E_Float real) => Type.T_Real f
 	        (* TODO: Several other FP Types *)
-	      | (ty, E_GetElementPtr (exp, idx_list)) =>
-		(* TODO: Punt this for now. Complex instruction *)
-		ty
+	      | (typ as Type.T_Pointer ty, E_GetElementPtr (exp, idx_list)) =>
+		let
+		  val exp_ty = check_exp exp
+		  fun check_indexes ty [] = ty
+		    |  check_indexes (Type.T_Pointer ty) _ =
+		         raise TypeError "Subsequent indexes of GEP is a pointer"
+		    | check_indexes (typ as Type.T_Vector {length, ty}) (i::rest) =
+		         (Type.assert_valid_idx typ i;
+			  check_indexes ty rest)
+		    | check_indexes (typ as Type.T_Array  {length, ty}) (i::rest) =
+		         (Type.assert_valid_idx typ i;
+			  check_indexes ty rest)
+		    | check_indexes (Type.T_Struct types) (i::rest) =
+		      let
+			val ty = List.nth (types, i)
+				  handle Subscript =>
+					 raise TypeError "GEP: Indexing out of bounds"
+		      in
+			check_indexes ty rest
+		      end
+		    | check_indexes ty _ =
+		      let
+			val ty_msg = Type.output ty
+			open LlvmOutput
+			val msg = seq_space [str "GEP: Wrong type:",
+					     ty_msg]
+		      in
+			raise TypeError (to_string msg)
+		      end
+		  fun check_first_index (typ as Type.T_Pointer ty) [] = typ
+		    | check_first_index (Type.T_Pointer ty) (i::rest) =
+		        check_indexes ty rest
+		    | check_first_index _ _ =
+		        raise TypeError "First thing being indexed by GetElementPtr is not a pointer"
+		in
+		  Type.eq typ exp_ty;
+		  check_first_index exp_ty idx_list
+		end
 	      | (ty, E_InsertElem {value, elt, idx}) =>
 		let
 		  val val_ty = check_exp value
