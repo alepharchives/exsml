@@ -282,7 +282,7 @@ struct
 	case ty of
 	  T_Real _ => Ok
 	| _ => type_fail "Type is not of real type"
-    
+
     fun assert_pointer ty =
 	case ty of
 	  T_Pointer _ => Ok
@@ -299,11 +299,25 @@ struct
     val assert_int_float = or assert_int assert_float
     val assert_float_vectorized = or assert_float (vectorized assert_float)
 
+    (* Other Assertions and helpers *)
+
     fun extract_size ty =
 	case ty of
 	  T_Array {length, ...} => length
 	| T_Vector {length, ...} => length
 	| _ => raise Internal_Error "Extracting from a nen-extractible"
+
+    fun assert_valid_idx ty idx =
+	let
+	  fun valid size i = if i >= 0 andalso i < size
+			     then ()
+			     else raise TypeError "Index out of bounds"
+	in
+	  case ty of
+	    T_Array {length, ...} => valid length idx
+	  | T_Vector {length, ...} => valid length idx
+	  | _ => raise Internal_Error "Used assert_valid_idx on a non-vector/array type"
+	end
 
     fun is_first_class ty =
 	case ty of
@@ -605,37 +619,43 @@ struct
 		  then raise TypeError "Array length/type length mismatch"
 		  else sametype exp_list
 		end
-(*	      | (ty, E_Binop {lhs, rhs, ...}) =>
+	      | (ty, E_Binop {lhs, rhs, ...}) =>
 		let
 		  val ty1 = check_exp lhs
 		  val ty2 = check_exp rhs
+		  open Type
 		in
-		  assert_eq ty1 ty2;
-*)		  
-(*	      | (ty, E_Binop {lhs, rhs, ...}) =>
-		(check_exp ty lhs;
-		 check_exp ty rhs;
-		 ty) *)
+		  eq ty1 ty2;
+		  run (or assert_int_float (vectorized assert_int_float)) ty1;
+		  ty
+		end
 	      | (ty, E_Conversion {conversion, value, target_ty}) =>
 		check_conversion conversion value target_ty ty
 	      | (ty, E_ExtractElem {value, idx}) =>
-		(* TODO: Punt this for now.
-		 * The problem with this call is that we do not
-		 * know the type of value. We know that it must have vector
-		 * type with ty as the base type contents, but we don't
-		 * know the length of the vector. The only way to figure that
-		 * out is by doing inference on the constant.
-		 *
-		 * More reading is required ... *)
-		ty
-	      | (T_Double, E_Float real) => T_Double
+		let
+		  val val_ty = check_exp value
+		in
+		  run assert_vector ty;
+		  eq (extract_base ty) val_ty;
+		  assert_valid_idx ty idx;
+		  ty
+		end
+	      | (T_Real f, E_Float real) => T_Real f
 	        (* TODO: Several other FP Types *)
 	      | (ty, E_GetElementPtr (exp, idx_list)) =>
 		(* TODO: Punt this for now. Complex instruction *)
 		ty
 	      | (ty, E_InsertElem {value, elt, idx}) =>
-		(* TODO: Punt for now. Must check several things *)
-		ty
+		let
+		  val val_ty = check_exp value
+		  val elt_ty = check_exp elt
+		  open Type
+		in
+		  eq ty val_ty;
+		  eq elt_ty (extract_base val_ty);
+		  assert_valid_idx val_ty idx;
+		  ty
+		end
 	      | (T_Integer k, E_Int n) =>
 		if int_fits_in n k then T_Integer k
 		else raise TypeError "Integer does not fit into type"
