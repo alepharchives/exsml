@@ -50,7 +50,10 @@ val seq_space : t list -> t
 (* Print a sequence of t's with space between them *)
 
 val seq : t list -> t
-(* Print a sequence of t's with a '\n' between them *)
+(* Print a sequence of t's *)
+
+val lines : t list -> t
+(* Intersperse with a '\n' *)
 
 val commas : t list -> t
 (* Print a sequence of t's with a ', ' between them *)

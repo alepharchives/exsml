@@ -94,7 +94,7 @@ fun brackets elems = sorround (str "[") (str "]") elems
 fun vector elems = sorround (str "<") (str ">") elems
 
 fun seq_space es = intersperse (str " ") es
-fun seq es = intersperse (str "\n") es
+fun lines es = intersperse (str "\n") es
 fun conc es = O_Seq es
-
+fun seq es = conc es
 

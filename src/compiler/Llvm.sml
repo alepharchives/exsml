@@ -594,144 +594,11 @@ struct
 
     type vtable = (Identifier.t, Type.t) LlvmSymtable.t
 
+    (* Convenience *)
     val E_true = E_Int 1
     val E_false = E_Int 0
     val E_typed_true = {ty = Type.T_I1, value = true}
     val E_typed_false = {ty = Type.T_I1, value = false}
-
-    fun check vtable (check_ty: Type.t) (term: t) : Type.t =
-	let
-	  fun check_id id = raise Not_Implemented
-	  open Type
-	  fun check_conversion conversion value target_ty check_ty =
-	      target_ty (* TODO: Write this function *)
-	  fun check_exp {ty, value} =
-	      case (ty, value) of
-		(typ as T_Array {length, ty = base_ty}, E_Array exp_list) =>
-		let
-		  fun sametype [] = typ
-		    | sametype ((x as {value, ty}) :: xs) =
-		      (Type.eq ty base_ty;
-		       check_exp x;
-		       sametype xs)
-		in
-		  if List.length exp_list <> length
-		  then raise TypeError "Array length/type length mismatch"
-		  else sametype exp_list
-		end
-	      | (ty, E_Binop {lhs, rhs, ...}) =>
-		let
-		  val ty1 = check_exp lhs
-		  val ty2 = check_exp rhs
-		  open Type
-		in
-		  eq ty1 ty2;
-		  run (or assert_int_float (vectorized assert_int_float)) ty1;
-		  ty
-		end
-	      | (ty, E_Conversion {conversion, value, target_ty}) =>
-		check_conversion conversion value target_ty ty
-	      | (ty, E_ExtractElem {value, idx}) =>
-		let
-		  val val_ty = check_exp value
-		in
-		  run assert_vector ty;
-		  eq (extract_base ty) val_ty;
-		  assert_valid_idx ty idx;
-		  ty
-		end
-	      | (T_Real f, E_Float real) => T_Real f
-	        (* TODO: Several other FP Types *)
-	      | (ty, E_GetElementPtr (exp, idx_list)) =>
-		(* TODO: Punt this for now. Complex instruction *)
-		ty
-	      | (ty, E_InsertElem {value, elt, idx}) =>
-		let
-		  val val_ty = check_exp value
-		  val elt_ty = check_exp elt
-		  open Type
-		in
-		  eq ty val_ty;
-		  eq elt_ty (extract_base val_ty);
-		  assert_valid_idx val_ty idx;
-		  ty
-		end
-	      | (T_Integer k, E_Int n) =>
-		if int_fits_in n k then T_Integer k
-		else raise TypeError "Integer does not fit into type"
-	      | (T_Pointer ty, E_Null) => T_Pointer ty
-	      | (ty, E_Select {cond, val1, val2}) =>
-		let
-		  val {value = val1_value, ty = val1_ty} = val1
-		  val {value = val2_value, ty = val2_ty} = val2
-		  val {value = cond_value, ty = cond_ty} = cond
-		in
-		  (* TODO: Assertions! *)
-		  if val1_ty = val2_ty
-		  then if val1_ty = ty
-		       then
-			 (check_exp {ty = ty, value = val1_value};
-			  check_exp {ty = ty, value = val2_value};
-			  check_exp {ty = Type.T_I1, value = cond_value};
-			  ty)
-		       else
-			 raise TypeError "Binop operand/return type mismatch"
-		  else
-		    raise TypeError "Binop types mismatch"
-		end
-	      | (ty, E_ShuffleVector {vec1, vec2, idxmask}) =>
-		let
-		  val ty' = Type.T_Vector {length = Type.extract_size ty,
-					   ty = Type.T_I1}
-		in
-		  check_exp {ty = ty, value = vec1};
-		  check_exp {ty = ty, value = vec2};
-		  check_exp {ty = ty', value = idxmask}
-		end
-	      (* TODO: E_Shufllevector *)
-	      | (ty as T_Array {length, ty = T_Integer 8}, E_String str) =>
-		if String.size str <> length
-		then raise TypeError "String has wrong size"
-		else ty
-	      | (ty as T_Array {length, ty = T_Integer 8}, E_Stringz str) =>
-		if String.size str + 1 <> length
-		then raise TypeError "Stringz has wrong size"
-		else ty
-	      | (T_Struct ts, E_Struct es) =>
-		let
-		  fun check_struct [] [] = T_Struct ts
-		    | check_struct (t::ts) (e::es) =
-		      (check_exp {ty = t, value = e};
-		       check_struct ts es)
-		    | check_struct _ _ =
-		      raise TypeError "Type/Exp len mismatch in struct"
-		in
-		  check_struct ts es
-		end
-	      | (ty, E_Undef) => ty
-	      | (typ as T_Vector {length, ty = check_ty}, E_Vector elist) =>
-		let
-		  fun sametype [] = ()
-		    | sametype ({value, ty} :: es) =
-		      if ty = check_ty then
-			(check_exp { ty = check_ty, value = value};
-			 sametype es)
-		      else
-			raise TypeError "Vector type is wrong"
-		in
-		  if List.length elist <> length
-		  then raise TypeError "Vector arity mismatch"
-		  else (sametype elist;
-			typ)
-		end
-	      | (ty, E_Zeroinit) => ty
-	      | (ty, exp) =>
-		raise TypeError "Type/Exp mismatch (Alter me to print out the types!)"
-	in
-	  case term of
-	    V_Identifier id => check_id id
-	  | V_ConstExpr value => check_exp {ty = check_ty, value = value }
-	end
 
     fun output (term : t) : LlvmOutput.t =
 	let
@@ -783,6 +650,145 @@ struct
 	    V_ConstExpr v => output_exp v
 	  | V_Identifier id => Identifier.output id
 	end
+
+    fun check vtable (check_ty: Type.t) (term: t) : Type.t =
+	let
+	  fun check_id id = raise Not_Implemented
+	  fun check_conversion conversion value target_ty check_ty =
+	      target_ty (* TODO: Write this function *)
+	  fun check_exp {ty, value} =
+	      case (ty, value) of
+		(typ as Type.T_Array {length, ty = base_ty}, E_Array exp_list) =>
+		let
+		  fun sametype [] = typ
+		    | sametype ((x as {value, ty}) :: xs) =
+		      (Type.eq ty base_ty;
+		       check_exp x;
+		       sametype xs)
+		in
+		  if List.length exp_list <> length
+		  then raise TypeError "Array length/type length mismatch"
+		  else sametype exp_list
+		end
+	      | (ty, E_Binop {lhs, rhs, ...}) =>
+		let
+		  val ty1 = check_exp lhs
+		  val ty2 = check_exp rhs
+		  open Type
+		in
+		  eq ty1 ty2;
+		  run (or assert_int_float (vectorized assert_int_float)) ty1;
+		  ty
+		end
+	      | (ty, E_Conversion {conversion, value, target_ty}) =>
+		check_conversion conversion value target_ty ty
+	      | (ty, E_ExtractElem {value, idx}) =>
+		let
+		  val val_ty = check_exp value
+		  open Type
+		in
+		  run assert_vector ty;
+		  eq (extract_base ty) val_ty;
+		  assert_valid_idx ty idx;
+		  ty
+		end
+	      | (Type.T_Real f, E_Float real) => Type.T_Real f
+	        (* TODO: Several other FP Types *)
+	      | (ty, E_GetElementPtr (exp, idx_list)) =>
+		(* TODO: Punt this for now. Complex instruction *)
+		ty
+	      | (ty, E_InsertElem {value, elt, idx}) =>
+		let
+		  val val_ty = check_exp value
+		  val elt_ty = check_exp elt
+		  open Type
+		in
+		  eq ty val_ty;
+		  eq elt_ty (extract_base val_ty);
+		  assert_valid_idx val_ty idx;
+		  ty
+		end
+	      | (Type.T_Integer k, E_Int n) =>
+		let open Type in
+		  if int_fits_in n k then Type.T_Integer k
+		  else raise TypeError "Integer does not fit into type"
+		end
+	      | (Type.T_Pointer ty, E_Null) => Type.T_Pointer ty
+	      | (ty, E_Select {cond, val1, val2}) =>
+		let
+		  val cond_ty = check_exp cond
+		  val val1_ty = check_exp val1
+		  val val2_ty = check_exp val2
+		  open Type
+		in
+		  eq Type.T_I1 cond_ty; (* One would think vectors are allowed, but no! *)
+		  eq val1_ty val2_ty;
+		  eq val1_ty ty;
+		  ty (* Since no selection type here, this is the right return type *)
+		end
+	      | (ty, E_ShuffleVector {vec1, vec2, idxmask}) =>
+		let
+		  val ty' = Type.T_Vector {length = Type.extract_size ty,
+					   ty = Type.T_I1}
+		in
+		  check_exp {ty = ty, value = vec1};
+		  check_exp {ty = ty, value = vec2};
+		  check_exp {ty = ty', value = idxmask};
+		  ty
+		end
+	      | (ty as Type.T_Array {length, ty = Type.T_Integer 8}, E_String str) =>
+		if String.size str <> length
+		then raise TypeError "String has wrong size"
+		else ty
+	      | (ty as Type.T_Array {length, ty = Type.T_Integer 8}, E_Stringz str) =>
+		if String.size str + 1 <> length
+		then raise TypeError "Stringz has wrong size"
+		else ty
+	      | (Type.T_Struct ts, E_Struct es) =>
+		let
+		  fun check_struct [] [] = Type.T_Struct ts
+		    | check_struct (t::ts) (e::es) =
+		      (check_exp {ty = t, value = e};
+		       check_struct ts es)
+		    | check_struct _ _ =
+		      raise TypeError "Type/Exp len mismatch in struct"
+		in
+		  check_struct ts es
+		end
+	      | (ty, E_Undef) => ty
+	      | (typ as Type.T_Vector {length, ty = check_ty}, E_Vector elist) =>
+		let
+		  fun sametype [] = ()
+		    | sametype ({value, ty} :: es) =
+		      if ty = check_ty then
+			(check_exp { ty = check_ty, value = value};
+			 sametype es)
+		      else
+			raise TypeError "Vector type is wrong"
+		in
+		  if List.length elist <> length
+		  then raise TypeError "Vector arity mismatch"
+		  else (sametype elist;
+			typ)
+		end
+	      | (ty, E_Zeroinit) => ty
+	      | (ty, exp) =>
+		let
+		  val ty_part = Type.output ty
+		  val exp_part = output (V_ConstExpr exp)
+		  open LlvmOutput
+		  val msg = lines [str "Type/Exp mismatch:",
+				   seq_space [str "Type:", ty_part],
+				   seq_space [str "Exp:", exp_part]]
+		in
+		  raise TypeError (to_string msg)
+		end
+	in
+	  case term of
+	    V_Identifier id => check_id id
+	  | V_ConstExpr value => check_exp {ty = check_ty, value = value }
+	end
+
 
     fun is_constant (V_ConstExpr _) = true
       | is_constant _             = false
