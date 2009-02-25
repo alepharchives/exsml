@@ -240,8 +240,8 @@ struct
 	| Wrong errors =>
 	  let
 	    open LlvmOutput
-	    val msg = seq [str "Check failed:\n",
-			   intersperse (str "\n") (List.map str errors)]
+	    val msg = lines [str "Check failed:",
+			     lines (List.map str errors)]
 	  in
 	    raise TypeError (to_string msg)
 	  end
@@ -298,6 +298,16 @@ struct
     val assert_select_ty = or assert_bool (vectorized assert_bool)
     val assert_int_float = or assert_int assert_float
     val assert_float_vectorized = or assert_float (vectorized assert_float)
+
+    fun assert_bit_size_cmp src cmp target =
+	let
+	  val src_size = bit_size src
+	  val target_size = bit_size target
+	in
+	  if cmp (src_size, target_size)
+	  then ()
+	  else raise TypeError "Bit size mismatch in bit size compare"
+	end
 
     (* Other Assertions and helpers *)
     fun extract_size ty =
@@ -563,7 +573,7 @@ struct
 				 lhs: typed_value,
 				 rhs: typed_value}
 		   | E_Conversion of {conversion: Op.conversion,
-				      value: t,
+				      value: typed_value,
 				      target_ty: Type.t}
 		   | E_ExtractElem of {value: typed_value,
 				       idx: int}
@@ -612,7 +622,9 @@ struct
 					   output_typed_exp rhs])]
 	      | E_Conversion {conversion, value, target_ty} =>
 			    seq_space [Op.conversion_output conversion,
-				       parens (seq_space [output_exp exp, str "to", Type.output target_ty])]
+				       parens (seq_space [output_typed_exp value,
+							  str "to",
+							  Type.output target_ty])]
 	      | E_ExtractElem {value, idx} =>
 		seq [str "extractelement", parens (commas [output_typed_exp value, integer idx])]
 	      | E_Float r => real r
@@ -653,20 +665,45 @@ struct
 	let
 	  fun check_id id = raise Not_Implemented
 	  fun check_conversion conversion value ty =
-	      case conversion of
-		Op.TRUNC => ty
-	      | Op.ZEXT  => ty
-	      | Op.SEXT  => ty
-	      | Op.FPTRUNC => ty
-	      | Op.FPEXT   => ty
-	      | Op.FPTOUI  => ty
-	      | Op.FPTOSI  => ty
-	      | Op.UITOFP  => ty
-	      | Op.SITOFP   => ty
-	      | Op.PTRTOINT => ty
-	      | Op.INTTOPTR => ty
-	      | Op.BITCAST  => ty
-	  fun check_exp {ty, value} =
+	      let
+		open Type
+		val val_ty = check_exp value
+	      in
+		case conversion of
+		  Op.TRUNC =>
+		    (run assert_int val_ty;
+		     run assert_int ty;
+		     assert_bit_size_cmp val_ty (op>) ty;
+		     ty)
+		| Op.ZEXT =>
+		    (run assert_int val_ty;
+		     run assert_int ty;
+		     assert_bit_size_cmp val_ty (op<=) ty;
+		     ty)
+		| Op.SEXT =>
+		    (run assert_int val_ty;
+		     run assert_int ty;
+		     assert_bit_size_cmp val_ty (op<=) ty;
+		     ty)
+		| Op.FPTRUNC =>
+		    (run assert_float val_ty;
+		     run assert_float ty;
+		     assert_bit_size_cmp val_ty (op>) ty;
+		     ty)
+		| Op.FPEXT =>
+		    (run assert_float val_ty;
+		     run assert_float ty;
+		     assert_bit_size_cmp val_ty (op<) ty;
+		     ty)
+		| Op.FPTOUI => ty
+		| Op.FPTOSI => ty
+		| Op.UITOFP => ty
+		| Op.SITOFP => ty
+		| Op.PTRTOINT => ty
+		| Op.INTTOPTR => ty
+		| Op.BITCAST => ty
+	      end
+	  and check_exp {ty, value} =
 	      case (ty, value) of
 		(typ as Type.T_Array {length, ty = base_ty}, E_Array exp_list) =>
 		let
