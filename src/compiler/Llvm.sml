@@ -300,7 +300,6 @@ struct
     val assert_float_vectorized = or assert_float (vectorized assert_float)
 
     (* Other Assertions and helpers *)
-
     fun extract_size ty =
 	case ty of
 	  T_Array {length, ...} => length
@@ -352,7 +351,6 @@ struct
 
     fun assert_first_class_lst args =
 	List.app assert_first_class args
-
 
     fun is_int_range_valid bits integer =
 	  bits >= bit_size integer
@@ -654,8 +652,20 @@ struct
     fun check vtable (check_ty: Type.t) (term: t) : Type.t =
 	let
 	  fun check_id id = raise Not_Implemented
-	  fun check_conversion conversion value target_ty check_ty =
-	      target_ty (* TODO: Write this function *)
+	  fun check_conversion conversion value ty =
+	      case conversion of
+		Op.TRUNC => ty
+	      | Op.ZEXT  => ty
+	      | Op.SEXT  => ty
+	      | Op.FPTRUNC => ty
+	      | Op.FPEXT   => ty
+	      | Op.FPTOUI  => ty
+	      | Op.FPTOSI  => ty
+	      | Op.UITOFP  => ty
+	      | Op.SITOFP   => ty
+	      | Op.PTRTOINT => ty
+	      | Op.INTTOPTR => ty
+	      | Op.BITCAST  => ty
 	  fun check_exp {ty, value} =
 	      case (ty, value) of
 		(typ as Type.T_Array {length, ty = base_ty}, E_Array exp_list) =>
@@ -681,7 +691,9 @@ struct
 		  ty
 		end
 	      | (ty, E_Conversion {conversion, value, target_ty}) =>
-		check_conversion conversion value target_ty ty
+		(check_conversion conversion value target_ty;
+	         Type.eq ty target_ty;
+	         target_ty)
 	      | (ty, E_ExtractElem {value, idx}) =>
 		let
 		  val val_ty = check_exp value
