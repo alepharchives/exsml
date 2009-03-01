@@ -121,12 +121,9 @@ struct
 	   | T_Array of {ty: t,
 			 length: int}
 	   | T_Pointer of t
-             (* TODO: Why the qualified pointer here ? *)
-	   | T_QualifiedPointer of {ty: t,
-				    address_space: int}
 	   | T_Vector of {ty: t,
 			  length: int}
-	     (* Opaque type, must be unique *)
+	     (* Opaque type, coercible to any type *)
 	   | T_Opaque
              (* Void type, only used for functions returning nothing *)
 	   | T_Void
@@ -198,9 +195,6 @@ struct
 	  | T_Array {ty, length} =>
 	     brackets (conc [integer length, str " x ", output ty])
 	  | T_Pointer ty => conc [output ty, str " *"]
-	  | T_QualifiedPointer {ty, address_space} =>
-	       conc [output ty,
-		     str " addrspace(", integer address_space, str ")"]
 	  | T_Vector {ty, length} =>
 	     sorround (str "< ") (str " >")
 		      (conc [integer length, str " x ",
