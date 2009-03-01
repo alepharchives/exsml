@@ -335,6 +335,76 @@ struct
 	  | _ => raise Internal_Error "Used assert_valid_idx on a non-vector/array type"
 	end
 
+    (* Analyze the compound structure of two types.
+     * raises an error if they are not matching in compound structure, but sees
+     * right through primitives being different *)
+    fun assert_eq_compound_structure ty1 ty2 =
+	let
+	  fun eq_list [] [] = true
+	    | eq_list (t1 :: ts1) (t2 :: ts2) =
+	      (eq t1 t2;
+	       eq_list ts1 ts2)
+	    | eq_list _ _ =
+	      raise TypeError "Wrong size in structs for compound eq"
+	  and eq ty1 ty2 =
+	      case (ty1, ty2) of
+		(T_Array {length = l1, ty = ty1'}, T_Array {length = l2, ty = ty2'}) =>
+		if l1 = l2 andalso eq ty1' ty2'
+		then true
+		else raise TypeError "Length mismatch in compound types"
+	      | (T_Vector {length = l1, ty = ty1'}, T_Vector {length = l2, ty = ty2'}) =>
+		if l1 = l2 andalso eq ty1' ty2'
+		then true
+		else raise TypeError "Length mismatch in compound types"
+	      | (T_Struct ts1, T_Struct ts2) =>
+		eq_list ts1 ts2
+	      | (T_Fun {return = r1, params = a1}, T_Fun {return = r2, params = a2}) =>
+		(eq r1 r2;
+		 eq_list a1 a2)
+	      | (T_Pointer ty1, T_Pointer ty2) =>
+		eq ty1 ty2
+	      | (_, _) => true
+	in
+	  eq ty1 ty2;
+	  ()
+	end
+
+    fun assert_eq_pointer_structure ty1 ty2 =
+	let
+	  fun fail () = raise TypeError "Both types are not pointer types"
+	in
+	  case (ty1, ty2) of
+	    (T_Pointer _, T_Pointer _) => ()
+	  | (T_Pointer _, _)           => fail ()
+	  | (_, T_Pointer _)           => fail ()
+	  | (_, _) => ()
+	end
+
+    fun assert_eq_size ty1 ty2 =
+	let
+	  val s1 = bit_size ty1
+	  val s2 = bit_size ty2
+	in
+	  if s1 = s2
+	  then ()
+	  else raise TypeError "Wrong bit sizes in types"
+	end
+
+    fun assert_bitcastable ty1 ty2 =
+	let
+	  fun bitcastable t =
+	      case t of
+		T_Pointer _ => true
+	      | T_Vector _  => true
+	      | T_Integer _ => true
+	      | T_Real _ => true
+	      | _ => false
+	in
+	  if bitcastable ty1 andalso bitcastable ty2
+	  then ()
+	  else raise TypeError "Non-bitcastable types"
+	end
+
     fun is_first_class ty =
 	case ty of
 	   T_Pointer ty' => is_first_class ty'
@@ -702,13 +772,39 @@ struct
 		     run assert_float ty;
 		     assert_bit_size_cmp val_ty (op<) ty;
 		     ty)
-		| Op.FPTOUI => ty
-		| Op.FPTOSI => ty
-		| Op.UITOFP => ty
-		| Op.SITOFP => ty
-		| Op.PTRTOINT => ty
-		| Op.INTTOPTR => ty
-		| Op.BITCAST => ty
+		| Op.FPTOUI =>
+		    (run (or assert_float (vectorized assert_float)) val_ty;
+		     run (or assert_int (vectorized assert_int)) ty;
+		     assert_eq_compound_structure val_ty ty;
+		     ty)
+		| Op.FPTOSI =>
+		    (run (or assert_float (vectorized assert_float)) val_ty;
+		     run (or assert_int (vectorized assert_int)) ty;
+		     assert_eq_compound_structure val_ty ty;
+		     ty)
+		| Op.UITOFP =>
+		    (run (or assert_int (vectorized assert_int)) val_ty;
+		     run (or assert_float (vectorized assert_float)) ty;
+		     assert_eq_compound_structure val_ty ty;
+		     ty)
+		| Op.SITOFP =>
+		    (run (or assert_int (vectorized assert_int)) val_ty;
+		     run (or assert_float (vectorized assert_float)) ty;
+		     assert_eq_compound_structure val_ty ty;
+		     ty)
+		| Op.PTRTOINT =>
+		    (run assert_pointer val_ty;
+		     run assert_int ty;
+		     ty)
+		| Op.INTTOPTR =>
+		    (run assert_int val_ty;
+		     run assert_pointer ty;
+		     ty)
+		| Op.BITCAST =>
+		    (assert_eq_size val_ty ty;
+		     assert_eq_pointer_structure val_ty ty;
+		     assert_bitcastable val_ty ty;
+		     ty)
 	      end
 	  and check_exp {ty, value} =
 	      case (ty, value) of
