@@ -946,6 +946,15 @@ struct
 		  else sametype elist
 		end
 	      | (ty, E_Zeroinit) => ty
+	      (* TODO: Figure out if the following is correct
+	       * The problem is that an exp carries no type information whatsoever, and
+	       * we can not figure its type out. So the only thing we can do is to
+	       * believe its type and then return T_Opaque.
+	       *
+	       * We might be able to add more information to identifiers in the long
+	       * run
+	       *)
+	      | (Type.T_Opaque, exp) => Type.T_Opaque
 	      | (ty, exp) =>
 		let
 		  val ty_part = Type.output ty
