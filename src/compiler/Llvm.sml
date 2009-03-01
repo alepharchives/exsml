@@ -114,15 +114,18 @@ struct
              (* Function types *)
 	   | T_Fun of {return: t,
 		       params: t list}
+	     (* TODO: Consider removing this *)
 	   | T_FunVarArg of {return: t,
 			     params: t list}
 	     (* Struct types *)
 	   | T_Struct of t list
+	     (* TODO: Kill this *)
 	   | T_PackedStruct of t list
              (* Array/Pointer types *)
 	   | T_Array of {ty: t,
 			 length: int}
 	   | T_Pointer of t
+             (* TODO: Why the qualified pointer here ? *)
 	   | T_QualifiedPointer of {ty: t,
 				    address_space: int}
 	   | T_Vector of {ty: t,
