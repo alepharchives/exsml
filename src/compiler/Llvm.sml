@@ -102,6 +102,9 @@ struct
 
   structure Type =
   struct
+    (* Settings *)
+    val pointer_size = ref 64;
+
     datatype float_ty = Float | Double | X86fp80 | FP128 | PPC_FP128
     datatype t =
 	     (* Integer types *)
@@ -159,7 +162,8 @@ struct
 	  | T_Vector {length, ty} => length * (bit_size ty)
 	  | T_Array {length, ty} => length * (bit_size ty)
 	  | T_Struct ts => sum (List.map bit_size ts)
-	  | _ => raise (Internal_Error "Bit size called with somehting odd")
+	  | T_Pointer _ => !pointer_size
+	  | _ => raise (Internal_Error "Bit size called with something odd")
 	end
 
     local
