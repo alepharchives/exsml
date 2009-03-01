@@ -221,8 +221,8 @@ struct
 	else ()
 
     (* Type checking helper code *)
-    (* The datatype of type checking. Either a checking is ok, or it is wrong because
-     * a list of tests failed *)
+    (* The datatype of type checking. Either a checking is ok, or it is
+     * wrong because a list of tests failed *)
     datatype t_check = Ok | Wrong of string list
     fun type_fail str = Wrong [str]
 
@@ -318,7 +318,8 @@ struct
 	  case ty of
 	    T_Array {length, ...} => valid length idx
 	  | T_Vector {length, ...} => valid length idx
-	  | _ => raise Internal_Error "Used assert_valid_idx on a non-vector/array type"
+	  | _ => raise Internal_Error
+			 "Used assert_valid_idx on a non-vector/array type"
 	end
 
     (* Analyze the compound structure of two types.
@@ -334,18 +335,22 @@ struct
 	      raise TypeError "Wrong size in structs for compound eq"
 	  and eq ty1 ty2 =
 	      case (ty1, ty2) of
-		(T_Array {length = l1, ty = ty1'}, T_Array {length = l2, ty = ty2'}) =>
+		(T_Array {length = l1, ty = ty1'},
+		 T_Array {length = l2, ty = ty2'}) =>
 		if l1 = l2 andalso eq ty1' ty2'
 		then true
 		else raise TypeError "Length mismatch in compound types"
-	      | (T_Vector {length = l1, ty = ty1'}, T_Vector {length = l2, ty = ty2'}) =>
+	      | (T_Vector {length = l1, ty = ty1'},
+		 T_Vector {length = l2, ty = ty2'}) =>
 		if l1 = l2 andalso eq ty1' ty2'
 		then true
 		else raise TypeError "Length mismatch in compound types"
-	      | (T_Struct {elements = ts1, ...}, T_Struct {elements  = ts2, ...}) =>
+	      | (T_Struct {elements = ts1, ...},
+		 T_Struct {elements  = ts2, ...}) =>
 		(* TODO: Handle packedness *)
 		eq_list ts1 ts2
-	      | (T_Fun {return = r1, params = a1}, T_Fun {return = r2, params = a2}) =>
+	      | (T_Fun {return = r1, params = a1},
+		 T_Fun {return = r2, params = a2}) =>
 		(eq r1 r2;
 		 eq_list a1 a2)
 	      | (T_Pointer ty1, T_Pointer ty2) =>
@@ -658,7 +663,7 @@ struct
 		   | E_Stringz of string
 		   | E_Struct of value list
 		   | E_Undef
-		   | E_Vector of typed_value list (* Perhaps merge with E_Array *)
+		   | E_Vector of typed_value list
 		   | E_Zeroinit
     and t = V_Identifier of Identifier.t
 	  | V_ConstExpr of value
@@ -685,36 +690,41 @@ struct
 			   parens (commas [output_typed_exp lhs,
 					   output_typed_exp rhs])]
 	      | E_Conversion {conversion, value, target_ty} =>
-			    seq_space [Op.conversion_output conversion,
-				       parens (seq_space [output_typed_exp value,
-							  str "to",
-							  Type.output target_ty])]
+		seq_space [Op.conversion_output conversion,
+			   parens (seq_space [output_typed_exp value,
+					      str "to",
+					      Type.output target_ty])]
 	      | E_ExtractElem {value, idx} =>
-		seq [str "extractelement", parens (commas [output_typed_exp value, integer idx])]
+		seq [str "extractelement",
+		     parens (commas [output_typed_exp value, integer idx])]
 	      | E_Float r => real r
 	      | E_GetElementPtr (exp, indexes) =>
 		let
 		  fun output_idxs idx = integer idx
 		in
-		  seq [str "getelementptr", parens (commas
-						      [output_typed_exp exp,
-						       commas (List.map output_idxs indexes)])]
+		  seq [str "getelementptr",
+		       parens (commas
+				 [output_typed_exp exp,
+				  commas (List.map output_idxs indexes)])]
 		end
 	      | E_InsertElem {value, elt, idx} =>
-		seq [str "insertelement", parens (commas [output_typed_exp value,
-							  output_typed_exp elt,
-							  integer idx])]
+		seq [str "insertelement",
+		     parens (commas [output_typed_exp value,
+				     output_typed_exp elt,
+				     integer idx])]
 	      | E_Int i => integer i
 	      | E_Null => str "null"
 	      | E_Select {cond, val1, val2} =>
-		seq [str "select", parens (commas (List.map output_typed_exp
-							    [cond, val1, val2]))]
+		seq [str "select",
+		     parens (commas (List.map output_typed_exp
+					      [cond, val1, val2]))]
 	      | E_ShuffleVector {vec1, vec2, idxmask} =>
-		seq [str "shufflevector", parens (commas [output_exp vec1,
-							  output_exp vec2,
-							  output_exp idxmask])]
+		seq [str "shufflevector",
+		     parens (commas [output_exp vec1,
+				     output_exp vec2,
+				     output_exp idxmask])]
 	      | E_String s => seq_space [str "\"", str s, str "\""]
-	      | E_Stringz s => str (s ^ "\000") (* Ugly, hopefully it is right *)
+	      | E_Stringz s => str (s ^ "\000")
 	      | E_Struct ts => braces (commas (List.map output_exp ts))
 	      | E_Undef => str "undef"
 	      | E_Vector el => vector (commas (List.map output_typed_exp el))
@@ -795,7 +805,8 @@ struct
 	      end
 	  and check_exp {ty, value} =
 	      case (ty, value) of
-		(typ as Type.T_Array {length, ty = base_ty}, E_Array exp_list) =>
+		(typ as Type.T_Array {length, ty = base_ty},
+		   E_Array exp_list) =>
 		let
 		  fun sametype [] = typ
 		    | sametype ((x as {value, ty}) :: xs) =
@@ -838,18 +849,22 @@ struct
 		  val exp_ty = check_exp exp
 		  fun check_indexes ty [] = ty
 		    |  check_indexes (Type.T_Pointer ty) _ =
-		         raise TypeError "Subsequent indexes of GEP is a pointer"
-		    | check_indexes (typ as Type.T_Vector {length, ty}) (i::rest) =
+		         raise
+			   TypeError "Subsequent indexes of GEP is a pointer"
+		    | check_indexes (typ as Type.T_Vector {length, ty})
+				    (i::rest) =
 		         (Type.assert_valid_idx typ i;
 			  check_indexes ty rest)
-		    | check_indexes (typ as Type.T_Array  {length, ty}) (i::rest) =
+		    | check_indexes (typ as Type.T_Array  {length, ty})
+				    (i::rest) =
 		         (Type.assert_valid_idx typ i;
 			  check_indexes ty rest)
-		    | check_indexes (Type.T_Struct {elements = types, ...}) (i::rest) =
+		    | check_indexes (Type.T_Struct {elements = types, ...})
+				    (i::rest) =
 		      let
 			val ty = List.nth (types, i)
-				  handle Subscript =>
-					 raise TypeError "GEP: Indexing out of bounds"
+			    handle Subscript =>
+				   raise TypeError "GEP: Indexing out of bounds"
 		      in
 			check_indexes ty rest
 		      end
@@ -866,7 +881,10 @@ struct
 		    | check_first_index (Type.T_Pointer ty) (i::rest) =
 		        check_indexes ty rest
 		    | check_first_index _ _ =
-		        raise TypeError "First thing being indexed by GetElementPtr is not a pointer"
+		        raise
+			  TypeError
+			    ("First thing being indexed by GetElementPtr" ^
+			     "is not a pointer")
 		in
 		  Type.eq typ exp_ty;
 		  check_first_index exp_ty idx_list
@@ -895,10 +913,11 @@ struct
 		  val val2_ty = check_exp val2
 		  open Type
 		in
-		  eq Type.T_I1 cond_ty; (* One would think vectors are allowed, but no! *)
+		  eq Type.T_I1 cond_ty; (* No vectors allowed *)
 		  eq val1_ty val2_ty;
 		  eq val1_ty ty;
-		  ty (* Since no selection type here, this is the right return type *)
+		  ty (* Since no selection type here,
+		      * this is the right return type *)
 		end
 	      | (ty, E_ShuffleVector {vec1, vec2, idxmask}) =>
 		let
@@ -910,11 +929,13 @@ struct
 		  check_exp {ty = ty', value = idxmask};
 		  ty
 		end
-	      | (ty as Type.T_Array {length, ty = Type.T_Integer 8}, E_String str) =>
+	      | (ty as Type.T_Array {length, ty = Type.T_Integer 8},
+		 E_String str) =>
 		if String.size str <> length
 		then raise TypeError "String has wrong size"
 		else ty
-	      | (ty as Type.T_Array {length, ty = Type.T_Integer 8}, E_Stringz str) =>
+	      | (ty as Type.T_Array {length, ty = Type.T_Integer 8},
+		 E_Stringz str) =>
 		if String.size str + 1 <> length
 		then raise TypeError "Stringz has wrong size"
 		else ty
@@ -930,7 +951,8 @@ struct
 		  check_struct ts es
 		end
 	      | (ty, E_Undef) => ty
-	      | (typ as Type.T_Vector {length, ty = check_ty}, E_Vector elist) =>
+	      | (typ as Type.T_Vector {length, ty = check_ty},
+		 E_Vector elist) =>
 		let
 		  fun sametype [] = typ
 		    | sametype (e :: es) =
@@ -947,12 +969,12 @@ struct
 		end
 	      | (ty, E_Zeroinit) => ty
 	      (* TODO: Figure out if the following is correct
-	       * The problem is that an exp carries no type information whatsoever, and
-	       * we can not figure its type out. So the only thing we can do is to
-	       * believe its type and then return T_Opaque.
-	       *
-	       * We might be able to add more information to identifiers in the long
-	       * run
+	       * The problem is that an exp carries no type information
+	       * whatsoever, and we can not figure its type out. So the only
+	       * thing we can do is to believe its type and then return
+	       * T_Opaque.
+	       * We might be able to add more information to identifiers
+	       * in the long run
 	       *)
 	      | (Type.T_Opaque, exp) => Type.T_Opaque
 	      | (ty, exp) =>
@@ -1140,53 +1162,70 @@ struct
 		  Value.check vtable ty rhs
 		end
 	  in case binop of
-	       Op.ADD => (Type.assert_int_float ty;
-			  LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-	     | Op.SUB => (Type.assert_int_float ty;
-			  LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-	     | Op.MUL => (Type.assert_int_float ty;
-			  LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-	     | Op.UDIV => (Type.assert_int ty;
-			   LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-	     | Op.SDIV => (Type.assert_int ty;
-			   LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-	     | Op.FDIV => (Type.assert_float ty;
-			   LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-	     | Op.UREM => (Type.assert_int ty;
-			   LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-	     | Op.SREM => (Type.assert_int ty;
-			   LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-	     | Op.FREM => (Type.assert_float ty;
-			   LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-
-	     | Op.SHL => (Type.assert_int ty;
-			  LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-	     | Op.LSHR => (Type.assert_int ty;
-			   LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-	     | Op.ASHR => (Type.assert_int ty;
-			   LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-	     | Op.AND => (Type.assert_int ty;
-			  LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-	     | Op.OR => (Type.assert_int ty;
-			  LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-	     | Op.XOR => (Type.assert_int ty;
-			  LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	       Op.ADD =>
+	       (Type.assert_int_float ty;
+		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	     | Op.SUB =>
+	       (Type.assert_int_float ty;
+		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	     | Op.MUL =>
+	       (Type.assert_int_float ty;
+		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	     | Op.UDIV =>
+	       (Type.assert_int ty;
+		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	     | Op.SDIV =>
+	       (Type.assert_int ty;
+		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	     | Op.FDIV =>
+	       (Type.assert_float ty;
+		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	     | Op.UREM =>
+	       (Type.assert_int ty;
+		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	     | Op.SREM =>
+	       (Type.assert_int ty;
+		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	     | Op.FREM =>
+	       (Type.assert_float ty;
+		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	     | Op.SHL =>
+	       (Type.assert_int ty;
+		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	     | Op.LSHR =>
+	       (Type.assert_int ty;
+		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	     | Op.ASHR =>
+	       (Type.assert_int ty;
+		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	     | Op.AND =>
+	       (Type.assert_int ty;
+		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	     | Op.OR =>
+	       (Type.assert_int ty;
+		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
+	     | Op.XOR =>
+	       (Type.assert_int ty;
+		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
 	  end
 	| S_Branch {cond, label_t, label_f} =>
 	  (Value.check vtable Type.T_I1 cond;
 	   vtable)
 	| S_Call {func, tail, ty, call_conv, args, ret, name, param_attrs, fnty, fn_attrs} =>
+	  (* TODO: Reformat! *)
 	  (* Rules:
-	     DONE:
-	     1. Of the param attributes, only 'zeroext, signext and inreg' are valid.
+	   * DONE:
+	   * 1. Of the param attributes, only 'zeroext, signext and inreg'
+	   *    are valid.
              8. Only function attributes of the kinds 'noreturn', 'nounwind',
                 'readonly' and 'readnone' are valid attribute kinds here
 	     2. 'ty' is the return type of the function.
              7. Function attributes are optional.
 
              NEEDS ATTENTION:
-             3. fnty is the function type but it is only needed when playing with function
-	        pointer returns and varargs. Sigh.
+             3. fnty is the function type but it is only needed when
+					      playing with function
+							     pointer returns and varargs. Sigh.
                 (What is the problem here?? We need to se an example or two to figure this
                  guy out. It is probably somehting simple)
 
@@ -1244,18 +1283,21 @@ struct
 	   Value.check vtable elem_ty elem_value;
 	   Value.check vtable Type.T_I32 idx;
 	   vtable)
-	| S_Invoke {callconv, ret_attrs, func, func_ty, args, func_attrs, label_cont,
-		    label_unwind, result} =>
+	| S_Invoke {callconv, ret_attrs, func, func_ty, args,
+		    func_attrs, label_cont, label_unwind, result} =>
 	  (* Rules:
-             1. ty_attrs are parameter attributes. Only 'zeroext','signext' and 'inreg' are valid.
-             2. func_ty is the signature of the function being invoked.
-	     3. func is the value of the function in question.
-             4. args are the function arguments. They must match the function signature type.
-             5. Of the function attributes list, only 'noreturn', 'nounwind', 'readonly'
-                and 'readnone' are valid.
+           * 1. ty_attrs are parameter attributes.
+	   *    Only 'zeroext','signext' and 'inreg' are valid.
+	   * 2. func_ty is the signature of the function being invoked.
+	   * 3. func is the value of the function in question.
+           * 4. args are the function arguments.
+	   *    They must match the function signature type.
+           * 5. Of the function attributes list,
+	   *  only 'noreturn', 'nounwind', 'readonly' and 'readnone' are valid.
            *)
 	  (* TODO! *)
-	  LlvmSymtable.enter result func_ty vtable (* Wrong, should extract ret-ty from func_ty *)
+	  (* Wrong, should extract ret-ty from func_ty *)
+	  LlvmSymtable.enter result func_ty vtable
 	| S_ShuffleVector {result, v1_ty, v1, v2_ty, v2, mask_len, mask} =>
 	  (* Rules:
 	     1. v1_ty and v2_ty must agree
@@ -1350,10 +1392,11 @@ struct
 	  raise Not_Implemented
 	| S_Icmp {result, cond, ty, lhs, rhs} =>
 	  (* Comparator of integers. Rules:
-	     1. Ty must be one of 'integer', 'pointer', or 'vector integer' type.
-	     2. Both lhs and rhs must coerce to ty.
-	     3. Types of lhs and rhs must agree.
-             4. The result is always either i1 or vector i1. *)
+	   * 1. Ty must be one of 'integer', 'pointer',
+	   *    or 'vector integer' type.
+	   * 2. Both lhs and rhs must coerce to ty.
+	   * 3. Types of lhs and rhs must agree.
+           * 4. The result is always either i1 or vector i1. *)
 	  let
 	    val ty' = Value.check vtable ty lhs
 	    val ty'' = Value.check vtable ty' rhs
@@ -1623,7 +1666,9 @@ struct
 		      seq_space (List.map output_case cases)
 		in
 		  seq_space [str "switch", Type.output ty, Value.output value,
-			     str ", label", Label.output default, output_cases cases]
+			     str ", label",
+			       Label.output default,
+			       output_cases cases]
 		end
 	      | S_Invoke {callconv, ret_attrs, func, func_ty, args, func_attrs,
 			  label_cont, label_unwind, result} =>
@@ -1634,12 +1679,15 @@ struct
 			     CallConv.output callconv,
 			     case ret_attrs of
 			       [] => null
-			     | attrs => seq_space (List.map ParamAttr.output attrs),
+			     | attrs => seq_space
+					  (List.map ParamAttr.output attrs),
 			     Type.output func_ty,
-			     seq [Value.output func, parens (process_args args)],
+			     seq [Value.output func,
+				  parens (process_args args)],
 			     case func_attrs of
 			       [] => null
-			     | attrs => seq_space (List.map FunctionAttr.output attrs),
+			     | attrs => seq_space
+					  (List.map FunctionAttr.output attrs),
 			     str "to label", Label.output label_cont,
 			     str "unwind label", Label.output label_unwind]
 		end
@@ -1654,60 +1702,72 @@ struct
 			   Type.output ty, Value.output value, str ",",
 			   Type.output elem_ty, Value.output elem_value,
 			   str ", i32", Value.output idx]
-	      | S_ShuffleVector {result, v1_ty, v1, v2_ty, v2, mask_len, mask} =>
+	      | S_ShuffleVector {result, v1_ty, v1, v2_ty, v2,
+				 mask_len, mask} =>
 		seq_space [Identifier.output result, str "= shufflevector",
 			   Type.output v1_ty, Value.output v1,
 			   Type.output v2_ty, Value.output v2,
-			   Type.output (Type.T_Vector {ty = Type.T_I32, length = mask_len}),
+			   Type.output (Type.T_Vector {ty = Type.T_I32,
+						       length = mask_len}),
 			   Value.output mask]
 	      | S_ExtractValue {result, ty, value, idxs} =>
 		let
 		  fun output_idx idx = seq_space [str "i32",
 						  Value.output idx]
-		  val output_idxs = intersperse (str ",") (List.map output_idx idxs)
+		  val output_idxs = intersperse (str ",")
+						(List.map output_idx idxs)
 		in
 		  seq_space [Identifier.output result, str "= extractvalue",
 			     Type.output ty, Value.output value, str ", ",
 			     output_idxs]
 		end
 	      | S_InsertValue {ty, value, elem_ty, elem_value, idx} =>
-		seq_space [str "insertvalue", Type.output ty, Value.output value,
-			   str ",", Type.output elem_ty, Value.output elem_value,
+		seq_space [str "insertvalue", Type.output ty,
+			                      Value.output value,
+			   str ",", Type.output elem_ty,
+			            Value.output elem_value,
 			   str ", i32", Value.output idx]
 	      | S_Malloc {result, ty, num_elems, align} =>
 		seq_space [Identifier.output result, str "=", Type.output ty,
-			   str ", i32", integer num_elems, case align of
-							     NONE => null
-							   | SOME a => seq_space [str ", align",
-										  Align.output a]]
+			   str ", i32", integer num_elems,
+			   case align of
+			     NONE => null
+			   | SOME a => seq_space [str ", align",
+						  Align.output a]]
 	      | S_Free {ty, value} =>
 		seq_space [str "free", Type.output ty, Value.output value]
 	      | S_Alloca {result, ty, num_elems, align} =>
-		commas [seq_space [Identifier.output result, str "=", Type.output ty],
+		commas [seq_space [Identifier.output result,
+				   str "=", Type.output ty],
 			seq_space [str "i32", integer num_elems],
-			case align of NONE => null | SOME a =>
-						       seq_space [str "align", Align.output a]]
+			case align of
+			  NONE => null
+			| SOME a => seq_space [str "align", Align.output a]]
 
 	      | S_Load {result, volatile, ty, value, align} =>
 		commas [seq_space [Identifier.output result, str "=",
 				   if volatile then str "volatile" else null,
-				   str "load", Type.output ty, Value.output value],
+				   str "load", Type.output ty,
+				               Value.output value],
 			case align of
 			  NONE => null
 			| SOME a => seq_space [str "align", Align.output a]]
 	      | S_Store {volatile, ty, value, ptr_ty, ptr, align} =>
 		commas [seq_space [if volatile then str "volatile" else null,
-				   str "store", Type.output ty, Value.output value],
+				   str "store", Type.output ty,
+				                Value.output value],
 			seq_space [Type.output ptr_ty, Value.output ptr],
 			case align of
 			  NONE => null
 			| SOME a => seq_space [str "align", Align.output a]]
 	      | S_GetElementPtr {result, ty, value, idxs} =>
 		let
-		  fun process_idxs idxs = commas (List.map (fn (ty, i) =>
-							       seq_space [Type.output ty,
-									  integer i])
-							   idxs)
+		  fun process_idxs idxs =
+		      commas
+			(List.map (fn (ty, i) =>
+				      seq_space [Type.output ty,
+						 integer i])
+				  idxs)
 		in
 		  seq_space [Identifier.output result, str "=",
 			     Type.output ty, Value.output value,
@@ -1715,33 +1775,42 @@ struct
 		end
 	      | S_Conversion {result, conversion, src_ty, value, dst_ty} =>
 		let
-		  val src_line = seq_space [Type.output src_ty, Value.output value]
+		  val src_line = seq_space [Type.output src_ty,
+					    Value.output value]
 		  val dst_line = Type.output dst_ty
 		in
 		  seq_space [Identifier.output result, str "=",
-			     Op.conversion_output_plug conversion src_line dst_line]
+			     Op.conversion_output_plug
+			       conversion
+			       src_line
+			       dst_line]
 		end
 	      | S_Icmp {result, cond, ty, lhs, rhs} =>
-		seq_space [Identifier.output result, str "= icmp", Op.output_icmp cond,
+		seq_space [Identifier.output result, str "= icmp",
+			   Op.output_icmp cond,
 			   Type.output ty,
 			   commas [Value.output lhs, Value.output rhs]]
 	      | S_Fcmp {result, cond, ty, lhs, rhs} =>
-		seq_space [Identifier.output result, str "= fcmp", Op.output_fcmp cond,
+		seq_space [Identifier.output result, str "= fcmp",
+			   Op.output_fcmp cond,
 			   Type.output ty,
 			   commas [Value.output lhs, Value.output rhs]]
 	      | S_VIcmp {result, cond, ty, lhs, rhs} =>
-		seq_space [Identifier.output result, str "= vicmp", Op.output_vicmp cond,
+		seq_space [Identifier.output result, str "= vicmp",
+			   Op.output_vicmp cond,
 			   Type.output ty,
 			   commas [Value.output lhs, Value.output rhs]]
 	      | S_VFcmp {result, cond, ty, lhs, rhs} =>
-		seq_space [Identifier.output result, str "= vfcmp", Op.output_vfcmp cond,
+		seq_space [Identifier.output result, str "= vfcmp",
+			   Op.output_vfcmp cond,
 			   Type.output ty,
 			   commas [Value.output lhs, Value.output rhs]]
 	      | S_Phi {result, ty, predecs} =>
 		let
 		  fun output_predecs predecs =
 		      commas (List.map (fn (value, label) =>
-					   commas [Value.output value, Label.output label])
+					   commas [Value.output value,
+						   Label.output label])
 				       predecs)
 		in
 		  seq_space [Identifier.output result, str "= phi",
@@ -1753,9 +1822,12 @@ struct
 			  false_ty, false_value} =>
 		commas [seq_space [Identifier.output result, str "= select",
 				   Type.output ty, Value.output cond],
-			seq_space [Type.output true_ty, Value.output true_value],
-			seq_space [Type.output false_ty, Value.output false_value]]
-	      | S_Call {func, tail, call_conv, param_attrs, ty, fnty, args, ret, name, fn_attrs} =>
+			seq_space [Type.output true_ty,
+				   Value.output true_value],
+			seq_space [Type.output false_ty,
+				   Value.output false_value]]
+	      | S_Call {func, tail, call_conv, param_attrs, ty, fnty,
+			args, ret, name, fn_attrs} =>
 		let
 		  fun process_args args = commas (List.map Value.output args)
 		in
@@ -1767,15 +1839,20 @@ struct
 			     | SOME cconv => CallConv.output cconv,
 			     case param_attrs of
 			       [] => null
-			     | p_attrs => seq_space (List.map ParamAttr.output p_attrs),
+			     | p_attrs =>
+			       seq_space
+				 (List.map ParamAttr.output p_attrs),
 			     Type.output ty,
 			     case fnty of
 			       NONE => null
 			     | SOME t => Type.output t,
-			     seq [Value.output func, parens (process_args args)],
+			     seq [Value.output func,
+				  parens (process_args args)],
 			     case fn_attrs of
 			       [] => null
-			     | attr => seq_space (List.map FunctionAttr.output attr)]
+			     | attr =>
+			       seq_space
+				 (List.map FunctionAttr.output attr)]
 		end
 	      | S_Seq us =>
 		intersperse (str "\n") (List.map output_op us)
@@ -1889,7 +1966,8 @@ struct
 
     fun output layout_spec =
 	let open LlvmOutput in
-	  intersperse (str "-") (List.map (fn l => str (stringify l)) layout_spec)
+	  intersperse (str "-")
+		      (List.map (fn l => str (stringify l)) layout_spec)
 	end
   end
 
@@ -1951,11 +2029,14 @@ struct
 	let
 	  open LlvmOutput
 	  fun output_args args =
-	      commas (List.map (fn (ty, id, pattrs) =>
-				   seq_space [Type.output ty,
-					      seq_space (List.map ParamAttr.output pattrs),
-					      Identifier.output id])
-			       args)
+	      commas
+		(List.map (fn (ty, id, pattrs) =>
+			      seq_space [Type.output ty,
+					 seq_space (List.map
+						      ParamAttr.output
+						      pattrs),
+					 Identifier.output id])
+			  args)
 	in
 	  case gbl of
 	    G_Value {id, value} =>
@@ -1997,13 +2078,15 @@ struct
 		       | lst => seq_space (List.map FunctionAttr.output lst),
 		       case section of
 			 NONE => null
-		       | SOME name => seq_space [str "section", quoted_str name],
+		       | SOME name =>
+			 seq_space [str "section", quoted_str name],
 		       case align of
 			 NONE => null
 		       | SOME n => seq_space [str "align", Align.output n],
 		       case gc of
 			 NONE => null
-		       | SOME gc => seq_space [str "gc", GarbageCollector.output gc]]
+		       | SOME gc =>
+			 seq_space [str "gc", GarbageCollector.output gc]]
 	  | G_Func {id, linkage, visibility, callconv, ret_ty, args, body,
 		ret_attrs, fn_attrs, section, align, gc} =>
 	    let
@@ -2031,13 +2114,15 @@ struct
 			 | lst => seq_space (List.map FunctionAttr.output lst),
 			 case section of
 			   NONE => null
-			 | SOME name => seq_space [str "section", quoted_str name],
+			 | SOME name => seq_space [str "section",
+						   quoted_str name],
 			 case align of
 			   NONE => null
 			 | SOME n => seq_space [str "align", Align.output n],
 			 case gc of
 			   NONE => null
-			 | SOME gc => seq_space [str "gc", GarbageCollector.output gc],
+			 | SOME gc => seq_space [str "gc",
+						 GarbageCollector.output gc],
 			 braces (output_bodies (!body))]
 	    end
 	end
