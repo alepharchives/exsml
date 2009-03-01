@@ -114,9 +114,6 @@ struct
              (* Function types *)
 	   | T_Fun of {return: t,
 		       params: t list}
-	     (* TODO: Consider removing this *)
-	   | T_FunVarArg of {return: t,
-			     params: t list}
 	     (* Struct types *)
 	   | T_Struct of t list
 	     (* TODO: Kill this *)
@@ -191,32 +188,25 @@ struct
 	    in
 	      seq_space [r_t, parens params_t]
 	    end
-	  | T_FunVarArg {return, params} =>
-	    let
-	      val r_t = output return
-	      val params_t = conc (List.map output params)
-	    in
-	      seq_space [r_t, parens (conc [params_t, str "..."])]
-	    end
-	   | T_Struct elements =>
+	  | T_Struct elements =>
 	     braces (conc (List.map output elements))
-	   | T_PackedStruct elements =>
+	  | T_PackedStruct elements =>
 	     sorround (str "< {") (str "} >")
 		      (conc (List.map output elements))
-	   | T_Array {ty, length} =>
+	  | T_Array {ty, length} =>
 	     brackets (conc [integer length, str " x ", output ty])
-	   | T_Pointer ty => conc [output ty, str " *"]
-	   | T_QualifiedPointer {ty, address_space} =>
+	  | T_Pointer ty => conc [output ty, str " *"]
+	  | T_QualifiedPointer {ty, address_space} =>
 	       conc [output ty,
 		     str " addrspace(", integer address_space, str ")"]
-	   | T_Vector {ty, length} =>
+	  | T_Vector {ty, length} =>
 	     sorround (str "< ") (str " >")
 		      (conc [integer length, str " x ",
 			     output ty])
-	   | T_Opaque => (str "opaque")
-	   | T_Void => (str "void")
-	   | T_Label => (str "label")
-	   | T_Top => raise (Internal_Error "T_Top is not valid for output")
+	  | T_Opaque => (str "opaque")
+	  | T_Void => (str "void")
+	  | T_Label => (str "label")
+	  | T_Top => raise (Internal_Error "T_Top is not valid for output")
     end
 
     fun eq ty1 ty2 =
