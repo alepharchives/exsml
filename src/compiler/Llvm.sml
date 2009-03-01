@@ -115,9 +115,8 @@ struct
 	   | T_Fun of {return: t,
 		       params: t list}
 	     (* Struct types *)
-	   | T_Struct of t list
-	     (* TODO: Kill this *)
-	   | T_PackedStruct of t list
+	   | T_Struct of {elements: t list,
+			  packed: bool}
              (* Array/Pointer types *)
 	   | T_Array of {ty: t,
 			 length: int}
@@ -161,7 +160,7 @@ struct
 	  | T_Real fty => float_sizes fty
 	  | T_Vector {length, ty} => length * (bit_size ty)
 	  | T_Array {length, ty} => length * (bit_size ty)
-	  | T_Struct ts => sum (List.map bit_size ts)
+	  | T_Struct {elements = ts, packed = false} => sum (List.map bit_size ts)
 	  | T_Pointer _ => !pointer_size
 	  | _ => raise (Internal_Error "Bit size called with something odd")
 	end
@@ -188,11 +187,14 @@ struct
 	    in
 	      seq_space [r_t, parens params_t]
 	    end
-	  | T_Struct elements =>
-	     braces (conc (List.map output elements))
-	  | T_PackedStruct elements =>
-	     sorround (str "< {") (str "} >")
-		      (conc (List.map output elements))
+	  | T_Struct {elements, packed} =>
+	    let
+	      val notation = if packed
+			     then sorround (str "< {") (str "} >")
+			     else braces
+	    in
+	      notation (conc (List.map output elements))
+	    end
 	  | T_Array {ty, length} =>
 	     brackets (conc [integer length, str " x ", output ty])
 	  | T_Pointer ty => conc [output ty, str " *"]
@@ -346,7 +348,8 @@ struct
 		if l1 = l2 andalso eq ty1' ty2'
 		then true
 		else raise TypeError "Length mismatch in compound types"
-	      | (T_Struct ts1, T_Struct ts2) =>
+	      | (T_Struct {elements = ts1, ...}, T_Struct {elements  = ts2, ...}) =>
+		(* TODO: Handle packedness *)
 		eq_list ts1 ts2
 	      | (T_Fun {return = r1, params = a1}, T_Fun {return = r2, params = a2}) =>
 		(eq r1 r2;
@@ -399,7 +402,7 @@ struct
 	case ty of
 	   T_Pointer ty' => is_first_class ty'
 	 | T_Vector {ty, ...} => is_first_class ty
-	 | T_Struct ts => List.all is_first_class ts
+	 | T_Struct {elements, ...} => List.all is_first_class elements
 	 | T_Array {ty, ...} => is_first_class ty
 	 | T_Integer _ => true
 	 | T_Real _ => true
@@ -848,7 +851,7 @@ struct
 		    | check_indexes (typ as Type.T_Array  {length, ty}) (i::rest) =
 		         (Type.assert_valid_idx typ i;
 			  check_indexes ty rest)
-		    | check_indexes (Type.T_Struct types) (i::rest) =
+		    | check_indexes (Type.T_Struct {elements = types, ...}) (i::rest) =
 		      let
 			val ty = List.nth (types, i)
 				  handle Subscript =>
@@ -921,9 +924,9 @@ struct
 		if String.size str + 1 <> length
 		then raise TypeError "Stringz has wrong size"
 		else ty
-	      | (Type.T_Struct ts, E_Struct es) =>
+	      | (typ as Type.T_Struct {elements = ts, ...}, E_Struct es) =>
 		let
-		  fun check_struct [] [] = Type.T_Struct ts
+		  fun check_struct [] [] = typ
 		    | check_struct (t::ts) (e::es) =
 		      (check_exp {ty = t, value = e};
 		       check_struct ts es)
