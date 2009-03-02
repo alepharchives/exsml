@@ -1416,7 +1416,6 @@ struct
 	    | Op.OR => Type.assert_int ty
 	    | Op.XOR => Type.assert_int ty);
 	   LlvmSymtable.enter ret ty vtable)
-	(* TYPE CHECK FIX BELOW *)
 	| S_Branch {cond, label_t, label_f} =>
 	  (Value.check vtable Type.T_I1 cond;
 	   vtable)
@@ -1464,12 +1463,9 @@ struct
              3. value must coerce to the vector type *)
 	  let open Type in
 	    run assert_vector ty;
-	    Value.check vtable Type.T_I32 value;
-	    let
-	      val r_ty = Value.check vtable ty value
-	    in
-	      LlvmSymtable.enter result r_ty vtable
-	    end
+	    Value.check vtable ty value;
+	    Value.check vtable Type.T_I32 idx;
+	    LlvmSymtable.enter result (extract_base ty) vtable
 	  end
 	| S_Free {ty, value} =>
 	  let open Type in
@@ -1477,6 +1473,7 @@ struct
 	     Value.check vtable ty value;
 	     vtable)
 	  end
+	(* TYPE CHECK FIX BELOW *)
 	| S_InsertElement {ty, value, elem_ty, elem_value, idx} =>
 	  (* Rules:
 	     1. Ty must be a vector type.
