@@ -1148,12 +1148,9 @@ struct
 			    label: Label.t}
     type t = Label.t * u
 
-    local
-      open LlvmOutput
-    in
-
     fun output (label, operation) =
 	let
+	  open LlvmOutput
 	  fun output_op operation =
 	      case operation of
 		S_Ret NONE => str "ret void"
@@ -1384,69 +1381,42 @@ struct
 	    [Label.output label, LlvmOutput.str ":\n",
 	     output_op operation]
 	end
-    end
 
-
+    (* Type check a basicblock with a given vtable mapping variables to types
+     * When carrying out the type check we process the contents of each possible
+     * outcome.
+     *
+     * This function does not verify label and return rules for basic blocks yet
+     *)
     fun check vtable bb =
 	case bb of
 	  S_Alloca {result, ty, num_elems, align} =>
+	  (* Rules:
+	   * 1. Type must be a sized type
+	   * 2. return is now having the type of a pointer to the ty *)
 	  (Type.assert_sized ty;
 	   LlvmSymtable.enter result (Type.T_Pointer ty) vtable)
 	| S_BinOp {binop, ty, lhs, rhs, ret, ...} =>
-	  let
-	    fun bin_coerce ty lhs rhs =
-		let
-		  val lhs_ty = Value.check vtable ty lhs
-		in
-		  Value.check vtable ty rhs
-		end
-	  in case binop of
-	       Op.ADD =>
-	       (Type.assert_int_float ty;
-		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-	     | Op.SUB =>
-	       (Type.assert_int_float ty;
-		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-	     | Op.MUL =>
-	       (Type.assert_int_float ty;
-		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-	     | Op.UDIV =>
-	       (Type.assert_int ty;
-		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-	     | Op.SDIV =>
-	       (Type.assert_int ty;
-		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-	     | Op.FDIV =>
-	       (Type.assert_float ty;
-		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-	     | Op.UREM =>
-	       (Type.assert_int ty;
-		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-	     | Op.SREM =>
-	       (Type.assert_int ty;
-		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-	     | Op.FREM =>
-	       (Type.assert_float ty;
-		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-	     | Op.SHL =>
-	       (Type.assert_int ty;
-		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-	     | Op.LSHR =>
-	       (Type.assert_int ty;
-		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-	     | Op.ASHR =>
-	       (Type.assert_int ty;
-		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-	     | Op.AND =>
-	       (Type.assert_int ty;
-		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-	     | Op.OR =>
-	       (Type.assert_int ty;
-		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-	     | Op.XOR =>
-	       (Type.assert_int ty;
-		LlvmSymtable.enter ret (bin_coerce ty lhs rhs) vtable)
-	  end
+	  (Value.check vtable ty lhs;
+	   Value.check vtable ty rhs;
+	   (case binop of
+	      Op.ADD => Type.assert_int_float ty
+	    | Op.SUB => Type.assert_int_float ty
+	    | Op.MUL => Type.assert_int_float ty
+	    | Op.UDIV => Type.assert_int ty
+	    | Op.SDIV => Type.assert_int ty
+	    | Op.FDIV => Type.assert_float ty
+	    | Op.UREM => Type.assert_int ty
+	    | Op.SREM => Type.assert_int ty
+	    | Op.FREM => Type.assert_float ty
+	    | Op.SHL => Type.assert_int ty
+	    | Op.LSHR => Type.assert_int ty
+	    | Op.ASHR => Type.assert_int ty
+	    | Op.AND => Type.assert_int ty
+	    | Op.OR => Type.assert_int ty
+	    | Op.XOR => Type.assert_int ty);
+	   LlvmSymtable.enter ret ty vtable)
+	(* TYPE CHECK FIX BELOW *)
 	| S_Branch {cond, label_t, label_f} =>
 	  (Value.check vtable Type.T_I1 cond;
 	   vtable)
