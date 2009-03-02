@@ -1045,7 +1045,8 @@ struct
 				      ty: Type.t, (* Ass: Vector type *)
 				      value: Value.t,
 				      idx: Value.t} (* Assumption: i32 *)
-	       | S_InsertElement of {ty: Type.t,  (* Vector type *)
+	       | S_InsertElement of {result: Identifier.t,
+				     ty: Type.t,  (* Vector type *)
 				     value: Value.t,
 				     elem_ty: Type.t, (* Match: type in vector*)
 				     elem_value: Value.t,
@@ -1216,8 +1217,8 @@ struct
 		seq_space [Identifier.output result, str "= extractelement",
 			   Type.output ty, Value.output value, str ", i32",
 			   Value.output idx]
-	      | S_InsertElement {ty, value, elem_ty, elem_value, idx} =>
-		seq_space [str "insertelement",
+	      | S_InsertElement {result, ty, value, elem_ty, elem_value, idx} =>
+		seq_space [Identifier.output result, str "= insertelement",
 			   Type.output ty, Value.output value, str ",",
 			   Type.output elem_ty, Value.output elem_value,
 			   str ", i32", Value.output idx]
@@ -1473,22 +1474,21 @@ struct
 	     Value.check vtable ty value;
 	     vtable)
 	  end
-	(* TYPE CHECK FIX BELOW *)
-	| S_InsertElement {ty, value, elem_ty, elem_value, idx} =>
+	| S_InsertElement {result, ty, value, elem_ty, elem_value, idx} =>
 	  (* Rules:
-	     1. Ty must be a vector type.
-             2. Value must coerce to ty
-	     3. elem_ty must be the extract of the vector type
-             4. elem_value must coerce to elem_ty
-	     5. idx must coerce to T_I32.
-	     Function is void'ed
-          *)
+	   * 1. Ty must be a vector type.
+           * 2. Value must coerce to ty
+	   * 3. elem_ty must be the extract of the vector type
+           * 4. elem_value must coerce to elem_ty
+	   * 5. idx must coerce to T_I32.
+	   * 6. Function is void'ed
+           *)
 	  (Type.assert_vector ty;
 	   Value.check vtable ty value;
 	   Type.eq (Type.extract_base ty) elem_ty;
 	   Value.check vtable elem_ty elem_value;
 	   Value.check vtable Type.T_I32 idx;
-	   vtable)
+	   LlvmSymtable.enter result ty vtable)
 	| S_Invoke {callconv, ret_attrs, func, func_ty, args,
 		    func_attrs, label_cont, label_unwind, result} =>
 	  (* Rules:
@@ -1504,6 +1504,7 @@ struct
 	  (* TODO! *)
 	  (* Wrong, should extract ret-ty from func_ty *)
 	  LlvmSymtable.enter result func_ty vtable
+	(* TYPE CHECK FIX BELOW *)
 	| S_ShuffleVector {result, v1_ty, v1, v2_ty, v2, mask_len, mask} =>
 	  (* Rules:
 	     1. v1_ty and v2_ty must agree
