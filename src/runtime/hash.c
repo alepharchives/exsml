@@ -86,14 +86,20 @@ static void hash_aux(obj)
       break;
     case Reference_tag:
       /* We can't hash on the heap address itself, since the reference block
-         may be moved (from the young generation to the old one).  
-	 But, we may follow the pointer.  On cyclic structures this will
-	 terminate because the hash_univ_count gets decremented. */
+       * may be moved (from the young generation to the old one).
+       * But, we may follow the pointer.  On cyclic structures this will
+       * terminate because the hash_univ_count gets decremented.
+       */
+
       /* Poor idea to hash on the pointed-to structure, even so: it may change,
-	 and hence the hash value of the value changes, although the ref doesn't.
-	 This breaks most hash table implementations.  sestoft 2000-02-20.
-      Combine_small(tag);
-      hash_univ_count--;
+       * and hence the hash value of the value changes, although the ref
+       * doesn't.
+       *
+       * This breaks most hash table implementations.  sestoft 2000-02-20.
+       */
+
+      /*  Combine_small(tag); */
+      /* hash_univ_count--; */
       /* hash_aux(Field(obj, 0)); */
       break;
     default:
