@@ -4,14 +4,10 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <sys/types.h>
-#ifdef WIN32
-#include <io.h>
-#include <windows.h>
-#else
 #include <unistd.h>
-#endif
 
-#include "version.h"
+#include <config.h>
+
 #include "alloc.h"
 #include "exec.h"
 #include "fail.h"

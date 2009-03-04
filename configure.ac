@@ -1,5 +1,5 @@
 AC_PREREQ(2.61)
-AC_INIT([src/runtime/interp.c])
+AC_INIT([runtime/interp.c])
 
 VERSION_MAJOR=0
 VERSION_MINOR=1
@@ -13,7 +13,7 @@ AC_SUBST([VERSION])
 
 AM_INIT_AUTOMAKE(mosml, [$VERSION_FULL])
 
-AC_CONFIG_SRCDIR([src/runtime/interp.c])
+AC_CONFIG_SRCDIR([runtime/interp.c])
 AC_LANG([C])
 
 # Checks for programs.
@@ -27,4 +27,5 @@ AC_CHECK_LIB(m, cos)
 
 AC_OUTPUT(
           Makefile
+	  runtime/Makefile
 )
