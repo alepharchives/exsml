@@ -6,6 +6,14 @@ config.h.in
 configure
 install-sh
 missing
+Makefile
+Makefile.in
+config.h
+config.h.in
+config.log
+config.status
+stamp-h1
+*~
 src/camlrunm
 src/compiler/Config.sml
 src/compiler/Filename.sml
