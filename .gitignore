@@ -1,5 +1,11 @@
 *.u[io]
 *.o
+aclocal.m4
+autom4te.cache
+config.h.in
+configure
+install-sh
+missing
 src/camlrunm
 src/compiler/Config.sml
 src/compiler/Filename.sml
