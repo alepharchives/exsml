@@ -1,5 +1,7 @@
 *.u[io]
 *.o
+depcomp
+runtime/.deps
 aclocal.m4
 autom4te.cache
 config.h.in
@@ -42,10 +44,11 @@ src/mosmllib/Word.sml
 src/mosmllib/Word8Array.sml
 src/mosmllib/Word8Vector.sml
 src/mosmlyac/mosmlyac
-src/runtime/camlrunm
-src/runtime/jumptbl.h
-src/runtime/primitives
-src/runtime/prims.c
+runtime/camlrunm
+runtime/jumptbl.h
+runtime/primitives
+runtime/prims.c
+runtime/Makefile
 src/launch/camlexec
 src/launch/camlexec.c
 src/launch/mosml
