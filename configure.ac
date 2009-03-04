@@ -22,6 +22,9 @@ AC_PROG_INSTALL
 AC_PROG_RANLIB
 AM_CONFIG_HEADER(config.h)
 
+# Checks for libs
+AC_CHECK_LIB(m, cos)
+
 AC_OUTPUT(
           Makefile
 )
