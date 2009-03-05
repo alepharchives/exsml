@@ -9,13 +9,6 @@
 #include <time.h>
 #include <ctype.h>
 
-#ifdef WIN32
-#include <sys/timeb.h>
-#include <sys/utime.h>
-#include <io.h>
-#include <direct.h>
-#include <windows.h>
-#else
 #include <sys/time.h>
 #include <sys/times.h>
 #include <sys/resource.h>
@@ -23,7 +16,6 @@
 #include <sys/param.h> 
 #include <unistd.h>
 #include <utime.h>
-#endif
 
 #include "mlvalues.h"
 #include "fail.h"
@@ -38,12 +30,7 @@
 #include "globals.h"
 #include "mosml.h"
 
-/* SunOS 4 appears not to have mktime: */
-#if defined(sun) && !defined(__svr4__)
-#define tm2cal(tptr)	timelocal(tptr)
-#else
 #define tm2cal(tptr)	mktime(tptr)
-#endif
 
 #define Raise_float_if(cond) \
    if( cond ) \

@@ -6,12 +6,8 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <stdio.h>
-#ifdef WIN32
-#include <io.h>
-#include <direct.h>
-#else
 #include <unistd.h>
-#endif
+
 #include "config.h"
 #include "alloc.h"
 #include "fail.h"
