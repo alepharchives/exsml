@@ -3,6 +3,7 @@
 #include <math.h>
 #include <setjmp.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "alloc.h"
 #include "debugger.h"
@@ -153,7 +154,9 @@ EXTERN value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
   struct longjmp_buffer raise_buf;
   value * modify_dest, modify_newval;
   value tmp;
+#ifndef THREADED
   int cur_instr;
+#endif
   double dtmp;
 
 #ifdef DIRECT_JUMP
@@ -165,6 +168,7 @@ EXTERN value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
 #if defined(DIRECT_JUMP) && defined(THREADED)
 
   realcode_t realcode;
+  memset(&realcode, 0, sizeof(realcode_t));
 
   switch (mode) {
   case 0:			// initialization

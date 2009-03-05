@@ -3,12 +3,20 @@
 AM_CFLAGS = -I$(top_srcdir) -Wall -DTHREADED
 
 bin_PROGRAMS = camlrunm
-camlrunm_SOURCES = interp.c expand.c misc.c stacks.c fix_code.c main.c \
+camlrunm_SOURCES = $(C_SOURCES) $(H_SOURCES) $(GEN_SOURCES)
+
+C_SOURCES = interp.c expand.c misc.c stacks.c fix_code.c main.c \
 	fail.c signals.c freelist.c major_gc.c minor_gc.c memory.c alloc.c \
 	roots.c compare.c ints.c floats.c str.c io.c extern.c externcp.c \
 	intern.c interncp.c hash.c sys.c meta.c parsing.c lexing.c \
-	gc_ctrl.c mosml.c unix.c runtime.c md5sum.c callback.c prims.c
-	jumptbl.h
+	gc_ctrl.c mosml.c unix.c runtime.c md5sum.c callback.c
+
+H_SOURCES = jumptbl.h
+
+# Generated sources
+GEN_SOURCES = prims.c
+
+
 
 
 
@@ -41,13 +49,13 @@ prims.c : primitives
 # 	${INSTALL_PROGRAM} camlrunm$(EXE) $(BINDIR)
 # 	${INSTALL_PROGRAM} *.h $(INCDIR)
 
-# primitives : $(PRIMS)
-# 	sed -n -e '/\/\* ML \*\//s/.* \([a-zA-Z0-9_][a-zA-Z0-9_]*\) *(.*/\1/p' \
-#                 $(PRIMS) > primitives2
-# 	sh -c 'if cmp -s primitives primitives2; \
-#         then rm primitives2; \
-#         else mv primitives2 primitives; \
-#         fi'
+primitives : $(C_SOURCES)
+	sed -n -e '/\/\* ML \*\//s/.* \([a-zA-Z0-9_][a-zA-Z0-9_]*\) *(.*/\1/p' \
+                $(C_SOURCES) > primitives2
+	sh -c 'if cmp -s primitives primitives2; \
+        then rm primitives2; \
+        else mv primitives2 primitives; \
+        fi'
 
 
 # opnames.h : instruct.h

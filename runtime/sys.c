@@ -228,8 +228,7 @@ void sys_init(char ** argv)
 
 /* Added by sestoft@dina.kvl.dk to make signals work under recent linuxes: */
 
-void mysignal(int signum, sighandler_return_type (*handler)(int)) {
-#ifdef linux
+void mysignal(int signum, void (*handler)(int)) {
   struct sigaction sigact;
   sigset_t emptyset;
   sigemptyset(&emptyset);
@@ -237,17 +236,12 @@ void mysignal(int signum, sighandler_return_type (*handler)(int)) {
   sigact.sa_mask     = emptyset;
   sigact.sa_flags    = SA_NOMASK;
   sigaction(signum, &sigact, 0); 
-#else
-  signal(signum, handler);
-#endif
 }
 
-sighandler_return_type intr_handler(int sig)
+void intr_handler(int sig)
 {
-#ifndef BSD_SIGNALS
   mysignal (SIGINT, intr_handler);
-#endif
-  sigint_pending = 1;
+  /* sigint_pending = 1; TODO: Where did this come from? */
 }
 
 value sys_catch_break(value onoff)    /* ML */
@@ -259,7 +253,7 @@ value sys_catch_break(value onoff)    /* ML */
   return Atom(0);
 }
 
-sighandler_return_type float_handler(int sig)
+void float_handler(int sig)
 {
 #ifndef BSD_SIGNALS
   mysignal (SIGFPE, float_handler);
