@@ -18,29 +18,12 @@
 #include "stacks.h"
 #include "io.h"
 
-#ifdef HAS_STRERROR
-
 extern char * strerror();
 
 char * error_message(void)
 {
   return strerror(errno);
 }
-
-#else
-
-extern int sys_nerr;
-extern char * sys_errlist [];
-
-char * error_message(void)
-{
-  if (errno < 0 || errno >= sys_nerr)
-    return "unknown error";
-  else
-    return sys_errlist[errno];
-}
-
-#endif /* HAS_STRERROR */
 
 char* globalexn[] = { 
        "Out_of_memory",

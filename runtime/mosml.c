@@ -950,14 +950,6 @@ value sml_access(value path, value permarg)          /* ML */
   return Val_bool(0);
 }
 
-#ifndef HAS_STRERROR
-#if (!defined(__FreeBSD__) && !defined(linux))
-  extern int sys_nerr;
-  extern char * sys_errlist [];
-#endif   
-  extern char *realpath();
-#endif
-
 value sml_tmpnam(value v)          /* ML */
 { 
   char *res;
