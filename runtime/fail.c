@@ -1,15 +1,8 @@
 /* Raising exceptions from C. */
 
-#if !defined(WIN32) && (defined(__unix__) || defined(unix)) && !defined(USG)
 #include <sys/param.h>
-#endif
-
-#if defined(__MWERKS__) || defined(WIN32)
-#define MAXDOUBLE 1.7976931348623157081e+308
-#else
 #include <float.h>
-#define MAXDOUBLE DBL_MAX
-#endif
+
 #include "alloc.h"
 #include "fail.h"
 #include "memory.h"
@@ -24,7 +17,7 @@
 
 volatile int float_exn = SYS__EXN_FAIL;
 
-double maxdouble = MAXDOUBLE/2;
+double maxdouble = DBL_MAX/2;
 
 struct longjmp_buffer * external_raise;
 value exn_bucket;		/* ML type: string ref * 'a */

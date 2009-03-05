@@ -224,24 +224,6 @@ void sys_init(char ** argv)
 
 /* Handling of user interrupts and floating-point errors */
 
-#ifdef WIN32
-static int catch_break = 0;
-static int sigint_pending = 0;
-
-void poll_break()
-{
-  if (catch_break == 0)
-    return;
-  if (sigint_pending)
-  {
-    sigint_pending = 0;
-    signal_handler = raise_break_exn;
-    signal_number = 0;
-    execute_signal();
-  } 
-}
-#endif
-
 #ifndef MSDOS
 
 /* Added by sestoft@dina.kvl.dk to make signals work under recent linuxes: */
@@ -265,20 +247,11 @@ sighandler_return_type intr_handler(int sig)
 #ifndef BSD_SIGNALS
   mysignal (SIGINT, intr_handler);
 #endif
-#ifndef WIN32
-  signal_handler = raise_break_exn;
-  signal_number = 0;
-  execute_signal();
-#else
   sigint_pending = 1;
-#endif
 }
 
 value sys_catch_break(value onoff)    /* ML */
 {
-#ifdef WIN32
-  catch_break = Tag_val(onoff);
-#endif
   if (Tag_val(onoff))
     mysignal(SIGINT, intr_handler);
   else
