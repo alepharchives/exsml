@@ -25,6 +25,7 @@ AM_CONFIG_HEADER(config.h)
 ## Checks for libs
 AC_CHECK_LIB(m, cos)
 AC_CHECK_FUNCS([strerror])
+AC_CHECK_FUNCS([rename])
 
 
 ## Check for various platform specific stuff needed in the mosml runtime

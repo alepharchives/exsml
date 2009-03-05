@@ -133,12 +133,8 @@ value sys_remove(value name)          /* ML */
 
 value sys_rename(value oldname, value newname) /* ML */
 {
-#ifdef HAS_RENAME
   if (rename(String_val(oldname), String_val(newname)) != 0) 
     sys_error(String_val(oldname));
-#else
-  invalid_argument("rename: not implemented");
-#endif
   return Atom(0);
 }
 
