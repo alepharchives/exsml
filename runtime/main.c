@@ -235,7 +235,7 @@ int main(int argc, char * argv[])
     if (read(fd, (char *) start_code, code_size) != code_size)
       fatal_error("Fatal error: truncated bytecode file.\n");
 
-#if defined(WORDS_BIGENDIAN) && !defined(ALIGNMENT)
+#if defined(WORDS_BIGENDIAN) && !defined(HAVE_ALIGNED_ACCESS_REQUIRED)
     fixup_endianness(start_code, code_size);
 #endif
 

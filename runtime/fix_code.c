@@ -12,7 +12,7 @@
    native endianness.
 */
 
-#if defined(WORDS_BIGENDIAN) && !defined(ALIGNMENT)
+#if defined(WORDS_BIGENDIAN) && !defined(HAVE_ALIGNED_ACCESS_REQUIRED)
 
 void fixup_endianness(p, len)
      register bytecode_t p;

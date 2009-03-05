@@ -22,7 +22,7 @@ value start_interp(value may_free, value prog, value offset, value vlen) /* ML *
   int len = Long_val(vlen);
   value res;
 
-#if defined(WORDS_BIGENDIAN) && !defined(ALIGNMENT)
+#if defined(WORDS_BIGENDIAN) && !defined(HAVE_ALIGNED_ACCESS_REQUIRED)
   fixup_endianness(&Byte(prog, 0), (asize_t) len);
 #endif
 

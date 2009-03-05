@@ -55,7 +55,7 @@ typedef unsigned char opcode_t;
    POP, 1, 0 means pop(1) 
 */
 
-#if defined(WORDS_BIGENDIAN) && !defined(ALIGNMENT)
+#if defined(WORDS_BIGENDIAN) && !defined(HAVE_ALIGNED_ACCESS_REQUIRED)
 static opcode_t byte_raise_break_exn[] =
        { GETGLOBAL, 0, EXN_INTERRUPT, RAISE };
 static opcode_t byte_callback1_code[] = { ACC1, APPLY1, POP, 0, 1, STOP };
