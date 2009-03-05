@@ -1,6 +1,6 @@
 # Makefile for the Moscow ML 2.00 version of the Caml Light runtime system
 
-AM_CFLAGS = -I$(top_srcdir)
+AM_CFLAGS = -I$(top_srcdir) -Wall -DTHREADED
 
 bin_PROGRAMS = camlrunm
 camlrunm_SOURCES = interp.c expand.c misc.c stacks.c fix_code.c main.c \
@@ -10,7 +10,7 @@ camlrunm_SOURCES = interp.c expand.c misc.c stacks.c fix_code.c main.c \
 	gc_ctrl.c mosml.c unix.c runtime.c md5sum.c callback.c prims.c
 	jumptbl.h
 
-CFLAGS=-Wall -DTHREADED -Dunix -O2
+
 
 DOBJS=$(OBJS:.o=.d.o) debugger.d.o
 
