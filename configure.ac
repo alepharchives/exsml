@@ -26,6 +26,8 @@ AM_CONFIG_HEADER(config.h)
 AC_CHECK_LIB(m, cos)
 AC_CHECK_HEADER(unistd.h)
 AC_CHECK_HEADER(dirent.h)
+AC_CHECK_HEADER(sys/param.h)
+AC_CHECK_HEADERS([asm/sigcontext.h])
 
 AC_CHECK_FUNCS([socket,socketpair,bind,listen,accept,connect])
 AC_CHECK_FUNCS([lockf])
@@ -41,26 +43,24 @@ AC_CHECK_FUNCS([symlink,readlink,lstat])
 AC_CHECK_FUNCS([wait3])
 AC_CHECK_FUNCS([waitpid])
 AC_CHECK_FUNCS([tcgetattr,tcsetattr,tcsendbreak,tcflush,tcflow])
-
+AC_CHECK_FUNCS([getgroups])
 AC_CHECK_FUNCS([strerror])
 AC_CHECK_FUNCS([rename])
+
+AC_FUNC_CHOWN
+AC_FUNC_GETGROUPS
 
 ## Check for various platform specific stuff needed in the mosml runtime
 # Endianness, define WORDS_BIGENDIAN on Big endian bastards
 AC_C_BIGENDIAN
-
-# AC_C_CHAR_UNSIGNED <- forget this one and use the thing below
-#include <limits.h>
-#if CHAR_MIN == 0
-# define CHAR_UNSIGNED 1
-#endif
 
 # Sizes of different things:
 AC_CHECK_SIZEOF([int])
 AC_CHECK_SIZEOF([long])
 AC_CHECK_SIZEOF([long *])
 
-# AC_CHECK_ALIGNOF <- perhaps to be used
+AC_TYPE_GETGROUPS
+AC_CHECK_ALIGNOF([double])
 
 AC_DEFUN([AC_FUNC_MEMMOVE],
 [AC_CHECK_FUNCS(memmove)
