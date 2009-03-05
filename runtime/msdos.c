@@ -70,7 +70,7 @@ int msdos_read(fd, ptr, len)
           if (bdosptr(0xA, &read_buffer, 0) != 0) poll_break();
           bdos(0x2, '\n', 0);
           read_buffer.data[read_buffer.act_len] = '\n';
-          bcopy(read_buffer.data, ptr, read_buffer.act_len + 1);
+          memmove(read_buffer.data, ptr, read_buffer.act_len + 1);
 	  {int i;
            for (i=0; (i<read_buffer.act_len)&&(read_buffer.data[i]!=0x1A);
 		 i++);

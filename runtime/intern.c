@@ -180,7 +180,7 @@ static void expand_block(value32 * source, value * dest, mlsize_t source_len, ml
         new_sz = (sz * sizeof(value32) + sizeof(value) - 1) / sizeof(value);
         *d++ = Make_header(new_sz, String_tag, color);
         Field(d, new_sz - 1) = 0;
-        bcopy((char *)p, (char *)d, len);
+        memmove((char *)p, (char *)d, len);
         ofs_last_byte = new_sz * sizeof(value) - 1;
         Byte(d, ofs_last_byte) = ofs_last_byte - len;
         p += sz;
@@ -363,7 +363,7 @@ static int shrink_block(value64 * source, value * dest, mlsize_t source_len, mls
         new_sz = (len + sizeof(value)) / sizeof(value);
         *d++ = Make_header(new_sz, String_tag, color);
         Field(d, new_sz - 1) = 0;
-        bcopy(p, d, len);
+        memmove(p, d, len);
         ofs_last_byte = new_sz * sizeof(value) - 1;
         Byte(d, ofs_last_byte) = ofs_last_byte - len;
         p += sz;

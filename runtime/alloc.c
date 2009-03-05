@@ -70,7 +70,7 @@ value copy_string(char * s)
 
   len = strlen(s);
   res = alloc_string(len);
-  bcopy(s, String_val(res), len);
+  memmove(s, String_val(res), len);
   return res;
 }
 

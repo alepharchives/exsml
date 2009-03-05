@@ -44,9 +44,7 @@ void realloc_stack()
     ((char *) new_high - ((char *) stack_high - (char *) (ptr)))
 
   new_sp = (value *) shift(extern_sp);
-  bcopy((char *) extern_sp,
-        (char *) new_sp,
-        (stack_high - extern_sp) * sizeof(value));
+  memmove((char *)extern_sp, (char *)new_sp, (stack_high - extern_sp) * sizeof(value));
   stat_free((char *) stack_low);
   trapsp = (value *) shift(trapsp);
   for (p = trapsp; p < new_high; p = Trap_link(p))
