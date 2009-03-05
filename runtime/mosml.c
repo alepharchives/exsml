@@ -1415,7 +1415,7 @@ value w8vectofloat(value v)		/* ML */
   int i;
   char* p = String_val(v);
   for (i=0; i<4; i++)
-#ifdef MOSML_BIG_ENDIAN
+#ifdef WORDS_BIGENDIAN
     buf.w8[i] = p[i];
 #else
     buf.w8[i] = p[3-i];
@@ -1437,7 +1437,7 @@ value floattow8vec(value v)		/* ML */
   res = alloc_string(4);
   p = String_val(res);
   for (i=0; i<4; i++)
-#ifdef MOSML_BIG_ENDIAN
+#ifdef WORDS_BIGENDIAN
     p[i] = buf.w8[i]; 
 #else
     p[i] = buf.w8[3-i];
@@ -1455,7 +1455,7 @@ value w8vectodouble(value v)		/* ML */
 
   value res;
   
-#ifdef MOSML_BIG_ENDIAN
+#ifdef WORDS_BIGENDIAN
   res = copy_double(Double_val(v));
 #else
   Push_roots(r, 1);
@@ -1483,7 +1483,7 @@ value doubletow8vec(value v)		/* ML */
   Store_double_val(res, Double_val(r[0]));
   Pop_roots();
 
-#ifndef MOSML_BIG_ENDIAN
+#ifndef WORDS_BIGENDIAN
   { 
     int i;
     for (i=0; i<4; i++)

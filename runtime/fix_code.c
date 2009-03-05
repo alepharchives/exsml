@@ -12,7 +12,7 @@
    native endianness.
 */
 
-#if defined(MOSML_BIG_ENDIAN) && !defined(ALIGNMENT)
+#if defined(WORDS_BIGENDIAN) && !defined(ALIGNMENT)
 
 void fixup_endianness(p, len)
      register bytecode_t p;

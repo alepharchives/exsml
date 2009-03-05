@@ -132,7 +132,7 @@ bits  63    10 9     8 7   0
 #define Bhsize_hp(hp) (Bsize_wsize (Whsize_hp (hp)))
 #define Bhsize_hd(hd) (Bsize_wsize (Whsize_hd (hd)))
 
-#ifdef MOSML_BIG_ENDIAN
+#ifdef WORDS_BIGENDIAN
 #define Tag_val(val) (((unsigned char *) (val)) [-1])
                                                  /* Also an l-value. */
 #define Tag_hp(hp) (((unsigned char *) (hp)) [sizeof(value)-1])

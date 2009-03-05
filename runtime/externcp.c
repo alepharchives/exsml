@@ -95,7 +95,7 @@ static void emit_compact(struct channel * chan, value v)
           invalid_argument("output_compact_value: non-standard floats");
         putch(chan, CODE_DOUBLE);
         buffer = Double_val(v);
-#ifndef MOSML_BIG_ENDIAN
+#ifndef WORDS_BIGENDIAN
         Reverse_double(&buffer);
 #endif
         putblock(chan, (char *) &buffer, 8);

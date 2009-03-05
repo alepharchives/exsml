@@ -19,13 +19,13 @@
 #define Last_valid_magic_number (Base_magic_number + 4)
 
 #ifdef SIXTYFOUR
-# ifdef MOSML_BIG_ENDIAN
+# ifdef WORDS_BIGENDIAN
 #  define Extern_magic_number Big_endian_64_magic_number
 # else
 #  define Extern_magic_number Little_endian_64_magic_number
 # endif
 #else
-# ifdef MOSML_BIG_ENDIAN
+# ifdef WORDS_BIGENDIAN
 #  define Extern_magic_number Big_endian_32_magic_number
 # else
 #  define Extern_magic_number Little_endian_32_magic_number

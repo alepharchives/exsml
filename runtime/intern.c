@@ -247,7 +247,7 @@ static void expand_block(value32 * source, value * dest, mlsize_t source_len, ml
 /* Routines to convert 64-bit externed objects to 32-bit memory blocks. */
 
 struct value64_struct {
-#ifdef MOSML_BIG_ENDIAN
+#ifdef WORDS_BIGENDIAN
   value msw, lsw;
 #else
   value lsw, msw;
@@ -426,7 +426,7 @@ static int shrink_block(value64 * source, value * dest, mlsize_t source_len, mls
 
 #endif /* SIXTYFOUR */
 
-#ifdef MOSML_BIG_ENDIAN
+#ifdef WORDS_BIGENDIAN
 #define Wrong_endian_32_magic_number Little_endian_32_magic_number
 #define Wrong_endian_64_magic_number Little_endian_64_magic_number
 #else

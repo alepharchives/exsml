@@ -34,7 +34,7 @@ struct parser_env {       /* Mirrors parser_env in ../mosmllib/Parsing.sml */
   value rule_number;
 };
 
-#ifdef MOSML_BIG_ENDIAN
+#ifdef WORDS_BIGENDIAN
 #define Short(tbl,n) \
   (*((unsigned char *)((tbl) + (n) * sizeof(short))) + \
           (*((schar *)((tbl) + (n) * sizeof(short) + 1)) << 8))

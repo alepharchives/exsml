@@ -22,7 +22,7 @@ value start_interp(value may_free, value prog, value offset, value vlen) /* ML *
   int len = Long_val(vlen);
   value res;
 
-#if defined(MOSML_BIG_ENDIAN) && !defined(ALIGNMENT)
+#if defined(WORDS_BIGENDIAN) && !defined(ALIGNMENT)
   fixup_endianness(&Byte(prog, 0), (asize_t) len);
 #endif
 

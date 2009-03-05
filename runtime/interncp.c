@@ -131,7 +131,7 @@ static void read_compact(struct channel * chan, value * dest)
         *intern_ptr = Make_header(Double_wosize, Double_tag, intern_color);
         intern_ptr += 1 + Double_wosize;
         really_getblock(chan, (char *) v, 8);
-#ifndef MOSML_BIG_ENDIAN
+#ifndef WORDS_BIGENDIAN
         Reverse_double(v);
 #endif
         break;
