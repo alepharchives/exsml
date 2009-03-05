@@ -963,14 +963,7 @@ value sml_errormsg(value err)   /* ML */
 {
   int errnum;
   errnum = Long_val(err);
-#ifdef HAS_STRERROR
   return copy_string(strerror(errnum));
-#else
-  if (errnum < 0 || errnum >= sys_nerr)
-      return copy_string("(Unknown error)");
-  else
-    return copy_string(sys_errlist[errnum]);
-#endif
 }
 
 value sml_asin(value f)           /* ML */
