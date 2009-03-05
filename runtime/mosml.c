@@ -13,7 +13,7 @@
 #include <sys/times.h>
 #include <sys/resource.h>
 #include <dirent.h>
-#include <sys/param.h> 
+#include <sys/param.h>
 #include <unistd.h>
 #include <utime.h>
 
@@ -112,7 +112,7 @@ value sml_floor(value f)              /* ML */
       i = (long) r;
     }
   else
-    { 
+    {
       if( r < ((double) Min_long) ) goto raise_floor;
       i = (long) r;
       if( r < ((double) i) ) i -= 1;
@@ -165,15 +165,15 @@ value sml_round(value f)              /* ML */
 #if defined(MSDOS) || defined(hpux) || defined(WIN32)
   double delta;
   r = floor(Double_val(f));
-  if (r < (double)(Min_long-1) || r > (double)(Max_long)) goto raise_round;  
+  if (r < (double)(Min_long-1) || r > (double)(Max_long)) goto raise_round;
   i = (long)r;
   delta = Double_val(f) - r;   // belongs to [0, 1[
   // Round to nearest even integer.
   // If delta > 0.5, round up; if delta == 0.5, round to nearest even:
   if (delta > 0.5 || delta == 0.5 && i % 2 != 0)
     i++;
-  v = Val_long(i); 
-  if( Long_val(v) != i )  goto raise_round; 
+  v = Val_long(i);
+  if( Long_val(v) != i )  goto raise_round;
 #else
   r = rint(Double_val(f));
   if ((r > (double) (Max_long)) || (r < (double)(Min_long))) goto raise_round;
@@ -193,7 +193,7 @@ value sml_trunc(value f)              /* ML */
   long i;
   value v;
   r = Double_val(f);
-  if ((r >= (double) (Max_long+1)) || (r <= (double)(Min_long-1))) 
+  if ((r >= (double) (Max_long+1)) || (r <= (double)(Min_long-1)))
     goto raise_trunc;
   i = (long) r;
   v = Val_long(i);
@@ -342,18 +342,18 @@ value sml_concat(value s1, value s2)        /* ML */
   mlsize_t len1, len2, len;
   value s;
   len1 = string_length(s1);
-  if (len1 == 0) 
+  if (len1 == 0)
     return s2;
   len2 = string_length(s2);
   if (len2 == 0)
     return s1;
-  { 
+  {
     Push_roots(r, 2);
     r[0] = s1;
     r[1] = s2;
     len = len1 + len2;
     if( (len + sizeof (value)) / sizeof (value) > Max_wosize )
-      raiseprimitive0(SYS__EXN_SIZE); 
+      raiseprimitive0(SYS__EXN_SIZE);
     s = alloc_string(len);
     memmove(&Byte(r[0], 0), &Byte(s, 0), len1);
     memmove(&Byte(r[1], 0), &Byte(s, len1), len2);
@@ -437,13 +437,13 @@ static void mkSMLMinus(char * s)
 {
   char *p = s, *q = s;
   int justafterexp = 0;		/* After exponent but before digits */
-  
+
   for ( ; *p != '\0'; p++) {
     switch( *p ) {
     case '+': break;
     case '-': *q++ = '~'; break;
     case 'e': *q++ = 'E'; justafterexp = 1; break;
-    case '0': 
+    case '0':
       if (!justafterexp)	/* Don't copy zero just after exponent */
 	*q++ = '0';
       justafterexp = 0;
@@ -543,8 +543,8 @@ value sml_makestring_of_string(value arg)      /* ML */
     c = a[i];
     switch (c)
       {
-      case '"': case '\\': 
-      case '\a': case '\b': case '\t': case '\n': case '\v': 
+      case '"': case '\\':
+      case '\a': case '\b': case '\t': case '\n': case '\v':
       case '\f': case '\r':
         len += 2; break;
       default:
@@ -688,12 +688,12 @@ value sml_getrutime (value v) /* ML */
   res = alloc (6, 0);
   Field (res, 2) = Val_long (rusages.ru_stime.tv_sec);
   Field (res, 3) = Val_long (rusages.ru_stime.tv_usec);
-  Field (res, 4) = Val_long (rusages.ru_utime.tv_sec); 
+  Field (res, 4) = Val_long (rusages.ru_utime.tv_sec);
   Field (res, 5) = Val_long (rusages.ru_utime.tv_usec);
 #endif
 
   Field (res, 0) = Val_long (gc_time.tv_sec);
-  Field (res, 1) = Val_long (gc_time.tv_usec); 
+  Field (res, 1) = Val_long (gc_time.tv_usec);
 #endif
 
   return res;
@@ -718,7 +718,7 @@ value sml_getdir(value arg)		/* ML */
   if (res == NULL)
      failwith("getcwd");
   for( ; *res; res++ )
-    if( *res == '\\' ) 
+    if( *res == '\\' )
       *res = '/';
   return copy_string(directory);
 #else
@@ -742,7 +742,7 @@ value sml_mkdir(value path)          /* ML */
       failwith("mkdir");
   return Val_unit;
 #else
-  if (mkdir(String_val(path), 0777) == -1) 
+  if (mkdir(String_val(path), 0777) == -1)
       failwith("mkdir");
   return Val_unit;
 #endif
@@ -750,7 +750,7 @@ value sml_mkdir(value path)          /* ML */
 
 value sml_rmdir(value path)          /* ML */
 {
-  if (rmdir(String_val(path)) == -1) 
+  if (rmdir(String_val(path)) == -1)
       failwith("rmdir");
   return Val_unit;
 }
@@ -777,12 +777,12 @@ MY_DIR *my_opendir(const char* dirname)
   strncat(dstr->szSearchPath, "\\*.*", MAX_PATH);
   dstr->szSearchPath[MAX_PATH-1] = '\0';
 
-  dstr->hSearch = FindFirstFile(dstr->szSearchPath, &dstr->FileData); 
-  if (dstr->hSearch == INVALID_HANDLE_VALUE) 
-  { 
+  dstr->hSearch = FindFirstFile(dstr->szSearchPath, &dstr->FileData);
+  if (dstr->hSearch == INVALID_HANDLE_VALUE)
+  {
     free(dstr);
     return NULL;
-  } 
+  }
   dstr->fFinished = FALSE;
   return dstr;
 }
@@ -814,12 +814,12 @@ BOOL my_rewinddir(MY_DIR *dstr)
   if( !dstr->fFinished )
     FindClose(dstr->hSearch);
 
-  dstr->hSearch = FindFirstFile(dstr->szSearchPath, &dstr->FileData); 
-  if (dstr->hSearch == INVALID_HANDLE_VALUE) 
-  { 
+  dstr->hSearch = FindFirstFile(dstr->szSearchPath, &dstr->FileData);
+  if (dstr->hSearch == INVALID_HANDLE_VALUE)
+  {
     free(dstr);
     return FALSE;
-  } 
+  }
   dstr->fFinished = FALSE;
   return TRUE;
 }
@@ -841,7 +841,7 @@ value sml_opendir(value path)          /* ML */
   if (dstr == NULL)
       failwith("opendir");
 #ifdef MSDOS
-  if (readdir(dstr) == NULL) 
+  if (readdir(dstr) == NULL)
       failwith("opendir");
   else
       rewinddir(dstr);
@@ -851,7 +851,7 @@ value sml_opendir(value path)          /* ML */
 }
 
 value sml_rewinddir(value v)          /* ML */
-{ 
+{
 #ifdef WIN32
   if( !my_rewinddir((MY_DIR *) v) )
     failwith("opendir");
@@ -863,7 +863,7 @@ value sml_rewinddir(value v)          /* ML */
 }
 
 value sml_readdir(value v)          /* ML */
-{ 
+{
 #ifdef WIN32
   MY_DIR *dstr;
 
@@ -876,14 +876,14 @@ value sml_readdir(value v)          /* ML */
   struct dirent *direntry;
 
   direntry = readdir((DIR *) v);
-  if (direntry == NULL) 
+  if (direntry == NULL)
       return copy_string("");
   return copy_string((*direntry).d_name);
 #endif
 }
 
 value sml_closedir(value v)          /* ML */
-{ 
+{
 #ifdef WIN32
   my_closedir((MY_DIR *) v);
   return Val_unit;
@@ -895,7 +895,7 @@ value sml_closedir(value v)          /* ML */
 }
 
 value sml_isdir(value path)          /* ML */
-{ 
+{
 #ifdef WIN32
   DWORD dwFileAttributes = GetFileAttributes( String_val(path) );
   if( dwFileAttributes == 0xFFFFFFFF )
@@ -919,7 +919,7 @@ value sml_modtime(value path)          /* ML */
 }
 
 value sml_settime(value path, value time)          /* ML */
-{ 
+{
   struct utimbuf tbuf;
 
   tbuf.actime = tbuf.modtime = SMLtoSYStime((long) (Double_val(time)));
@@ -936,7 +936,7 @@ value sml_settime(value path, value time)          /* ML */
 #endif
 
 value sml_access(value path, value permarg)          /* ML */
-{ 
+{
   long perms;
   long perm = Long_val(permarg);
 
@@ -951,23 +951,12 @@ value sml_access(value path, value permarg)          /* ML */
 }
 
 value sml_tmpnam(value v)          /* ML */
-{ 
+{
   char *res;
-#ifdef WIN32
-  value value_res;
-
-  res = _tempnam(NULL, "mosml");
-  if (res == NULL) 
-    failwith("tmpnam");
-  value_res = copy_string(res);
-  free(res);
-  return value_res;
-#else
   res = tmpnam(NULL);
-  if (res == NULL) 
-    failwith("tmpnam");  
+  if (res == NULL)
+    failwith("tmpnam");
   return copy_string(res);
-#endif
 }
 
 value sml_errormsg(value err)   /* ML */
@@ -977,9 +966,9 @@ value sml_errormsg(value err)   /* ML */
 #ifdef HAS_STRERROR
   return copy_string(strerror(errnum));
 #else
-  if (errnum < 0 || errnum >= sys_nerr) 
+  if (errnum < 0 || errnum >= sys_nerr)
       return copy_string("(Unknown error)");
-  else 
+  else
     return copy_string(sys_errlist[errnum]);
 #endif
 }
@@ -987,7 +976,7 @@ value sml_errormsg(value err)   /* ML */
 value sml_asin(value f)           /* ML */
 { double r = Double_val(f);
   float_exn = SYS__EXN_DOMAIN;
-  Raise_float_if( r < -1.0 || r > 1.0 );  
+  Raise_float_if( r < -1.0 || r > 1.0 );
   r = asin(r);
   Raise_float_if( r != r );
   return copy_double(r);
@@ -996,7 +985,7 @@ value sml_asin(value f)           /* ML */
 value sml_acos(value f)           /* ML */
 { double r = Double_val(f);
   float_exn = SYS__EXN_DOMAIN;
-  Raise_float_if( r < -1.0 || r > 1.0 );  
+  Raise_float_if( r < -1.0 || r > 1.0 );
   r = acos(r);
   Raise_float_if( r != r );
   return copy_double(r);
@@ -1007,7 +996,7 @@ value sml_atan2(value f1, value f2)           /* ML */
   float_exn = SYS__EXN_DOMAIN;
   r1 = Double_val(f1);
   r2 = Double_val(f2);
-  if (r1 == 0.0 && r2 == 0.0) 
+  if (r1 == 0.0 && r2 == 0.0)
     return copy_double(0.0);
   r = atan2(r1, r2);
   Check_float(r);
@@ -1020,10 +1009,10 @@ value sml_pow(value f1, value f2)           /* ML */
   float_exn = SYS__EXN_DOMAIN;
   r1 = Double_val(f1);
   r2 = Double_val(f2);
-  if (r1 == 0.0 && r2 == 0.0) 
+  if (r1 == 0.0 && r2 == 0.0)
     return copy_double(1.0);
-  if (   (r1 == 0.0 && r2 < 0.0) 
-      || (r1 < 0.0 && (   fabs(r2) > (double) (Max_long) 
+  if (   (r1 == 0.0 && r2 < 0.0)
+      || (r1 < 0.0 && (   fabs(r2) > (double) (Max_long)
 		       || r2 != (double)(long)r2)))
     raiseprimitive0(float_exn);
   r = pow(r1, r2);
@@ -1044,7 +1033,7 @@ value sml_localtime (value v) /* ML */
   Field (res, 0) = Val_long ((*tmr).tm_hour);
   Field (res, 1) = Val_long ((*tmr).tm_isdst);
   Field (res, 2) = Val_long ((*tmr).tm_mday);
-  Field (res, 3) = Val_long ((*tmr).tm_min); 
+  Field (res, 3) = Val_long ((*tmr).tm_min);
   Field (res, 4) = Val_long ((*tmr).tm_mon);
   Field (res, 5) = Val_long ((*tmr).tm_sec);
   Field (res, 6) = Val_long ((*tmr).tm_wday);
@@ -1064,7 +1053,7 @@ value sml_gmtime (value v) /* ML */
   Field (res, 0) = Val_long ((*tmr).tm_hour);
   Field (res, 1) = Val_long ((*tmr).tm_isdst);
   Field (res, 2) = Val_long ((*tmr).tm_mday);
-  Field (res, 3) = Val_long ((*tmr).tm_min); 
+  Field (res, 3) = Val_long ((*tmr).tm_min);
   Field (res, 4) = Val_long ((*tmr).tm_mon);
   Field (res, 5) = Val_long ((*tmr).tm_sec);
   Field (res, 6) = Val_long ((*tmr).tm_wday);
@@ -1106,7 +1095,7 @@ value sml_asctime (value v) /* ML */
   tmr.tm_year  = Long_val(Field (v, 8));
 
   res = asctime(&tmr);
-  if (res == NULL) 
+  if (res == NULL)
     failwith("asctime");
   return copy_string(res);
 }
@@ -1114,7 +1103,7 @@ value sml_asctime (value v) /* ML */
 value sml_strftime (value fmt, value v) /* ML */
 {
   struct tm tmr;
-#define BUFSIZE 256      
+#define BUFSIZE 256
   char buf[BUFSIZE];
   long ressize;
 
@@ -1129,7 +1118,7 @@ value sml_strftime (value fmt, value v) /* ML */
   tmr.tm_year  = Long_val(Field (v, 8));
 
   ressize = strftime(buf, BUFSIZE, String_val(fmt), &tmr);
-  if (ressize == 0 || ressize == BUFSIZE) 
+  if (ressize == 0 || ressize == BUFSIZE)
     failwith("strftime");
   return copy_string(buf);
 #undef BUFSIZE
@@ -1141,7 +1130,7 @@ value sml_general_string_of_float(value fmt, value arg)    /* ML */
   char format_buffer[BUFSIZE];
 
   /* Unfortunately there seems to be no way to ensure that this does not
-   * crash by overflowing the format_buffer (e.g. when specifying a huge 
+   * crash by overflowing the format_buffer (e.g. when specifying a huge
    * number of decimal digits in the fixed-point format).  Well, we might
    * use snprintf if universally supported?
    */
@@ -1178,7 +1167,7 @@ value sml_int_of_hex(value s)          /* ML */
     p++;
   }
   /* skip 0x in s */
-  p += 2; 
+  p += 2;
 
   res = sign * scanhex(p, (unsigned long)Min_long);
   v = Val_long(res);
@@ -1200,7 +1189,7 @@ value sml_word_of_hex(value s)          /* ML */
 
   p = String_val(s);
   /* skip 0wx in s */
-  p += 3; 
+  p += 3;
 
   res = scanhex(p, 2 * (unsigned long)Min_long);
   v = Val_long((long)res);
@@ -1215,7 +1204,7 @@ value sml_word_of_dec(value s)          /* ML */
   /* The argument s has form 0w[0-9]+ */
   p = String_val(s);
   /* skip 0w in s */
-  p += 2; 
+  p += 2;
 
   res = (long)scandec(p, 2 * (unsigned long)Min_long);
   v = Val_long((long)res);
@@ -1232,7 +1221,7 @@ value sml_hexstring_of_word(value arg)      /* ML */
 
 value sml_sinh(value f)         /* ML */
 { double r;
-  float_exn = SYS__EXN_OVERFLOW;  
+  float_exn = SYS__EXN_OVERFLOW;
   r = Double_val(f);
   r = sinh(r);
   Check_float(r);
@@ -1261,22 +1250,22 @@ value sml_tanh(value f)         /* ML */
    weak phase and v is a white block in the heap.
 
    Conversely, v is live if
-   * v is non-NULL 
-   AND 
+   * v is non-NULL
+   AND
    * v isn't a block (e.g. an int or char), OR
    * v isn't in the heap (e.g. is an atom, or in the young generation), OR
    * we're in the mark phase (in which v may be resurrected by darkening), OR
-   * we're in the weak phase but v has been darkened (so it will survive 
+   * we're in the weak phase but v has been darkened (so it will survive
      the sweep phase), OR
-   * we're in the sweep phase (since the pointer hasn't been reset by the 
-     weak phase, v must have been dark at that time; hence v will 
-     not be deallocated, but sweeping may have changed its color already).  
+   * we're in the sweep phase (since the pointer hasn't been reset by the
+     weak phase, v must have been dark at that time; hence v will
+     not be deallocated, but sweeping may have changed its color already).
 */
 
 int isdead(value v)
 {
   return v == (value)NULL
-         || (gc_phase == Phase_weak 
+         || (gc_phase == Phase_weak
 	     && Is_block(v) && Is_in_heap(v) && Is_white_val(v));
 }
 
@@ -1332,13 +1321,13 @@ value string_mlval(value val)	/* ML */
   if (extern_pos == 0)
     {
       s = alloc_string(8);
-      ((asize_t *)s)[0] = (asize_t)extern_pos; 
-      ((asize_t *)s)[1] = (asize_t)res;    
+      ((asize_t *)s)[0] = (asize_t)extern_pos;
+      ((asize_t *)s)[1] = (asize_t)res;
     }
   else
     {
       s = alloc_string(4 + extern_pos * sizeof(unsigned long));
-      ((asize_t *)s)[0] = (asize_t)extern_pos; 
+      ((asize_t *)s)[0] = (asize_t)extern_pos;
       memmove((char *)extern_block, &Byte(s, 4), extern_pos * sizeof(unsigned long));
     }
   stat_free((char *) extern_block);
@@ -1366,7 +1355,7 @@ value mlval_string(value s)	/* ML */
   }
   bhsize = Bsize_wsize (whsize);
   wosize = Wosize_whsize (whsize);
-  
+
   if (wosize > Max_wosize)
     failwith("mlval_string: structure too big");
   res = alloc_shr(wosize, String_tag);
@@ -1416,7 +1405,7 @@ value floattow8vec(value v)		/* ML */
   p = String_val(res);
   for (i=0; i<4; i++)
 #ifdef WORDS_BIGENDIAN
-    p[i] = buf.w8[i]; 
+    p[i] = buf.w8[i];
 #else
     p[i] = buf.w8[3-i];
 #endif
@@ -1432,14 +1421,14 @@ value w8vectodouble(value v)		/* ML */
   /* The v vector must have length = 8 bytes */
 
   value res;
-  
+
 #ifdef WORDS_BIGENDIAN
   res = copy_double(Double_val(v));
 #else
   Push_roots(r, 1);
   r[0] = v;
   res = copy_double(0.0);
-  { 
+  {
     int i;
     for (i=0; i<8; i++)
       Byte(res, i) = Byte(r[0], 7-i);
@@ -1462,11 +1451,11 @@ value doubletow8vec(value v)		/* ML */
   Pop_roots();
 
 #ifndef WORDS_BIGENDIAN
-  { 
+  {
     int i;
     for (i=0; i<4; i++)
-      { 
-	char tmp = Byte(res, i); 
+      {
+	char tmp = Byte(res, i);
 	Byte(res, i) = Byte(res, 7-i);
 	Byte(res, 7-i) = tmp;
       }
@@ -1535,22 +1524,22 @@ char* exnmessage_aux(value exn)
     value nameval  = Field(argval, 2);
     char* causetxt = exnmessage_aux(causeval);
 #if defined(__CYGWIN__) || defined(hpux)
-    sprintf(buf, "%s: %s failed on `%s'; %s", 
-	     String_val(strval), String_val(fcnval), 
+    sprintf(buf, "%s: %s failed on `%s'; %s",
+	     String_val(strval), String_val(fcnval),
 	     String_val(nameval), causetxt);
 #elif defined(WIN32)
-    _snprintf(buf, BUFSIZE, "%s: %s failed on `%s'; %s", 
-	     String_val(strval), String_val(fcnval), 
+    _snprintf(buf, BUFSIZE, "%s: %s failed on `%s'; %s",
+	     String_val(strval), String_val(fcnval),
 	     String_val(nameval), causetxt);
 #else
-    snprintf(buf, BUFSIZE, "%s: %s failed on `%s'; %s", 
-	     String_val(strval), String_val(fcnval), 
+    snprintf(buf, BUFSIZE, "%s: %s failed on `%s'; %s",
+	     String_val(strval), String_val(fcnval),
 	     String_val(nameval), causetxt);
 #endif
     free(causetxt);
     return buf;
   } else if (Is_block(argval)) {
-    if (Tag_val(argval) == String_tag) { 
+    if (Tag_val(argval) == String_tag) {
 #if defined(__CYGWIN__) || defined(hpux)
       sprintf(buf, "%s: %s", String_val(strval), String_val(argval));
 #elif defined(WIN32)
@@ -1581,7 +1570,7 @@ char* exnmessage_aux(value exn)
   snprintf(buf, BUFSIZE, "%s", String_val(strval));
 #endif
   return buf;
-#undef BUFSIZE 
+#undef BUFSIZE
 }
 
 
