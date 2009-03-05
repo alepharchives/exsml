@@ -3,7 +3,7 @@
 #ifndef _misc_
 #define _misc_
 
-#include "config.h"
+#include "runtime_config.h"
 #if defined(__STDC__) || defined(WIN32)
 #include <stddef.h>
 #endif

@@ -1,39 +1,9 @@
 #ifndef _config_
 #define _config_
 
+#include "mosml_config.h"
 
-#if defined(__MWERKS__) || defined(THINK_C)
-#include "m.h"
-#include "s.h"
-#else
-#ifdef macintosh
-#include ":::config:m.h"
-#include ":::config:s.h"
-#else
-#if defined(msdos)
-#include "../config.dos/m.h"
-#include "../config.dos/s.h"
-#elif defined(WIN32)
-#include "../config.w32/m.h"
-#include "../config.w32/s.h"
-#else
-#include "../config/m.h"
-#include "../config/s.h"
-#endif
-#endif
-#endif
-
-#ifdef WIN32
-
-#ifdef CAMLRT
-#define EXTERN __declspec(dllexport)
-#else
-#define EXTERN __declspec(dllimport)
-#endif
-
-#else
 #define EXTERN extern
-#endif
 
 /* Library dependencies */
 

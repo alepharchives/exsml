@@ -8,10 +8,9 @@ camlrunm_SOURCES = interp.c expand.c misc.c stacks.c fix_code.c main.c \
 	roots.c compare.c ints.c floats.c str.c io.c extern.c externcp.c \
 	intern.c interncp.c hash.c sys.c meta.c parsing.c lexing.c \
 	gc_ctrl.c mosml.c unix.c runtime.c md5sum.c callback.c prims.c
+	jumptbl.h
 
-
-OPTS=-Wall -DTHREADED
-BASECFLAGS= -Dunix -O2 $(OPTS)
+CFLAGS=-Wall -DTHREADED -Dunix -O2
 
 DOBJS=$(OBJS:.o=.d.o) debugger.d.o
 
@@ -58,8 +57,8 @@ prims.c : primitives
 #             -e 's/\([A-Z][A-Z_0-9]*\)/"\1"/g' instruct.h > opnames.h
 
 # jumptbl.h is required only if you have GCC 2.0 or later
-# jumptbl.h : instruct.h
-# 	awk -f ../tools/make-jumptbl instruct.h > jumptbl.h
+jumptbl.h : instruct.h
+	awk -f ../src/tools/make-jumptbl instruct.h > jumptbl.h
 
 # .SUFFIXES: .d.o
 
