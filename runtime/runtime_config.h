@@ -29,7 +29,7 @@
 
 /* Signed char type */
 
-#if defined(__STDC__) || defined(SIGNED_CHAR_WORKS) || defined(WIN32)
+#if defined(__STDC__) || !defined(UNSIGNED_CHAR)
 typedef signed char schar;
 #else
 typedef char schar;
