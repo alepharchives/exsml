@@ -4,12 +4,21 @@
  * for the rest of the source code
  */
 
-#ifndef MOSML-CONFIG_H
-#define MOSML-CONFIG_H
+#ifndef MOSML_CONFIG_H
+#define MOSML_CONFIG_H
+
+#include <limits.h>
 
 #include "config.h"
 
-#ifdef ((SIZEOF_INT == 4) && (SIZEOF_LONG == 8) && (SIZEOF_LONG_P == 8))
+/* Determine if a char is unsigned or not */
+
+#if CHAR_MIN == 0
+ #define CHAR_UNSIGNED 1
+#endif
+
+
+#if ((SIZEOF_INT == 4) && (SIZEOF_LONG == 8) && (SIZEOF_LONG_P == 8))
  #define SIXTYFOUR
 #elif  ((SIZEOF_INT == 4) && (SIZEOF_LONG == 4) && (SIZEOF_LONG_P == 4))
  #define THIRTYTWO
