@@ -24,6 +24,8 @@ AM_CONFIG_HEADER(config.h)
 
 ## Checks for libs
 AC_CHECK_LIB(m, cos)
+AC_CHECK_FUNCS([strerror])
+
 
 ## Check for various platform specific stuff needed in the mosml runtime
 # Endianness, define WORDS_BIGENDIAN on Big endian bastards
@@ -41,6 +43,8 @@ AC_CHECK_SIZEOF([long])
 AC_CHECK_SIZEOF([long *])
 
 # AC_CHECK_ALIGNOF <- perhaps to be used
+
+
 
 AC_OUTPUT(
           Makefile
