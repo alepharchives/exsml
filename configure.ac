@@ -24,9 +24,26 @@ AM_CONFIG_HEADER(config.h)
 
 ## Checks for libs
 AC_CHECK_LIB(m, cos)
+AC_CHECK_HEADER(unistd.h)
+AC_CHECK_HEADER(dirent.h)
+
+AC_CHECK_FUNCS([socket,socketpair,bind,listen,accept,connect])
+AC_CHECK_FUNCS([lockf])
+AC_CHECK_FUNCS([mkfifo])
+AC_CHECK_FUNCS([getpriority])
+AC_CHECK_FUNCS([utime])
+AC_CHECK_FUNCS([utimes])
+AC_CHECK_FUNCS([dup2])
+AC_CHECK_FUNCS([fchmod,fchown])
+AC_CHECK_FUNCS([truncate,ftruncate])
+AC_CHECK_FUNCS([select])
+AC_CHECK_FUNCS([symlink,readlink,lstat])
+AC_CHECK_FUNCS([wait3])
+AC_CHECK_FUNCS([waitpid])
+AC_CHECK_FUNCS([tcgetattr,tcsetattr,tcsendbreak,tcflush,tcflow])
+
 AC_CHECK_FUNCS([strerror])
 AC_CHECK_FUNCS([rename])
-
 
 ## Check for various platform specific stuff needed in the mosml runtime
 # Endianness, define WORDS_BIGENDIAN on Big endian bastards
