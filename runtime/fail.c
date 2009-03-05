@@ -33,8 +33,8 @@ EXTERN void mlraise(value v)
 
 void raiseprimitive1(int exnindex, value arg) {
   value exn;
-  Push_roots(r, 1);  
-  r[0] = arg;  
+  Push_roots(r, 1);
+  r[0] = arg;
   exn = alloc_tuple(2);
   modify(&Field(exn, 0), Field(global_data, exnindex));
   modify(&Field(exn, 1), r[0]);
@@ -45,18 +45,6 @@ void raiseprimitive1(int exnindex, value arg) {
 void raiseprimitive0(int exnindex) {
   raiseprimitive1(exnindex, Val_unit);
 }
-
-/*  EXTERN void raise_with_arg(tag_t tag, value arg) */
-/*  { */
-/*    value bucket; */
-/*    Push_roots (a, 1); */
-/*    a[0] = arg; */
-
-/*    bucket = alloc (1, tag); */
-/*    Field(bucket, 0) = a[0]; */
-/*    Pop_roots (); */
-/*    mlraise(bucket); */
-/*  } */
 
 EXTERN void raise_with_string(int exnindex, char * msg) {
   raiseprimitive1(exnindex, copy_string(msg));
