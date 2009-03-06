@@ -1,6 +1,11 @@
 *.u[io]
 *.o
 TAGS
+config.guess
+config.sub
+libtool
+ltmain.sh
+m4
 depcomp
 runtime/.deps
 aclocal.m4

@@ -14,12 +14,14 @@ AC_SUBST([VERSION])
 AM_INIT_AUTOMAKE(mosml-llvm, [$VERSION_FULL])
 
 AC_CONFIG_SRCDIR([runtime/interp.c])
+AC_CONFIG_MACRO_DIR([m4])
 AC_LANG([C])
+
+LT_INIT
 
 ## Checks for programs.
 AC_PROG_CC
 AC_PROG_INSTALL
-AC_PROG_RANLIB
 AM_CONFIG_HEADER(config.h)
 
 ## Checks for libs
