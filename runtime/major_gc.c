@@ -11,21 +11,9 @@
 #include "mlvalues.h"
 #include "roots.h"
 
-#ifdef macintosh
-#include <Memory.h>
-#endif
-
 #include "runtime.h"
 
-#ifdef ANSI
 #include <limits.h>
-#else
-#ifdef SIXTYFOUR
-#define LONG_MAX 0x7FFFFFFFFFFFFFFF
-#else
-#define LONG_MAX 0x7FFFFFFF
-#endif
-#endif
 
 int percent_free;
 long major_heap_increment;

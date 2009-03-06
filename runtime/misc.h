@@ -4,27 +4,10 @@
 #define _misc_
 
 #include "runtime_config.h"
-#if defined(__STDC__) || defined(WIN32)
 #include <stddef.h>
-#endif
-#if defined(SIXTEEN) || defined (__MWERKS__)
-#include <stdlib.h>
-#include <string.h>
-#endif
 
-#if defined(__STDC__) || defined(WIN32)
 typedef size_t asize_t;
-#else
-typedef int asize_t;
-#endif
 
-#ifndef NULL
-#define NULL 0
-#endif
-
-#ifdef SIXTEEN
-typedef char huge * addr;
-#else
 typedef char * addr;
 #endif
 
