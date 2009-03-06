@@ -1,6 +1,6 @@
 # Makefile for the Moscow ML 2.00 version of the Caml Light runtime system
 
-AM_CFLAGS = -I$(top_srcdir) -Wall -DTHREADED
+AM_CFLAGS = -I$(top_srcdir) -Wall -Wextra -Wunused -Wstrict-aliasing -DTHREADED
 
 bin_PROGRAMS = camlrunm
 camlrunm_SOURCES = $(C_SOURCES) $(H_SOURCES) $(GEN_SOURCES)
