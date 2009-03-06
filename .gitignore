@@ -1,5 +1,6 @@
 *.u[io]
 *.o
+TAGS
 depcomp
 runtime/.deps
 aclocal.m4
