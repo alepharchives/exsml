@@ -10,8 +10,8 @@
 #endif
 
 int verb_gc;
-int Volatile something_to_do = 0;
-int Volatile force_minor_flag = 0;
+int volatile something_to_do = 0;
+int volatile force_minor_flag = 0;
 
 void force_minor_gc (void)
 {

@@ -7,10 +7,10 @@
 #include "instruct.h"
 #include "interp.h"
 
-Volatile int signal_is_pending = 0;
+volatile int signal_is_pending = 0;
 int in_blocking_section = 0;
-Volatile CODE signal_handler;
-Volatile int signal_number;
+volatile CODE signal_handler;
+volatile int signal_number;
 
 /* This is set by interprete in interp.c on initialization: */
 
