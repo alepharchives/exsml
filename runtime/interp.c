@@ -94,55 +94,11 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
 
 /* Declarations for the registers of the abstract machine.
    The most heavily used registers come first.
-   For reasonable performance, "pc" MUST reside in a register.
-   Many ``optimizing'' compilers underestimate the importance of "pc",
-   and don't put it in a register.
-   For GCC users, I've hand-assigned registers for some architectures. */
+*/
 
-#if defined(__GNUC__) && defined(sparc)
-  register CODE pc asm("%l0");
-  register value accu asm("%l1");
-  register value * sp asm("%l2");
-#else
-#if defined(__GNUC__) && defined(mc68000)
-  register CODE pc asm("a5");
-  register value accu;
-  register value * sp;
-#else
-#if defined(__GNUC__) && defined(mips)
-  register CODE   pc asm("$20");
-  register value  accu asm("$21");
-  register value * sp asm("$22");
-#else
-#if defined(__GNUC__) && defined(__alpha__)
-  register CODE   pc asm("$11");
-  register value  accu asm("$12");
-  register value * sp asm("$13");
-#else
-#if defined(__GNUC__) && defined(hppa)
-  register CODE   pc asm("%r11");
-  register value  accu asm("%r12");
-  register value * sp asm("%r13");
-#else
-#if defined(__GNUC__) && defined(i386)
-#if defined(MSDOS)
-  register CODE pc asm("si");
-  register value * sp asm("di");
-#else
-  register CODE pc asm("%esi");
-  register value * sp asm("%edi");
-#endif
-  register value accu;
-#else
-  register CODE pc;
-  register value accu;
-  register value * sp;
-#endif
-#endif
-#endif
-#endif
-#endif
-#endif
+  CODE pc;
+  value accu;
+  value * sp;
 
   value env;
   int extra_args;
