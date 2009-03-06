@@ -16,6 +16,7 @@ void beg_gc_time(void)
   struct rusage rusages;
 
   getrusage(RUSAGE_SELF, &rusages);
+
   gc_time.tv_sec  -= rusages.ru_utime.tv_sec;
   gc_time.tv_usec -= rusages.ru_utime.tv_usec;
 
@@ -30,6 +31,7 @@ void end_gc_time(void)
   struct rusage rusages;
 
   getrusage(RUSAGE_SELF, &rusages);
+
   gc_time.tv_sec  += rusages.ru_utime.tv_sec;
   gc_time.tv_usec += rusages.ru_utime.tv_usec;
 
@@ -37,5 +39,4 @@ void end_gc_time(void)
     gc_time.tv_usec -= 1000000;
     gc_time.tv_sec  += 1;
   }
-
 }
