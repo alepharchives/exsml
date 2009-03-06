@@ -29,7 +29,7 @@ typedef char schar;
 #define Stack_threshold 2048
 
 /* Maximum sizes for the stacks (bytes). */
-   
+
 #ifdef MINIMIZE_MEMORY
 #define Max_stack_size 262144
 #else

@@ -133,7 +133,7 @@ value sys_remove(value name)          /* ML */
 
 value sys_rename(value oldname, value newname) /* ML */
 {
-  if (rename(String_val(oldname), String_val(newname)) != 0) 
+  if (rename(String_val(oldname), String_val(newname)) != 0)
     sys_error(String_val(oldname));
   return Atom(0);
 }

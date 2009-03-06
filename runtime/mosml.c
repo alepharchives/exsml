@@ -33,10 +33,10 @@
 #define tm2cal(tptr)	mktime(tptr)
 
 #define Raise_float_if(cond) \
-   if( cond ) \
-      { raiseprimitive0(float_exn); }
+  if( cond )					\
+    { raiseprimitive0(float_exn); }
 
-#define Check_float(dval) \
+#define Check_float(dval)					\
    Raise_float_if( (dval > maxdouble) || (dval < -maxdouble) )
 
 /* Structural equality on trees. */
