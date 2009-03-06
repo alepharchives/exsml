@@ -94,4 +94,4 @@ Documentation files:
 Source files:
 
    * src/compiler : The Moscow ML compiler
-   * src/runtime : The C-based caml-light runtime
+   * runtime : The C-based caml-light runtime
