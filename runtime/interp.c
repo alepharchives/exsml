@@ -4,6 +4,7 @@
 #include <setjmp.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include "alloc.h"
 #include "debugger.h"
@@ -681,7 +682,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       value newval = *sp++;
       mlsize_t size, n;
       size = Wosize_val(newval);
-      Assert(size == Wosize_val(accu));
+      assert(size == Wosize_val(accu));
       Tag_val(accu) = Tag_val(newval);
       for (n = 0; n < size; n++) {
         modify(&Field(accu, n), Field(newval, n));
@@ -1051,7 +1052,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       if (Tag_val(accu) != u8pci) branch(); else pc += LONG;
       Next;
     Instruct(SWITCH):
-      Assert(Long_val(accu) >= 0 && Long_val(accu) < *pc);
+      assert(Long_val(accu) >= 0 && Long_val(accu) < *pc);
       pc++;
       //      printf("SWITCH: JUMPSWITCHINDEX(pc, %d) = %d\n", accu, JUMPSWITCHINDEX(pc, accu));
       pc = JUMPSWITCHINDEX(pc, accu);

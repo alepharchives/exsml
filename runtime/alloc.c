@@ -4,6 +4,8 @@
 */
 
 #include <string.h>
+#include <assert.h>
+
 #include "alloc.h"
 #include "debugger.h"
 #include "major_gc.h"
@@ -18,7 +20,7 @@ value alloc (mlsize_t wosize, tag_t tag)
 {
 	value result;
 
-	Assert (wosize > 0 && wosize <= Max_young_wosize);
+	assert (wosize > 0 && wosize <= Max_young_wosize);
 	Alloc_small (result, wosize, tag);
 	return result;
 }

@@ -2,6 +2,8 @@
    Updated 2008-03-05 to prevent malloc from using mmap()
 */
 #include <malloc.h>
+#include <assert.h>
+
 #include "alloc.h"
 #include "debugger.h"
 #include "gc.h"
@@ -38,7 +40,7 @@ value gc_stat (value v) /* ML */
   char *cur_hp, *prev_hp;
   header_t cur_hd;
 
-  Assert (v == Atom (0));
+  assert (v == Atom (0));
 
   while (chunk != NULL){
     ++ heap_chunks;
@@ -51,42 +53,42 @@ value gc_stat (value v) /* ML */
       case White:
 	if (Wosize_hd (cur_hd) == 0){
 	  ++fragments;
-	  Assert (prev_hp == NULL
+	  assert (prev_hp == NULL
 		  || (Color_hp (prev_hp) != Blue
 		      && Wosize_hp (prev_hp) > 0));
-	  Assert (Next (cur_hp) == chunk_end
+	  assert (Next (cur_hp) == chunk_end
 		  || (Color_hp (Next (cur_hp)) != Blue
 		      && Wosize_hp (Next (cur_hp)) > 0));
 	  break;
 	}
 	/* FALLTHROUGH */
       case Gray: case Black:
-	Assert (Wosize_hd (cur_hd) > 0);
+	assert (Wosize_hd (cur_hd) > 0);
 	++ live_blocks;
 	live_words += Whsize_hd (cur_hd);
 	break;
       case Blue:
-	Assert (Wosize_hd (cur_hd) > 0);
+	assert (Wosize_hd (cur_hd) > 0);
 	++ free_blocks;
 	free_words += Whsize_hd (cur_hd);
 	if (Whsize_hd (cur_hd) > largest_free){
 	  largest_free = Whsize_hd (cur_hd);
 	}
-	Assert (prev_hp == NULL
+	assert (prev_hp == NULL
 		|| (Color_hp (prev_hp) != Blue
 		    && Wosize_hp (prev_hp) > 0));
-	Assert (Next (cur_hp) == chunk_end
+	assert (Next (cur_hp) == chunk_end
 		|| (Color_hp (Next (cur_hp)) != Blue
 		    && Wosize_hp (Next (cur_hp)) > 0));
 	break;
       }
       prev_hp = cur_hp;
       cur_hp = Next (cur_hp);
-    }                                          Assert (cur_hp == chunk_end);
+    }                                          assert (cur_hp == chunk_end);
     chunk = Chunk_next (chunk);
   }
 
-  Assert (live_words + free_words + fragments == Wsize_bsize (stat_heap_size));
+  assert (live_words + free_words + fragments == Wsize_bsize (stat_heap_size));
   /* Order of elements changed for Moscow ML */
   res = alloc (13, 0);
   Field (res, 11) = Val_long (stat_minor_words
@@ -110,7 +112,7 @@ value gc_get (value v) /* ML */
 {
   value res;
 
-  Assert (v == Atom (0));
+  assert (v == Atom (0));
   /* Order of elements changed for Moscow ML */
   res = alloc (4, 0);
   Field (res, 1) = Wsize_bsize (Val_long (minor_heap_size));
@@ -169,40 +171,43 @@ value gc_set (value v) /* ML */
 }
 
 value gc_minor (value v) /* ML */
-{                                                    Assert (v == Atom (0));
-  minor_collection ();
-  return Atom (0);
+{
+	assert (v == Atom (0));
+	minor_collection ();
+	return Atom (0);
 }
 
 value gc_major (value v) /* ML */
-{                                                    Assert (v == Atom (0));
-  minor_collection ();
-  finish_major_cycle ();
-  return Atom (0);
+{
+	assert (v == Atom (0));
+	minor_collection ();
+	finish_major_cycle ();
+	return Atom (0);
 }
 
 value gc_full_major (value v) /* ML */
-{                                                    Assert (v == Atom (0));
-  minor_collection ();
-  finish_major_cycle ();
-  finish_major_cycle ();
-  return Atom (0);
+{
+	assert (v == Atom (0));
+	minor_collection ();
+	finish_major_cycle ();
+	finish_major_cycle ();
+	return Atom (0);
 }
 
 void init_gc (long minor_size, long major_incr, int percent_fr, int verb)
 {
 #ifdef DEBUG
-  gc_message ("*** camlrunm: debug mode ***\n", 0);
+	gc_message ("*** camlrunm: debug mode ***\n", 0);
 #endif
-  verb_gc = verb;
-  /* Added 2008-03-05 to prevent malloc from using mmap() */
-  mallopt(M_MMAP_MAX, 0);
-  set_minor_heap_size (Bsize_wsize (norm_minsize (minor_size)));
-  major_heap_increment = Bsize_wsize (norm_heapincr (major_incr));
-  percent_free = norm_pfree (percent_fr);
-  init_major_heap (major_heap_increment);
-  init_c_roots ();
-  gc_message ("Initial space overhead: %d%%\n", percent_free);
-  gc_message ("Initial heap increment: %ldk\n", major_heap_increment / 1024);
-  gc_message ("Initial minor heap size: %ldk\n", minor_heap_size / 1024);
+	verb_gc = verb;
+	/* Added 2008-03-05 to prevent malloc from using mmap() */
+	mallopt(M_MMAP_MAX, 0);
+	set_minor_heap_size (Bsize_wsize (norm_minsize (minor_size)));
+	major_heap_increment = Bsize_wsize (norm_heapincr (major_incr));
+	percent_free = norm_pfree (percent_fr);
+	init_major_heap (major_heap_increment);
+	init_c_roots ();
+	gc_message ("Initial space overhead: %d%%\n", percent_free);
+	gc_message ("Initial heap increment: %ldk\n", major_heap_increment / 1024);
+	gc_message ("Initial minor heap size: %ldk\n", minor_heap_size / 1024);
 }

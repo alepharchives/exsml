@@ -1,6 +1,7 @@
 #include <setjmp.h>
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include "config.h"
 #include "debugger.h"
@@ -27,11 +28,11 @@ void set_minor_heap_size (asize_t size)
   char *new_heap;
   value **new_table;
 
-  Assert (size >= Minor_heap_min);
-  Assert (size <= Minor_heap_max);
-  Assert (size % sizeof (value) == 0);
+  assert (size >= Minor_heap_min);
+  assert (size <= Minor_heap_max);
+  assert (size % sizeof (value) == 0);
   if (young_ptr != young_start) minor_collection ();
-                                           Assert (young_ptr == young_start);
+  assert (young_ptr == young_start);
   new_heap = (char *) stat_alloc (size);
   if (young_start != NULL){
     stat_free ((char *) young_start);
@@ -78,7 +79,7 @@ static void oldify (value *p, value v)
 
  tail_call:
   if (Is_block (v) && Is_young (v)){
-    Assert (Hp_val (v) < young_ptr);
+    assert (Hp_val (v) < young_ptr);
     if (Is_blue_val (v)){    /* Already forwarded ? */
       *p = Field (v, 0);     /* Then the forward pointer is the first field. */
     }else if (Tag_val (v) >= No_scan_tag){
@@ -151,31 +152,34 @@ void minor_collection(void)
 }
 
 void realloc_ref_table (void)
-{                                 Assert (ref_table_ptr == ref_table_limit);
-                                  Assert (ref_table_limit <= ref_table_end);
-                            Assert (ref_table_limit >= ref_table_threshold);
+{
+	assert (ref_table_ptr == ref_table_limit);
+	assert (ref_table_limit <= ref_table_end);
+	assert (ref_table_limit >= ref_table_threshold);
 
-  if (ref_table_limit == ref_table_threshold){
-    gc_message ("ref_table threshold crossed\n", 0);
-    ref_table_limit = ref_table_end;
-    force_minor_gc ();
-  }else{                                       /* This will never happen. */
-    asize_t sz;
-    asize_t cur_ptr = ref_table_ptr - ref_table;
-                                                  Assert (force_minor_flag);
-                                                   Assert (something_to_do);
-    ref_table_reserve += 1024;
-    sz = (ref_table_size + ref_table_reserve) * sizeof (value *);
-    gc_message ("Growing ref_table to %ldk\n", (long) sz / 1024);
+	if (ref_table_limit == ref_table_threshold){
+		gc_message ("ref_table threshold crossed\n", 0);
+		ref_table_limit = ref_table_end;
+		force_minor_gc ();
+	} else {
+		/* This will never happen. */
+		assert(0);
+		asize_t sz;
+		asize_t cur_ptr = ref_table_ptr - ref_table;
+		assert (force_minor_flag);
+		assert (something_to_do);
+		ref_table_reserve += 1024;
+		sz = (ref_table_size + ref_table_reserve) * sizeof (value *);
+		gc_message ("Growing ref_table to %ldk\n", (long) sz / 1024);
 #ifdef MAX_MALLOC_SIZE
-    if (sz > MAX_MALLOC_SIZE) ref_table = NULL;
-    else
+		if (sz > MAX_MALLOC_SIZE) ref_table = NULL;
+		else
 #endif
-    ref_table = (value **) realloc ((char *) ref_table, sz);
-    if (ref_table == NULL) fatal_error ("Fatal error: ref_table overflow\n");
-    ref_table_end = ref_table + ref_table_size + ref_table_reserve;
-    ref_table_threshold = ref_table + ref_table_size;
-    ref_table_ptr = ref_table + cur_ptr;
-    ref_table_limit = ref_table_end;
-  }
+			ref_table = (value **) realloc ((char *) ref_table, sz);
+		if (ref_table == NULL) fatal_error ("Fatal error: ref_table overflow\n");
+		ref_table_end = ref_table + ref_table_size + ref_table_reserve;
+		ref_table_threshold = ref_table + ref_table_size;
+		ref_table_ptr = ref_table + cur_ptr;
+		ref_table_limit = ref_table_end;
+	}
 }

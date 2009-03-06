@@ -36,7 +36,6 @@ unsigned long not_random (void);
 #else /* DEBUG */
 
 #define Debug(x)
-#define Assert(x)
 #define Dprintx(x)
 
 #endif /* DEBUG */

@@ -1,5 +1,7 @@
 /* Structured input, compact format */
 
+#include <assert.h>
+
 #include "debugger.h"
 #include "fail.h"
 #include "gc.h"
@@ -100,7 +102,7 @@ static void read_compact(struct channel * chan, value * dest)
       case CODE_SHARED8:
         ofs = input_bytes(chan, 1, 0);
       read_shared:
-        Assert(ofs > 0 && ofs <= obj_counter);
+        assert(ofs > 0 && ofs <= obj_counter);
         v = intern_obj_table[obj_counter - ofs];
         break;
       case CODE_SHARED16:
@@ -162,7 +164,7 @@ value intern_compact_val(struct channel * chan)
     intern_block = alloc_shr(Wosize_whsize(whsize), String_tag);
     intern_header = Hd_val(intern_block);
     intern_color = Color_hd(intern_header);
-    Assert (intern_color == White || intern_color == Black);
+    assert (intern_color == White || intern_color == Black);
     intern_ptr = (header_t *) Hp_val(intern_block);
     obj_counter = 0;
     intern_obj_table = (value *) stat_alloc(num_objects * sizeof(value));

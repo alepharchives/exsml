@@ -1,4 +1,6 @@
 #include <string.h>
+#include <assert.h>
+
 #include <stdlib.h>
 #include "mlvalues.h"
 #include "debugger.h"
@@ -36,14 +38,14 @@ static char *expand_heap (mlsize_t request)
   }
   mem += sizeof (heap_chunk_head);
   (((heap_chunk_head *) mem) [-1]).size = malloc_request;
-  Assert (Wosize_bhsize (malloc_request) >= request);
+  assert (Wosize_bhsize (malloc_request) >= request);
   Hd_hp (mem) = Make_header (Wosize_bhsize (malloc_request), 0, Blue);
 
 #ifndef SIXTEEN
   if (mem < heap_start){
     more_pages = -Page (mem);
   }else if (Page (mem + malloc_request) > page_table_size){
-    Assert (mem >= heap_end);
+    assert (mem >= heap_end);
     more_pages = Page (mem + malloc_request) - page_table_size;
   }else{
     more_pages = 0;
@@ -60,7 +62,7 @@ static char *expand_heap (mlsize_t request)
   }
 
   if (mem < heap_start){
-    Assert (more_pages != 0);
+    assert (more_pages != 0);
     for (i = 0; i < more_pages; i++){
       new_page_table [i] = Not_in_heap;
     }
@@ -129,7 +131,7 @@ extern value alloc_shr (mlsize_t wosize, tag_t tag)
     if (hp == NULL) fatal_error ("alloc_shr: expand heap failed\n");
   }
 
-  Assert (Is_in_heap (Val_hp (hp)));
+  assert (Is_in_heap (Val_hp (hp)));
 
   if (gc_phase == Phase_mark || (addr)hp >= (addr)gc_sweep_hp){
     Hd_hp (hp) = Make_header (wosize, tag, Black);
@@ -170,7 +172,7 @@ void adjust_gc_speed (mlsize_t mem, mlsize_t max)
 void initialize (value * fp, value val)
 {
   *fp = val;
-  Assert (Is_in_heap (fp));
+  assert (Is_in_heap (fp));
   if (Is_block (val) && Is_young (val)){
     *ref_table_ptr++ = fp;
     if (ref_table_ptr >= ref_table_limit){

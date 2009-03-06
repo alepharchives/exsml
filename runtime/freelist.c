@@ -1,3 +1,5 @@
+#include <assert.h>
+
 #include "config.h"
 #include "debugger.h"
 #include "freelist.h"
@@ -73,10 +75,10 @@ static char *allocate_block (wh_sz, prev, cur)
     char *prev, *cur;
 {
   header_t h = Hd_bp (cur);
-                                             Assert (Whsize_hd (h) >= wh_sz);
+                                             assert (Whsize_hd (h) >= wh_sz);
   if (Wosize_hd (h) < wh_sz + 1){                        /* Cases 0 and 1. */
     Next (prev) = Next (cur);
-                    Assert (Is_in_heap (Next (prev)) || Next (prev) == NULL);
+    assert (Is_in_heap (Next (prev)) || Next (prev) == NULL);
     if (fl_merge == cur) fl_merge = prev;
 #ifdef DEBUG
     fl_last = NULL;
@@ -96,23 +98,24 @@ static char *allocate_block (wh_sz, prev, cur)
    The calling function must do it before any GC function gets called.
    [fl_allocate] returns a head pointer.
 */
-char *fl_allocate (wo_sz)
-     mlsize_t wo_sz;
+char *fl_allocate (mlsize_t wo_sz)
 {
   char *cur, *prev;
-                                  Assert (sizeof (char *) == sizeof (value));
-                                  Assert (fl_prev != NULL);
-                                  Assert (wo_sz >= 1);
+  assert (sizeof (char *) == sizeof (value));
+  assert (fl_prev != NULL);
+  assert (wo_sz >= 1);
     /* Search from [fl_prev] to the end of the list. */
   prev = fl_prev;
   cur = Next (prev);
-  while (cur != NULL){                             Assert (Is_in_heap (cur));
-    if (Wosize_bp (cur) >= wo_sz){
-      return allocate_block (Whsize_wosize (wo_sz), prev, cur);
-    }
-    prev = cur;
-    cur = Next (prev);
+  while (cur != NULL) {
+	  assert (Is_in_heap (cur));
+	  if (Wosize_bp (cur) >= wo_sz){
+		  return allocate_block (Whsize_wosize (wo_sz), prev, cur);
+	  }
+	  prev = cur;
+	  cur = Next (prev);
   }
+
   fl_last = prev;
     /* Search from the start of the list to [fl_prev]. */
   prev = Fl_head;
@@ -153,8 +156,8 @@ char *fl_merge_block (bp)
   cur = Next (prev);
     /* The sweep code makes sure that this is the right place to insert
        this block: */
-    Assert (prev < bp || prev == Fl_head);
-    Assert (cur > bp || cur == NULL);
+    assert (prev < bp || prev == Fl_head);
+    assert (cur > bp || cur == NULL);
 
     /* If [bp] and [cur] are adjacent, remove [cur] from the free-list
        and merge them. */
@@ -182,7 +185,7 @@ char *fl_merge_block (bp)
 #ifdef DEBUG
     Hd_bp (bp) = not_random ();
 #endif
-    Assert (fl_merge == prev);
+    assert (fl_merge == prev);
   }else if (Wosize_hd (hd) > 0){
     Hd_bp (bp) = Bluehd_hd (hd);
     Next (bp) = cur;
@@ -199,11 +202,10 @@ char *fl_merge_block (bp)
    Most of the heap extensions are expected to be at the end of the
    free list.  (This depends on the implementation of [malloc].)
 */
-void fl_add_block (bp)
-     char *bp;
+void fl_add_block (char * bp)
 {
-                                                   Assert (fl_last != NULL);
-                                            Assert (Next (fl_last) == NULL);
+	assert (fl_last != NULL);
+	assert (Next (fl_last) == NULL);
 #ifdef DEBUG
   {
     mlsize_t i;
@@ -220,11 +222,14 @@ void fl_add_block (bp)
 
     prev = Fl_head;
     cur = Next (prev);
-    while (cur != NULL && cur < bp){   Assert (prev < bp || prev == Fl_head);
-      prev = cur;
-      cur = Next (prev);
-    }                                  Assert (prev < bp || prev == Fl_head);
-                                            Assert (cur > bp || cur == NULL);
+    while (cur != NULL && cur < bp) {
+	    assert (prev < bp || prev == Fl_head);
+	    prev = cur;
+	    cur = Next (prev);
+    }
+
+    assert (prev < bp || prev == Fl_head);
+    assert (cur > bp || cur == NULL);
     Next (bp) = cur;
     Next (prev) = bp;
     /* When inserting a block between fl_merge and gc_sweep_hp, we must

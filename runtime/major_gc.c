@@ -1,4 +1,6 @@
 #include <stdlib.h>
+#include <assert.h>
+
 #include "config.h"
 #include "debugger.h"
 #include "fail.h"
@@ -48,7 +50,7 @@ static void realloc_gray_vals (void)
 {
   value *new;
 
-  Assert (gray_vals_cur == gray_vals_end);
+  assert (gray_vals_cur == gray_vals_end);
   if (gray_vals_size < stat_heap_size / 128){
     gc_message ("Growing gray_vals to %ldk\n",
 		(long) gray_vals_size * sizeof (value) / 512);
@@ -74,7 +76,7 @@ static void realloc_weak_arrays (void)
 {
   value *new;
 
-  Assert (weak_arrays_cur == weak_arrays_end);
+  assert (weak_arrays_cur == weak_arrays_end);
   gc_message ("Growing weak_arrays to %ld\n",
               (long) weak_arrays_size * 2);
   new = (value *) realloc ((char *) weak_arrays,
@@ -105,8 +107,8 @@ static void darken_root (value *p, value v)
 
 static void start_cycle (void)
 {
-  Assert (gray_vals_cur == gray_vals);
-  Assert (Is_white_val (global_data));
+  assert (gray_vals_cur == gray_vals);
+  assert (Is_white_val (global_data));
   darken (global_data);
   local_roots (darken_root);
   gc_phase = Phase_mark;
@@ -121,7 +123,7 @@ static void mark_slice (long work)
   while (work > 0){
     if (gray_vals_cur > gray_vals){
       v = *--gray_vals_cur;
-      Assert (Is_gray_val (v));
+      assert (Is_gray_val (v));
       Hd_val (v) = Blackhd_hd (Hd_val (v));
       if (Tag_val (v) < No_scan_tag){
 	for (i = Wosize_val (v); i > 0;){
@@ -145,7 +147,7 @@ static void mark_slice (long work)
 	}
       }else{
 	if (Is_gray_val (Val_hp (markhp))){
-	  Assert (gray_vals_cur == gray_vals);
+	  assert (gray_vals_cur == gray_vals);
 	  *gray_vals_cur++ = Val_hp (markhp);
 	}
 	markhp += Bhsize_hp (markhp);
@@ -209,7 +211,7 @@ static void sweep_slice (long work)
 	gc_sweep_hp = fl_merge_block (Bp_hp (hp));
 	break;
       case Gray:
-	Assert (0);     /* Fall through to Black when not in debug mode. */
+	assert (0);     /* Fall through to Black when not in debug mode. */
       case Black:
 	Hd_hp (hp) = Whitehd_hd (hd);
 	break;
@@ -218,7 +220,7 @@ static void sweep_slice (long work)
 	fl_merge = Bp_hp (hp);
 	break;
       }
-      Assert (gc_sweep_hp <= limit);
+      assert (gc_sweep_hp <= limit);
     }else{
       chunk = (((heap_chunk_head *) chunk) [-1]).next;
       if (chunk == NULL){
@@ -273,7 +275,7 @@ void major_collection_slice (void)
     weak_phase();
     gc_message (".", 0);
   }else{
-    Assert (gc_phase == Phase_sweep);
+    assert (gc_phase == Phase_sweep);
     sweep_slice (200 * (allocated_words * 3 / percent_free / 2
 			+ 100 * extra_heap_memory)
 		 + Margin);
@@ -292,7 +294,7 @@ void finish_major_cycle (void)
 
   if (gc_phase == Phase_mark) mark_slice (LONG_MAX);
   if (gc_phase == Phase_weak) weak_phase();
-  Assert (gc_phase == Phase_sweep);
+  assert (gc_phase == Phase_sweep);
   sweep_slice (LONG_MAX);
   stat_major_words += allocated_words;
   allocated_words = 0;
@@ -302,16 +304,17 @@ void finish_major_cycle (void)
 }
 
 asize_t round_heap_chunk_size (asize_t request)
-{                            Assert (major_heap_increment >= Heap_chunk_min);
-  if (request < major_heap_increment){
-                              Assert (major_heap_increment % Page_size == 0);
-    return major_heap_increment;
-  }else if (request <= Heap_chunk_max){
-    return ((request + Page_size - 1) >> Page_log) << Page_log;
-  }else{
-    raise_out_of_memory ();
-  }
-  return 0;			/* Can't reach return */
+{
+	assert (major_heap_increment >= Heap_chunk_min);
+	if (request < major_heap_increment) {
+		assert (major_heap_increment % Page_size == 0);
+		return major_heap_increment;
+	} else if (request <= Heap_chunk_max) {
+		return ((request + Page_size - 1) >> Page_log) << Page_log;
+	} else {
+		raise_out_of_memory ();
+	}
+	return 0;			/* Can't reach return */
 }
 
 void init_major_heap (asize_t heap_size)
@@ -319,22 +322,18 @@ void init_major_heap (asize_t heap_size)
   asize_t i;
 
   stat_heap_size = round_heap_chunk_size (heap_size);
-  Assert (stat_heap_size % Page_size == 0);
+  assert (stat_heap_size % Page_size == 0);
   heap_start = aligned_malloc (stat_heap_size + sizeof (heap_chunk_head),
 			       sizeof (heap_chunk_head));
   if (heap_start == NULL)
     fatal_error ("Fatal error: not enough memory for the initial heap.\n");
   heap_start += sizeof (heap_chunk_head);
-  Assert ((unsigned long) heap_start % Page_size == 0);
+  assert ((unsigned long) heap_start % Page_size == 0);
   (((heap_chunk_head *) heap_start) [-1]).size = stat_heap_size;
   (((heap_chunk_head *) heap_start) [-1]).next = NULL;
   heap_end = heap_start + stat_heap_size;
-  Assert ((unsigned long) heap_end % Page_size == 0);
-#ifdef SIXTEEN
-  page_table_size = 640L * 1024L / Page_size + 1;
-#else
+  assert ((unsigned long) heap_end % Page_size == 0);
   page_table_size = 4 * stat_heap_size / Page_size;
-#endif
   page_table = (char *) malloc (page_table_size);
   if (page_table == NULL){
     fatal_error ("Fatal error: not enough memory for the initial heap.\n");

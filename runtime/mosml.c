@@ -17,6 +17,8 @@
 #include <unistd.h>
 #include <utime.h>
 
+#include <assert.h>
+
 #include "mlvalues.h"
 #include "fail.h"
 #include "memory.h"
@@ -1356,7 +1358,7 @@ value mlval_string(value s)	/* ML */
   res = alloc_shr(wosize, String_tag);
   hd = Hd_val (res);
   color = Color_hd (hd);
-  Assert (color == White || color == Black);
+  assert (color == White || color == Black);
   if (bhsize + 4 > string_length(s)) {
     Hd_val (res) = hd;                      /* Avoid confusing the GC. */
     failwith ("mlval_string: truncated object");

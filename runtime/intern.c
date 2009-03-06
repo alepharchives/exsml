@@ -1,6 +1,8 @@
 /* Structured input, fast format */
 
 #include <string.h>
+#include <assert.h>
+
 #include "debugger.h"
 #include "fail.h"
 #include "gc.h"
@@ -37,12 +39,12 @@ void adjust_pointers(value * start, mlsize_t size, color_t color)
         v = *p;
         switch(v & 3) {
         case 0:                 /* 0 -> A bloc represented by its offset. */
-          Assert(v >= 0 && v <= bosize && (v & 3) == 0);
+          assert(v >= 0 && v <= bosize && (v & 3) == 0);
           *p = (value) ((byteoffset_t) start + v);
           break;
         case 2:                 /* 2 -> An atom. */
           v = v >> 2;
-          Assert(v >= 0 && v < 256);
+          assert(v >= 0 && v < 256);
           *p = Atom(v);
           break;
         default:                /* 1 or 3 -> An integer. */
@@ -191,7 +193,7 @@ static void expand_block(value32 * source, value * dest, mlsize_t source_len, ml
       *d++ = Make_header(Double_wosize, Double_tag, color);
       /* Cannot do *((double *) d) = *((double *) p) directly
          because p might not be 64-aligned. */
-      Assert(sizeof(double) == sizeof(value));
+      assert(sizeof(double) == sizeof(value));
       ((value32 *) d)[0] = p[0];
       ((value32 *) d)[1] = p[1];
       p += sizeof(double) / sizeof(value32);
@@ -210,7 +212,7 @@ static void expand_block(value32 * source, value * dest, mlsize_t source_len, ml
     }
     *forward_addr = dest_ofs;   /* store the forwarding pointer */
   }
-  Assert(d == dest + dest_len);
+  assert(d == dest + dest_len);
 
   /* Second pass: resolve pointers contained inside blocks,
      replacing them by the corresponding forwarding pointer. */
@@ -226,12 +228,12 @@ static void expand_block(value32 * source, value * dest, mlsize_t source_len, ml
         v = *d;
         switch(v & 3) {
         case 0:                 /* 0: a block represented by its offset */
-          Assert(v >= 0 && v < source_len * sizeof(value32) && (v & 3) == 0);
+          assert(v >= 0 && v < source_len * sizeof(value32) && (v & 3) == 0);
           *d = (value) (dest + *((uint32 *)((char *) source + v)));
           break;
         case 2:                 /* 2: an atom */
           v = v >> 2;
-          Assert(v >= 0 && v < 256);
+          assert(v >= 0 && v < 256);
           *d = Atom(v);
           break;
         default:                /* 1 or 3: an integer */
@@ -391,7 +393,7 @@ static int shrink_block(value64 * source, value * dest, mlsize_t source_len, mls
     }
     *forward_addr = dest_ofs;   /* store the forwarding pointer */
   }
-  Assert(d == dest + dest_len);
+  assert(d == dest + dest_len);
 
   /* Second pass: resolve pointers contained inside blocks,
      replacing them by the corresponding forwarding pointer. */
@@ -407,12 +409,12 @@ static int shrink_block(value64 * source, value * dest, mlsize_t source_len, mls
         v = *d;
         switch(v & 3) {
         case 0:                 /* 0: a block represented by its offset */
-          Assert(v >= 0 && v < source_len * sizeof(value64) && (v & 7) == 0);
+          assert(v >= 0 && v < source_len * sizeof(value64) && (v & 7) == 0);
           *d = (value) (dest + *((byteoffset_t *)((char *) source + v)));
           break;
         case 2:                 /* 2: an atom */
           v = v >> 2;
-          Assert(v >= 0 && v < 256);
+          assert(v >= 0 && v < 256);
           *d = Atom(v);
           break;
         default:                /* 1 or 3: an integer */
@@ -472,7 +474,7 @@ static value intern_fast_val(struct channel * chan, unsigned long magic)
     res = alloc_shr(wosize, String_tag);
     hd = Hd_val (res);
     color = Color_hd (hd);
-    Assert (color == White || color == Black);
+    assert (color == White || color == Black);
     expand_block(block, Hp_val(res), whsize32, whsize, color);
     stat_free((char *) block);
   } else {
@@ -480,7 +482,7 @@ static value intern_fast_val(struct channel * chan, unsigned long magic)
     res = alloc_shr(wosize, String_tag);
     hd = Hd_val (res);
     color = Color_hd (hd);
-    Assert (color == White || color == Black);
+    assert (color == White || color == Black);
     if (really_getblock(chan, Hp_val(res), bhsize) == 0) {
       Hd_val (res) = hd;                      /* Avoid confusing the GC. */
       failwith ("intern : truncated object");
@@ -519,7 +521,7 @@ static value intern_fast_val(struct channel * chan, unsigned long magic)
     res = alloc_shr(wosize, String_tag);
     hd = Hd_val (res);
     color = Color_hd (hd);
-    Assert (color == White || color == Black);
+    assert (color == White || color == Black);
     if (shrink_block(block, (value*)(Hp_val(res)), whsize64, whsize, color) == -1) {
       Hd_val (res) = hd;                      /* Avoid confusing the GC. */
       stat_free((char *) block);
@@ -533,7 +535,7 @@ static value intern_fast_val(struct channel * chan, unsigned long magic)
     res = alloc_shr(wosize, String_tag);
     hd = Hd_val (res);
     color = Color_hd (hd);
-    Assert (color == White || color == Black);
+    assert (color == White || color == Black);
     if (really_getblock(chan, Hp_val(res), bhsize) == 0) {
       Hd_val (res) = hd;                      /* Avoid confusing the GC. */
       failwith ("intern : truncated object");

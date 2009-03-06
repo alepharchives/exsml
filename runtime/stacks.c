@@ -1,6 +1,8 @@
 /* To initialize and resize the stacks */
 
 #include <string.h>
+#include <assert.h>
+
 #include "config.h"
 #include "fail.h"
 #include "misc.h"
@@ -30,7 +32,7 @@ void realloc_stack()
   value * new_low, * new_high, * new_sp;
   value * p;
 
-  Assert(extern_sp >= stack_low);
+  assert(extern_sp >= stack_low);
   size = stack_high - stack_low;
   if (size >= Max_stack_size)
     raise_out_of_memory();

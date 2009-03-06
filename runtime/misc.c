@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
+
 #include "config.h"
 #include "debugger.h"
 #include "misc.h"
@@ -139,7 +141,7 @@ char *aligned_malloc (asize_t size, int modulo)
   extern char * malloc();
 #endif
 */
-                                                 Assert (modulo < Page_size);
+  assert (modulo < Page_size);
   raw_mem = malloc (size + Page_size);
   if (raw_mem == NULL) return NULL;
   raw_mem += modulo;		/* Address to be aligned */

@@ -3,6 +3,7 @@
 #ifndef _memory_
 #define _memory_
 
+#include <assert.h>
 
 #include "config.h"
 #include "gc.h"
@@ -50,8 +51,8 @@ extern char * stat_resize (char *, asize_t);     /* Size in bytes. */
 	&& ! (Is_block (_old_) && Is_young (_old_))){			      \
       *ref_table_ptr++ = (fp);						      \
       if (ref_table_ptr >= ref_table_limit){				      \
-        Assert (ref_table_ptr == ref_table_limit);			      \
-	realloc_ref_table ();						      \
+	      assert (ref_table_ptr == ref_table_limit);		      \
+	      realloc_ref_table ();					      \
       }									      \
     }									      \
   }									      \

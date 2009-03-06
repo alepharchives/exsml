@@ -2,6 +2,8 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
+
 #include "alloc.h"
 #include "debugger.h"
 #include "mlvalues.h"
@@ -11,7 +13,7 @@ mlsize_t string_length(value s)
 {
   mlsize_t temp;
   temp = Bosize_val(s) - 1;
-  Assert (Byte (s, temp - Byte (s, temp)) == 0);
+  assert (Byte (s, temp - Byte (s, temp)) == 0);
   return temp - Byte (s, temp);
 }
 
