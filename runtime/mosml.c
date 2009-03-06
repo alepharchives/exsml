@@ -32,8 +32,6 @@
 #include "globals.h"
 #include "mosml.h"
 
-#define tm2cal(tptr)	mktime(tptr)
-
 #define Raise_float_if(cond) \
   if( cond )					\
     { raiseprimitive0(float_exn); }
@@ -151,43 +149,24 @@ raise_ceil:
     return Val_unit;		/* Can't reach return */
 }
 
-#ifdef __MWERKS__
-#if __MWERKS__ < 0x0400
-#include <Types.h>
-double_t nearbyint ( double_t x );
-#define rint nearbyint
-#endif
-#endif
-
 value sml_round(value f)              /* ML */
-{ double r;
-  long i;
-  value v;
-  /* Apparently no rint() in djgpp's libm: */
-#if defined(MSDOS) || defined(hpux) || defined(WIN32)
-  double delta;
-  r = floor(Double_val(f));
-  if (r < (double)(Min_long-1) || r > (double)(Max_long)) goto raise_round;
-  i = (long)r;
-  delta = Double_val(f) - r;   // belongs to [0, 1[
-  // Round to nearest even integer.
-  // If delta > 0.5, round up; if delta == 0.5, round to nearest even:
-  if (delta > 0.5 || delta == 0.5 && i % 2 != 0)
-    i++;
-  v = Val_long(i);
-  if( Long_val(v) != i )  goto raise_round;
-#else
-  r = rint(Double_val(f));
-  if ((r > (double) (Max_long)) || (r < (double)(Min_long))) goto raise_round;
-  i = (long) r;
-  v = Val_long(i);
-#endif
+{
+	double r;
+	long i;
+	value v;
 
-  return v;
+	r = rint(Double_val(f));
+	if ((r > (double) (Max_long)) || (r < (double)(Min_long)))
+		goto raise_round;
+
+	i = (long) r;
+	v = Val_long(i);
+
+	return v;
 
 raise_round:
-    raise_overflow();
-    return Val_unit;		/* Can't reach return */
+	raise_overflow();
+	return Val_unit;		/* Can't reach return */
 }
 
 value sml_trunc(value f)              /* ML */
@@ -484,10 +463,6 @@ value sml_string_of_float(value arg)    /* ML */
   return copy_string(format_buffer);
 }
 
-#ifdef __MWERKS__
-#pragma mpwc_newline on
-#endif
-
 value sml_makestring_of_char(value arg)      /* ML */
 {
   unsigned char c;
@@ -598,10 +573,6 @@ value sml_makestring_of_string(value arg)      /* ML */
   return res;
 }
 
-#ifdef __MWERKS__
-#pragma mpwc_newline off
-#endif
-
 /* The following must agree with timebase in mosmllib/Time.sml: */
 
 #define TIMEBASE (-1073741824)
@@ -611,80 +582,22 @@ value sml_makestring_of_string(value arg)      /* ML */
    the macros below to compensate. 07Sep95 e
 */
 
-#ifndef macintosh
-
-#define SYStoSMLtime
-#define SMLtoSYStime
-
-#endif
-
 value sml_getrealtime (value v) /* ML */
 {
-#ifdef WIN32
-  value res;
-  struct timeb t;
-
-  /*
-  // It seems that the time returned by 'ftime' under MS Windows
-  // disagree with that returned by 'gettimeofday' under MS DOS!
-  // The following lines are written according the specification
-  // of 'ftime' though...
-  // Experiments show, that in Moscow the result returned by
-  // 'ftime' is recalculated into the correct local time, while
-  // the time calculated from the result of 'gettimeofday' is
-  // 1 hour late.
-  //  Sergei Romanenko
-  */
-
-  ftime(&t);
-  res = alloc (2, 0);
-  Field (res, 0) = Val_long (t.time + TIMEBASE);
-  Field (res, 1) = Val_long (((long) t.millitm) * 1000);
-  return res;
-#else
   value res;
   struct timeval tp;
 
   gettimeofday(&tp, NULL);
   res = alloc (2, 0);
-  Field (res, 0) = Val_long (SYStoSMLtime(tp.tv_sec)+TIMEBASE);
+  Field (res, 0) = Val_long (tp.tv_sec+TIMEBASE);
   Field (res, 1) = Val_long (tp.tv_usec);
   return res;
-#endif
 }
 
 value sml_getrutime (value v) /* ML */
 {
   value res;
 
-#if defined(__MWERKS__)
-  res = e_getrusage();
-#else
-#ifdef WIN32
-  /*
-  // Here I return sysTime = usrTime.
-  // Perhaps, win32 enables sysTime and usrTime to be mesured
-  // in an accurate way...
-  //  Sergei Romanenko
-  */
-  struct timeb t;
-  ftime(&t);
-  res = alloc (6, 0);
-  Field (res, 2) = Val_long (t.time)+TIMEBASE;
-  Field (res, 3) = Val_long (((long) t.millitm) * 1000);
-  Field (res, 4) = Val_long (t.time)+TIMEBASE;
-  Field (res, 5) = Val_long (((long) t.millitm) * 1000);
-#elif defined(hpux) || defined(__svr4__)
-  struct tms buffer;
-
-  long persec = sysconf(_SC_CLK_TCK);
-  times(&buffer);
-  res = alloc (6, 0);
-  Field (res, 2) = Val_long (buffer.tms_stime / persec);
-  Field (res, 3) = Val_long ((buffer.tms_stime % persec) * (1000000 / persec));
-  Field (res, 4) = Val_long (buffer.tms_utime / persec);
-  Field (res, 5) = Val_long ((buffer.tms_utime % persec) * (1000000 / persec));
-#else
   struct rusage rusages;
   getrusage(RUSAGE_SELF, &rusages);
   res = alloc (6, 0);
@@ -692,11 +605,9 @@ value sml_getrutime (value v) /* ML */
   Field (res, 3) = Val_long (rusages.ru_stime.tv_usec);
   Field (res, 4) = Val_long (rusages.ru_utime.tv_sec);
   Field (res, 5) = Val_long (rusages.ru_utime.tv_usec);
-#endif
 
   Field (res, 0) = Val_long (gc_time.tv_sec);
   Field (res, 1) = Val_long (gc_time.tv_usec);
-#endif
 
   return res;
 }
@@ -709,21 +620,6 @@ value sml_errno(value arg)          /* ML */
 
 value sml_getdir(value arg)		/* ML */
 {
-#ifdef WIN32
-  char directory[_MAX_PATH];
-  char *res;
-
-  errno = 0;
-  /* Unlike Unix and DJ GPP, the path is returned with the drive letter, */
-  /* and with '\', rather then '/'! */
-  res = getcwd(directory, _MAX_PATH);
-  if (res == NULL)
-     failwith("getcwd");
-  for( ; *res; res++ )
-    if( *res == '\\' )
-      *res = '/';
-  return copy_string(directory);
-#else
  char directory[MAXPATHLEN];
  char *res;
 
@@ -732,22 +628,13 @@ value sml_getdir(value arg)		/* ML */
  if (res == NULL)
     failwith("getcwd");
  return copy_string(directory);
-#endif
 }
 
 value sml_mkdir(value path)          /* ML */
 {
-#ifdef WIN32
-  /* Unlike Unix and DJ GPP, the path may contain a drive letter, */
-  /* and must contain '\' rather than '/'. */
-  if (mkdir(String_val(path)) == -1)
-      failwith("mkdir");
-  return Val_unit;
-#else
   if (mkdir(String_val(path), 0777) == -1)
       failwith("mkdir");
   return Val_unit;
-#endif
 }
 
 value sml_rmdir(value path)          /* ML */
@@ -757,159 +644,47 @@ value sml_rmdir(value path)          /* ML */
   return Val_unit;
 }
 
-#ifdef WIN32
-typedef struct
-{
-  WIN32_FIND_DATA FileData;
-  char szSearchPath[MAX_PATH];
-  HANDLE hSearch;
-  BOOL fFinished;
-  char d_name[MAX_PATH];
-} MY_DIR;
-
-MY_DIR *my_opendir(const char* dirname)
-{
-  MY_DIR *dstr;
-
-  dstr = malloc(sizeof(MY_DIR));
-  if( dstr == NULL ) return NULL;
-  memset(dstr, 0, sizeof(MY_DIR));
-
-  strncpy(dstr->szSearchPath, dirname, MAX_PATH);
-  strncat(dstr->szSearchPath, "\\*.*", MAX_PATH);
-  dstr->szSearchPath[MAX_PATH-1] = '\0';
-
-  dstr->hSearch = FindFirstFile(dstr->szSearchPath, &dstr->FileData);
-  if (dstr->hSearch == INVALID_HANDLE_VALUE)
-  {
-    free(dstr);
-    return NULL;
-  }
-  dstr->fFinished = FALSE;
-  return dstr;
-}
-
-void my_readdir(MY_DIR *dstr)
-{
-  if( dstr->fFinished )
-    dstr->d_name[0] = '\0';
-  else
-  {
-    strncpy(dstr->d_name, dstr->FileData.cFileName, MAX_PATH);
-    if (!FindNextFile(dstr->hSearch, &dstr->FileData))
-    {
-      dstr->fFinished = TRUE;
-      FindClose(dstr->hSearch);
-    }
-  }
-}
-
-void my_closedir(MY_DIR *dstr)
-{
-  if( !dstr->fFinished )
-    FindClose(dstr->hSearch);
-  free(dstr);
-}
-
-BOOL my_rewinddir(MY_DIR *dstr)
-{
-  if( !dstr->fFinished )
-    FindClose(dstr->hSearch);
-
-  dstr->hSearch = FindFirstFile(dstr->szSearchPath, &dstr->FileData);
-  if (dstr->hSearch == INVALID_HANDLE_VALUE)
-  {
-    free(dstr);
-    return FALSE;
-  }
-  dstr->fFinished = FALSE;
-  return TRUE;
-}
-#endif
 
 value sml_opendir(value path)          /* ML */
 {
-#ifdef WIN32
-  MY_DIR *dstr;
-
-  dstr = my_opendir(String_val(path));
-  if (dstr == NULL)
-      failwith("opendir");
-  return (value) dstr;
-#else
   DIR * dstr;
 
   dstr = opendir(String_val(path));
   if (dstr == NULL)
       failwith("opendir");
-#ifdef MSDOS
-  if (readdir(dstr) == NULL)
-      failwith("opendir");
-  else
-      rewinddir(dstr);
-#endif
   return (value) dstr;
-#endif
 }
 
 value sml_rewinddir(value v)          /* ML */
 {
-#ifdef WIN32
-  if( !my_rewinddir((MY_DIR *) v) )
-    failwith("opendir");
-  return Val_unit;
-#else
   rewinddir((DIR *) v);
   return Val_unit;
-#endif
 }
 
 value sml_readdir(value v)          /* ML */
 {
-#ifdef WIN32
-  MY_DIR *dstr;
-
-  dstr = (MY_DIR *) v;
-  my_readdir(dstr);
-  if( dstr->d_name[0] == '\0' )
-    return copy_string("");
-  return copy_string(dstr->d_name);
-#else
   struct dirent *direntry;
 
   direntry = readdir((DIR *) v);
   if (direntry == NULL)
       return copy_string("");
   return copy_string((*direntry).d_name);
-#endif
 }
 
 value sml_closedir(value v)          /* ML */
 {
-#ifdef WIN32
-  my_closedir((MY_DIR *) v);
-  return Val_unit;
-#else
   if (closedir((DIR *) v) == -1)
       failwith("closedir");
   return Val_unit;
-#endif
 }
 
 value sml_isdir(value path)          /* ML */
 {
-#ifdef WIN32
-  DWORD dwFileAttributes = GetFileAttributes( String_val(path) );
-  if( dwFileAttributes == 0xFFFFFFFF )
-    failwith("isdir");
-  return (Val_bool(dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY));
-#else
   struct stat buf;
 
   if (stat(String_val(path), &buf) == -1)
       failwith("stat");
   return (Val_bool(S_ISDIR(buf.st_mode)));
-#endif
 }
 
 value sml_modtime(value path)          /* ML */
@@ -917,25 +692,18 @@ value sml_modtime(value path)          /* ML */
 
   if (stat(String_val(path), &buf) == -1)
       failwith("stat");
-  return (copy_double ((double) (SYStoSMLtime(buf.st_mtime))));
+  return (copy_double ((double) (buf.st_mtime)));
 }
 
 value sml_settime(value path, value time)          /* ML */
 {
   struct utimbuf tbuf;
 
-  tbuf.actime = tbuf.modtime = SMLtoSYStime((long) (Double_val(time)));
+  tbuf.actime = tbuf.modtime = (long) (Double_val(time));
   if (utime(String_val(path), &tbuf) == -1)
       failwith("utime");
   return Val_unit;
 }
-
-#ifdef WIN32
-#define F_OK            0       /* does file exist */
-#define	X_OK		1	/* is it executable by caller */
-#define	W_OK		2	/* is it writable by caller */
-#define	R_OK		4	/* is it readable by caller */
-#endif
 
 value sml_access(value path, value permarg)          /* ML */
 {
@@ -1024,7 +792,7 @@ value sml_localtime (value v) /* ML */
 {
   value res;
   struct tm *tmr;
-  time_t clock = SMLtoSYStime((long) (Double_val(v)));
+  time_t clock = (long) (Double_val(v));
   tmr = localtime(&clock);
   res = alloc (9, 0);
   Field (res, 0) = Val_long ((*tmr).tm_hour);
@@ -1044,7 +812,7 @@ value sml_gmtime (value v) /* ML */
 {
   value res;
   struct tm *tmr;
-  time_t clock = SMLtoSYStime((long) (Double_val(v)));
+  time_t clock = (long) (Double_val(v));
   tmr = gmtime(&clock);
   res = alloc (9, 0);
   Field (res, 0) = Val_long ((*tmr).tm_hour);
@@ -1073,7 +841,7 @@ value sml_mktime (value v) /* ML */
   tmr.tm_yday  = Long_val(Field (v, 7));
   tmr.tm_year  = Long_val(Field (v, 8));
 
-  return copy_double((double)SYStoSMLtime(tm2cal(&tmr)));
+  return copy_double((double) mktime(&tmr));
 }
 
 value sml_asctime (value v) /* ML */
@@ -1472,7 +1240,7 @@ value sml_localoffset(value v)	/* ML */
 
   t1 = time((time_t*)0);
   gmt = gmtime (&t1);
-  t2 = tm2cal(gmt);
+  t2 = mktime(gmt);
   td = difftime(t2, t1);
 
   return copy_double(td); /* not SYStoSMLtime(td) */
