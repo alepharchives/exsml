@@ -124,8 +124,7 @@ value gc_get (value v) /* ML */
 
 static int norm_pfree (int p)
 {
-  if (p < 1) return p = 1;
-  return p;
+	return (p < 1) ? 0 : p;
 }
 
 static long norm_heapincr (long i)
