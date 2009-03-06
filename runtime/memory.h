@@ -11,16 +11,16 @@
 #include "misc.h"
 #include "mlvalues.h"
 
-EXTERN value *c_roots_head;
+extern value *c_roots_head;
 
 void init_c_roots (void);
-EXTERN value alloc_shr (mlsize_t, tag_t);
+extern value alloc_shr (mlsize_t, tag_t);
 void adjust_gc_speed (mlsize_t, mlsize_t);
-EXTERN void modify (value *, value);
-EXTERN void initialize (value *, value);
-EXTERN char * stat_alloc (asize_t);	         /* Size in bytes. */
-EXTERN void stat_free (char *);
-EXTERN char * stat_resize (char *, asize_t);     /* Size in bytes. */
+extern void modify (value *, value);
+extern void initialize (value *, value);
+extern char * stat_alloc (asize_t);	         /* Size in bytes. */
+extern void stat_free (char *);
+extern char * stat_resize (char *, asize_t);     /* Size in bytes. */
 
 
 #define Alloc_small(result, wosize, tag) {				      \

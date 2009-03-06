@@ -218,7 +218,7 @@ typedef void ** realcode_t;
 #ifndef ALIGN_DOUBLE
 #define Double_val(v) (* (double *) (v))
 #else
-EXTERN double Double_val (value);
+extern double Double_val (value);
 #endif
 void Store_double_val (value,double);
 
@@ -232,7 +232,7 @@ typedef void (*final_fun) (value);
 
 /* 3- Atoms are 0-tuples.  They are statically allocated once and for all. */
 
-EXTERN header_t first_atoms[];
+extern header_t first_atoms[];
 #define Atom(tag) (Val_hp (&(first_atoms [tag])))
 #define Is_atom(v) (v >= Atom(0) && v <= Atom(255))
 

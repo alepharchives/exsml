@@ -20,7 +20,7 @@ value create_string(value len)        /* ML */
   return alloc_string(Long_val(len));
 }
 
-EXTERN value compare_strings(value s1, value s2)   /* ML */
+extern value compare_strings(value s1, value s2)   /* ML */
 {
   mlsize_t len1, len2;
   register mlsize_t len;

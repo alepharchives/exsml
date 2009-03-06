@@ -116,7 +116,7 @@ static char *expand_heap (mlsize_t request)
   return Bp_hp (mem);
 }
 
-EXTERN value alloc_shr (mlsize_t wosize, tag_t tag)
+extern value alloc_shr (mlsize_t wosize, tag_t tag)
 {
   char *hp, *new_block;
 
@@ -184,7 +184,7 @@ void initialize (value * fp, value val)
    the value being written is not a young block. */
 /* Never calls the GC. */
 
-EXTERN void modify (value * fp, value val)
+extern void modify (value * fp, value val)
 {
   Modify (fp, val);
 }

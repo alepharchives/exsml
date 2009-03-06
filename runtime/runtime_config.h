@@ -3,15 +3,6 @@
 
 #include "mosml_config.h"
 
-#define EXTERN extern
-
-/* Library dependencies */
-
-#ifndef HAS__SETJMP
-#define _setjmp setjmp
-#define _longjmp longjmp
-#endif
-
 /* Signed char type */
 
 #if defined(__STDC__) || !defined(UNSIGNED_CHAR)

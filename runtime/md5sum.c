@@ -162,7 +162,7 @@ void encode(byte*, my_uint*, my_uint);
 void decode(my_uint*, byte*, my_uint);
 MD5state* md5(byte*, my_uint, byte*, MD5state*);
 
-EXTERN value md5sum(value str)     /* ML */
+extern value md5sum(value str)     /* ML */
 {
 	byte *buf;
 	byte digest[16], pr64[25];

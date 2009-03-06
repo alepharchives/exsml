@@ -4,8 +4,8 @@
 
 #include "misc.h"
 
-EXTERN mlsize_t string_length (value);
-EXTERN value compare_strings (value, value);
+extern mlsize_t string_length (value);
+extern value compare_strings (value, value);
 
 
 #endif /* _str_ */

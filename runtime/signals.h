@@ -20,7 +20,7 @@ extern int in_blocking_section;
 #endif
 
 void execute_signal (void);
-EXTERN void enter_blocking_section (void);
-EXTERN void leave_blocking_section (void);
+extern void enter_blocking_section (void);
+extern void leave_blocking_section (void);
 extern CODE raise_break_exn;
 #endif /* _signals_ */

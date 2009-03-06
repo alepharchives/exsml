@@ -12,14 +12,14 @@ struct longjmp_buffer {
 extern struct longjmp_buffer * external_raise;
 extern value exn_bucket;
 
-EXTERN Noreturn mlraise(value);
-EXTERN Noreturn raiseprimitive0(int exnindex);
-EXTERN Noreturn raiseprimitive1(int exnindex, value arg);
-EXTERN Noreturn raise_with_string(int exnindex, char * msg);
-EXTERN Noreturn failwith(char *);
-EXTERN Noreturn invalid_argument(char *);
-EXTERN Noreturn raise_overflow(void);
-EXTERN Noreturn raise_out_of_memory(void);
+extern Noreturn mlraise(value);
+extern Noreturn raiseprimitive0(int exnindex);
+extern Noreturn raiseprimitive1(int exnindex, value arg);
+extern Noreturn raise_with_string(int exnindex, char * msg);
+extern Noreturn failwith(char *);
+extern Noreturn invalid_argument(char *);
+extern Noreturn raise_overflow(void);
+extern Noreturn raise_out_of_memory(void);
 extern volatile int float_exn;
 
 extern double maxdouble;

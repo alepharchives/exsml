@@ -10,7 +10,7 @@
 
 #ifdef ALIGN_DOUBLE
 
-EXTERN double Double_val(value val)
+extern double Double_val(value val)
 {
   union { value v[2]; double d; } buffer;
 
