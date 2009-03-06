@@ -16,8 +16,6 @@ typedef char schar;
 
 /* Memory model parameters */
 
-#if !defined(SMALL) && !defined(SIXTEEN)
-
 /* The size of a page for memory management (in bytes) is [1 << Page_log].
    It must be a multiple of [sizeof (long)]. */
 #define Page_log 12             /* A page is 4 kilobytes. */
@@ -30,11 +28,7 @@ typedef char schar;
 
 /* Maximum sizes for the stacks (bytes). */
 
-#ifdef MINIMIZE_MEMORY
-#define Max_stack_size 262144
-#else
 #define Max_stack_size 1048576
-#endif
 
 /* Maximum size of a block allocated in the young generation (words). */
 /* Must be > 4 */
@@ -72,45 +66,5 @@ typedef char schar;
    the dead objects and the free list represent this percentage of the
    heap size.  The rest of the heap is live objects. */
 #define Percent_free_def 30
-
-
-#else
-#ifdef SIXTEEN                 /* Scaled-down parameters for 16-bit machines */
-
-#define Page_log 10
-#define Stack_size 32768
-#define Stack_threshold 2048
-
-#define Max_stack_size 65532
-#define Max_young_wosize 256
-#define Minor_heap_min 512
-#define Minor_heap_max 0x3F00
-#define Minor_heap_def 8192
-#define Heap_chunk_min 0x400
-#define Heap_chunk_max 0x3C00
-#define Heap_chunk_def 0x2000
-#define Percent_free_def 15
-
-#else
-#ifdef SMALL                   /* Scaled-down parameters for small memory */
-
-#define Page_log 10
-#define Stack_size 32768
-#define Stack_threshold 2048
-#define Max_stack_size 1048576
-#define Max_young_wosize 256
-#define Minor_heap_min 1024
-#define Minor_heap_max (1 << 28)
-#define Minor_heap_def 16384
-#define Heap_chunk_min (2 * Page_size / sizeof (value))
-#define Heap_chunk_max (1 << 28)
-#define Heap_chunk_def (126 * Page_size / sizeof (value))
-#define Percent_free_def 20
-
-#endif /* SMALL */
-#endif /* SIXTEEN */
-
-#endif /* !defined(SMALL) && !defined(SIXTEEN) */
-
 
 #endif /* _config_ */

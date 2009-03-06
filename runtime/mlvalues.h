@@ -37,11 +37,7 @@
 
 typedef long value;
 typedef unsigned long header_t;
-#ifdef SIXTEEN
-typedef unsigned int mlsize_t;
-#else
 typedef unsigned long mlsize_t;
-#endif
 typedef unsigned int tag_t;             /* Actually, an unsigned char */
 typedef unsigned long color_t;
 typedef unsigned long mark_t;
@@ -100,14 +96,11 @@ bits  63    10 9     8 7   0
 #define Bp_hp(hp) ((char *) Val_hp (hp))
 
 #define Num_tags (1 << 8)
+
 #ifdef SIXTYFOUR
-#define Max_wosize ((1L << 54) - 1)
+  #define Max_wosize ((1L << 54) - 1)
 #else
-#ifdef SIXTEEN
-#define Max_wosize ((1 << 14) - 1)
-#else
-#define Max_wosize ((1 << 22) - 1)
-#endif
+  #define Max_wosize ((1 << 22) - 1)
 #endif
 
 #define Wosize_val(val) (Wosize_hd (Hd_val (val)))

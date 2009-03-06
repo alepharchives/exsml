@@ -41,7 +41,6 @@ static char *expand_heap (mlsize_t request)
   assert (Wosize_bhsize (malloc_request) >= request);
   Hd_hp (mem) = Make_header (Wosize_bhsize (malloc_request), 0, Blue);
 
-#ifndef SIXTEEN
   if (mem < heap_start){
     more_pages = -Page (mem);
   }else if (Page (mem + malloc_request) > page_table_size){
@@ -95,21 +94,6 @@ static char *expand_heap (mlsize_t request)
     page_table = new_page_table;
     page_table_size = new_page_table_size;
   }
-#else                           /* Simplified version for the 8086 */
-  {
-    char **last;
-    char *cur;
-
-    last = &heap_start;
-    cur = *last;
-    while (cur != NULL && (char huge *) cur < (char huge *) mem){
-      last = &((((heap_chunk_head *) cur) [-1]).next);
-      cur = *last;
-    }
-    (((heap_chunk_head *) mem) [-1]).next = cur;
-    *last = mem;
-  }
-#endif
 
   for (i = Page (mem); i < Page (mem + malloc_request); i++){
     page_table [i] = In_heap;
