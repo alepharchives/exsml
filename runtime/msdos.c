@@ -61,7 +61,7 @@ int msdos_read(fd, ptr, len)
      }
     /* Modified for Moscow SML 1994-08-23 to detect control-Z = 0x1A */
     if (stdin_is_console)
-      if (stdin_at_eof) 
+      if (stdin_at_eof)
 	return 0;
       else
 	{
@@ -75,7 +75,7 @@ int msdos_read(fd, ptr, len)
            for (i=0; (i<read_buffer.act_len)&&(read_buffer.data[i]!=0x1A);
 		 i++);
            if (read_buffer.data[i] == 0x1A)
-	     { 
+	     {
 	       stdin_at_eof = 1;
 	       return i;
 	     }

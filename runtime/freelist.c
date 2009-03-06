@@ -90,7 +90,7 @@ static char *allocate_block (wh_sz, prev, cur)
   }
   fl_prev = prev;
   return cur + Bosize_hd (h) - Bsize_wsize (wh_sz);
-}  
+}
 
 /* [fl_allocate] does not set the header of the newly allocated block.
    The calling function must do it before any GC function gets called.
@@ -140,7 +140,7 @@ char *fl_merge_block (bp)
 {
   char *prev, *cur, *adj;
   header_t hd = Hd_bp (bp);
-  
+
 #ifdef DEBUG
   {
     mlsize_t i;

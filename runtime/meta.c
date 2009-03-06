@@ -11,7 +11,7 @@
 #include "mlvalues.h"
 #include "prims.h"
 
-extern value interprete(int mode, bytecode_t bprog, 
+extern value interprete(int mode, bytecode_t bprog,
 			int code_size, CODE* rprog);
 
 extern realcode_t interp_realcode;	/* In interp.c */
@@ -28,11 +28,11 @@ value start_interp(value may_free, value prog, value offset, value vlen) /* ML *
 
 #if defined(DIRECT_JUMP) && defined(THREADED)
   {
-    realcode_t generated_code;    
+    realcode_t generated_code;
     res = interprete(/* mode=byte exec */ 1, bprog, len, &generated_code);
     if (Bool_val(may_free)) {
-      //      printf("start_interp freeing: generated_code=%d, len=%d\n", 
-      //     (int)*generated_code, len); 
+      //      printf("start_interp freeing: generated_code=%d, len=%d\n",
+      //     (int)*generated_code, len);
       free(generated_code);	// Allocated by the call to interprete()
     }
   }
@@ -42,7 +42,7 @@ value start_interp(value may_free, value prog, value offset, value vlen) /* ML *
     bytecode_t actualprog = (bytecode_t)malloc(len);
     memmove(bprog, actualprog, len);
     res = interprete(/* mode=byte exec */ 1, actualprog, len, NULL);
-    if (Bool_val(may_free)) 
+    if (Bool_val(may_free))
       free(actualprog);		// Allocated above
   }
 #endif
@@ -71,8 +71,8 @@ value realloc_global(size)      /* ML */
   }
   return Atom(0);
 }
-    
-    
+
+
 value static_alloc(size)        /* ML */
      value size;
 {

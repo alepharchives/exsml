@@ -38,7 +38,7 @@ void Store_double_val(value val, double dbl)
 
 void Store_double_val(value val, double dbl)
 {
-  if (dbl == -0) 
+  if (dbl == -0)
     * (double *) (val) = 0;
   else
     * (double *) (val) = dbl;

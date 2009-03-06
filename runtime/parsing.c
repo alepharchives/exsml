@@ -55,7 +55,7 @@ int parser_trace = 0;
 #define SEMANTIC_ACTION_COMPUTED 0
 #define STACKS_GROWN_1 1
 #define STACKS_GROWN_2 2
-#define START 3   
+#define START 3
 #define TOKEN_READ 4
 
 /* Output codes */
@@ -65,7 +65,7 @@ int parser_trace = 0;
 #define GROW_STACKS_1 Atom(1)
 #define GROW_STACKS_2 Atom(2)
 #define RAISE_PARSE_ERROR Atom(3)
-#define READ_TOKEN Atom(4) 
+#define READ_TOKEN Atom(4)
 
 /* The pushdown automata */
 
@@ -101,7 +101,7 @@ value parse_engine(tables, env, cmd, arg) /* ML */
       modify(&env->lval, Field(arg, 0));
     }
     Trace(printf("Token %d (0x%lx)\n", Int_val(env->curr_char), env->lval));
-    
+
   testshift:
     n1 = Short(tables->sindex, state);
     n2 = n1 + Int_val(env->curr_char);

@@ -19,7 +19,7 @@ value get_next_char(lexbuf)     /* ML */
      struct lexer_buffer * lexbuf;
 {
   mlsize_t buffer_len, curr_pos;
-  
+
   buffer_len = string_length(lexbuf->lex_buffer);
   curr_pos = Long_val(lexbuf->lex_curr_pos);
   if (curr_pos >= buffer_len) {

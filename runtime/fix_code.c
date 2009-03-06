@@ -29,24 +29,24 @@ void fixup_endianness(p, len)
       p++; /* fall through */
       /* Instructions with a two-byte immediate argument */
     case PUSHACC: case ACCESS: case POP: case ASSIGN:
-    case PUSHENVACC: case ENVACC: case DUMMY: case RETURN: 
-    case SETGLOBAL: case GETGLOBAL: 
+    case PUSHENVACC: case ENVACC: case DUMMY: case RETURN:
+    case SETGLOBAL: case GETGLOBAL:
     case APPTERM1: case APPTERM2: case APPTERM3: case APPTERM4:
-    case PUSH_ENV1_APPTERM1: case PUSH_ENV1_APPTERM2: 
-    case PUSH_ENV1_APPTERM3: case PUSH_ENV1_APPTERM4: 
-    case PUSH_GETGLOBAL: 
+    case PUSH_ENV1_APPTERM1: case PUSH_ENV1_APPTERM2:
+    case PUSH_ENV1_APPTERM3: case PUSH_ENV1_APPTERM4:
+    case PUSH_GETGLOBAL:
     case PUSH_GETGLOBAL_APPLY1: case PUSH_GETGLOBAL_APPLY2:
     case PUSH_GETGLOBAL_APPLY3: case PUSH_GETGLOBAL_APPLY4:
     case GETFIELD: case SETFIELD:
     case C_CALL1: case C_CALL2: case C_CALL3: case C_CALL4:
-    case C_CALL5: 
+    case C_CALL5:
     case CONSTSHORT:
       Reverse_short(p);
       p += 2;
       break;
 
       /* Instructions with a one-byte and a four-byte immediate argument */
-    case CLOSURE: case CLOSREC: case BRANCHIFNEQTAG: 
+    case CLOSURE: case CLOSREC: case BRANCHIFNEQTAG:
       p++; /* fall through */
       /* Instructions with a four-byte immediate argument */
     case PUSH_RETADDR: case PUSHTRAP:
@@ -58,14 +58,14 @@ void fixup_endianness(p, len)
       p += 4;
       break;
       /* Instructions with two two-byte immediate arguments */
-    case PUSH_GETGLOBAL_APPTERM1: case PUSH_GETGLOBAL_APPTERM2: 
-    case PUSH_GETGLOBAL_APPTERM3: case PUSH_GETGLOBAL_APPTERM4: 
+    case PUSH_GETGLOBAL_APPTERM1: case PUSH_GETGLOBAL_APPTERM2:
+    case PUSH_GETGLOBAL_APPTERM3: case PUSH_GETGLOBAL_APPTERM4:
       Reverse_short(p);
       Reverse_short(p+2);
       p += 4;
       break;
       /* Instructions with two four-byte immediate arguments */
-    case BRANCHINTERVAL: 
+    case BRANCHINTERVAL:
       Reverse_word(p);
       Reverse_word(p+4);
       p += 8;
@@ -80,9 +80,9 @@ void fixup_endianness(p, len)
       }
       break;
       /* Instructions with a one-byte immediate argument */
-    case APPLY: case GRAB: case PUSHATOM: case ATOM: 
+    case APPLY: case GRAB: case PUSHATOM: case ATOM:
     case MAKEBLOCK1: case MAKEBLOCK2: case MAKEBLOCK3: case MAKEBLOCK4:
-    case CONSTBYTE: 
+    case CONSTBYTE:
       p++;
       break;
     }

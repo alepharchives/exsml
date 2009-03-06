@@ -38,7 +38,7 @@ int gc_phase;
 /* The mark phase will register pointers to live arrays of weak
    pointers in weak_arrays.  Then the weak phase traverses each weak
    array and resets pointers to objects that will be deallocated by the
-   sweep phase: 
+   sweep phase:
 */
 
 static value *weak_arrays;
@@ -187,12 +187,12 @@ static void weak_phase()
 {
   value *c;
   for (c = weak_arrays; c < weak_arrays_cur; c++)
-    { 
+    {
       int i;
       value arr = *c;
       int len = Wosize_val(arr);
-      for (i=0; i < len; i++) 
-	{ 
+      for (i=0; i < len; i++)
+	{
 	  value v = Field(arr, i);
 	  if (Is_block(v) && Is_in_heap(v) && Is_white_val(v))
 	    Field(arr, i) = (value)NULL;
@@ -281,7 +281,7 @@ void major_collection_slice (void)
                    + 100 * extra_heap_memory)
 		+ Margin);
     gc_message ("!", 0);
-  }else if (gc_phase == Phase_weak){  
+  }else if (gc_phase == Phase_weak){
     weak_phase();
     gc_message (".", 0);
   }else{

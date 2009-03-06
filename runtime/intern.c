@@ -10,7 +10,7 @@
 #include "mlvalues.h"
 #include "reverse.h"
 
-/* Transform offsets relative to the beginning of the block 
+/* Transform offsets relative to the beginning of the block
    back into pointers. */
 
 void adjust_pointers(value * start, mlsize_t size, color_t color)
@@ -497,7 +497,7 @@ static value intern_fast_val(struct channel * chan, unsigned long magic)
     value64 * block;
     whsize64 = whsize;
     block = (value64 *) stat_alloc(whsize64 * sizeof(value64));
-    if (really_getblock(chan, (char *) block, 
+    if (really_getblock(chan, (char *) block,
                         whsize64 * sizeof(value64)) == 0) {
       stat_free((char *) block);
       failwith ("intern : truncated object");

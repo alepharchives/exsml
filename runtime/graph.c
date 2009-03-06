@@ -1,5 +1,5 @@
 /* Stub code for the graphic primitives */
-/* This version has been modified for Moscow ML and won't work for 
+/* This version has been modified for Moscow ML and won't work for
    Caml Light any more */
 
 #include <math.h>
@@ -30,7 +30,7 @@ value gr_open_graph(mode)       /* ML */
 {
   char * mode_name;
   int mode_code, width, height;
-  
+
   mode_name = String_val(mode);
   mode_code = GR_default_graphics;
   width = 0;
@@ -220,7 +220,7 @@ value gr_text_size(s)   /* ML */
   GrTextOption * topt = text_option();
   int sx, sy;
   value res;
-  
+
   sx = GrStringWidth(String_val(s), string_length(s), topt);
   sy = GrStringHeight(String_val(s), string_length(s), topt);
   res = alloc_tuple(2);
@@ -344,7 +344,7 @@ value gr_blit_image(image, vx, vy)      /* ML */
 {
   GrContext dest;
   int x, y, w, h;
-  
+
   w = Int_val(image->width);
   h = Int_val(image->height);
   x = Int_val(vx);
@@ -392,7 +392,7 @@ value gr_make_image(color_matrix)       /* ML */
 	has_transp = 1;
 	GrPlot(i, j, 0);
       } else {
-	GrPlot(i, j, 
+	GrPlot(i, j,
 	       rgb_to_color((rgb>>16) & 0xFF, (rgb>>8) & 0xFF, rgb & 0xFF));
       }
     }
@@ -431,7 +431,7 @@ static value alloc_int_vect(size)
 {
   value res;
   mlsize_t i;
-  
+
   if (size <= Max_young_wosize) {
     res = alloc(size, Reference_tag);
   } else {
@@ -492,7 +492,7 @@ static int event_codes[] = {
   M_BUTTON_DOWN, M_BUTTON_UP, M_KEYPRESS, M_MOTION, M_POLL
 };
 
-/* Moscow ML expects gr_wait_events to return fields in this order: 
+/* Moscow ML expects gr_wait_events to return fields in this order:
 	0 - button
 	1 - key
 	2 - keypressed
@@ -540,7 +540,7 @@ value gr_wait_event(events)     /* ML */
 static unsigned get_time()
 {
   union REGS r;
-  
+
   r.x.ax = 0;
   int86(0x1A, &r, &r);
   return (r.x.cx << 16) + r.x.dx;
@@ -550,7 +550,7 @@ value gr_sound(freq, duration)  /* ML */
 	value freq, duration;
 {
   int start, d, t;
-	
+
   enter_blocking_section();
   sound(Long_val(freq));
   start = get_time();

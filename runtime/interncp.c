@@ -100,7 +100,7 @@ static void read_compact(struct channel * chan, value * dest)
       case CODE_SHARED8:
         ofs = input_bytes(chan, 1, 0);
       read_shared:
-        Assert(ofs > 0 && ofs <= obj_counter); 
+        Assert(ofs > 0 && ofs <= obj_counter);
         v = intern_obj_table[obj_counter - ofs];
         break;
       case CODE_SHARED16:

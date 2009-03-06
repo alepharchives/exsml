@@ -28,13 +28,13 @@
 
 /* Common functions. */
 
-/* Improvement suggested by Doug Currie: 
+/* Improvement suggested by Doug Currie:
    memoize std_in, std_out and std_err.
    Used also in function flush_stdouterr.
 
-   As usual, std_channel[0] = stdin, 
-             std_channel[1] = stdout, 
-	     std_channel[2] = stderr. 
+   As usual, std_channel[0] = stdin,
+             std_channel[1] = stdout,
+	     std_channel[2] = stderr.
 */
 
 static struct channel *std_channel[3] = {NULL, NULL, NULL};
@@ -53,7 +53,7 @@ struct channel * open_descr(int fd)
   if( (unsigned)fd < 3 )
     std_channel[fd] = channel;
   return channel;
-}               
+}
 
 value open_descriptor(value fd)       /* ML */
 {
@@ -71,7 +71,7 @@ value channel_size(struct channel * channel)      /* ML */
 
   end = lseek(channel->fd, 0, 2);
   if (end == -1) sys_error(NULL);
-  if (lseek(channel->fd, channel->offset, 0) != channel->offset) 
+  if (lseek(channel->fd, channel->offset, 0) != channel->offset)
     sys_error(NULL);
   return Val_long(end);
 }
@@ -95,7 +95,7 @@ static void really_write(int fd, char * p, int n)
     p += retcode;
     n -= retcode;
   }
-}   
+}
 
 value flush(struct channel * channel)            /* ML */
 {
@@ -197,7 +197,7 @@ value pos_out(struct channel * channel)          /* ML */
 
 value close_out(struct channel * channel)     /* ML */
 {
-  if ((unsigned)(channel->fd) >= 3) 
+  if ((unsigned)(channel->fd) >= 3)
     {
       flush(channel);
       close(channel->fd);
@@ -212,7 +212,7 @@ value close_out(struct channel * channel)     /* ML */
 void (__cdecl *old_ctrl_c_handler)(int);
 int volatile ctrl_c_during_read;
 
-void handle_ctrl_c(int sig) 
+void handle_ctrl_c(int sig)
 {
     signal(SIGINT, handle_ctrl_c);
     /* Beep(2000, 300); */
@@ -226,7 +226,7 @@ void nonblocking_mode(int fd, int nonblocking) {
 #else
   int retcode = fcntl(fd, F_GETFL);
   if (retcode != -1) {
-    if (nonblocking) 
+    if (nonblocking)
       retcode = fcntl(fd, F_SETFL, retcode | O_NONBLOCK);
     else
       retcode = fcntl(fd, F_SETFL, retcode & (~O_NONBLOCK));
@@ -323,7 +323,7 @@ unsigned char refill(struct channel * channel)
 {
   int n;
 
-  n = really_read(channel->fd, channel->buff, IO_BUFFER_SIZE, 
+  n = really_read(channel->fd, channel->buff, IO_BUFFER_SIZE,
                   /* nonblocking = */ 0);
   if (n == 0) raiseprimitive0(SYS__EXN_SIZE);
   channel->offset += n;
@@ -377,7 +377,7 @@ int getblock(struct channel * channel, char * p, unsigned n,
     return m;
   } else if (n < IO_BUFFER_SIZE) {
     l = really_read(channel->fd, channel->buff, IO_BUFFER_SIZE, nonblocking);
-    if (l == -1) /* Non-blocking read returned no data */ 
+    if (l == -1) /* Non-blocking read returned no data */
       return -1;
     else {
       channel->offset += l;
@@ -391,7 +391,7 @@ int getblock(struct channel * channel, char * p, unsigned n,
     channel->curr = channel->buff;
     channel->max = channel->buff;
     l = really_read(channel->fd, p, n, nonblocking);
-    if (l == -1)	/* Non-blocking read returned no data */ 
+    if (l == -1)	/* Non-blocking read returned no data */
       return -1;
     else {
       channel->offset += l;
@@ -425,7 +425,7 @@ value input_nonblocking(value channel, value buff, value start, value length) /*
                    &Byte(buff, Long_val(start)),
                    (unsigned) Long_val(length),
 	           /* nonblocking = */ 1);
-  if (n == -1)		/* Non-blocking read returned no data */ 
+  if (n == -1)		/* Non-blocking read returned no data */
     return NONE;
   else {
     value res = alloc(1, SOMEtag);
@@ -491,7 +491,7 @@ value input_scan_line(struct channel * channel)       /* ML */
 		      /* nonblocking = */ 0);
       if (n == 0) {
         /* End-of-file encountered. Return the number of characters in the
-           buffer, with negative sign since we haven't encountered 
+           buffer, with negative sign since we haven't encountered
            a newline. */
         return Val_long(-(channel->max - channel->curr));
       }

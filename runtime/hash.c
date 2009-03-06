@@ -54,7 +54,7 @@ static void hash_aux(obj)
 
   /* Pointers into the heap are well-structured blocks.
      We can inspect the block contents. */
-  
+
   if (Is_in_heap(obj) || Is_young(obj)) {
     tag = Tag_val(obj);
     switch (tag) {

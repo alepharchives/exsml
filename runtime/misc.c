@@ -38,7 +38,7 @@ void fatal_error (char * msg)
   ui_fatal_error("%s", msg);
 #else
   fprintf (stderr, "%s", msg);
-  sys_exit(Val_int(2));  
+  sys_exit(Val_int(2));
 #endif
 }
 
@@ -49,7 +49,7 @@ void fatal_error_arg (char * fmt, char * arg)
   ui_fatal_error(fmt, arg);
 #else
   fprintf (stderr, fmt, arg);
-  sys_exit(Val_int(2)); 
+  sys_exit(Val_int(2));
 #endif
 }
 

@@ -13,10 +13,10 @@
 
 /* ML closures for the functions to look up, register and unregister values */
 
-static value get_valueptr_            = (value)NULL; 
-static valueptr reg_mlvalueptr_ptr_   = (valueptr)NULL; 
-static valueptr unreg_mlvalueptr_ptr_ = (valueptr)NULL; 
-static valueptr reg_cptr_ptr_         = (valueptr)NULL; 
+static value get_valueptr_            = (value)NULL;
+static valueptr reg_mlvalueptr_ptr_   = (valueptr)NULL;
+static valueptr unreg_mlvalueptr_ptr_ = (valueptr)NULL;
+static valueptr reg_cptr_ptr_         = (valueptr)NULL;
 
 /* Obtain an ML value pointer from a string.  Return NULL if the name
    is not registered, or has been unregistered. */
@@ -42,7 +42,7 @@ value get_value(valueptr mvp) {
     return (value)NULL;	        /* Not an ML value */
   else
     return (value)(Field(opt, 0));	/* opt == SOME v   */
-}  
+}
 
 value callbackptr(valueptr closureptr, value arg1) {
   value closure = get_value(closureptr);
@@ -100,7 +100,7 @@ valueptr alloc_valueptr(value v) /* ML */
 void registercptr(char* nam, void* cptr) {
   // A simple way to initialize the ML value pointer once
   if (reg_cptr_ptr_ == (valueptr)NULL)
-    reg_cptr_ptr_ = get_valueptr("Callback.registercptr");     
+    reg_cptr_ptr_ = get_valueptr("Callback.registercptr");
   callbackptr2(reg_cptr_ptr_, copy_string(nam), (value)cptr);
 }
 
@@ -114,13 +114,13 @@ value sml_init_register(value v)	/* ML */
 {
   /* The closure in v may be moved if it is not in the old heap.  We
      force it into the old heap by requesting a minor collection: */
-  Push_roots(r, 1); 
+  Push_roots(r, 1);
   r[0] = v;
-  minor_collection();		
+  minor_collection();
   get_valueptr_         = r[0];
   Pop_roots();
-  reg_mlvalueptr_ptr_   = get_valueptr("Callback.register"); 
-  unreg_mlvalueptr_ptr_ = get_valueptr("Callback.unregister"); 
+  reg_mlvalueptr_ptr_   = get_valueptr("Callback.register");
+  unreg_mlvalueptr_ptr_ = get_valueptr("Callback.unregister");
   return Val_unit;
 }
 
@@ -134,7 +134,7 @@ value c_var(value symhdl) /* ML */
 value cfun_app1(value cfun, value arg)  /* ML */
 {
   /* Due to the heavy typecasting, I had to declare a temp variable in
-     order to get it right.  
+     order to get it right.
   */
   value (*cp)(value) = (value (*)(value)) cfun;
 
@@ -160,7 +160,7 @@ value cfun_app3(value cfun, value arg1, value arg2, value arg3)  /* ML */
 value cfun_app4(value cfun, value arg1, value arg2, value arg3, value arg4)  /* ML */
 {
   /* again a typecast value */
-  value (*cp)(value,value,value,value) = 
+  value (*cp)(value,value,value,value) =
     (value (*)(value,value,value,value)) cfun;
 
   return (*cp)(arg1,arg2,arg3,arg4);
@@ -174,9 +174,9 @@ value cfun_app5(value args, int argc)  /* ML */
   value arg3 = Field(args, 3);
   value arg4 = Field(args, 4);
   value arg5 = Field(args, 5);
-  
+
   /* again a typecast value */
-  value (*cp)(value,value,value,value,value) = 
+  value (*cp)(value,value,value,value,value) =
     (value (*)(value,value,value,value,value)) cfun;
 
   return (*cp)(arg1,arg2,arg3,arg4,arg5);

@@ -61,7 +61,7 @@ static void oldify (value *p, value v)
 {
   value result;
   mlsize_t i;
-  
+
 #ifdef macintosh
 #if __POWERPC__
   register int sptr;

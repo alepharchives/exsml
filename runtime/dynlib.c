@@ -21,7 +21,7 @@
 
 /* Sergei Romanenko 1998 Windows 95/NT specific code */
 
-/* Peter Sestoft (sestoft@dina.kvl.dk) 
+/* Peter Sestoft (sestoft@dina.kvl.dk)
    1998 clean-up, documentation, and OSF/1
    1999 HP-UX specific code */
 
@@ -71,7 +71,7 @@ value dynlib_dlopen(value libname, value flagval) /* ML */
     p_to_c( errMessage, (char *)errMessage );
     failwith( (char *)errMessage );
   }
-  
+
 #elif defined(WIN32)
 
   handle = LoadLibrary( String_val(libname) );
@@ -94,12 +94,12 @@ value dynlib_dlopen(value libname, value flagval) /* ML */
     int mlflags = Long_val(flagval);
     int cflags;
     handle = (void*)(malloc(sizeof(shl_t)));
-    if (1 & mlflags) 
+    if (1 & mlflags)
       cflags = BIND_IMMEDIATE;
     else
       cflags = BIND_DEFERRED;
     *((shl_t*)handle) = shl_load(String_val(libname), cflags, 0L);
-    if (!handle) 
+    if (!handle)
       hpux_error();
   }
 
@@ -107,14 +107,14 @@ value dynlib_dlopen(value libname, value flagval) /* ML */
 
   int mlflags = Long_val(flagval);
   int cflags;
-  if (1 & mlflags) 
+  if (1 & mlflags)
     cflags = RTLD_NOW;
   else
     cflags = RTLD_LAZY;
-#ifndef __osf__     
+#ifndef __osf__
   if (2 & mlflags)
     cflags += RTLD_GLOBAL;
-#endif 
+#endif
   handle = dlopen (String_val(libname), cflags);
   if (!handle) {
     failwith(dlerror());
@@ -166,7 +166,7 @@ value dynlib_dlsym(value handle, value sym) /* ML */
       failwith( "FindSymbol: unknown error" );
       break;
   }
-  
+
 #elif defined(WIN32)
 
   symhdl = GetProcAddress((HMODULE) handle, String_val(sym));
@@ -195,9 +195,9 @@ value dynlib_dlsym(value handle, value sym) /* ML */
 #else
 
   symhdl = dlsym((void *) handle, String_val(sym));
-  {   
+  {
     char *error = dlerror();
-    if (error != NULL)  
+    if (error != NULL)
       failwith(error);
   }
 

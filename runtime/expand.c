@@ -21,11 +21,11 @@
 
 #define Instruct(name) case name
 
-/* Computing the length of the realcode array, and building the 
-   address offset translation.  
+/* Computing the length of the realcode array, and building the
+   address offset translation.
 
    In the bytecode, a label is represented by a signed 32-bit offset
-   from the current bytecode PC; hence the jump is done by 
+   from the current bytecode PC; hence the jump is done by
 	pcb = pcb + *pcb
 
    In the threaded code we want to replace this by the relevant index
@@ -53,7 +53,7 @@ int buildrealmap(bytecode_t byteprog, int code_size, int realaddress[])
 {
 #ifdef THREADED
   int realsize = 0;
-  bytecode_t pc = byteprog;    
+  bytecode_t pc = byteprog;
 
   /* Initialize to catch errors */
   int i;
@@ -63,55 +63,55 @@ int buildrealmap(bytecode_t byteprog, int code_size, int realaddress[])
   while (pc-byteprog < code_size) {
     int cur_inst = *pc;
     //    printf("%d:%d\t real = %d\n", pc-byteprog, cur_inst, realsize);
-    realaddress[pc++ - byteprog] = realsize++;    
+    realaddress[pc++ - byteprog] = realsize++;
 
     switch (cur_inst) {
-      
+
     /* No arguments: */
-    Instruct(SWAP):  
-    Instruct(PUSH): 
+    Instruct(SWAP):
+    Instruct(PUSH):
     Instruct(PUSHACC0):
-    Instruct(ACC0): 
-    Instruct(PUSHACC1): 
-    Instruct(ACC1): 
-    Instruct(PUSHACC2): 
-    Instruct(ACC2): 
+    Instruct(ACC0):
+    Instruct(PUSHACC1):
+    Instruct(ACC1):
+    Instruct(PUSHACC2):
+    Instruct(ACC2):
     Instruct(PUSHACC3):
-    Instruct(ACC3): 
+    Instruct(ACC3):
     Instruct(PUSHACC4):
-    Instruct(ACC4): 
+    Instruct(ACC4):
     Instruct(PUSHACC5):
-    Instruct(ACC5): 
+    Instruct(ACC5):
     Instruct(PUSHACC6):
-    Instruct(ACC6): 
+    Instruct(ACC6):
     Instruct(PUSHACC7):
-    Instruct(ACC7): 
-    Instruct(PUSHENV1): 
-    Instruct(ENV1): 
-    Instruct(PUSHENV2): 
-    Instruct(ENV2): 
-    Instruct(PUSHENV3): 
-    Instruct(ENV3): 
+    Instruct(ACC7):
+    Instruct(PUSHENV1):
+    Instruct(ENV1):
+    Instruct(PUSHENV2):
+    Instruct(ENV2):
+    Instruct(PUSHENV3):
+    Instruct(ENV3):
     Instruct(PUSHENV4):
-    Instruct(ENV4): 
+    Instruct(ENV4):
     Instruct(PUSHENV5):
-    Instruct(ENV5): 
+    Instruct(ENV5):
     Instruct(PUSHENV6):
-    Instruct(ENV6): 
+    Instruct(ENV6):
     Instruct(PUSHENV7):
-    Instruct(ENV7): 
-    Instruct(PUSH_ENV1_APPLY1): 
-    Instruct(PUSH_ENV1_APPLY2): 
-    Instruct(PUSH_ENV1_APPLY3): 
-    Instruct(PUSH_ENV1_APPLY4): 
-    Instruct(APPLY1): 
-    Instruct(APPLY2): 
-    Instruct(APPLY3): 
-    Instruct(APPLY4): 
+    Instruct(ENV7):
+    Instruct(PUSH_ENV1_APPLY1):
+    Instruct(PUSH_ENV1_APPLY2):
+    Instruct(PUSH_ENV1_APPLY3):
+    Instruct(PUSH_ENV1_APPLY4):
+    Instruct(APPLY1):
+    Instruct(APPLY2):
+    Instruct(APPLY3):
+    Instruct(APPLY4):
     Instruct(RETURN1):
     Instruct(RETURN2):
-    Instruct(RESTART): 
-    Instruct(UPDATE): 
+    Instruct(RESTART):
+    Instruct(UPDATE):
     Instruct(CHECK_SIGNALS):
     Instruct(PUSHATOM0):
     Instruct(ATOM0):
@@ -144,18 +144,18 @@ int buildrealmap(bytecode_t byteprog, int code_size, int realaddress[])
     Instruct(BOOLNOT):
     Instruct(POPTRAP):
     Instruct(RAISE):
-    Instruct(PUSHCONST0): 
-    Instruct(CONST0): 			  
-    Instruct(PUSHCONST1): 
-    Instruct(CONST1): 
-    Instruct(PUSHCONST2): 
-    Instruct(CONST2): 
-    Instruct(PUSHCONST3): 
-    Instruct(CONST3): 
-    Instruct(ADDINT):		
-    Instruct(SUBINT):		
-    Instruct(MULINT):		
-    Instruct(DIVINT):		
+    Instruct(PUSHCONST0):
+    Instruct(CONST0):
+    Instruct(PUSHCONST1):
+    Instruct(CONST1):
+    Instruct(PUSHCONST2):
+    Instruct(CONST2):
+    Instruct(PUSHCONST3):
+    Instruct(CONST3):
+    Instruct(ADDINT):
+    Instruct(SUBINT):
+    Instruct(MULINT):
+    Instruct(DIVINT):
     Instruct(MODINT):
     Instruct(ANDINT):
     Instruct(ORINT):
@@ -212,22 +212,22 @@ int buildrealmap(bytecode_t byteprog, int code_size, int realaddress[])
       break;
 
     /* A one-byte argument: */
-    Instruct(APPLY): 
-    Instruct(GRAB): 
+    Instruct(APPLY):
+    Instruct(GRAB):
     Instruct(PUSHATOM):
     Instruct(ATOM):
-    Instruct(MAKEBLOCK1): 
-    Instruct(MAKEBLOCK2): 
-    Instruct(MAKEBLOCK3): 
-    Instruct(MAKEBLOCK4): 
-    Instruct(CONSTBYTE): 
+    Instruct(MAKEBLOCK1):
+    Instruct(MAKEBLOCK2):
+    Instruct(MAKEBLOCK3):
+    Instruct(MAKEBLOCK4):
+    Instruct(CONSTBYTE):
       pc++; realsize++;
       break;
 
     /* A four-byte label argument.  The label should be translated to
        an address in the realprog[] array.  This requires an auxiliary
        table.  */
-    Instruct(PUSH_RETADDR): 
+    Instruct(PUSH_RETADDR):
     Instruct(PUSHTRAP):
     Instruct(BRANCH):
     Instruct(BRANCHIF):
@@ -252,18 +252,18 @@ int buildrealmap(bytecode_t byteprog, int code_size, int realaddress[])
       break;
 
     /* A two-byte signed argument. */
-    Instruct(CONSTSHORT): 
+    Instruct(CONSTSHORT):
       pc += SHORT; realsize++;
       break;
 
     /* A two-byte unsigned argument. */
-    Instruct(PUSHACC): 
-    Instruct(ACCESS): 
+    Instruct(PUSHACC):
+    Instruct(ACCESS):
     Instruct(POP):
     Instruct(ASSIGN):
-    Instruct(PUSHENVACC): 
-    Instruct(ENVACC): 
-    Instruct(DUMMY): 
+    Instruct(PUSHENVACC):
+    Instruct(ENVACC):
+    Instruct(DUMMY):
     Instruct(RETURN):
     Instruct(SETGLOBAL):
     Instruct(GETGLOBAL):
@@ -276,10 +276,10 @@ int buildrealmap(bytecode_t byteprog, int code_size, int realaddress[])
     Instruct(PUSH_ENV1_APPTERM3):
     Instruct(PUSH_ENV1_APPTERM4):
     Instruct(PUSH_GETGLOBAL):
-    Instruct(PUSH_GETGLOBAL_APPLY1): 
-    Instruct(PUSH_GETGLOBAL_APPLY2): 
-    Instruct(PUSH_GETGLOBAL_APPLY3): 
-    Instruct(PUSH_GETGLOBAL_APPLY4): 
+    Instruct(PUSH_GETGLOBAL_APPLY1):
+    Instruct(PUSH_GETGLOBAL_APPLY2):
+    Instruct(PUSH_GETGLOBAL_APPLY3):
+    Instruct(PUSH_GETGLOBAL_APPLY4):
     Instruct(GETFIELD):
     Instruct(SETFIELD):
     Instruct(C_CALL1):
@@ -302,15 +302,15 @@ int buildrealmap(bytecode_t byteprog, int code_size, int realaddress[])
       break;
 
     /* A one-byte argument and a four-byte signed (label) argument. */
-    Instruct(CLOSURE): 
-    Instruct(CLOSREC): 
+    Instruct(CLOSURE):
+    Instruct(CLOSREC):
     Instruct(BRANCHIFNEQTAG):
       pc++; realsize++;
       pc += LONG; realsize++;
       break;
 
     /* A one-byte argument and a two-byte unsigned argument. */
-    Instruct(APPTERM): 
+    Instruct(APPTERM):
     Instruct(C_CALLN):
       pc++; realsize++;
       pc += SHORT; realsize++;
@@ -368,50 +368,50 @@ realcode_t expandcode(bytecode_t byteprog, int code_size, void * jumptable[])
     switch (*pc) {
 
     /* No arguments: */
-    Instruct(SWAP):  
-    Instruct(PUSH): 
+    Instruct(SWAP):
+    Instruct(PUSH):
     Instruct(PUSHACC0):
-    Instruct(ACC0): 
-    Instruct(PUSHACC1): 
-    Instruct(ACC1): 
-    Instruct(PUSHACC2): 
-    Instruct(ACC2): 
+    Instruct(ACC0):
+    Instruct(PUSHACC1):
+    Instruct(ACC1):
+    Instruct(PUSHACC2):
+    Instruct(ACC2):
     Instruct(PUSHACC3):
-    Instruct(ACC3): 
+    Instruct(ACC3):
     Instruct(PUSHACC4):
-    Instruct(ACC4): 
+    Instruct(ACC4):
     Instruct(PUSHACC5):
-    Instruct(ACC5): 
+    Instruct(ACC5):
     Instruct(PUSHACC6):
-    Instruct(ACC6): 
+    Instruct(ACC6):
     Instruct(PUSHACC7):
-    Instruct(ACC7): 
-    Instruct(PUSHENV1): 
-    Instruct(ENV1): 
-    Instruct(PUSHENV2): 
-    Instruct(ENV2): 
-    Instruct(PUSHENV3): 
-    Instruct(ENV3): 
+    Instruct(ACC7):
+    Instruct(PUSHENV1):
+    Instruct(ENV1):
+    Instruct(PUSHENV2):
+    Instruct(ENV2):
+    Instruct(PUSHENV3):
+    Instruct(ENV3):
     Instruct(PUSHENV4):
-    Instruct(ENV4): 
+    Instruct(ENV4):
     Instruct(PUSHENV5):
-    Instruct(ENV5): 
+    Instruct(ENV5):
     Instruct(PUSHENV6):
-    Instruct(ENV6): 
+    Instruct(ENV6):
     Instruct(PUSHENV7):
-    Instruct(ENV7): 
-    Instruct(PUSH_ENV1_APPLY1): 
-    Instruct(PUSH_ENV1_APPLY2): 
-    Instruct(PUSH_ENV1_APPLY3): 
-    Instruct(PUSH_ENV1_APPLY4): 
-    Instruct(APPLY1): 
-    Instruct(APPLY2): 
-    Instruct(APPLY3): 
-    Instruct(APPLY4): 
+    Instruct(ENV7):
+    Instruct(PUSH_ENV1_APPLY1):
+    Instruct(PUSH_ENV1_APPLY2):
+    Instruct(PUSH_ENV1_APPLY3):
+    Instruct(PUSH_ENV1_APPLY4):
+    Instruct(APPLY1):
+    Instruct(APPLY2):
+    Instruct(APPLY3):
+    Instruct(APPLY4):
     Instruct(RETURN1):
     Instruct(RETURN2):
-    Instruct(RESTART): 
-    Instruct(UPDATE): 
+    Instruct(RESTART):
+    Instruct(UPDATE):
     Instruct(CHECK_SIGNALS):
     Instruct(PUSHATOM0):
     Instruct(ATOM0):
@@ -444,18 +444,18 @@ realcode_t expandcode(bytecode_t byteprog, int code_size, void * jumptable[])
     Instruct(BOOLNOT):
     Instruct(POPTRAP):
     Instruct(RAISE):
-    Instruct(PUSHCONST0): 
-    Instruct(CONST0): 			  
-    Instruct(PUSHCONST1): 
-    Instruct(CONST1): 
-    Instruct(PUSHCONST2): 
-    Instruct(CONST2): 
-    Instruct(PUSHCONST3): 
-    Instruct(CONST3): 
-    Instruct(ADDINT):		
-    Instruct(SUBINT):		
-    Instruct(MULINT):		
-    Instruct(DIVINT):		
+    Instruct(PUSHCONST0):
+    Instruct(CONST0):
+    Instruct(PUSHCONST1):
+    Instruct(CONST1):
+    Instruct(PUSHCONST2):
+    Instruct(CONST2):
+    Instruct(PUSHCONST3):
+    Instruct(CONST3):
+    Instruct(ADDINT):
+    Instruct(SUBINT):
+    Instruct(MULINT):
+    Instruct(DIVINT):
     Instruct(MODINT):
     Instruct(ANDINT):
     Instruct(ORINT):
@@ -509,26 +509,26 @@ realcode_t expandcode(bytecode_t byteprog, int code_size, void * jumptable[])
     Instruct(SMLQUOTINT):
     Instruct(SMLREMINT):
     Instruct(STOP):
-      realprog[codeptr++] = jumptable[*pc++]; 
+      realprog[codeptr++] = jumptable[*pc++];
       break;
 
     /* A one-byte argument: */
-    Instruct(APPLY): 
-    Instruct(GRAB): 
+    Instruct(APPLY):
+    Instruct(GRAB):
     Instruct(PUSHATOM):
     Instruct(ATOM):
-    Instruct(MAKEBLOCK1): 
-    Instruct(MAKEBLOCK2): 
-    Instruct(MAKEBLOCK3): 
-    Instruct(MAKEBLOCK4): 
-    Instruct(CONSTBYTE): 
-      realprog[codeptr++] = jumptable[*pc++]; 
-      realprog[codeptr++] = (void*)(long)(*pc++); 
+    Instruct(MAKEBLOCK1):
+    Instruct(MAKEBLOCK2):
+    Instruct(MAKEBLOCK3):
+    Instruct(MAKEBLOCK4):
+    Instruct(CONSTBYTE):
+      realprog[codeptr++] = jumptable[*pc++];
+      realprog[codeptr++] = (void*)(long)(*pc++);
       break;
 
     /* A four-byte label argument.  The label is translated to an index
        into the realprog[] array. */
-    Instruct(PUSH_RETADDR): 
+    Instruct(PUSH_RETADDR):
     Instruct(PUSHTRAP):
     Instruct(BRANCH):
     Instruct(BRANCHIF):
@@ -540,7 +540,7 @@ realcode_t expandcode(bytecode_t byteprog, int code_size, void * jumptable[])
     Instruct(BRANCHIFGT):
     Instruct(BRANCHIFLE):
     Instruct(BRANCHIFGE):
-      realprog[codeptr++] = jumptable[*pc++]; 
+      realprog[codeptr++] = jumptable[*pc++];
       realprog[codeptr++] = REALADDR(pc, s32pc); pc += LONG;
       break;
 
@@ -549,28 +549,28 @@ realcode_t expandcode(bytecode_t byteprog, int code_size, void * jumptable[])
        requires an auxiliary table.
     */
     Instruct(BRANCHINTERVAL):
-      realprog[codeptr++] = jumptable[*pc++]; 
-      realprog[codeptr++] = REALADDR(pc, s32pc); 
+      realprog[codeptr++] = jumptable[*pc++];
+      realprog[codeptr++] = REALADDR(pc, s32pc);
       pc += LONG;
-      realprog[codeptr++] = REALADDR(pc, s32pc); 
+      realprog[codeptr++] = REALADDR(pc, s32pc);
       pc += LONG;
       break;
 
     /* A two-byte signed argument. */
-    Instruct(CONSTSHORT): 
-      realprog[codeptr++] = jumptable[*pc++]; 
+    Instruct(CONSTSHORT):
+      realprog[codeptr++] = jumptable[*pc++];
       realprog[codeptr++] = (void*)(long)s16pc;
       pc += SHORT;
       break;
 
     /* A two-byte unsigned argument. */
-    Instruct(PUSHACC): 
-    Instruct(ACCESS): 
+    Instruct(PUSHACC):
+    Instruct(ACCESS):
     Instruct(POP):
     Instruct(ASSIGN):
-    Instruct(PUSHENVACC): 
-    Instruct(ENVACC): 
-    Instruct(DUMMY): 
+    Instruct(PUSHENVACC):
+    Instruct(ENVACC):
+    Instruct(DUMMY):
     Instruct(RETURN):
     Instruct(SETGLOBAL):
     Instruct(GETGLOBAL):
@@ -583,10 +583,10 @@ realcode_t expandcode(bytecode_t byteprog, int code_size, void * jumptable[])
     Instruct(PUSH_ENV1_APPTERM3):
     Instruct(PUSH_ENV1_APPTERM4):
     Instruct(PUSH_GETGLOBAL):
-    Instruct(PUSH_GETGLOBAL_APPLY1): 
-    Instruct(PUSH_GETGLOBAL_APPLY2): 
-    Instruct(PUSH_GETGLOBAL_APPLY3): 
-    Instruct(PUSH_GETGLOBAL_APPLY4): 
+    Instruct(PUSH_GETGLOBAL_APPLY1):
+    Instruct(PUSH_GETGLOBAL_APPLY2):
+    Instruct(PUSH_GETGLOBAL_APPLY3):
+    Instruct(PUSH_GETGLOBAL_APPLY4):
     Instruct(GETFIELD):
     Instruct(SETFIELD):
     Instruct(C_CALL1):
@@ -594,14 +594,14 @@ realcode_t expandcode(bytecode_t byteprog, int code_size, void * jumptable[])
     Instruct(C_CALL3):
     Instruct(C_CALL4):
     Instruct(C_CALL5):
-      realprog[codeptr++] = jumptable[*pc++]; 
+      realprog[codeptr++] = jumptable[*pc++];
       realprog[codeptr++] = (void*)(unsigned long)u16pc;
       pc += SHORT;
       break;
 
     /* A four-byte unsigned argument. */
     Instruct(MAKEBLOCK):
-      realprog[codeptr++] = jumptable[*pc++]; 
+      realprog[codeptr++] = jumptable[*pc++];
       realprog[codeptr++] = (void*)(unsigned long)u32pc;
       pc += LONG;
       break;
@@ -609,25 +609,25 @@ realcode_t expandcode(bytecode_t byteprog, int code_size, void * jumptable[])
     /* A four-byte signed argument. */
     Instruct(PUSHCONSTINT):
     Instruct(CONSTINT):
-      realprog[codeptr++] = jumptable[*pc++]; 
+      realprog[codeptr++] = jumptable[*pc++];
       realprog[codeptr++] = (void*)(long)s32pc;
       pc += LONG;
       break;
 
     /* A one-byte argument and a four-byte signed (label) argument. */
-    Instruct(CLOSURE): 
-    Instruct(CLOSREC): 
+    Instruct(CLOSURE):
+    Instruct(CLOSREC):
     Instruct(BRANCHIFNEQTAG):
-      realprog[codeptr++] = jumptable[*pc++]; 
+      realprog[codeptr++] = jumptable[*pc++];
       realprog[codeptr++] = (void*)(unsigned long)*pc++;
       realprog[codeptr++] = REALADDR(pc, s32pc);
       pc += LONG;
       break;
 
     /* A one-byte argument and a two-byte unsigned argument. */
-    Instruct(APPTERM): 
+    Instruct(APPTERM):
     Instruct(C_CALLN):
-      realprog[codeptr++] = jumptable[*pc++]; 
+      realprog[codeptr++] = jumptable[*pc++];
       realprog[codeptr++] = (void*)(long)*pc++;
       realprog[codeptr++] = (void*)(unsigned long)u16pc;
       pc += SHORT;
@@ -638,7 +638,7 @@ realcode_t expandcode(bytecode_t byteprog, int code_size, void * jumptable[])
     Instruct(PUSH_GETGLOBAL_APPTERM2):
     Instruct(PUSH_GETGLOBAL_APPTERM3):
     Instruct(PUSH_GETGLOBAL_APPTERM4):
-      realprog[codeptr++] = jumptable[*pc++]; 
+      realprog[codeptr++] = jumptable[*pc++];
       realprog[codeptr++] = (void*)(unsigned long)u16pc; pc += SHORT;
       realprog[codeptr++] = (void*)(unsigned long)u16pc; pc += SHORT;
       break;
@@ -649,9 +649,9 @@ realcode_t expandcode(bytecode_t byteprog, int code_size, void * jumptable[])
       {
 	unsigned long i, n;
 	bytecode_t pc1;
-	realprog[codeptr++] = jumptable[*pc++]; 
+	realprog[codeptr++] = jumptable[*pc++];
 	n = (unsigned long)*pc++;
-	realprog[codeptr++] = (void*)n; 
+	realprog[codeptr++] = (void*)n;
 	pc1 = pc;
 	for (i=0; i<n; i++) {
 	  realprog[codeptr++] = REALADDR(pc1, s32pc);

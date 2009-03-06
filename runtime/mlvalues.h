@@ -63,7 +63,7 @@ typedef unsigned long uint32;
 #define Val_long(x)     (((long)(x) << 1) + 1)
 #define Long_val(x)     ((x) >> 1)
 #define Max_long ((long)((1L << (8 * sizeof(value) - 2)) - 1))
-#define Min_long ((long) -(1L << (8 * sizeof(value) - 2))) 
+#define Min_long ((long) -(1L << (8 * sizeof(value) - 2)))
 #define Val_int Val_long
 #define Int_val(x) ((int) Long_val(x))
 
@@ -197,9 +197,9 @@ typedef void ** realcode_t;
 #define Byte(x, i) (((char *) (x)) [i])            /* Also an l-value. */
 #define Byte_u(x, i) (((unsigned char *) (x)) [i]) /* Also an l-value. */
 
-/* Arrays of weak pointers.  Just like abstract things, but the GC will 
-   reset each cell (during the weak phase, between marking and sweeping) 
-   as the pointed-to object gets deallocated.  
+/* Arrays of weak pointers.  Just like abstract things, but the GC will
+   reset each cell (during the weak phase, between marking and sweeping)
+   as the pointed-to object gets deallocated.
 */
 #define Weak_tag No_scan_tag
 
@@ -250,6 +250,6 @@ extern header_t first_atoms[];
 /*  SML option values: Must match compiler/Types.sml: */
 
 #define NONE Atom(0)
-#define SOMEtag (1) 
+#define SOMEtag (1)
 
 #endif /* _mlvalues_ */

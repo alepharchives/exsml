@@ -60,7 +60,7 @@ static int read_trailer(int fd, struct exec_trailer * trail)
   unsigned char buffer[TRAILER_SIZE];
 
   lseek(fd, (long) -TRAILER_SIZE, 2);
-  if (read(fd, (char*)buffer, TRAILER_SIZE) < TRAILER_SIZE) 
+  if (read(fd, (char*)buffer, TRAILER_SIZE) < TRAILER_SIZE)
     return TRUNCATED_FILE;
   trail->code_size = read_size(buffer);
   trail->data_size = read_size(buffer+4);
@@ -228,7 +228,7 @@ int main(int argc, char * argv[])
     close_in(chan);
 
     sys_init(argv + i);
-    interprete(/* mode=init */ 0, NULL, 0, NULL); 
+    interprete(/* mode=init */ 0, NULL, 0, NULL);
     interprete(/* mode=byte exec */ 1, start_code, code_size, NULL);
     sys_exit(Val_int(0));
 

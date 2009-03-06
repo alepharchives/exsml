@@ -246,10 +246,10 @@ value e_getrusage( void )
 #include <sys/timeb.h>
 #include <sys/utime.h>
 #else
-#include <sys/times.h>    
+#include <sys/times.h>
 #include <sys/time.h>
 #include <sys/resource.h>
-#include <unistd.h>   
+#include <unistd.h>
 #endif
 
 struct mosml_timeval gc_time = { (long) 0, (long) 0 };

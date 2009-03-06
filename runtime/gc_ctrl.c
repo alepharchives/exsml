@@ -1,5 +1,5 @@
 /* mosml/src/runtime/gc_ctrl.c
-   Updated 2008-03-05 to prevent malloc from using mmap() 
+   Updated 2008-03-05 to prevent malloc from using mmap()
 */
 #include <malloc.h>
 #include "alloc.h"
@@ -85,7 +85,7 @@ value gc_stat (value v) /* ML */
     }                                          Assert (cur_hp == chunk_end);
     chunk = Chunk_next (chunk);
   }
-  
+
   Assert (live_words + free_words + fragments == Wsize_bsize (stat_heap_size));
   /* Order of elements changed for Moscow ML */
   res = alloc (13, 0);

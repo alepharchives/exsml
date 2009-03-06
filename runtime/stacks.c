@@ -25,7 +25,7 @@ void init_stack()
 }
 
 void realloc_stack()
-{        
+{
   asize_t size;
   value * new_low, * new_high, * new_sp;
   value * p;
