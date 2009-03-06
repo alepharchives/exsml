@@ -19,7 +19,7 @@
   bp: Pointer to the first byte of an object.  (a char *)
   op: Pointer to the first field of an object.  (a value *)
   hp: Pointer to the header of an object.  (a char *)
-  int32: Four bytes on all architectures.
+  int32_t: Four bytes on all architectures.
 
   Remark: An object size is always a multiple of the word size, and at least
           one word plus the header.
@@ -41,14 +41,6 @@ typedef unsigned long mlsize_t;
 typedef unsigned int tag_t;             /* Actually, an unsigned char */
 typedef unsigned long color_t;
 typedef unsigned long mark_t;
-
-#ifdef SIXTYFOUR
-typedef int int32;            /* Not portable, but checked by autoconf. */
-typedef unsigned int uint32;  /* Seems like a reasonable assumption anyway. */
-#else
-typedef long int32;
-typedef unsigned long uint32;
-#endif
 
 /* Longs vs blocks. */
 #define Is_long(x)   (((x) & 1) == 1)

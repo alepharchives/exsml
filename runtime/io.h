@@ -3,6 +3,7 @@
 #ifndef _io_
 #define _io_
 
+#include <inttypes.h>
 
 #include "misc.h"
 #include "mlvalues.h"
@@ -38,10 +39,10 @@ struct channel {
 
 struct channel * open_descr (int);
 value flush (struct channel *);
-void putword (struct channel *, uint32);
+void putword (struct channel *, uint32_t);
 void putblock (struct channel *, char *, unsigned);
 unsigned char refill (struct channel *);
-uint32 getword (struct channel *);
+uint32_t getword (struct channel *);
 int getblock (struct channel *, char *, unsigned, int);
 int really_getblock (struct channel *, char *, unsigned long);
 value close_in (struct channel *);

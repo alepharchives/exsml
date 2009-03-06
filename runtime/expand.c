@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <inttypes.h>
 
 #include "fail.h"
 #include "instruct.h"
@@ -17,7 +18,7 @@
 #define s32pc s32(pc)
 #define u32pc u32(pc)
 #define SHORT  (sizeof(short))
-#define LONG   (sizeof(int32))
+#define LONG   (sizeof(int32_t))
 
 /* Computing the length of the realcode array, and building the
    address offset translation.

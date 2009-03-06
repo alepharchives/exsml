@@ -13,7 +13,7 @@
   _p[1] = _a;                                                                 \
 }
 
-#define Reverse_int32(w) {                                                    \
+#define Reverse_int32_t(w) {                                                    \
   char * _p;                                                                  \
   int _a;                                                                     \
   _p = (char *) (w);                                                          \
@@ -46,7 +46,7 @@
 #ifdef SIXTYFOUR
 #define Reverse_word Reverse_int64
 #else
-#define Reverse_word Reverse_int32
+#define Reverse_word Reverse_int32_t
 #endif
 
 #define Reverse_double Reverse_int64

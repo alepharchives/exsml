@@ -180,7 +180,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
 /* To read immediate operands, read some bytes after pc: */
 
 #define SHORT  (sizeof(short))
-#define LONG   (sizeof(int32))
+#define LONG   (sizeof(int32_t))
 #define DOUBLE (sizeof(double))
 
 #define u8pc  (unsigned char)(*pc)

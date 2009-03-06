@@ -112,7 +112,7 @@ value output_char(struct channel * channel, value ch)  /* ML */
 	return Atom(0);
 }
 
-void putword(struct channel * channel, uint32 w)
+void putword(struct channel * channel, uint32_t w)
 {
 	putch(channel, w >> 24);
 	putch(channel, w >> 16);
@@ -264,10 +264,10 @@ value input_char(struct channel * channel)       /* ML */
 	return Val_long(c);
 }
 
-uint32 getword(struct channel * channel)
+uint32_t getword(struct channel * channel)
 {
 	int i;
-	uint32 res;
+	uint32_t res;
 
 	res = 0;
 	for(i = 0; i < 4; i++) {
