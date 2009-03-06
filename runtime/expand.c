@@ -19,8 +19,6 @@
 #define SHORT  (sizeof(short))
 #define LONG   (sizeof(int32))
 
-#define Instruct(name) case name
-
 /* Computing the length of the realcode array, and building the
    address offset translation.
 
@@ -68,177 +66,177 @@ int buildrealmap(bytecode_t byteprog, int code_size, int realaddress[])
     switch (cur_inst) {
 
     /* No arguments: */
-    Instruct(SWAP):
-    Instruct(PUSH):
-    Instruct(PUSHACC0):
-    Instruct(ACC0):
-    Instruct(PUSHACC1):
-    Instruct(ACC1):
-    Instruct(PUSHACC2):
-    Instruct(ACC2):
-    Instruct(PUSHACC3):
-    Instruct(ACC3):
-    Instruct(PUSHACC4):
-    Instruct(ACC4):
-    Instruct(PUSHACC5):
-    Instruct(ACC5):
-    Instruct(PUSHACC6):
-    Instruct(ACC6):
-    Instruct(PUSHACC7):
-    Instruct(ACC7):
-    Instruct(PUSHENV1):
-    Instruct(ENV1):
-    Instruct(PUSHENV2):
-    Instruct(ENV2):
-    Instruct(PUSHENV3):
-    Instruct(ENV3):
-    Instruct(PUSHENV4):
-    Instruct(ENV4):
-    Instruct(PUSHENV5):
-    Instruct(ENV5):
-    Instruct(PUSHENV6):
-    Instruct(ENV6):
-    Instruct(PUSHENV7):
-    Instruct(ENV7):
-    Instruct(PUSH_ENV1_APPLY1):
-    Instruct(PUSH_ENV1_APPLY2):
-    Instruct(PUSH_ENV1_APPLY3):
-    Instruct(PUSH_ENV1_APPLY4):
-    Instruct(APPLY1):
-    Instruct(APPLY2):
-    Instruct(APPLY3):
-    Instruct(APPLY4):
-    Instruct(RETURN1):
-    Instruct(RETURN2):
-    Instruct(RESTART):
-    Instruct(UPDATE):
-    Instruct(CHECK_SIGNALS):
-    Instruct(PUSHATOM0):
-    Instruct(ATOM0):
-    Instruct(ATOM1):
-    Instruct(ATOM2):
-    Instruct(ATOM3):
-    Instruct(ATOM4):
-    Instruct(ATOM5):
-    Instruct(ATOM6):
-    Instruct(ATOM7):
-    Instruct(ATOM8):
-    Instruct(ATOM9):
-    Instruct(GETFIELD0):
-    Instruct(GETFIELD1):
-    Instruct(GETFIELD2):
-    Instruct(GETFIELD3):
-    Instruct(GETFIELD0_0):
-    Instruct(GETFIELD0_1):
-    Instruct(GETFIELD1_0):
-    Instruct(GETFIELD1_1):
-    Instruct(SETFIELD0):
-    Instruct(SETFIELD1):
-    Instruct(SETFIELD2):
-    Instruct(SETFIELD3):
-    Instruct(VECTLENGTH):
-    Instruct(GETVECTITEM):
-    Instruct(SETVECTITEM):
-    Instruct(GETSTRINGCHAR):
-    Instruct(SETSTRINGCHAR):
-    Instruct(BOOLNOT):
-    Instruct(POPTRAP):
-    Instruct(RAISE):
-    Instruct(PUSHCONST0):
-    Instruct(CONST0):
-    Instruct(PUSHCONST1):
-    Instruct(CONST1):
-    Instruct(PUSHCONST2):
-    Instruct(CONST2):
-    Instruct(PUSHCONST3):
-    Instruct(CONST3):
-    Instruct(ADDINT):
-    Instruct(SUBINT):
-    Instruct(MULINT):
-    Instruct(DIVINT):
-    Instruct(MODINT):
-    Instruct(ANDINT):
-    Instruct(ORINT):
-    Instruct(XORINT):
-    Instruct(SHIFTLEFTINT):
-    Instruct(SHIFTRIGHTINTSIGNED):
-    Instruct(SHIFTRIGHTINTUNSIGNED):
-    Instruct(TAGOF):
-    Instruct(EQ):
-    Instruct(NEQ):
-    Instruct(LTINT):
-    Instruct(GTINT):
-    Instruct(LEINT):
-    Instruct(GEINT):
-    Instruct(EQUNSIGN):
-    Instruct(NEQUNSIGN):
-    Instruct(LTUNSIGN):
-    Instruct(GTUNSIGN):
-    Instruct(LEUNSIGN):
-    Instruct(GEUNSIGN):
-    Instruct(FLOATOFINT):
-    Instruct(SMLNEGFLOAT):
-    Instruct(SMLADDFLOAT):
-    Instruct(SMLSUBFLOAT):
-    Instruct(SMLMULFLOAT):
-    Instruct(SMLDIVFLOAT):
-    Instruct(INTOFFLOAT):
-    Instruct(EQFLOAT):
-    Instruct(NEQFLOAT):
-    Instruct(LTFLOAT):
-    Instruct(GTFLOAT):
-    Instruct(LEFLOAT):
-    Instruct(GEFLOAT):
-    Instruct(STRINGLENGTH):
-    Instruct(EQSTRING):
-    Instruct(NEQSTRING):
-    Instruct(LTSTRING):
-    Instruct(GTSTRING):
-    Instruct(LESTRING):
-    Instruct(GESTRING):
-    Instruct(MAKEVECTOR):
-    Instruct(SMLNEGINT):
-    Instruct(SMLSUCCINT):
-    Instruct(SMLPREDINT):
-    Instruct(SMLADDINT):
-    Instruct(SMLSUBINT):
-    Instruct(SMLMULINT):
-    Instruct(SMLDIVINT):
-    Instruct(SMLMODINT):
-    Instruct(MAKEREFVECTOR):
-    Instruct(SMLQUOTINT):
-    Instruct(SMLREMINT):
-    Instruct(STOP):
+    case SWAP:
+    case PUSH:
+    case PUSHACC0:
+    case ACC0:
+    case PUSHACC1:
+    case ACC1:
+    case PUSHACC2:
+    case ACC2:
+    case PUSHACC3:
+    case ACC3:
+    case PUSHACC4:
+    case ACC4:
+    case PUSHACC5:
+    case ACC5:
+    case PUSHACC6:
+    case ACC6:
+    case PUSHACC7:
+    case ACC7:
+    case PUSHENV1:
+    case ENV1:
+    case PUSHENV2:
+    case ENV2:
+    case PUSHENV3:
+    case ENV3:
+    case PUSHENV4:
+    case ENV4:
+    case PUSHENV5:
+    case ENV5:
+    case PUSHENV6:
+    case ENV6:
+    case PUSHENV7:
+    case ENV7:
+    case PUSH_ENV1_APPLY1:
+    case PUSH_ENV1_APPLY2:
+    case PUSH_ENV1_APPLY3:
+    case PUSH_ENV1_APPLY4:
+    case APPLY1:
+    case APPLY2:
+    case APPLY3:
+    case APPLY4:
+    case RETURN1:
+    case RETURN2:
+    case RESTART:
+    case UPDATE:
+    case CHECK_SIGNALS:
+    case PUSHATOM0:
+    case ATOM0:
+    case ATOM1:
+    case ATOM2:
+    case ATOM3:
+    case ATOM4:
+    case ATOM5:
+    case ATOM6:
+    case ATOM7:
+    case ATOM8:
+    case ATOM9:
+    case GETFIELD0:
+    case GETFIELD1:
+    case GETFIELD2:
+    case GETFIELD3:
+    case GETFIELD0_0:
+    case GETFIELD0_1:
+    case GETFIELD1_0:
+    case GETFIELD1_1:
+    case SETFIELD0:
+    case SETFIELD1:
+    case SETFIELD2:
+    case SETFIELD3:
+    case VECTLENGTH:
+    case GETVECTITEM:
+    case SETVECTITEM:
+    case GETSTRINGCHAR:
+    case SETSTRINGCHAR:
+    case BOOLNOT:
+    case POPTRAP:
+    case RAISE:
+    case PUSHCONST0:
+    case CONST0:
+    case PUSHCONST1:
+    case CONST1:
+    case PUSHCONST2:
+    case CONST2:
+    case PUSHCONST3:
+    case CONST3:
+    case ADDINT:
+    case SUBINT:
+    case MULINT:
+    case DIVINT:
+    case MODINT:
+    case ANDINT:
+    case ORINT:
+    case XORINT:
+    case SHIFTLEFTINT:
+    case SHIFTRIGHTINTSIGNED:
+    case SHIFTRIGHTINTUNSIGNED:
+    case TAGOF:
+    case EQ:
+    case NEQ:
+    case LTINT:
+    case GTINT:
+    case LEINT:
+    case GEINT:
+    case EQUNSIGN:
+    case NEQUNSIGN:
+    case LTUNSIGN:
+    case GTUNSIGN:
+    case LEUNSIGN:
+    case GEUNSIGN:
+    case FLOATOFINT:
+    case SMLNEGFLOAT:
+    case SMLADDFLOAT:
+    case SMLSUBFLOAT:
+    case SMLMULFLOAT:
+    case SMLDIVFLOAT:
+    case INTOFFLOAT:
+    case EQFLOAT:
+    case NEQFLOAT:
+    case LTFLOAT:
+    case GTFLOAT:
+    case LEFLOAT:
+    case GEFLOAT:
+    case STRINGLENGTH:
+    case EQSTRING:
+    case NEQSTRING:
+    case LTSTRING:
+    case GTSTRING:
+    case LESTRING:
+    case GESTRING:
+    case MAKEVECTOR:
+    case SMLNEGINT:
+    case SMLSUCCINT:
+    case SMLPREDINT:
+    case SMLADDINT:
+    case SMLSUBINT:
+    case SMLMULINT:
+    case SMLDIVINT:
+    case SMLMODINT:
+    case MAKEREFVECTOR:
+    case SMLQUOTINT:
+    case SMLREMINT:
+    case STOP:
       break;
 
     /* A one-byte argument: */
-    Instruct(APPLY):
-    Instruct(GRAB):
-    Instruct(PUSHATOM):
-    Instruct(ATOM):
-    Instruct(MAKEBLOCK1):
-    Instruct(MAKEBLOCK2):
-    Instruct(MAKEBLOCK3):
-    Instruct(MAKEBLOCK4):
-    Instruct(CONSTBYTE):
+    case APPLY:
+    case GRAB:
+    case PUSHATOM:
+    case ATOM:
+    case MAKEBLOCK1:
+    case MAKEBLOCK2:
+    case MAKEBLOCK3:
+    case MAKEBLOCK4:
+    case CONSTBYTE:
       pc++; realsize++;
       break;
 
     /* A four-byte label argument.  The label should be translated to
        an address in the realprog[] array.  This requires an auxiliary
        table.  */
-    Instruct(PUSH_RETADDR):
-    Instruct(PUSHTRAP):
-    Instruct(BRANCH):
-    Instruct(BRANCHIF):
-    Instruct(BRANCHIFNOT):
-    Instruct(POPBRANCHIFNOT):
-    Instruct(BRANCHIFEQ):
-    Instruct(BRANCHIFNEQ):
-    Instruct(BRANCHIFLT):
-    Instruct(BRANCHIFGT):
-    Instruct(BRANCHIFLE):
-    Instruct(BRANCHIFGE):
+    case PUSH_RETADDR:
+    case PUSHTRAP:
+    case BRANCH:
+    case BRANCHIF:
+    case BRANCHIFNOT:
+    case POPBRANCHIFNOT:
+    case BRANCHIFEQ:
+    case BRANCHIFNEQ:
+    case BRANCHIFLT:
+    case BRANCHIFGT:
+    case BRANCHIFLE:
+    case BRANCHIFGE:
       pc += LONG; realsize++;
       break;
 
@@ -246,88 +244,88 @@ int buildrealmap(bytecode_t byteprog, int code_size, int realaddress[])
        be translated to an address in the realprog[] array.  This
        requires an auxiliary table.
     */
-    Instruct(BRANCHINTERVAL):
+    case BRANCHINTERVAL:
       pc += LONG; realsize++;
       pc += LONG; realsize++;
       break;
 
     /* A two-byte signed argument. */
-    Instruct(CONSTSHORT):
+    case CONSTSHORT:
       pc += SHORT; realsize++;
       break;
 
     /* A two-byte unsigned argument. */
-    Instruct(PUSHACC):
-    Instruct(ACCESS):
-    Instruct(POP):
-    Instruct(ASSIGN):
-    Instruct(PUSHENVACC):
-    Instruct(ENVACC):
-    Instruct(DUMMY):
-    Instruct(RETURN):
-    Instruct(SETGLOBAL):
-    Instruct(GETGLOBAL):
-    Instruct(APPTERM1):
-    Instruct(APPTERM2):
-    Instruct(APPTERM3):
-    Instruct(APPTERM4):
-    Instruct(PUSH_ENV1_APPTERM1):
-    Instruct(PUSH_ENV1_APPTERM2):
-    Instruct(PUSH_ENV1_APPTERM3):
-    Instruct(PUSH_ENV1_APPTERM4):
-    Instruct(PUSH_GETGLOBAL):
-    Instruct(PUSH_GETGLOBAL_APPLY1):
-    Instruct(PUSH_GETGLOBAL_APPLY2):
-    Instruct(PUSH_GETGLOBAL_APPLY3):
-    Instruct(PUSH_GETGLOBAL_APPLY4):
-    Instruct(GETFIELD):
-    Instruct(SETFIELD):
-    Instruct(C_CALL1):
-    Instruct(C_CALL2):
-    Instruct(C_CALL3):
-    Instruct(C_CALL4):
-    Instruct(C_CALL5):
+    case PUSHACC:
+    case ACCESS:
+    case POP:
+    case ASSIGN:
+    case PUSHENVACC:
+    case ENVACC:
+    case DUMMY:
+    case RETURN:
+    case SETGLOBAL:
+    case GETGLOBAL:
+    case APPTERM1:
+    case APPTERM2:
+    case APPTERM3:
+    case APPTERM4:
+    case PUSH_ENV1_APPTERM1:
+    case PUSH_ENV1_APPTERM2:
+    case PUSH_ENV1_APPTERM3:
+    case PUSH_ENV1_APPTERM4:
+    case PUSH_GETGLOBAL:
+    case PUSH_GETGLOBAL_APPLY1:
+    case PUSH_GETGLOBAL_APPLY2:
+    case PUSH_GETGLOBAL_APPLY3:
+    case PUSH_GETGLOBAL_APPLY4:
+    case GETFIELD:
+    case SETFIELD:
+    case C_CALL1:
+    case C_CALL2:
+    case C_CALL3:
+    case C_CALL4:
+    case C_CALL5:
       pc += SHORT; realsize++;
       break;
 
     /* A four-byte unsigned argument. */
-    Instruct(MAKEBLOCK):
+    case MAKEBLOCK:
       pc += LONG; realsize++;
       break;
 
     /* A four-byte signed argument. */
-    Instruct(PUSHCONSTINT):
-    Instruct(CONSTINT):
+    case PUSHCONSTINT:
+    case CONSTINT:
       pc += LONG; realsize++;
       break;
 
     /* A one-byte argument and a four-byte signed (label) argument. */
-    Instruct(CLOSURE):
-    Instruct(CLOSREC):
-    Instruct(BRANCHIFNEQTAG):
+    case CLOSURE:
+    case CLOSREC:
+    case BRANCHIFNEQTAG:
       pc++; realsize++;
       pc += LONG; realsize++;
       break;
 
     /* A one-byte argument and a two-byte unsigned argument. */
-    Instruct(APPTERM):
-    Instruct(C_CALLN):
+    case APPTERM:
+    case C_CALLN:
       pc++; realsize++;
       pc += SHORT; realsize++;
       break;
 
     /* Two two-byte unsigned arguments. */
-    Instruct(PUSH_GETGLOBAL_APPTERM1):
-    Instruct(PUSH_GETGLOBAL_APPTERM2):
-    Instruct(PUSH_GETGLOBAL_APPTERM3):
-    Instruct(PUSH_GETGLOBAL_APPTERM4):
+    case PUSH_GETGLOBAL_APPTERM1:
+    case PUSH_GETGLOBAL_APPTERM2:
+    case PUSH_GETGLOBAL_APPTERM3:
+    case PUSH_GETGLOBAL_APPTERM4:
       pc += SHORT; realsize++;
       pc += SHORT; realsize++;
       break;
 
     /* A one-byte argument and a table of four-byte signed (label) arguments */
     /* We keep the byte argument for consistency.                           */
-    Instruct(SWITCH):
+    case SWITCH:
       {
 	int n = *pc;
 	pc++; realsize++;		/* The byte     */
@@ -368,178 +366,178 @@ realcode_t expandcode(bytecode_t byteprog, int code_size, void * jumptable[])
     switch (*pc) {
 
     /* No arguments: */
-    Instruct(SWAP):
-    Instruct(PUSH):
-    Instruct(PUSHACC0):
-    Instruct(ACC0):
-    Instruct(PUSHACC1):
-    Instruct(ACC1):
-    Instruct(PUSHACC2):
-    Instruct(ACC2):
-    Instruct(PUSHACC3):
-    Instruct(ACC3):
-    Instruct(PUSHACC4):
-    Instruct(ACC4):
-    Instruct(PUSHACC5):
-    Instruct(ACC5):
-    Instruct(PUSHACC6):
-    Instruct(ACC6):
-    Instruct(PUSHACC7):
-    Instruct(ACC7):
-    Instruct(PUSHENV1):
-    Instruct(ENV1):
-    Instruct(PUSHENV2):
-    Instruct(ENV2):
-    Instruct(PUSHENV3):
-    Instruct(ENV3):
-    Instruct(PUSHENV4):
-    Instruct(ENV4):
-    Instruct(PUSHENV5):
-    Instruct(ENV5):
-    Instruct(PUSHENV6):
-    Instruct(ENV6):
-    Instruct(PUSHENV7):
-    Instruct(ENV7):
-    Instruct(PUSH_ENV1_APPLY1):
-    Instruct(PUSH_ENV1_APPLY2):
-    Instruct(PUSH_ENV1_APPLY3):
-    Instruct(PUSH_ENV1_APPLY4):
-    Instruct(APPLY1):
-    Instruct(APPLY2):
-    Instruct(APPLY3):
-    Instruct(APPLY4):
-    Instruct(RETURN1):
-    Instruct(RETURN2):
-    Instruct(RESTART):
-    Instruct(UPDATE):
-    Instruct(CHECK_SIGNALS):
-    Instruct(PUSHATOM0):
-    Instruct(ATOM0):
-    Instruct(ATOM1):
-    Instruct(ATOM2):
-    Instruct(ATOM3):
-    Instruct(ATOM4):
-    Instruct(ATOM5):
-    Instruct(ATOM6):
-    Instruct(ATOM7):
-    Instruct(ATOM8):
-    Instruct(ATOM9):
-    Instruct(GETFIELD0):
-    Instruct(GETFIELD1):
-    Instruct(GETFIELD2):
-    Instruct(GETFIELD3):
-    Instruct(GETFIELD0_0):
-    Instruct(GETFIELD0_1):
-    Instruct(GETFIELD1_0):
-    Instruct(GETFIELD1_1):
-    Instruct(SETFIELD0):
-    Instruct(SETFIELD1):
-    Instruct(SETFIELD2):
-    Instruct(SETFIELD3):
-    Instruct(VECTLENGTH):
-    Instruct(GETVECTITEM):
-    Instruct(SETVECTITEM):
-    Instruct(GETSTRINGCHAR):
-    Instruct(SETSTRINGCHAR):
-    Instruct(BOOLNOT):
-    Instruct(POPTRAP):
-    Instruct(RAISE):
-    Instruct(PUSHCONST0):
-    Instruct(CONST0):
-    Instruct(PUSHCONST1):
-    Instruct(CONST1):
-    Instruct(PUSHCONST2):
-    Instruct(CONST2):
-    Instruct(PUSHCONST3):
-    Instruct(CONST3):
-    Instruct(ADDINT):
-    Instruct(SUBINT):
-    Instruct(MULINT):
-    Instruct(DIVINT):
-    Instruct(MODINT):
-    Instruct(ANDINT):
-    Instruct(ORINT):
-    Instruct(XORINT):
-    Instruct(SHIFTLEFTINT):
-    Instruct(SHIFTRIGHTINTSIGNED):
-    Instruct(SHIFTRIGHTINTUNSIGNED):
-    Instruct(TAGOF):
-    Instruct(EQ):
-    Instruct(NEQ):
-    Instruct(LTINT):
-    Instruct(GTINT):
-    Instruct(LEINT):
-    Instruct(GEINT):
-    Instruct(EQUNSIGN):
-    Instruct(NEQUNSIGN):
-    Instruct(LTUNSIGN):
-    Instruct(GTUNSIGN):
-    Instruct(LEUNSIGN):
-    Instruct(GEUNSIGN):
-    Instruct(FLOATOFINT):
-    Instruct(SMLNEGFLOAT):
-    Instruct(SMLADDFLOAT):
-    Instruct(SMLSUBFLOAT):
-    Instruct(SMLMULFLOAT):
-    Instruct(SMLDIVFLOAT):
-    Instruct(INTOFFLOAT):
-    Instruct(EQFLOAT):
-    Instruct(NEQFLOAT):
-    Instruct(LTFLOAT):
-    Instruct(GTFLOAT):
-    Instruct(LEFLOAT):
-    Instruct(GEFLOAT):
-    Instruct(STRINGLENGTH):
-    Instruct(EQSTRING):
-    Instruct(NEQSTRING):
-    Instruct(LTSTRING):
-    Instruct(GTSTRING):
-    Instruct(LESTRING):
-    Instruct(GESTRING):
-    Instruct(MAKEVECTOR):
-    Instruct(SMLNEGINT):
-    Instruct(SMLSUCCINT):
-    Instruct(SMLPREDINT):
-    Instruct(SMLADDINT):
-    Instruct(SMLSUBINT):
-    Instruct(SMLMULINT):
-    Instruct(SMLDIVINT):
-    Instruct(SMLMODINT):
-    Instruct(MAKEREFVECTOR):
-    Instruct(SMLQUOTINT):
-    Instruct(SMLREMINT):
-    Instruct(STOP):
+    case SWAP:
+    case PUSH:
+    case PUSHACC0:
+    case ACC0:
+    case PUSHACC1:
+    case ACC1:
+    case PUSHACC2:
+    case ACC2:
+    case PUSHACC3:
+    case ACC3:
+    case PUSHACC4:
+    case ACC4:
+    case PUSHACC5:
+    case ACC5:
+    case PUSHACC6:
+    case ACC6:
+    case PUSHACC7:
+    case ACC7:
+    case PUSHENV1:
+    case ENV1:
+    case PUSHENV2:
+    case ENV2:
+    case PUSHENV3:
+    case ENV3:
+    case PUSHENV4:
+    case ENV4:
+    case PUSHENV5:
+    case ENV5:
+    case PUSHENV6:
+    case ENV6:
+    case PUSHENV7:
+    case ENV7:
+    case PUSH_ENV1_APPLY1:
+    case PUSH_ENV1_APPLY2:
+    case PUSH_ENV1_APPLY3:
+    case PUSH_ENV1_APPLY4:
+    case APPLY1:
+    case APPLY2:
+    case APPLY3:
+    case APPLY4:
+    case RETURN1:
+    case RETURN2:
+    case RESTART:
+    case UPDATE:
+    case CHECK_SIGNALS:
+    case PUSHATOM0:
+    case ATOM0:
+    case ATOM1:
+    case ATOM2:
+    case ATOM3:
+    case ATOM4:
+    case ATOM5:
+    case ATOM6:
+    case ATOM7:
+    case ATOM8:
+    case ATOM9:
+    case GETFIELD0:
+    case GETFIELD1:
+    case GETFIELD2:
+    case GETFIELD3:
+    case GETFIELD0_0:
+    case GETFIELD0_1:
+    case GETFIELD1_0:
+    case GETFIELD1_1:
+    case SETFIELD0:
+    case SETFIELD1:
+    case SETFIELD2:
+    case SETFIELD3:
+    case VECTLENGTH:
+    case GETVECTITEM:
+    case SETVECTITEM:
+    case GETSTRINGCHAR:
+    case SETSTRINGCHAR:
+    case BOOLNOT:
+    case POPTRAP:
+    case RAISE:
+    case PUSHCONST0:
+    case CONST0:
+    case PUSHCONST1:
+    case CONST1:
+    case PUSHCONST2:
+    case CONST2:
+    case PUSHCONST3:
+    case CONST3:
+    case ADDINT:
+    case SUBINT:
+    case MULINT:
+    case DIVINT:
+    case MODINT:
+    case ANDINT:
+    case ORINT:
+    case XORINT:
+    case SHIFTLEFTINT:
+    case SHIFTRIGHTINTSIGNED:
+    case SHIFTRIGHTINTUNSIGNED:
+    case TAGOF:
+    case EQ:
+    case NEQ:
+    case LTINT:
+    case GTINT:
+    case LEINT:
+    case GEINT:
+    case EQUNSIGN:
+    case NEQUNSIGN:
+    case LTUNSIGN:
+    case GTUNSIGN:
+    case LEUNSIGN:
+    case GEUNSIGN:
+    case FLOATOFINT:
+    case SMLNEGFLOAT:
+    case SMLADDFLOAT:
+    case SMLSUBFLOAT:
+    case SMLMULFLOAT:
+    case SMLDIVFLOAT:
+    case INTOFFLOAT:
+    case EQFLOAT:
+    case NEQFLOAT:
+    case LTFLOAT:
+    case GTFLOAT:
+    case LEFLOAT:
+    case GEFLOAT:
+    case STRINGLENGTH:
+    case EQSTRING:
+    case NEQSTRING:
+    case LTSTRING:
+    case GTSTRING:
+    case LESTRING:
+    case GESTRING:
+    case MAKEVECTOR:
+    case SMLNEGINT:
+    case SMLSUCCINT:
+    case SMLPREDINT:
+    case SMLADDINT:
+    case SMLSUBINT:
+    case SMLMULINT:
+    case SMLDIVINT:
+    case SMLMODINT:
+    case MAKEREFVECTOR:
+    case SMLQUOTINT:
+    case SMLREMINT:
+    case STOP:
       realprog[codeptr++] = jumptable[*pc++];
       break;
 
     /* A one-byte argument: */
-    Instruct(APPLY):
-    Instruct(GRAB):
-    Instruct(PUSHATOM):
-    Instruct(ATOM):
-    Instruct(MAKEBLOCK1):
-    Instruct(MAKEBLOCK2):
-    Instruct(MAKEBLOCK3):
-    Instruct(MAKEBLOCK4):
-    Instruct(CONSTBYTE):
+    case APPLY:
+    case GRAB:
+    case PUSHATOM:
+    case ATOM:
+    case MAKEBLOCK1:
+    case MAKEBLOCK2:
+    case MAKEBLOCK3:
+    case MAKEBLOCK4:
+    case CONSTBYTE:
       realprog[codeptr++] = jumptable[*pc++];
       realprog[codeptr++] = (void*)(long)(*pc++);
       break;
 
     /* A four-byte label argument.  The label is translated to an index
        into the realprog[] array. */
-    Instruct(PUSH_RETADDR):
-    Instruct(PUSHTRAP):
-    Instruct(BRANCH):
-    Instruct(BRANCHIF):
-    Instruct(BRANCHIFNOT):
-    Instruct(POPBRANCHIFNOT):
-    Instruct(BRANCHIFEQ):
-    Instruct(BRANCHIFNEQ):
-    Instruct(BRANCHIFLT):
-    Instruct(BRANCHIFGT):
-    Instruct(BRANCHIFLE):
-    Instruct(BRANCHIFGE):
+    case PUSH_RETADDR:
+    case PUSHTRAP:
+    case BRANCH:
+    case BRANCHIF:
+    case BRANCHIFNOT:
+    case POPBRANCHIFNOT:
+    case BRANCHIFEQ:
+    case BRANCHIFNEQ:
+    case BRANCHIFLT:
+    case BRANCHIFGT:
+    case BRANCHIFLE:
+    case BRANCHIFGE:
       realprog[codeptr++] = jumptable[*pc++];
       realprog[codeptr++] = REALADDR(pc, s32pc); pc += LONG;
       break;
@@ -548,7 +546,7 @@ realcode_t expandcode(bytecode_t byteprog, int code_size, void * jumptable[])
        be translated to an address in the realprog[] array.  This
        requires an auxiliary table.
     */
-    Instruct(BRANCHINTERVAL):
+    case BRANCHINTERVAL:
       realprog[codeptr++] = jumptable[*pc++];
       realprog[codeptr++] = REALADDR(pc, s32pc);
       pc += LONG;
@@ -557,67 +555,67 @@ realcode_t expandcode(bytecode_t byteprog, int code_size, void * jumptable[])
       break;
 
     /* A two-byte signed argument. */
-    Instruct(CONSTSHORT):
+    case CONSTSHORT:
       realprog[codeptr++] = jumptable[*pc++];
       realprog[codeptr++] = (void*)(long)s16pc;
       pc += SHORT;
       break;
 
     /* A two-byte unsigned argument. */
-    Instruct(PUSHACC):
-    Instruct(ACCESS):
-    Instruct(POP):
-    Instruct(ASSIGN):
-    Instruct(PUSHENVACC):
-    Instruct(ENVACC):
-    Instruct(DUMMY):
-    Instruct(RETURN):
-    Instruct(SETGLOBAL):
-    Instruct(GETGLOBAL):
-    Instruct(APPTERM1):
-    Instruct(APPTERM2):
-    Instruct(APPTERM3):
-    Instruct(APPTERM4):
-    Instruct(PUSH_ENV1_APPTERM1):
-    Instruct(PUSH_ENV1_APPTERM2):
-    Instruct(PUSH_ENV1_APPTERM3):
-    Instruct(PUSH_ENV1_APPTERM4):
-    Instruct(PUSH_GETGLOBAL):
-    Instruct(PUSH_GETGLOBAL_APPLY1):
-    Instruct(PUSH_GETGLOBAL_APPLY2):
-    Instruct(PUSH_GETGLOBAL_APPLY3):
-    Instruct(PUSH_GETGLOBAL_APPLY4):
-    Instruct(GETFIELD):
-    Instruct(SETFIELD):
-    Instruct(C_CALL1):
-    Instruct(C_CALL2):
-    Instruct(C_CALL3):
-    Instruct(C_CALL4):
-    Instruct(C_CALL5):
+    case PUSHACC:
+    case ACCESS:
+    case POP:
+    case ASSIGN:
+    case PUSHENVACC:
+    case ENVACC:
+    case DUMMY:
+    case RETURN:
+    case SETGLOBAL:
+    case GETGLOBAL:
+    case APPTERM1:
+    case APPTERM2:
+    case APPTERM3:
+    case APPTERM4:
+    case PUSH_ENV1_APPTERM1:
+    case PUSH_ENV1_APPTERM2:
+    case PUSH_ENV1_APPTERM3:
+    case PUSH_ENV1_APPTERM4:
+    case PUSH_GETGLOBAL:
+    case PUSH_GETGLOBAL_APPLY1:
+    case PUSH_GETGLOBAL_APPLY2:
+    case PUSH_GETGLOBAL_APPLY3:
+    case PUSH_GETGLOBAL_APPLY4:
+    case GETFIELD:
+    case SETFIELD:
+    case C_CALL1:
+    case C_CALL2:
+    case C_CALL3:
+    case C_CALL4:
+    case C_CALL5:
       realprog[codeptr++] = jumptable[*pc++];
       realprog[codeptr++] = (void*)(unsigned long)u16pc;
       pc += SHORT;
       break;
 
     /* A four-byte unsigned argument. */
-    Instruct(MAKEBLOCK):
+    case MAKEBLOCK:
       realprog[codeptr++] = jumptable[*pc++];
       realprog[codeptr++] = (void*)(unsigned long)u32pc;
       pc += LONG;
       break;
 
     /* A four-byte signed argument. */
-    Instruct(PUSHCONSTINT):
-    Instruct(CONSTINT):
+    case PUSHCONSTINT:
+    case CONSTINT:
       realprog[codeptr++] = jumptable[*pc++];
       realprog[codeptr++] = (void*)(long)s32pc;
       pc += LONG;
       break;
 
     /* A one-byte argument and a four-byte signed (label) argument. */
-    Instruct(CLOSURE):
-    Instruct(CLOSREC):
-    Instruct(BRANCHIFNEQTAG):
+    case CLOSURE:
+    case CLOSREC:
+    case BRANCHIFNEQTAG:
       realprog[codeptr++] = jumptable[*pc++];
       realprog[codeptr++] = (void*)(unsigned long)*pc++;
       realprog[codeptr++] = REALADDR(pc, s32pc);
@@ -625,8 +623,8 @@ realcode_t expandcode(bytecode_t byteprog, int code_size, void * jumptable[])
       break;
 
     /* A one-byte argument and a two-byte unsigned argument. */
-    Instruct(APPTERM):
-    Instruct(C_CALLN):
+    case APPTERM:
+    case C_CALLN:
       realprog[codeptr++] = jumptable[*pc++];
       realprog[codeptr++] = (void*)(long)*pc++;
       realprog[codeptr++] = (void*)(unsigned long)u16pc;
@@ -634,10 +632,10 @@ realcode_t expandcode(bytecode_t byteprog, int code_size, void * jumptable[])
       break;
 
     /* Two two-byte unsigned arguments. */
-    Instruct(PUSH_GETGLOBAL_APPTERM1):
-    Instruct(PUSH_GETGLOBAL_APPTERM2):
-    Instruct(PUSH_GETGLOBAL_APPTERM3):
-    Instruct(PUSH_GETGLOBAL_APPTERM4):
+    case PUSH_GETGLOBAL_APPTERM1:
+    case PUSH_GETGLOBAL_APPTERM2:
+    case PUSH_GETGLOBAL_APPTERM3:
+    case PUSH_GETGLOBAL_APPTERM4:
       realprog[codeptr++] = jumptable[*pc++];
       realprog[codeptr++] = (void*)(unsigned long)u16pc; pc += SHORT;
       realprog[codeptr++] = (void*)(unsigned long)u16pc; pc += SHORT;
@@ -645,7 +643,7 @@ realcode_t expandcode(bytecode_t byteprog, int code_size, void * jumptable[])
 
     /* A one-byte argument and a table of four-byte signed (label) arguments. */
     /* We keep the byte argument for consistency.                            */
-    Instruct(SWITCH):
+    case SWITCH:
       {
 	unsigned long i, n;
 	bytecode_t pc1;
