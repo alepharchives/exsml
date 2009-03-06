@@ -21,9 +21,6 @@
 #include "interp.h"
 #include "expand.h"
 #include "globals.h"
-#ifdef HAS_UI
-#include "ui.h"
-#endif
 
 #ifdef DEBUG
 static long icount = 0;

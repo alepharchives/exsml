@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "config.h"
 #include "alloc.h"
@@ -18,14 +19,7 @@
 #include "stacks.h"
 #include "io.h"
 
-extern char * strerror();
-
-char * error_message(void)
-{
-  return strerror(errno);
-}
-
-char* globalexn[] = { 
+char* globalexn[] = {
        "Out_of_memory",
        "Invalid_argument",
        "Graphic_failure",
@@ -45,7 +39,7 @@ char* globalexn[] = {
 
 void sys_error(char * arg)
 {
-  char * err = error_message();
+  char * err = strerror(errno);
   value exnarg;
 
   /* Raise SysErr with argument (err, SOME errno) */
@@ -78,43 +72,17 @@ void sys_exit(value retcode)          /* ML */
 #endif
 
 static int sys_open_flags[] = {
-  O_APPEND, O_BINARY, O_CREAT, O_EXCL, O_RDONLY, O_RDWR, 
+  O_APPEND, O_BINARY, O_CREAT, O_EXCL, O_RDONLY, O_RDWR,
   O_TEXT, O_TRUNC, O_WRONLY
 };
-#ifdef macintosh
-static int sys_text_flags []  = { 0, 0, 0, 0, 0, 0, 1, 0, 0 };
-static int sys_write_flags [] = { 0, 0, 0, 0, 0, 1, 0, 0, 1 };
-#endif
 
 value sys_open(value path, value flags, value perm) /* ML */
 {
-  int ret;
-#ifdef macintosh
-  extern void set_file_type (char *name, long type);
-#if defined(THINK_C) || defined(__MWERKS__)
-# define FILE_NAME_SIZE 256
-  char filename_temp[FILE_NAME_SIZE];
-  char *expanded;
-  extern char *unix_to_mac_filename(char *, char *, int);
-  expanded = unix_to_mac_filename(String_val(path), filename_temp, FILE_NAME_SIZE);
-  if (expanded == NULL)
-    ret = -1;
-  else
-    ret = open(expanded, convert_flag_list(flags, sys_open_flags));
-  if ( ret != -1 && convert_flag_list (flags, sys_text_flags)
-  	             && convert_flag_list (flags, sys_write_flags))
-    set_file_type (expanded, 'TEXT');
-#else
-  ret = open(String_val(path), convert_flag_list(flags, sys_open_flags));
-  if (ret != -1 && convert_flag_list (flags, sys_text_flags))
-    set_file_type (String_val (path), 'TEXT');
-#endif
-#else
-  ret = open(String_val(path), convert_flag_list(flags, sys_open_flags),
-             Int_val(perm));
-#endif
-  if (ret == -1) sys_error(String_val(path));
-  return Val_long(ret);
+	int ret;
+	ret = open(String_val(path), convert_flag_list(flags, sys_open_flags),
+		   Int_val(perm));
+	if (ret == -1) sys_error(String_val(path));
+	return Val_long(ret);
 }
 
 value sys_close(value fd)             /* ML */
@@ -197,10 +165,8 @@ void sys_init(char ** argv)
   value v;
   int i;
 
-  #ifndef MSDOS
   void init_float_handler();
   init_float_handler();
-  #endif
 
   v = copy_string_array(argv);
   modify(&Field(global_data, SYS__COMMAND_LINE), v);
@@ -224,24 +190,20 @@ void sys_init(char ** argv)
 
 /* Handling of user interrupts and floating-point errors */
 
-#ifndef MSDOS
-
-/* Added by sestoft@dina.kvl.dk to make signals work under recent linuxes: */
-
-void mysignal(int signum, void (*handler)(int)) {
-  struct sigaction sigact;
-  sigset_t emptyset;
-  sigemptyset(&emptyset);
-  sigact.sa_handler  = handler;
-  sigact.sa_mask     = emptyset;
-  sigact.sa_flags    = SA_NOMASK;
-  sigaction(signum, &sigact, 0); 
+static void mysignal(int signum, void (*handler)(int)) {
+	struct sigaction sigact;
+	sigset_t emptyset;
+	sigemptyset(&emptyset);
+	sigact.sa_handler  = handler;
+	sigact.sa_mask     = emptyset;
+	sigact.sa_flags    = SA_NOMASK;
+	sigaction(signum, &sigact, 0);
 }
 
 void intr_handler(int sig)
 {
-  mysignal (SIGINT, intr_handler);
-  /* sigint_pending = 1; TODO: Where did this come from? */
+	mysignal (SIGINT, intr_handler);
+	/* sigint_pending = 1; TODO: Where did this come from? */
 }
 
 value sys_catch_break(value onoff)    /* ML */
@@ -255,26 +217,21 @@ value sys_catch_break(value onoff)    /* ML */
 
 void float_handler(int sig)
 {
-#ifndef BSD_SIGNALS
-  mysignal (SIGFPE, float_handler);
-#endif
-  if (float_exn == Field(global_data, SYS__EXN_FAIL))
-    failwith("floating point error");
-  else
-    raiseprimitive0(float_exn);
+	mysignal (SIGFPE, float_handler);
+
+	if (float_exn == Field(global_data, SYS__EXN_FAIL)) {
+		failwith("floating point error");
+	} else {
+		raiseprimitive0(float_exn);
+	}
 }
 
 void init_float_handler(void)
 {
   mysignal(SIGFPE, float_handler);
 }
-#endif
 
 /* Search path function */
-
-#ifndef MSDOS
-#ifndef macintosh
-
 char * searchpath(char * name)
 {
   static char fullname[512];
@@ -303,7 +260,4 @@ char * searchpath(char * name)
     path++;
   }
 }
-
-#endif
-#endif
 

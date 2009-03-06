@@ -118,13 +118,7 @@ Algorithm:
 
 */
 
-#ifdef WIN32
-__declspec(dllexport) int caml_main(int argc, char * argv[])
-#elif HAS_UI
-int caml_main(int argc, char * argv[])
-#else
 int main(int argc, char * argv[])
-#endif
 {
   int fd;
   struct exec_trailer trail;
@@ -134,18 +128,9 @@ int main(int argc, char * argv[])
   int verbose_init = 0, percent_free_init = Percent_free_def;
   long minor_heap_init = Minor_heap_def, heap_chunk_init = Heap_chunk_def;
   char * debugger_address = NULL;
-#ifdef MSDOS
-  extern char ** check_args();
-  argv = check_args(argv);
-#endif
 
 #ifdef DEBUG
   verbose_init = 1;
-#endif
-
-#ifdef WIN32
-  BOOL fOk;
-  fOk = SetConsoleCtrlHandler(NULL, FALSE);
 #endif
 
   i = 0;
@@ -208,10 +193,8 @@ int main(int argc, char * argv[])
     }
   }
 
-#ifdef HAS_SOCKETS
   if (debugger_address == NULL)
     debugger_address = getenv("CAML_DEBUG_SOCKET");
-#endif
 
   if (setjmp(raise_buf.buf) == 0) {
 

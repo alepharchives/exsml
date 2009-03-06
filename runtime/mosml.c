@@ -952,11 +952,13 @@ value sml_access(value path, value permarg)          /* ML */
 
 value sml_tmpnam(value v)          /* ML */
 {
-  char *res;
-  res = tmpnam(NULL);
-  if (res == NULL)
-    failwith("tmpnam");
-  return copy_string(res);
+  /*  char *res;
+      res = tmpnam(NULL);
+      if (res == NULL)
+      failwith("tmpnam");
+      return copy_string(res); */
+  failwith("tmpnam is dangerous");
+  return Val_unit;
 }
 
 value sml_errormsg(value err)   /* ML */
@@ -1299,11 +1301,11 @@ value string_mlval(value val)	/* ML */
   value s;
   byteoffset_t res;
 
-  extern_size = INITIAL_EXTERN_SIZE;
+  extern_size = INITIAL_extern_SIZE;
   extern_block =
     (byteoffset_t *) stat_alloc(extern_size * sizeof(unsigned long));
   extern_pos = 0;
-  extern_table_size = INITIAL_EXTERN_TABLE_SIZE;
+  extern_table_size = INITIAL_extern_TABLE_SIZE;
   alloc_extern_table();
   extern_table_used = 0;
   res = emit_all(val);
@@ -1469,13 +1471,7 @@ value sml_localoffset(value v)	/* ML */
   t1 = time((time_t*)0);
   gmt = gmtime (&t1);
   t2 = tm2cal(gmt);
-
-  /* SunOS appears to lack difftime: */
-#if defined(sun) && !defined(__svr4__)
-  td = (long)t2 - (long)t1;
-#else
   td = difftime(t2, t1);
-#endif
 
   return copy_double(td); /* not SYStoSMLtime(td) */
 }
@@ -1500,68 +1496,32 @@ char* exnmessage_aux(value exn)
   value argval = Field(exn, 1);
   if (strref == Field(global_data, SYS__EXN_SYSERR)) {
     value msgval = Field(argval, 0);
-#if defined(__CYGWIN__) || defined(hpux)
-    sprintf(buf, "%s: %s",
-	     String_val(strval), String_val(msgval));
-#elif defined(WIN32)
-    _snprintf(buf, BUFSIZE, "%s: %s",
-	     String_val(strval), String_val(msgval));
-#else
     snprintf(buf, BUFSIZE, "%s: %s",
 	     String_val(strval), String_val(msgval));
-#endif
     return buf;
   } else if (strref == Field(global_data, SYS__EXN_IO)) {
     value causeval = Field(argval, 0);
     value fcnval   = Field(argval, 1);
     value nameval  = Field(argval, 2);
     char* causetxt = exnmessage_aux(causeval);
-#if defined(__CYGWIN__) || defined(hpux)
-    sprintf(buf, "%s: %s failed on `%s'; %s",
-	     String_val(strval), String_val(fcnval),
-	     String_val(nameval), causetxt);
-#elif defined(WIN32)
-    _snprintf(buf, BUFSIZE, "%s: %s failed on `%s'; %s",
-	     String_val(strval), String_val(fcnval),
-	     String_val(nameval), causetxt);
-#else
     snprintf(buf, BUFSIZE, "%s: %s failed on `%s'; %s",
 	     String_val(strval), String_val(fcnval),
 	     String_val(nameval), causetxt);
-#endif
     free(causetxt);
     return buf;
   } else if (Is_block(argval)) {
     if (Tag_val(argval) == String_tag) {
-#if defined(__CYGWIN__) || defined(hpux)
-      sprintf(buf, "%s: %s", String_val(strval), String_val(argval));
-#elif defined(WIN32)
-      _snprintf(buf, BUFSIZE, "%s: %s", String_val(strval), String_val(argval));
-#else
       snprintf(buf, BUFSIZE, "%s: %s", String_val(strval), String_val(argval));
-#endif
       return buf;
     } else if (Tag_val(argval) == Double_tag){
       char doubletxt[64];
       string_of_float_aux(doubletxt, Double_val(argval));
-#if defined(__CYGWIN__) || defined(hpux)
-      sprintf(buf, "%s: %s", String_val(strval), doubletxt);
-#elif defined(WIN32)
-      _snprintf(buf, BUFSIZE, "%s: %s", String_val(strval), doubletxt);
-#else
       snprintf(buf, BUFSIZE, "%s: %s", String_val(strval), doubletxt);
-#endif
       return buf;
     }
   }
   /* If unknown exception, copy the name and return it */
-#if defined(__CYGWIN__)
-  sprintf(buf, "%s", String_val(strval));
-#elif defined(WIN32)
-  _snprintf(buf, BUFSIZE, "%s", String_val(strval));
-#else
   snprintf(buf, BUFSIZE, "%s", String_val(strval));
-#endif
   return buf;
 #undef BUFSIZE
 }
