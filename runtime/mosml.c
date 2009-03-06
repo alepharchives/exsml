@@ -1301,11 +1301,11 @@ value string_mlval(value val)	/* ML */
   value s;
   byteoffset_t res;
 
-  extern_size = INITIAL_extern_SIZE;
+  extern_size = INITIAL_EXTERN_SIZE;
   extern_block =
     (byteoffset_t *) stat_alloc(extern_size * sizeof(unsigned long));
   extern_pos = 0;
-  extern_table_size = INITIAL_extern_TABLE_SIZE;
+  extern_table_size = INITIAL_EXTERN_TABLE_SIZE;
   alloc_extern_table();
   extern_table_used = 0;
   res = emit_all(val);
