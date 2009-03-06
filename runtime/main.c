@@ -199,11 +199,7 @@ int main(int argc, char * argv[])
 
     code_size = trail.code_size;
 
-#if defined(DIRECT_JUMP) && defined(THREADED)
-    start_code = (bytecode_t) alloc_string(code_size);
-#else
     start_code = (bytecode_t) stat_alloc(code_size);
-#endif
     if (read(fd, (char *) start_code, code_size) != code_size)
       fatal_error("Fatal error: truncated bytecode file.\n");
 

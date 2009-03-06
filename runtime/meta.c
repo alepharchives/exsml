@@ -26,17 +26,6 @@ value start_interp(value may_free, value prog, value offset, value vlen) /* ML *
   fixup_endianness(&Byte(prog, 0), (asize_t) len);
 #endif
 
-#if defined(DIRECT_JUMP) && defined(THREADED)
-  {
-    realcode_t generated_code;
-    res = interprete(/* mode=byte exec */ 1, bprog, len, &generated_code);
-    if (Bool_val(may_free)) {
-      //      printf("start_interp freeing: generated_code=%d, len=%d\n",
-      //     (int)*generated_code, len);
-      free(generated_code);	// Allocated by the call to interprete()
-    }
-  }
-#else
   {
     // Copy bytecode to memory outside the ML heap
     bytecode_t actualprog = (bytecode_t)malloc(len);
@@ -45,7 +34,6 @@ value start_interp(value may_free, value prog, value offset, value vlen) /* ML *
     if (Bool_val(may_free))
       free(actualprog);		// Allocated above
   }
-#endif
 
   return res;
 }

@@ -148,18 +148,7 @@ typedef unsigned char * bytecode_t;
 /* A sequence of real machine instruction addresses */
 typedef void ** realcode_t;
 
-/* GCC 2.0 has labels as first-class values. We take advantage of that
-   to provide faster dispatch than the "switch" statement. */
-
-#if defined(__GNUC__) && __GNUC__ >= 2 && !defined(DEBUG)
-#define DIRECT_JUMP
-#endif
-
-#if defined(DIRECT_JUMP) && defined(THREADED)
-#define CODE realcode_t
-#else
 #define CODE bytecode_t
-#endif
 
 #define Closure_wosize 2
 #define Closure_tag (No_scan_tag - 2)

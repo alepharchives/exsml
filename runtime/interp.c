@@ -97,7 +97,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
    The most heavily used registers come first.
 */
 
-  CODE pc;
+  CODE pc = bprog;
   value accu;
   value * sp;
 
@@ -109,59 +109,8 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
   struct longjmp_buffer raise_buf;
   value * modify_dest, modify_newval;
   value tmp;
-#ifndef THREADED
   int cur_instr;
-#endif
   double dtmp;
-
-#ifdef DIRECT_JUMP
-  static void * jumptable[] = {
-#   include "jumptbl.h"
-  };
-#endif
-
-#if defined(DIRECT_JUMP) && defined(THREADED)
-
-  realcode_t realcode;
-  memset(&realcode, 0, sizeof(realcode_t));
-
-  switch (mode) {
-  case 0:			// initialization
-    raise_break_exn =
-      expandcode(byte_raise_break_exn, RAISE_CODE_LEN, jumptable);
-    callback1_code =
-      expandcode(byte_callback1_code, CALLBACK_CODE_LEN, jumptable);
-    callback2_code =
-      expandcode(byte_callback2_code, CALLBACK_CODE_LEN, jumptable);
-    callback3_code =
-      expandcode(byte_callback3_code, CALLBACK_CODE_LEN, jumptable);
-    return Atom(0);
-  case 1:			// bytecode threading and execution
-    realcode = expandcode(bprog, code_size, jumptable);
-    if (rprog != NULL)
-      *rprog = realcode;
-    break;
-  case 2:			// realcode execution, used by callback()
-    realcode = *rprog;
-    break;
-  }
-
-/* To read immediate operands, read an entire word: */
-#undef s16
-#define s16(pc) (int)(*pc)
-#define u8pc  (unsigned long)(*pc)
-#define u8pci (unsigned long)(*pc++)
-#define s16pc (long)(*pc)
-#define u16pc (unsigned long)(*pc)
-#define s32pc (long)(*pc)
-#define u32pc (long)(*pc)
-#define SHORT 1
-#define LONG  1
-#define JUMPTGT(tgt) (realcode_t)tgt
-#define JUMPSWITCHINDEX(pc, accu) (realcode_t)(*(pc + Long_val(accu)))
-
-  pc = realcode;
-#else
 
   switch (mode) {
   case 0:			// initialization
@@ -193,8 +142,6 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
 #define JUMPTGT(offset) (bytecode_t)(pc + offset)
 #define JUMPSWITCHINDEX(pc, accu) (bytecode_t)(pc + s32(pc + 4 * Long_val(accu)))
 
-#endif
-
   sp = extern_sp;
   extra_args = 0;
   env = null_env;
@@ -214,23 +161,9 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
   log_ptr = log_buffer;
 #endif
 
-#ifdef DIRECT_JUMP
-# define Instruct(name) lbl_##name
-# ifdef THREADED
-  //#  define Next printf("addr[%d] = ", pc-realcode); printf("%d\n", *pc-realcode[0]); goto **pc++
-#define Next goto **pc++
-# else
-  //#define Next printf("addr[%d] = ", pc-bprog); cur_instr = *pc++; printf("%d\n", cur_instr); goto *jumptable[cur_instr]
-#  define Next cur_instr = *pc++; goto *jumptable[cur_instr]
-# endif
-#else
-# define Instruct(name) case name
-# define Next break
-#endif
+#define Instruct(name) case name
+#define Next break
 
-#ifdef DIRECT_JUMP
-  Next;                         /* Jump to the first instruction */
-#else
   while (1) {
 #ifdef DEBUG
     if (icount-- == 0) stop_here ();
@@ -241,9 +174,8 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
     Assert(sp <= stack_high);
 #endif
     cur_instr = *pc++;
-  decode_instruction:
+
     switch (cur_instr) {
-#endif
 
 /* Basic stack operations */
 
@@ -686,14 +618,6 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
     check_signals:
 
     Instruct(CHECK_SIGNALS):    /* accu not preserved */
-#ifdef PERIODIC_ACTION_FREQ
-      { static int periodic_action_count = 1;
-        if (--periodic_action_count == 0) {
-          periodic_action_count = PERIODIC_ACTION_FREQ;
-          ui_periodic_action();
-        }
-      }
-#endif
       if (something_to_do) goto process_signal;
       Next;
 
@@ -1515,19 +1439,12 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       external_raise = initial_external_raise;
       return accu;
 
-#ifdef DIRECT_JUMP
-    lbl_EVENT:
-#else
     default:
-#endif
-
       fatal_error("bad opcode");
       return Val_unit;		/* Can't reach the return */
 
-#ifndef DIRECT_JUMP
     }
   }
-#endif
 }
 
 extern value callback(value closure, value arg)
