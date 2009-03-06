@@ -33,6 +33,9 @@ prims.c : primitives
 	 sed -e 's/.*/  "&",/' primitives; \
 	 echo '  0 };') > prims.c
 
+tags:
+	etags *.c *.h
+
 #camlrunm: $(OBJS) prims.o
 #	$(LD) -o camlrunm$(EXE) prims.o $(OBJS) $(LIBS)
 #	$(STRIP) camlrunm$(EXE)
