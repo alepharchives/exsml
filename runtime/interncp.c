@@ -145,17 +145,12 @@ static void read_compact(struct channel * chan, value * dest)
 
 value intern_compact_val(struct channel * chan)
 {
-  mlsize_t num_objects, size_32, size_64, whsize;
   value res;
 
+  mlsize_t num_objects, whsize;
   num_objects = getword(chan);
-  size_32 = getword(chan);
-  size_64 = getword(chan);
-#ifdef SIXTYFOUR
-  whsize = size_64;
-#else
-  whsize = size_32;
-#endif
+  whsize = getword(chan);
+
   if (whsize == 0) {
     read_compact(chan, &res);
   } else {
