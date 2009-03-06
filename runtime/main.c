@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #include <config.h>
 
@@ -23,13 +24,7 @@
 #include "interp.h"
 #include "mosml.h"
 
-#ifndef macintosh
-#if defined(__STDC__) || defined(WIN32)
-#include <stdlib.h>
-#else
-extern char *getenv ();
-#endif /* __STDC__ */
-#endif /* not macintosh */
+
 
 #ifndef O_BINARY
 #define O_BINARY 0
@@ -238,13 +233,7 @@ int main(int argc, char * argv[])
     else {
       char* buf = (char*)malloc(201);
       char* exnmsg = exnmessage_aux(exn_bucket);
-#if defined(__CYGWIN__) || defined(hpux)
-      sprintf(buf, "Uncaught exception:\n%s\n", exnmsg);
-#elif defined(WIN32)
-      _snprintf(buf, 200, "Uncaught exception:\n%s\n", exnmsg);
-#else
       snprintf(buf, 200, "Uncaught exception:\n%s\n", exnmsg);
-#endif
       free(exnmsg);
       fatal_error(buf);
     }

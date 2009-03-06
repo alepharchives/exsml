@@ -740,11 +740,6 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
 #if defined(macintosh) && !defined(PERIODIC_ACTION_FREQ)
        ui_periodic_action();
 #endif
-#if ( defined(MSDOS) && defined(__GNUC__) ) || defined(WIN32)
-      { static int poll_count = 1;
-        if (--poll_count == 0) { poll_count = 500; poll_break(); }
-      }
-#endif
       if (something_to_do) goto process_signal;
       Next;
 
@@ -1052,7 +1047,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       if (Tag_val(accu) != u8pci) branch(); else pc += LONG;
       Next;
     Instruct(SWITCH):
-      assert(Long_val(accu) >= 0 && Long_val(accu) < *pc);
+      assert(Long_val(accu) >= 0 && Long_val(accu) < (size_t) *pc);
       pc++;
       //      printf("SWITCH: JUMPSWITCHINDEX(pc, %d) = %d\n", accu, JUMPSWITCHINDEX(pc, accu));
       pc = JUMPSWITCHINDEX(pc, accu);

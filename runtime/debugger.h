@@ -13,7 +13,7 @@ extern int trace_flag;
 
 #define Debug(x) x
 
-#if defined(__STDC__) || defined(WIN32)
+#if defined(__STDC__)
 #define Assert(x) if (!(x)) failed_assert ( #x , __FILE__, __LINE__)
 #define Dprintx(x) printf ("expression %s %ld\n", #x, (unsigned long) (x))
 #else
