@@ -64,16 +64,8 @@ void sys_exit(value retcode)          /* ML */
   exit(Int_val(retcode));
 }
 
-#ifndef O_BINARY
-#define O_BINARY 0
-#endif
-#ifndef O_TEXT
-#define O_TEXT 0
-#endif
-
 static int sys_open_flags[] = {
-  O_APPEND, O_BINARY, O_CREAT, O_EXCL, O_RDONLY, O_RDWR,
-  O_TEXT, O_TRUNC, O_WRONLY
+  O_APPEND, 0, O_CREAT, O_EXCL, O_RDONLY, O_RDWR, 0, O_TRUNC, O_WRONLY
 };
 
 value sys_open(value path, value flags, value perm) /* ML */
