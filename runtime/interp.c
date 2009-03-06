@@ -737,9 +737,6 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
         }
       }
 #endif
-#if defined(macintosh) && !defined(PERIODIC_ACTION_FREQ)
-       ui_periodic_action();
-#endif
       if (something_to_do) goto process_signal;
       Next;
 
