@@ -21,85 +21,86 @@ value *c_roots_head;
 */
 static char *expand_heap (mlsize_t request)
 {
-  char *mem;
-  char *new_page_table = NULL;
-  asize_t new_page_table_size = 0;
-  asize_t malloc_request;
-  asize_t i, more_pages;
+	char *mem;
+	char *new_page_table = NULL;
+	asize_t new_page_table_size = 0;
+	asize_t malloc_request;
+	asize_t i, more_pages;
 
-  malloc_request = round_heap_chunk_size (Bhsize_wosize (request));
-  gc_message ("Growing heap to %ldk\n",
-	      (stat_heap_size + malloc_request) / 1024);
-  mem = aligned_malloc (malloc_request + sizeof (heap_chunk_head),
-                        sizeof (heap_chunk_head));
-  if (mem == NULL){
-    gc_message ("No room for growing heap\n", 0);
-    return NULL;
-  }
-  mem += sizeof (heap_chunk_head);
-  (((heap_chunk_head *) mem) [-1]).size = malloc_request;
-  assert (Wosize_bhsize (malloc_request) >= request);
-  Hd_hp (mem) = Make_header (Wosize_bhsize (malloc_request), 0, Blue);
+	malloc_request = round_heap_chunk_size (Bhsize_wosize (request));
+	gc_message ("Growing heap to %ldk\n",
+		    (stat_heap_size + malloc_request) / 1024);
+	mem = aligned_malloc (malloc_request + sizeof (heap_chunk_head),
+			      sizeof (heap_chunk_head));
+	if (mem == NULL){
+		gc_message ("No room for growing heap\n", 0);
+		return NULL;
+	}
 
-  if (mem < heap_start){
-    more_pages = -Page (mem);
-  }else if (Page (mem + malloc_request) > page_table_size){
-    assert (mem >= heap_end);
-    more_pages = Page (mem + malloc_request) - page_table_size;
-  }else{
-    more_pages = 0;
-  }
+	mem += sizeof (heap_chunk_head);
+	(((heap_chunk_head *) mem) [-1]).size = malloc_request;
+	assert (Wosize_bhsize (malloc_request) >= request);
+	Hd_hp (mem) = Make_header (Wosize_bhsize (malloc_request), 0, Blue);
 
-  if (more_pages != 0){
-    new_page_table_size = page_table_size + more_pages;
-    new_page_table = (char *) malloc (new_page_table_size);
-    if (new_page_table == NULL){
-      gc_message ("No room for growing page table\n", 0);
-      free (mem);
-      return NULL;
-    }
-  }
+	if (mem < heap_start) {
+		more_pages = -Page (mem);
+	} else if (Page (mem + malloc_request) > page_table_size) {
+		assert (mem >= heap_end);
+		more_pages = Page (mem + malloc_request) - page_table_size;
+	} else {
+		more_pages = 0;
+	}
 
-  if (mem < heap_start){
-    assert (more_pages != 0);
-    for (i = 0; i < more_pages; i++){
-      new_page_table [i] = Not_in_heap;
-    }
-    bcopy (page_table, new_page_table + more_pages, page_table_size);
-    (((heap_chunk_head *) mem) [-1]).next = heap_start;
-    heap_start = mem;
-  }else{
-    char **last;
-    char *cur;
+	if (more_pages != 0) {
+		new_page_table_size = page_table_size + more_pages;
+		new_page_table = (char *) malloc (new_page_table_size);
+		if (new_page_table == NULL){
+			gc_message ("No room for growing page table\n", 0);
+			free (mem);
+			return NULL;
+		}
+	}
 
-    if (mem >= heap_end) heap_end = mem + malloc_request;
-    if (more_pages != 0){
-      for (i = page_table_size; i < new_page_table_size; i++){
-        new_page_table [i] = Not_in_heap;
-      }
-      bcopy (page_table, new_page_table, page_table_size);
-    }
-    last = &heap_start;
-    cur = *last;
-    while (cur != NULL && cur < mem){
-      last = &((((heap_chunk_head *) cur) [-1]).next);
-      cur = *last;
-    }
-    (((heap_chunk_head *) mem) [-1]).next = cur;
-    *last = mem;
-  }
+	if (mem < heap_start) {
+		assert (more_pages != 0);
+		for (i = 0; i < more_pages; i++){
+			new_page_table [i] = Not_in_heap;
+		}
+		bcopy (page_table, new_page_table + more_pages, page_table_size);
+		(((heap_chunk_head *) mem) [-1]).next = heap_start;
+		heap_start = mem;
+	} else {
+		char **last;
+		char *cur;
 
-  if (more_pages != 0){
-    free (page_table);
-    page_table = new_page_table;
-    page_table_size = new_page_table_size;
-  }
+		if (mem >= heap_end) heap_end = mem + malloc_request;
+		if (more_pages != 0) {
+			for (i = page_table_size; i < new_page_table_size; i++) {
+				new_page_table [i] = Not_in_heap;
+			}
+			bcopy (page_table, new_page_table, page_table_size);
+		}
+		last = &heap_start;
+		cur = *last;
+		while (cur != NULL && cur < mem){
+			last = &((((heap_chunk_head *) cur) [-1]).next);
+			cur = *last;
+		}
+		(((heap_chunk_head *) mem) [-1]).next = cur;
+		*last = mem;
+	}
 
-  for (i = Page (mem); i < Page (mem + malloc_request); i++){
-    page_table [i] = In_heap;
-  }
-  stat_heap_size += malloc_request;
-  return Bp_hp (mem);
+	if (more_pages != 0) {
+		free (page_table);
+		page_table = new_page_table;
+		page_table_size = new_page_table_size;
+	}
+
+	for (i = Page (mem); i < Page (mem + malloc_request); i++){
+		page_table [i] = In_heap;
+	}
+	stat_heap_size += malloc_request;
+	return Bp_hp (mem);
 }
 
 extern value alloc_shr (mlsize_t wosize, tag_t tag)
