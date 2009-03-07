@@ -83,9 +83,6 @@ value format_float(value fmt, value arg)    /* ML */
 
 value float_of_string(value s)        /* ML */
 {
-#ifndef __MWERKS__
-  extern double atof();
-#endif
   return copy_double(atof(String_val(s)));
 }
 

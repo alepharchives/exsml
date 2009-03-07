@@ -6,10 +6,6 @@
 #include "str.h"
 #include "md5sum.h"
 
-#ifdef __MWERKS__
-#undef nil
-#endif
-
 typedef unsigned int my_uint;	/* To avoid collision with predefined */
 typedef unsigned char byte;
 int enc64(byte*,byte*,int);
