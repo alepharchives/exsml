@@ -48,7 +48,7 @@ tags:
 
 primitives : $(C_SOURCES)
 	sed -n -e '/\/\* ML \*\//s/.* \([a-zA-Z0-9_][a-zA-Z0-9_]*\) *(.*/\1/p' \
-                $(C_SOURCES) > primitives2
+                $(C_SOURCES) | grep -v UNUSED > primitives2
 	sh -c 'if cmp -s primitives primitives2; \
         then rm primitives2; \
         else mv primitives2 primitives; \

@@ -3,7 +3,7 @@
 
 #include "misc.h"
 
-void sys_error (char *);
+void sys_error ();
 void raise_pending_signal (void);
 void sys_init (char **);
 void sys_exit (value);
