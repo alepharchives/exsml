@@ -1,6 +1,14 @@
+2009-03-07  Jesper Louis Andersen  <jesper.louis.andersen@gmail.com>
+
+	* KILL MSDOS, macintosh, win32 support. Needs another
+	  implementation path.
+
+	* KILL THREADED code compiler. We will handle this by LLVM.
+	* KILL DIRECT_JUMP. More idiomatic C needed here.
+
 2009-03-04  Jesper Louis Andersen  <jesper.louis.andersen@gmail.com>
 
-	* NEW Inital Changelog Entry
-	* CONFIG Added configure.ac and what is required for a "real" project
+	* NEW Inital Changelog Entry.
+	* CONFIG Added configure.ac and what is required for a "real" project.
 
 

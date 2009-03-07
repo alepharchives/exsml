@@ -19,11 +19,13 @@ build glue.
 ## Ideology
 
 Use UNIX tools all the way. We want a pipeline of commands, not some
-big buildsystem built into the REPL. Use Makefiles or SCONS for
-building the software. Prefer sh(1) for scripting and Python if it is
-more expensive.
+big buildsystem built into the REPL. Use Autotools. Prefer sh(1) for
+scripting and Python if it is more expensive.
 
-Handle the win32 implementation separately.
+   * Handle the win32 implementation separately.
+   * Kill old Macintosh code.
+   * Kill old MSDOS code.
+   * Kill the Threaded/Direct Jump compiler.
 
 ## Original readme:
 
@@ -95,3 +97,5 @@ Source files:
 
    * src/compiler : The Moscow ML compiler
    * runtime : The C-based caml-light runtime
+   * mosmlyac : The Moscow ML yacc compiler
+
