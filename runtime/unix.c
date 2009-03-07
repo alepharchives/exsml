@@ -8,6 +8,7 @@
 #include <sys/utsname.h>
 #include <unistd.h>
 
+#include "attributes.h"
 #include "mlvalues.h"
 #include "fail.h"
 #include "memory.h"
@@ -25,7 +26,7 @@ value sml_realpath(value v)          /* ML */
   return copy_string(result);
 }
 
-value sml_uname(value v)          /* ML */
+value sml_uname(value UNUSED(v))          /* ML */
 {
   struct utsname buf;
   value res;
@@ -76,7 +77,7 @@ value sml_devinode(value path)          /* ML */
   return copy_double(dev_inode);
 }
 
-value sml_setdisk(value volno)        /* ML */
+value sml_setdisk(value UNUSED(volno))        /* ML */
 {
   failwith("setdisk");
   return Val_unit;		/* Can't reach return */
