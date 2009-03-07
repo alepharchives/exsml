@@ -3,15 +3,13 @@
 AM_CFLAGS = -I$(top_srcdir) -Wall -Wextra -Wunused -Wstrict-aliasing
 
 bin_PROGRAMS = camlrunm
-camlrunm_SOURCES = $(C_SOURCES) $(H_SOURCES) $(GEN_SOURCES)
+camlrunm_SOURCES = $(C_SOURCES) $(GEN_SOURCES)
 
 C_SOURCES = interp.c misc.c stacks.c fix_code.c main.c \
 	fail.c signals.c freelist.c major_gc.c minor_gc.c memory.c alloc.c \
 	roots.c compare.c ints.c floats.c str.c io.c extern.c externcp.c \
 	intern.c interncp.c hash.c sys.c meta.c parsing.c lexing.c \
 	gc_ctrl.c mosml.c unix.c runtime.c md5sum.c callback.c
-
-H_SOURCES = jumptbl.h
 
 # Generated sources
 GEN_SOURCES = prims.c
@@ -63,19 +61,9 @@ primitives : $(C_SOURCES)
 #             -e 's/{$$/[] = {/' \
 #             -e 's/\([A-Z][A-Z_0-9]*\)/"\1"/g' instruct.h > opnames.h
 
-# jumptbl.h is required only if you have GCC 2.0 or later
-jumptbl.h : instruct.h
-	awk -f ../src/tools/make-jumptbl instruct.h > jumptbl.h
-
 # .SUFFIXES: .d.o
 
 # .c.d.o:
 # 	cd .debugobj; $(CC) -c -g -I.. -I.. -DDEBUG $(OPTS) ../$<
 # 	mv .debugobj/$*.o $*.d.o
 
-# depend : prims.c opnames.h jumptbl.h
-# 	mv Makefile Makefile.bak
-# 	(sed -n -e '1,/^### DO NOT DELETE THIS LINE/p' Makefile.bak;	 \
-#          gcc -MM -I.. $(OPTS) *.c; \
-#          gcc -MM -I.. $(OPTS) -DDEBUG *.c | sed -e 's/\.o/.d.o/') > Makefile
-# 	rm Makefile.bak
