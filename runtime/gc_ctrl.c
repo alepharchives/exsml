@@ -13,14 +13,14 @@
 #include "mlvalues.h"
 #include "memory.h"
 
-long stat_minor_words = 0,
-     stat_promoted_words = 0,
-     stat_major_words = 0,
-     stat_minor_collections = 0,
-     stat_major_collections = 0,
-     stat_heap_size = 0;           /* bytes */
+size_t stat_minor_words = 0;
+size_t stat_promoted_words = 0;
+size_t stat_major_words = 0;
+size_t stat_minor_collections = 0;
+size_t stat_major_collections = 0;
+size_t stat_heap_size = 0;           /* bytes */
 
-extern asize_t major_heap_increment;  /* bytes; cf. major_gc.c */
+extern size_t major_heap_increment;  /* bytes; cf. major_gc.c */
 extern int percent_free;              /*        cf. major_gc.c */
 extern int verb_gc;                   /*        cf. misc.c */
 

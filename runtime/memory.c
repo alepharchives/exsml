@@ -23,9 +23,9 @@ static char *expand_heap (mlsize_t request)
 {
 	char *mem;
 	char *new_page_table = NULL;
-	asize_t new_page_table_size = 0;
-	asize_t malloc_request;
-	asize_t i, more_pages;
+	size_t new_page_table_size = 0;
+	size_t malloc_request;
+	size_t i, more_pages;
 
 	malloc_request = round_heap_chunk_size (Bhsize_wosize (request));
 	gc_message ("Growing heap to %ldk\n",
@@ -42,9 +42,12 @@ static char *expand_heap (mlsize_t request)
 	assert (Wosize_bhsize (malloc_request) >= request);
 	Hd_hp (mem) = Make_header (Wosize_bhsize (malloc_request), 0, Blue);
 
+	/* The else if check here can never be negative since have mem >= heap_start
+	 * so the Page calculation will be positive. Hence the (unsigned) cast is valid
+	 */
 	if (mem < heap_start) {
 		more_pages = -Page (mem);
-	} else if (Page (mem + malloc_request) > page_table_size) {
+	} else if ((unsigned) Page(mem + malloc_request) > page_table_size) {
 		assert (mem >= heap_end);
 		more_pages = Page (mem + malloc_request) - page_table_size;
 	} else {
@@ -96,7 +99,8 @@ static char *expand_heap (mlsize_t request)
 		page_table_size = new_page_table_size;
 	}
 
-	for (i = Page (mem); i < Page (mem + malloc_request); i++){
+	assert(Page(mem + malloc_request) >= 0);
+	for (i = Page (mem); i < (unsigned) Page (mem + malloc_request); i++){
 		page_table [i] = In_heap;
 	}
 	stat_heap_size += malloc_request;

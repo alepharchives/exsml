@@ -920,7 +920,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       if (Tag_val(accu) != u8pci) pc = JUMPTGT(s32pc); else pc += LONG;
       break;
     case SWITCH:
-      assert(Long_val(accu) >= 0 && Long_val(accu) < (size_t) *pc);
+      assert(Long_val(accu) >= 0 && Long_val(accu) < *pc);
       pc++;
       //      printf("SWITCH: JUMPSWITCHINDEX(pc, %d) = %d\n", accu, JUMPSWITCHINDEX(pc, accu));
       pc = JUMPSWITCHINDEX(pc, accu);

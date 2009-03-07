@@ -21,7 +21,7 @@ int percent_free;
 long major_heap_increment;
 char *heap_start, *heap_end;
 char *page_table;
-asize_t page_table_size;
+size_t page_table_size;
 char *gc_sweep_hp;
 int gc_phase;
 
@@ -33,11 +33,11 @@ int gc_phase;
 
 static value *weak_arrays;
 value *weak_arrays_cur, *weak_arrays_end;
-static asize_t weak_arrays_size;
+static size_t weak_arrays_size;
 
 static value *gray_vals;
 value *gray_vals_cur, *gray_vals_end;
-static asize_t gray_vals_size;
+static size_t gray_vals_size;
 static int heap_is_pure;   /* The heap is pure if the only gray objects
                               below [markhp] are also in [gray_vals]. */
 unsigned long allocated_words;
@@ -303,7 +303,7 @@ void finish_major_cycle (void)
 
 }
 
-asize_t round_heap_chunk_size (asize_t request)
+size_t round_heap_chunk_size (size_t request)
 {
 	assert (major_heap_increment >= Heap_chunk_min);
 	if (request < major_heap_increment) {
@@ -317,9 +317,9 @@ asize_t round_heap_chunk_size (asize_t request)
 	return 0;			/* Can't reach return */
 }
 
-void init_major_heap (asize_t heap_size)
+void init_major_heap (size_t heap_size)
 {
-  asize_t i;
+  size_t i;
 
   stat_heap_size = round_heap_chunk_size (heap_size);
   assert (stat_heap_size % Page_size == 0);
