@@ -182,8 +182,10 @@ int main(int argc, char * argv[])
     }
   }
 
+#ifdef DEBUG
   if (debugger_address == NULL)
     debugger_address = getenv("CAML_DEBUG_SOCKET");
+#endif
 
   if (setjmp(raise_buf.buf) == 0) {
 
