@@ -115,7 +115,8 @@ value parse_engine(tables, env, cmd, arg) /* ML */
     state = Short(tables->table, n2);
     Trace(printf("Shift %d\n", state));
     sp++;
-    if (sp < Long_val(env->stacksize)) goto push;
+    assert(Long_val(env->stacksize) >= 0);
+    if (sp < (unsigned) Long_val(env->stacksize)) goto push;
     return GROW_STACKS_1;
                                 /* The ML code resizes the stacks */
   case STACKS_GROWN_1:
@@ -144,7 +145,8 @@ value parse_engine(tables, env, cmd, arg) /* ML */
     } else {
       state = Short(tables->dgoto, m);
     }
-    if (sp < Long_val(env->stacksize)) goto semantic_action;
+    assert(Long_val(env->stacksize) >= 0);
+    if (sp < (unsigned) Long_val(env->stacksize)) goto semantic_action;
     return GROW_STACKS_2;
                                 /* The ML code resizes the stacks */
   case STACKS_GROWN_2:
