@@ -1264,33 +1264,46 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
     case INTOFFLOAT:
       accu = Val_long((long)Double_val(accu)); break;
 
-#define floattest(name, tst)    					     \
-    case name:							     \
-      accu = Atom(Double_val(*sp++) tst Double_val(accu));		     \
-      break;
-
-      floattest(EQFLOAT,==);
-      floattest(NEQFLOAT,!=);
-      floattest(LTFLOAT,<);
-      floattest(GTFLOAT,>);
-      floattest(LEFLOAT,<=);
-      floattest(GEFLOAT,>=);
-
+    case EQFLOAT:
+	    accu = (((value) (((header_t *) (&(first_atoms [(* (double *) (*sp++)) == (* (double *) (accu))]))) + 1)));
+	    break;
+    case NEQFLOAT:
+	    accu = (((value) (((header_t *) (&(first_atoms [(* (double *) (*sp++)) != (* (double *) (accu))]))) + 1)));
+	    break;
+    case LTFLOAT:
+	    accu = (((value) (((header_t *) (&(first_atoms [(* (double *) (*sp++)) < (* (double *) (accu))]))) + 1)));
+	    break;
+    case GTFLOAT:
+	    accu = (((value) (((header_t *) (&(first_atoms [(* (double *) (*sp++)) > (* (double *) (accu))]))) + 1)));
+	    break;
+    case LEFLOAT:
+	    accu = (((value) (((header_t *) (&(first_atoms [(* (double *) (*sp++)) <= (* (double *) (accu))]))) + 1)));
+	    break;
+    case GEFLOAT:
+	    accu = (((value) (((header_t *) (&(first_atoms [(* (double *) (*sp++)) >= (* (double *) (accu))]))) + 1)));
+	    break;
     case STRINGLENGTH:
       accu = Val_long(string_length(accu));
       break;
 
-#define stringtest(name, tst)                                                \
-    case name:                                                          \
-      accu = Atom(compare_strings(*sp++, accu) tst Val_long(0));             \
-      break;
-
-      stringtest(EQSTRING,==);
-      stringtest(NEQSTRING,!=);
-      stringtest(LTSTRING,<);
-      stringtest(GTSTRING,>);
-      stringtest(LESTRING,<=);
-      stringtest(GESTRING, >=);
+    case EQSTRING:
+	    accu = (((value) (((header_t *) (&(first_atoms [compare_strings(*sp++, accu) == (((long)(0) << 1) + 1)]))) + 1)));
+	    break;
+    case NEQSTRING:
+	    accu = (((value) (((header_t *) (&(first_atoms [compare_strings(*sp++, accu) != (((long)(0) << 1) + 1)]))) + 1)));
+	    break;
+    case LTSTRING:
+	    accu = (((value) (((header_t *) (&(first_atoms [compare_strings(*sp++, accu) < (((long)(0) << 1) + 1)]))) + 1)));
+	    break;
+    case GTSTRING:
+	    accu = (((value) (((header_t *) (&(first_atoms [compare_strings(*sp++, accu) > (((long)(0) << 1) + 1)]))) + 1)));
+	    break;
+    case LESTRING:
+	    accu = (((value) (((header_t *) (&(first_atoms [compare_strings(*sp++, accu) <= (((long)(0) << 1) + 1)]))) + 1)));
+	    break;
+    case GESTRING:
+	    accu = (((value) (((header_t *) (&(first_atoms [compare_strings(*sp++, accu) >= (((long)(0) << 1) + 1)]))) + 1)));
+	    break;
 
     case MAKEVECTOR:
       { mlsize_t size = Long_val(sp[0]);
