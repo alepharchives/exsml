@@ -161,9 +161,6 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
   log_ptr = log_buffer;
 #endif
 
-#define Instruct(name) case name
-#define Next break
-
   while (1) {
 #ifdef DEBUG
     if (icount-- == 0) stop_here ();
@@ -179,77 +176,77 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
 
 /* Basic stack operations */
 
-    Instruct(SWAP):
+    case SWAP:
     { value tmp = accu;
       accu = sp[0];
       sp[0] = tmp;
-      Next;
+      break;
     }
 
-    Instruct(PUSH):
+    case PUSH:
 //      printf("PUSH\n");
-    Instruct(PUSHACC0): *--sp = accu; Next;
-    Instruct(ACC0): accu = sp[0]; Next;
+    case PUSHACC0: *--sp = accu; break;
+    case ACC0: accu = sp[0]; break;
 
-    Instruct(PUSHACC1): *--sp = accu; /* Fallthrough */
-    Instruct(ACC1): accu = sp[1]; Next;
+    case PUSHACC1: *--sp = accu; /* Fallthrough */
+    case ACC1: accu = sp[1]; break;
 
-    Instruct(PUSHACC2): *--sp = accu; /* Fallthrough */
-    Instruct(ACC2): accu = sp[2]; Next;
+    case PUSHACC2: *--sp = accu; /* Fallthrough */
+    case ACC2: accu = sp[2]; break;
 
-    Instruct(PUSHACC3): *--sp = accu; /* Fallthrough */
-    Instruct(ACC3): accu = sp[3]; Next;
+    case PUSHACC3: *--sp = accu; /* Fallthrough */
+    case ACC3: accu = sp[3]; break;
 
-    Instruct(PUSHACC4): *--sp = accu; /* Fallthrough */
-    Instruct(ACC4): accu = sp[4]; Next;
+    case PUSHACC4: *--sp = accu; /* Fallthrough */
+    case ACC4: accu = sp[4]; break;
 
-    Instruct(PUSHACC5): *--sp = accu; /* Fallthrough */
-    Instruct(ACC5): accu = sp[5]; Next;
+    case PUSHACC5: *--sp = accu; /* Fallthrough */
+    case ACC5: accu = sp[5]; break;
 
-    Instruct(PUSHACC6): *--sp = accu; /* Fallthrough */
-    Instruct(ACC6): accu = sp[6]; Next;
+    case PUSHACC6: *--sp = accu; /* Fallthrough */
+    case ACC6: accu = sp[6]; break;
 
-    Instruct(PUSHACC7): *--sp = accu; /* Fallthrough */
-    Instruct(ACC7): accu = sp[7]; Next;
+    case PUSHACC7: *--sp = accu; /* Fallthrough */
+    case ACC7: accu = sp[7]; break;
 
-    Instruct(PUSHACC): *--sp = accu; /* Fallthrough */
-    Instruct(ACCESS): accu = sp[u16pc]; pc += SHORT; Next;
+    case PUSHACC: *--sp = accu; /* Fallthrough */
+    case ACCESS: accu = sp[u16pc]; pc += SHORT; break;
 
-    Instruct(POP):
+    case POP:
       sp += u16pc; pc += SHORT;
-      Next;
-    Instruct(ASSIGN):
+      break;
+    case ASSIGN:
       sp[u16pc] = accu; pc += SHORT;
       accu = Val_unit;
-      Next;
+      break;
 
 /* Access in heap-allocated environment */
 
-    Instruct(PUSHENV1): *--sp = accu; /* Fallthrough */
-    Instruct(ENV1): accu = Field(env, 1); Next;
+    case PUSHENV1: *--sp = accu; /* Fallthrough */
+    case ENV1: accu = Field(env, 1); break;
 
-    Instruct(PUSHENV2): *--sp = accu; /* Fallthrough */
-    Instruct(ENV2): accu = Field(env, 2); Next;
+    case PUSHENV2: *--sp = accu; /* Fallthrough */
+    case ENV2: accu = Field(env, 2); break;
 
-    Instruct(PUSHENV3): *--sp = accu; /* Fallthrough */
-    Instruct(ENV3): accu = Field(env, 3); Next;
+    case PUSHENV3: *--sp = accu; /* Fallthrough */
+    case ENV3: accu = Field(env, 3); break;
 
-    Instruct(PUSHENV4): *--sp = accu; /* Fallthrough */
-    Instruct(ENV4): accu = Field(env, 4); Next;
+    case PUSHENV4: *--sp = accu; /* Fallthrough */
+    case ENV4: accu = Field(env, 4); break;
 
-    Instruct(PUSHENV5): *--sp = accu; /* Fallthrough */
-    Instruct(ENV5): accu = Field(env, 5); Next;
+    case PUSHENV5: *--sp = accu; /* Fallthrough */
+    case ENV5: accu = Field(env, 5); break;
 
-    Instruct(PUSHENV6): *--sp = accu; /* Fallthrough */
-    Instruct(ENV6): accu = Field(env, 6); Next;
+    case PUSHENV6: *--sp = accu; /* Fallthrough */
+    case ENV6: accu = Field(env, 6); break;
 
-    Instruct(PUSHENV7): *--sp = accu; /* Fallthrough */
-    Instruct(ENV7): accu = Field(env, 7); Next;
+    case PUSHENV7: *--sp = accu; /* Fallthrough */
+    case ENV7: accu = Field(env, 7); break;
 
-    Instruct(PUSHENVACC): *--sp = accu; /* Fallthrough */
-    Instruct(ENVACC): accu = Field(env, u16pc); pc += SHORT; Next;
+    case PUSHENVACC: *--sp = accu; /* Fallthrough */
+    case ENVACC: accu = Field(env, u16pc); pc += SHORT; break;
 
-    Instruct(PUSH_ENV1_APPLY1):
+    case PUSH_ENV1_APPLY1:
     {
       sp -= 4;
       sp[0] = accu;
@@ -261,7 +258,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       goto apply;
     }
 
-    Instruct(PUSH_ENV1_APPLY2):
+    case PUSH_ENV1_APPLY2:
     { value arg2 = sp[0];
       sp -= 4;
       sp[0] = accu;
@@ -274,7 +271,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       goto apply;
     }
 
-    Instruct(PUSH_ENV1_APPLY3):
+    case PUSH_ENV1_APPLY3:
     { value arg2 = sp[0];
       value arg3 = sp[1];
       sp -= 4;
@@ -289,7 +286,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       goto apply;
     }
 
-    Instruct(PUSH_ENV1_APPLY4):
+    case PUSH_ENV1_APPLY4:
     { value arg2 = sp[0];
       value arg3 = sp[1];
       value arg4 = sp[2];
@@ -306,7 +303,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       goto apply;
     }
 
-    Instruct(PUSH_ENV1_APPTERM1):
+    case PUSH_ENV1_APPTERM1:
     { sp = sp + u16pc - 2; pc += SHORT;
 
       sp[0] = accu;
@@ -318,7 +315,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       env = accu;
       goto check_signals;
 
-    Instruct(PUSH_ENV1_APPTERM2):
+    case PUSH_ENV1_APPTERM2:
     { value arg2 = sp[0];
       sp = sp + u16pc - 3; pc += SHORT;
       sp[0] = accu;
@@ -327,7 +324,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       goto env1_appterm;
     }
 
-    Instruct(PUSH_ENV1_APPTERM3):
+    case PUSH_ENV1_APPTERM3:
     { value arg2 = sp[0];
       value arg3 = sp[1];
       sp = sp + u16pc - 4; pc += SHORT;
@@ -338,7 +335,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       goto env1_appterm;
     }
 
-    Instruct(PUSH_ENV1_APPTERM4):
+    case PUSH_ENV1_APPTERM4:
     { value arg2 = sp[0];
       value arg3 = sp[1];
       value arg4 = sp[2];
@@ -353,19 +350,19 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
 
 /* Function application */
 
-    Instruct(PUSH_RETADDR): {
+    case PUSH_RETADDR: {
       sp -= 3;
       sp[0] = (value) (JUMPTGT(s32pc));
       sp[1] = env;
       sp[2] = Val_long(extra_args);
       pc += LONG;
-      Next;
+      break;
     }
-    Instruct(APPLY): {
+    case APPLY: {
       extra_args = u8pc - 1;
       goto apply;
     }
-    Instruct(APPLY1): {
+    case APPLY1: {
       value arg1 = sp[0];
       sp -= 3;
       sp[0] = arg1;
@@ -375,7 +372,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       extra_args = 0;
       goto apply;
     }
-    Instruct(APPLY2): {
+    case APPLY2: {
       value arg1 = sp[0];
       value arg2 = sp[1];
       sp -= 3;
@@ -387,7 +384,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       extra_args = 1;
       goto apply;
     }
-    Instruct(APPLY3): {
+    case APPLY3: {
       value arg1 = sp[0];
       value arg2 = sp[1];
       value arg3 = sp[2];
@@ -401,7 +398,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       extra_args = 2;
       goto apply;
     }
-    Instruct(APPLY4): {
+    case APPLY4: {
       value arg1 = sp[0];
       value arg2 = sp[1];
       value arg3 = sp[2];
@@ -418,7 +415,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       goto apply;
     }
 
-    Instruct(APPTERM): {
+    case APPTERM: {
       int nargs = u8pci;
       int slotsize = u16pc;
       value * newsp;
@@ -432,13 +429,13 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       extra_args += nargs - 1;
       goto appterm;
     }
-    Instruct(APPTERM1): {
+    case APPTERM1: {
       value arg1 = sp[0];
       sp = sp + u16pc - 1; pc += SHORT;
       sp[0] = arg1;
       goto appterm;
     }
-    Instruct(APPTERM2): {
+    case APPTERM2: {
       value arg1 = sp[0];
       value arg2 = sp[1];
       sp = sp + u16pc - 2; pc += SHORT;
@@ -447,7 +444,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       extra_args += 1;
       goto appterm;
     }
-    Instruct(APPTERM3): {
+    case APPTERM3: {
       value arg1 = sp[0];
       value arg2 = sp[1];
       value arg3 = sp[2];
@@ -458,7 +455,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       extra_args += 2;
       goto appterm;
     }
-    Instruct(APPTERM4): {
+    case APPTERM4: {
       value arg1 = sp[0];
       value arg2 = sp[1];
       value arg3 = sp[2];
@@ -472,7 +469,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       goto appterm;
     }
 
-    Instruct(RETURN1):
+    case RETURN1:
       sp += 1;
     return_code:
       if (extra_args > 0) {
@@ -486,27 +483,27 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
 	sp += 3;
 	if (something_to_do) goto process_signal;
       }
-      Next;
+      break;
 
-    Instruct(RETURN2):
+    case RETURN2:
       sp += 2;
       goto return_code;
 
-    Instruct(RETURN):
+    case RETURN:
       sp += u16pc; pc += SHORT;
       goto return_code;
 
-    Instruct(RESTART): {
+    case RESTART: {
       int num_args = Wosize_val(env) - 2;
       int i;
       sp -= num_args;
       for (i = 0; i < num_args; i++) sp[i] = Field(env, i + 2);
       env = Field(env, 1);
       extra_args += num_args;
-      Next;
+      break;
     }
 
-    Instruct(GRAB): {
+    case GRAB: {
       int required = u8pci;
       if (extra_args >= required) {
         extra_args -= required;
@@ -526,10 +523,10 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
         extra_args = Long_val(sp[2]);
         sp += 3;
       }
-      Next;
+      break;
     }
 
-    Instruct(CLOSURE): {
+    case CLOSURE: {
       int nvars = u8pci;
       int i;
       if (nvars > 0) *--sp = accu;
@@ -540,10 +537,10 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       for (i = 0; i < nvars; i++) Field(accu, i + 1) = sp[i];
       sp += nvars;
       pc += LONG;
-      Next;
+      break;
     }
 
-    Instruct(CLOSREC): {
+    case CLOSREC: {
       int nvars = u8pci;
       int i;
       if (nvars > 0) *--sp = accu;
@@ -555,19 +552,19 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       sp += nvars;
       modify(&Field(accu, 1), accu);
       pc += LONG;
-      Next;
+      break;
     }
 
 /* For recursive definitions */
 
-    Instruct(DUMMY): {
+    case DUMMY: {
       int size = u16pc + 1; /* size + 1 to match CLOSURE */
       pc += SHORT;
       Alloc_small(accu, size, 0);
       while (size--) Field(accu, size) = Val_long(0);
-      Next;
+      break;
     }
-    Instruct(UPDATE): {
+    case UPDATE: {
       value newval = *sp++;
       mlsize_t size, n;
       size = Wosize_val(newval);
@@ -577,20 +574,20 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
         modify(&Field(accu, n), Field(newval, n));
       }
       accu = Val_unit;
-      Next;
+      break;
     }
 
 /* Globals */
 
-    Instruct(PUSH_GETGLOBAL):
+    case PUSH_GETGLOBAL:
       *--sp = accu;
       /* Fallthrough */
-    Instruct(GETGLOBAL):
+    case GETGLOBAL:
       accu = Field(global_data, u16pc);
       pc += SHORT;
-      Next;
+      break;
 
-    Instruct(PUSH_GETGLOBAL_APPLY1):
+    case PUSH_GETGLOBAL_APPLY1:
     { sp -= 4;
       sp[0] = accu;
       accu = Field(global_data, u16pc);
@@ -617,11 +614,11 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
 
     check_signals:
 
-    Instruct(CHECK_SIGNALS):    /* accu not preserved */
+    case CHECK_SIGNALS:    /* accu not preserved */
       if (something_to_do) goto process_signal;
-      Next;
+      break;
 
-    Instruct(PUSH_GETGLOBAL_APPLY2):
+    case PUSH_GETGLOBAL_APPLY2:
     { value arg2 = sp[0];
       sp -= 4;
       sp[0] = accu;
@@ -635,7 +632,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       goto apply;
     }
 
-    Instruct(PUSH_GETGLOBAL_APPLY3):
+    case PUSH_GETGLOBAL_APPLY3:
     { value arg2 = sp[0];
       value arg3 = sp[1];
       sp -= 4;
@@ -650,7 +647,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       extra_args = 2;
       goto apply;
     }
-    Instruct(PUSH_GETGLOBAL_APPLY4):
+    case PUSH_GETGLOBAL_APPLY4:
     { value arg2 = sp[0];
       value arg3 = sp[1];
       value arg4 = sp[2];
@@ -668,7 +665,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       goto apply;
     }
 
-    Instruct(PUSH_GETGLOBAL_APPTERM1):
+    case PUSH_GETGLOBAL_APPTERM1:
       /* opcode, popnbr, globalindex */
       sp = sp + u16pc - 2; pc += SHORT;
       sp[0] = accu;
@@ -678,7 +675,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       env = accu;
       goto check_signals;
 
-    Instruct(PUSH_GETGLOBAL_APPTERM2):
+    case PUSH_GETGLOBAL_APPTERM2:
     { value arg2 = sp[0];
       sp = sp + u16pc - 3; pc += SHORT;
       sp[0] = accu;
@@ -687,7 +684,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       goto getglobal_appterm;
     }
 
-    Instruct(PUSH_GETGLOBAL_APPTERM3):
+    case PUSH_GETGLOBAL_APPTERM3:
     { value arg2 = sp[0];
       value arg3 = sp[1];
       sp = sp + u16pc - 4; pc += SHORT;
@@ -698,7 +695,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       goto getglobal_appterm;
     }
 
-    Instruct(PUSH_GETGLOBAL_APPTERM4):
+    case PUSH_GETGLOBAL_APPTERM4:
     { value arg2 = sp[0];
       value arg3 = sp[1];
       value arg4 = sp[2];
@@ -711,46 +708,46 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       goto getglobal_appterm;
     }
 
-    Instruct(SETGLOBAL):
+    case SETGLOBAL:
       modify(&Field(global_data, u16pc), accu);
       accu = Val_unit; /* ? */
       pc += SHORT;
-      Next;
+      break;
 
 /* Allocation of blocks */
 
-    Instruct(PUSHATOM0):
+    case PUSHATOM0:
       *--sp = accu;
       /* Fallthrough */
-    Instruct(ATOM0):
-      accu = Atom(0); Next;
+    case ATOM0:
+      accu = Atom(0); break;
 
-    Instruct(ATOM1):
-      accu = Atom(1); Next;
-    Instruct(ATOM2):
-      accu = Atom(2); Next;
-    Instruct(ATOM3):
-      accu = Atom(3); Next;
-    Instruct(ATOM4):
-      accu = Atom(4); Next;
-    Instruct(ATOM5):
-      accu = Atom(5); Next;
-    Instruct(ATOM6):
-      accu = Atom(6); Next;
-    Instruct(ATOM7):
-      accu = Atom(7); Next;
-    Instruct(ATOM8):
-      accu = Atom(8); Next;
-    Instruct(ATOM9):
-      accu = Atom(9); Next;
+    case ATOM1:
+      accu = Atom(1); break;
+    case ATOM2:
+      accu = Atom(2); break;
+    case ATOM3:
+      accu = Atom(3); break;
+    case ATOM4:
+      accu = Atom(4); break;
+    case ATOM5:
+      accu = Atom(5); break;
+    case ATOM6:
+      accu = Atom(6); break;
+    case ATOM7:
+      accu = Atom(7); break;
+    case ATOM8:
+      accu = Atom(8); break;
+    case ATOM9:
+      accu = Atom(9); break;
 
-    Instruct(PUSHATOM):
+    case PUSHATOM:
       *--sp = accu;
       /* Fallthrough */
-    Instruct(ATOM):
-      accu = Atom(u8pci); Next;
+    case ATOM:
+      accu = Atom(u8pci); break;
 
-    Instruct(MAKEBLOCK):
+    case MAKEBLOCK:
       { header_t hdr;
         mlsize_t size;
 	tag_t tag;
@@ -773,18 +770,18 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
           for (i = size-2; i >= 0; i--) initialize (&Field(tmp, i), *sp++);
           accu = tmp;
         }
-	Next;
+	break;
       }
 
-    Instruct(MAKEBLOCK1): {
+    case MAKEBLOCK1: {
       tag_t tag = u8pci;
       value block;
       Alloc_small(block, 1, tag);
       Field(block, 0) = accu;
       accu = block;
-      Next;
+      break;
     }
-    Instruct(MAKEBLOCK2): {
+    case MAKEBLOCK2: {
       tag_t tag = u8pci;
       value block;
       Alloc_small(block, 2, tag);
@@ -792,9 +789,9 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       Field(block, 1) = accu;
       sp += 1;
       accu = block;
-      Next;
+      break;
     }
-    Instruct(MAKEBLOCK3): {
+    case MAKEBLOCK3: {
       tag_t tag = u8pci;
       value block;
       Alloc_small(block, 3, tag);
@@ -803,9 +800,9 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       Field(block, 2) = accu;
       sp += 2;
       accu = block;
-      Next;
+      break;
     }
-    Instruct(MAKEBLOCK4): {
+    case MAKEBLOCK4: {
       tag_t tag = u8pci;
       value block;
       Alloc_small(block, 4, tag);
@@ -815,62 +812,62 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       Field(block, 3) = accu;
       sp += 3;
       accu = block;
-      Next;
+      break;
     }
 
 /* Access to components of blocks */
 
-    Instruct(GETFIELD0):
-      accu = Field(accu, 0); Next;
-    Instruct(GETFIELD1):
-      accu = Field(accu, 1); Next;
-    Instruct(GETFIELD2):
-      accu = Field(accu, 2); Next;
-    Instruct(GETFIELD3):
-      accu = Field(accu, 3); Next;
-    Instruct(GETFIELD):
-      accu = Field(accu, u16pc); pc += SHORT; Next;
+    case GETFIELD0:
+      accu = Field(accu, 0); break;
+    case GETFIELD1:
+      accu = Field(accu, 1); break;
+    case GETFIELD2:
+      accu = Field(accu, 2); break;
+    case GETFIELD3:
+      accu = Field(accu, 3); break;
+    case GETFIELD:
+      accu = Field(accu, u16pc); pc += SHORT; break;
 
-    Instruct(GETFIELD0_0):
+    case GETFIELD0_0:
       accu = Field(accu, 0);
       accu = Field(accu, 0);
-      Next;
+      break;
 
-    Instruct(GETFIELD0_1):
+    case GETFIELD0_1:
       accu = Field(accu, 0);
       accu = Field(accu, 1);
-      Next;
+      break;
 
-    Instruct(GETFIELD1_0):
+    case GETFIELD1_0:
       accu = Field(accu, 1);
       accu = Field(accu, 0);
-      Next;
+      break;
 
-    Instruct(GETFIELD1_1):
+    case GETFIELD1_1:
       accu = Field(accu, 1);
       accu = Field(accu, 1);
-      Next;
+      break;
 
-    Instruct(SETFIELD0):
+    case SETFIELD0:
       modify_dest = &Field(*sp++, 0);
       modify_newval = accu;
     modify:
       Modify(modify_dest, modify_newval);
       accu = Val_unit; /* Atom(0); */
-      Next;
-    Instruct(SETFIELD1):
+      break;
+    case SETFIELD1:
       modify_dest = &Field(*sp++, 1);
       modify_newval = accu;
       goto modify;
-    Instruct(SETFIELD2):
+    case SETFIELD2:
       modify_dest = &Field(*sp++, 2);
       modify_newval = accu;
       goto modify;
-    Instruct(SETFIELD3):
+    case SETFIELD3:
       modify_dest = &Field(*sp++, 3);
       modify_newval = accu;
       goto modify;
-    Instruct(SETFIELD):
+    case SETFIELD:
       modify_dest = &Field(*sp++, u16pc);
       pc += SHORT;
       modify_newval = accu;
@@ -878,14 +875,14 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
 
 /* Array operations */
 
-    Instruct(VECTLENGTH):
+    case VECTLENGTH:
       accu = Val_long(Wosize_val(accu));
-      Next;
-    Instruct(GETVECTITEM):
+      break;
+    case GETVECTITEM:
       accu = Field(sp[0], Long_val(accu));
       sp += 1;
-      Next;
-    Instruct(SETVECTITEM):
+      break;
+    case SETVECTITEM:
       modify_dest = &Field(sp[1], Long_val(sp[0]));
       modify_newval = accu;
       sp += 2;
@@ -893,50 +890,50 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
 
 /* String operations */
 
-    Instruct(GETSTRINGCHAR):
+    case GETSTRINGCHAR:
       accu = Val_int(Byte_u(sp[0], Long_val(accu)));
       sp += 1;
-      Next;
-    Instruct(SETSTRINGCHAR):
+      break;
+    case SETSTRINGCHAR:
       Byte_u(sp[1], Long_val(sp[0])) = Int_val(accu);
       accu = Atom(0);
       sp += 2;
-      Next;
+      break;
 
 /* Branches and conditional branches */
 
 #define branch() pc = JUMPTGT(s32pc)
 
-    Instruct(BRANCH):
+    case BRANCH:
 //      printf("BRANCH to %d\n", (void**)(s32pc)-realcode);
-      branch(); Next;
-    Instruct(BRANCHIF):
+      branch(); break;
+    case BRANCHIF:
       if (Tag_val(accu) != 0) branch(); else pc += LONG;
-      Next;
-    Instruct(BRANCHIFNOT):
+      break;
+    case BRANCHIFNOT:
       if (Tag_val(accu) == 0) branch(); else pc += LONG;
-      Next;
-    Instruct(POPBRANCHIFNOT):
+      break;
+    case POPBRANCHIFNOT:
       tmp = accu;
       accu = *sp++;
       if (Tag_val(tmp) == 0) branch(); else pc += LONG;
-      Next;
-    Instruct(BRANCHIFNEQTAG):
+      break;
+    case BRANCHIFNEQTAG:
       if (Tag_val(accu) != u8pci) branch(); else pc += LONG;
-      Next;
-    Instruct(SWITCH):
+      break;
+    case SWITCH:
       assert(Long_val(accu) >= 0 && Long_val(accu) < (size_t) *pc);
       pc++;
       //      printf("SWITCH: JUMPSWITCHINDEX(pc, %d) = %d\n", accu, JUMPSWITCHINDEX(pc, accu));
       pc = JUMPSWITCHINDEX(pc, accu);
-      Next;
-    Instruct(BOOLNOT):
-      accu = Atom(Tag_val(accu) == 0); Next;
+      break;
+    case BOOLNOT:
+      accu = Atom(Tag_val(accu) == 0); break;
 
 
 /* Exceptions */
 
-    Instruct(PUSHTRAP):
+    case PUSHTRAP:
       sp -= 4;
       Trap_pc(sp) = JUMPTGT(s32pc);
       Trap_link(sp) = trapsp;
@@ -944,20 +941,20 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       sp[3] = Val_long(extra_args);
       trapsp = sp;
       pc += LONG;
-      Next;
+      break;
 
-    Instruct(POPTRAP):
+    case POPTRAP:
       /* We should check here if a signal is pending, to preserve the
          semantics of the program w.r.t. exceptions. Unfortunately,
          process_signal destroys the accumulator, and there is no
          convenient way to preserve it... */
       trapsp = Trap_link(sp);
       sp += 4;
-      Next;
+      break;
 
     raise_exception:			/* An external raise jumps here */
 
-    Instruct(RAISE):            /* arg */
+    case RAISE:            /* arg */
       sp = trapsp;
       if (sp >= stack_high - initial_sp_offset) {
         exn_bucket = accu;
@@ -969,7 +966,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       env = sp[2];
       extra_args = Long_val(sp[3]);
       sp += 4;
-      Next;
+      break;
 
     process_signal:
       something_to_do = 0;
@@ -1001,46 +998,46 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
           extra_args = 0;
         }
       }
-      Next;
+      break;
 
 /* Calling C functions */
 
-    Instruct(C_CALL1):
+    case C_CALL1:
       Setup_for_c_call;
       accu = (cprim[u16pc])(accu);
       Restore_after_c_call;
       pc += SHORT;
-      Next;
-    Instruct(C_CALL2):
+      break;
+    case C_CALL2:
       Setup_for_c_call;
       /* sp[0] temporarily holds the environment pointer */
       accu = (cprim[u16pc])(sp[1], accu);
       Restore_after_c_call;
       pc += SHORT;
       sp += 1;
-      Next;
-    Instruct(C_CALL3):
+      break;
+    case C_CALL3:
       Setup_for_c_call;
       accu = (cprim[u16pc])(sp[2], sp[1], accu);
       Restore_after_c_call;
       pc += SHORT;
       sp += 2;
-      Next;
-    Instruct(C_CALL4):
+      break;
+    case C_CALL4:
       Setup_for_c_call;
       accu = (cprim[u16pc])(sp[3], sp[2], sp[1], accu);
       Restore_after_c_call;
       pc += SHORT;
       sp += 3;
-      Next;
-    Instruct(C_CALL5):
+      break;
+    case C_CALL5:
       Setup_for_c_call;
       accu = (cprim[u16pc])(sp[4], sp[3], sp[2], sp[1], accu);
       Restore_after_c_call;
       pc += SHORT;
       sp += 4;
-      Next;
-    Instruct(C_CALLN):
+      break;
+    case C_CALLN:
       { int n = u8pci;
         value * args;
 	int i;
@@ -1054,46 +1051,46 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
         pc += SHORT;
 	free(args);
         sp += n;
-        Next; }
+        break; }
 
 /* small values */
 
-    Instruct(CONSTBYTE): accu = u8pci;  Next;
+    case CONSTBYTE: accu = u8pci;  break;
 
-    Instruct(CONSTSHORT): accu = s16pc; pc += SHORT; Next;
+    case CONSTSHORT: accu = s16pc; pc += SHORT; break;
 
 /* Integer constants */
 
-    Instruct(PUSHCONST0): *--sp = accu; /* Fallthrough */
-    Instruct(CONST0): accu = Val_int(0); Next;
+    case PUSHCONST0: *--sp = accu; /* Fallthrough */
+    case CONST0: accu = Val_int(0); break;
 
-    Instruct(PUSHCONST1): *--sp = accu; /* Fallthrough */
-    Instruct(CONST1): accu = Val_int(1); Next;
+    case PUSHCONST1: *--sp = accu; /* Fallthrough */
+    case CONST1: accu = Val_int(1); break;
 
-    Instruct(PUSHCONST2): *--sp = accu; /* Fallthrough */
-    Instruct(CONST2): accu = Val_int(2); Next;
+    case PUSHCONST2: *--sp = accu; /* Fallthrough */
+    case CONST2: accu = Val_int(2); break;
 
-    Instruct(PUSHCONST3): *--sp = accu; /* Fallthrough */
-    Instruct(CONST3): accu = Val_int(3); Next;
+    case PUSHCONST3: *--sp = accu; /* Fallthrough */
+    case CONST3: accu = Val_int(3); break;
 
-    Instruct(PUSHCONSTINT): *--sp = accu; /* Fallthrough */
-    Instruct(CONSTINT):
+    case PUSHCONSTINT: *--sp = accu; /* Fallthrough */
+    case CONSTINT:
       accu = Val_int(s32pc);
       pc += LONG;
-      Next;
+      break;
 
 /* Unsigned integer arithmetic modulo 2^(wordsize-1) */
 
-    Instruct(ADDINT):		/* Modified for Moscow ML: unsigned */
+    case ADDINT:		/* Modified for Moscow ML: unsigned */
       accu = (unsigned long) ((unsigned long) *sp++
-			      + (unsigned long) (accu - 1)); Next;
-    Instruct(SUBINT):		/* unsigned */
+			      + (unsigned long) (accu - 1)); break;
+    case SUBINT:		/* unsigned */
       accu = (unsigned long) ((unsigned long) *sp++
-			      - (unsigned long) (accu - 1)); Next;
-    Instruct(MULINT):		/* unsigned */
+			      - (unsigned long) (accu - 1)); break;
+    case MULINT:		/* unsigned */
       accu = (unsigned long) (1 + (unsigned long) (*sp++ >> 1)
-			      * (unsigned long) (accu - 1)); Next;
-    Instruct(DIVINT):		/* unsigned */
+			      * (unsigned long) (accu - 1)); break;
+    case DIVINT:		/* unsigned */
       tmp = accu - 1;
       if (tmp == 0) {
         accu = Field(global_data, EXN_DIV);
@@ -1101,9 +1098,9 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       }
       accu = Val_long((unsigned long) ((unsigned long) (*sp++ - 1)
 				       / (unsigned long) tmp));
-      Next;
+      break;
 
-    Instruct(MODINT):
+    case MODINT:
       tmp = accu - 1;
       if (tmp == 0) {
         accu = Field(global_data, EXN_DIV);
@@ -1111,28 +1108,28 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       }
       accu = (unsigned long) (1 + (unsigned long) (*sp++ - 1)
 			      % (unsigned long) tmp);
-      Next;
+      break;
 
-    Instruct(ANDINT):
-      accu &= *sp++; Next;
-    Instruct(ORINT):
-      accu |= *sp++; Next;
-    Instruct(XORINT):
-      accu = 1 + (accu ^ *sp++); Next;
-    Instruct(SHIFTLEFTINT):
-      accu = 1 + ((*sp++ - 1) << Long_val(accu)); Next;
-    Instruct(SHIFTRIGHTINTSIGNED):
-      accu = 1 | ((*sp++ - 1) >> Long_val(accu)); Next;
-    Instruct(SHIFTRIGHTINTUNSIGNED):
-      accu = 1 | ((unsigned long)(*sp++ - 1) >> Long_val(accu)); Next;
+    case ANDINT:
+      accu &= *sp++; break;
+    case ORINT:
+      accu |= *sp++; break;
+    case XORINT:
+      accu = 1 + (accu ^ *sp++); break;
+    case SHIFTLEFTINT:
+      accu = 1 + ((*sp++ - 1) << Long_val(accu)); break;
+    case SHIFTRIGHTINTSIGNED:
+      accu = 1 | ((*sp++ - 1) >> Long_val(accu)); break;
+    case SHIFTRIGHTINTUNSIGNED:
+      accu = 1 | ((unsigned long)(*sp++ - 1) >> Long_val(accu)); break;
 
 #define inttest(name1,name2,tst)					     \
-    Instruct(name1):							     \
+    case name1:							     \
       accu = Atom(*sp++ tst accu);					     \
-      Next;								     \
-    Instruct(name2):							     \
+      break;								     \
+    case name2:							     \
       if (*sp++ tst accu) { branch(); } else { pc += LONG; }                 \
-      Next;
+      break;
 
       inttest(EQ,BRANCHIFEQ,==);
       inttest(NEQ,BRANCHIFNEQ,!=);
@@ -1141,14 +1138,14 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       inttest(LEINT,BRANCHIFLE,<=);
       inttest(GEINT,BRANCHIFGE,>=);
 
-    Instruct(TAGOF):
+    case TAGOF:
       accu = Val_long(Tag_val(accu));
-      Next;
+      break;
 
 #define unsigntest(name, tst)    					\
-    Instruct(name):							\
+    case name:							\
       accu = Atom((unsigned long)(*sp++) tst (unsigned long)accu);	\
-      Next;								\
+      break;								\
 
       unsigntest(EQUNSIGN,==);
       unsigntest(NEQUNSIGN,!=);
@@ -1157,23 +1154,23 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       unsigntest(LEUNSIGN,<=);
       unsigntest(GEUNSIGN,>=);
 
-    Instruct(BRANCHINTERVAL):
+    case BRANCHINTERVAL:
       { value low_bound, high_bound;
         high_bound = accu;
         low_bound = *sp++;
         accu = *sp++;
         if (accu < low_bound) {
           branch();
-          Next;
+          break;
         }
         pc += LONG;
         if (accu > high_bound) {
           branch();
-          Next;
+          break;
         }
         pc += LONG;
         accu = accu - low_bound + 1;
-        Next;
+        break;
       }
 
     /* --- Moscow SML changes begin --- */
@@ -1182,26 +1179,26 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
    if ((dval > maxdouble) || (dval < -maxdouble)) \
       { accu = Field(global_data, EXN_OVERFLOW); goto raise_exception; }
 
-    Instruct(FLOATOFINT):
+    case FLOATOFINT:
 	dtmp = (double) Long_val(accu); goto float_done;
 
-    Instruct(SMLNEGFLOAT):
+    case SMLNEGFLOAT:
 	dtmp = -Double_val(accu);
 	Check_float(dtmp); goto float_done;
 
-    Instruct(SMLADDFLOAT):
+    case SMLADDFLOAT:
 	dtmp = Double_val(*sp++) + Double_val(accu);
 	Check_float(dtmp); goto float_done;
 
-    Instruct(SMLSUBFLOAT):
+    case SMLSUBFLOAT:
 	dtmp = Double_val(*sp++) - Double_val(accu);
 	Check_float(dtmp); goto float_done;
 
-    Instruct(SMLMULFLOAT):
+    case SMLMULFLOAT:
 	dtmp = Double_val(*sp++) * Double_val(accu);
 	Check_float(dtmp); goto float_done;
 
-    Instruct(SMLDIVFLOAT):
+    case SMLDIVFLOAT:
 	dtmp = Double_val(accu);
 	if (dtmp == 0) {
 	    accu = Field(global_data, EXN_DIV);
@@ -1213,17 +1210,17 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
 	Alloc_small(tmp, Double_wosize, Double_tag);
 	Store_double_val(tmp, dtmp);
 	accu = tmp;
-	Next;
+	break;
 
     /* --- Moscow SML changes end --- */
 
-    Instruct(INTOFFLOAT):
-      accu = Val_long((long)Double_val(accu)); Next;
+    case INTOFFLOAT:
+      accu = Val_long((long)Double_val(accu)); break;
 
 #define floattest(name, tst)    					     \
-    Instruct(name):							     \
+    case name:							     \
       accu = Atom(Double_val(*sp++) tst Double_val(accu));		     \
-      Next;
+      break;
 
       floattest(EQFLOAT,==);
       floattest(NEQFLOAT,!=);
@@ -1232,14 +1229,14 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       floattest(LEFLOAT,<=);
       floattest(GEFLOAT,>=);
 
-    Instruct(STRINGLENGTH):
+    case STRINGLENGTH:
       accu = Val_long(string_length(accu));
-      Next;
+      break;
 
 #define stringtest(name, tst)                                                \
-    Instruct(name):                                                          \
+    case name:                                                          \
       accu = Atom(compare_strings(*sp++, accu) tst Val_long(0));             \
-      Next;
+      break;
 
       stringtest(EQSTRING,==);
       stringtest(NEQSTRING,!=);
@@ -1248,7 +1245,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       stringtest(LESTRING,<=);
       stringtest(GESTRING, >=);
 
-    Instruct(MAKEVECTOR):
+    case MAKEVECTOR:
       { mlsize_t size = Long_val(sp[0]);
         /* Make sure that the object referred to by sp[0] survives gc: */
         sp[0] = accu;
@@ -1272,50 +1269,50 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
 	  do {size--; initialize(&Field(accu, size), *sp);} while (size != 0);
 	}
 	sp++;
-	Next;
+	break;
       }
 
 /* --- Additional instructions for Moscow SML --- */
 
-    Instruct(SMLNEGINT):
+    case SMLNEGINT:
       tmp =  - Long_val(accu);
       accu = Val_long(tmp);
       if( Long_val(accu) != tmp )
 	goto raise_overflow;
-      Next;
+      break;
     raise_overflow:
       accu = Field(global_data, EXN_OVERFLOW);
       goto raise_exception;
 
-    Instruct(SMLSUCCINT):
+    case SMLSUCCINT:
       tmp =  Long_val(accu) + 1;
       accu = Val_long(tmp);
       if( Long_val(accu) != tmp )
 	goto raise_overflow;
-      Next;
-    Instruct(SMLPREDINT):
+      break;
+    case SMLPREDINT:
       tmp =  Long_val(accu) - 1;
       accu = Val_long(tmp);
       if( Long_val(accu) != tmp )
         goto raise_overflow;
-      Next;
-    Instruct(SMLADDINT):
+      break;
+    case SMLADDINT:
       tmp = Long_val(*sp++) + Long_val(accu);
       accu = Val_long(tmp);
       if( Long_val(accu) != tmp )
 	goto raise_overflow;
-      Next;
-    Instruct(SMLSUBINT):
+      break;
+    case SMLSUBINT:
       tmp = Long_val(*sp++) - Long_val(accu);
       accu = Val_long(tmp);
       if( Long_val(accu) != tmp )
 	goto raise_overflow;
-      Next;
+      break;
 
 #define ChunkLen (4 * sizeof(value) - 1)
 #define MaxChunk ((1L << ChunkLen) - 1)
 
-    Instruct(SMLMULINT):
+    case SMLMULINT:
       { register long x, y;
         register int isNegative = 0;
         x = Long_val(*sp++);
@@ -1326,7 +1323,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
         if( y > MaxChunk )
 	  goto raise_overflow;
         if( x <= MaxChunk )
-          { accu = Val_long(isNegative?(-(x * y)):(x * y)); }
+	{ accu = Val_long(isNegative?(-(x * y)):(x * y)); }
         else /* x > MaxChunk */
           { tmp = (x >> ChunkLen) * y;
             if( tmp > MaxChunk + 1)
@@ -1338,9 +1335,9 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
 	      goto raise_overflow;
           }
       }
-      Next;
+      break;
 
-    Instruct(SMLDIVINT):
+    case SMLDIVINT:
       tmp = Long_val(accu);
       accu = Long_val(*sp++);
       if (tmp == 0)
@@ -1360,9 +1357,9 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       accu = Val_long(tmp);
       if( Long_val(accu) != tmp )
 	goto raise_overflow;
-      Next;
+      break;
 
-    Instruct(SMLMODINT):
+    case SMLMODINT:
       { register long y;
       y = tmp = Long_val(accu);
       accu = Long_val(*sp++);
@@ -1375,16 +1372,16 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
         tmp = accu % tmp;
       else
         { accu = (-accu) % tmp;
-          tmp = ( accu == 0 )?( 0 ):( tmp - accu );
+		tmp = ( accu == 0 )?( 0 ) :( tmp - accu );
         }
       if( y < 0 ) tmp = -tmp;
       accu = Val_long(tmp);
       if( Long_val(accu) != tmp )
 	goto raise_overflow;
       }
-      Next;
+      break;
 
-    Instruct(MAKEREFVECTOR):
+    case MAKEREFVECTOR:
       { mlsize_t size = Long_val(sp[0]);
         sp[0] = accu;
         if (size == 0)
@@ -1407,10 +1404,10 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
 	  do {size--; initialize(&Field(accu, size), *sp);} while (size != 0);
 	}
 	sp++;
-	Next;
+	break;
       }
 
-    Instruct(SMLQUOTINT):
+    case SMLQUOTINT:
       tmp = accu - 1;
       if (tmp == 0)
 	{ accu = Field(global_data, EXN_DIV);
@@ -1420,21 +1417,21 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       accu = Val_long(tmp);
       if( Long_val(accu) != tmp )
 	goto raise_overflow;
-      Next;
-    Instruct(SMLREMINT):
+      break;
+    case SMLREMINT:
       tmp = accu - 1;
       if (tmp == 0) {
         accu = Field(global_data, EXN_DIV);
         goto raise_exception;
       }
       accu = 1 + (*sp++ - 1) % tmp;
-      Next;
+      break;
 
 /* --- End of additional instructions for Moscow SML --- */
 
 /* Machine control */
 
-    Instruct(STOP):
+    case STOP:
       extern_sp = sp;
       external_raise = initial_external_raise;
       return accu;
