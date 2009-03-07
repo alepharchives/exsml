@@ -902,24 +902,22 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
 
 /* Branches and conditional branches */
 
-#define branch() pc = JUMPTGT(s32pc)
-
     case BRANCH:
 //      printf("BRANCH to %d\n", (void**)(s32pc)-realcode);
-      branch(); break;
+      pc = JUMPTGT(s32pc); break;
     case BRANCHIF:
-      if (Tag_val(accu) != 0) branch(); else pc += LONG;
+      if (Tag_val(accu) != 0) pc = JUMPTGT(s32pc); else pc += LONG;
       break;
     case BRANCHIFNOT:
-      if (Tag_val(accu) == 0) branch(); else pc += LONG;
+      if (Tag_val(accu) == 0) pc = JUMPTGT(s32pc); else pc += LONG;
       break;
     case POPBRANCHIFNOT:
       tmp = accu;
       accu = *sp++;
-      if (Tag_val(tmp) == 0) branch(); else pc += LONG;
+      if (Tag_val(tmp) == 0) pc = JUMPTGT(s32pc); else pc += LONG;
       break;
     case BRANCHIFNEQTAG:
-      if (Tag_val(accu) != u8pci) branch(); else pc += LONG;
+      if (Tag_val(accu) != u8pci) pc = JUMPTGT(s32pc); else pc += LONG;
       break;
     case SWITCH:
       assert(Long_val(accu) >= 0 && Long_val(accu) < (size_t) *pc);
@@ -1128,7 +1126,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       accu = Atom(*sp++ tst accu);					     \
       break;								     \
     case name2:							     \
-      if (*sp++ tst accu) { branch(); } else { pc += LONG; }                 \
+      if (*sp++ tst accu) { pc = JUMPTGT(s32pc); } else { pc += LONG; }                 \
       break;
 
       inttest(EQ,BRANCHIFEQ,==);
@@ -1160,12 +1158,12 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
         low_bound = *sp++;
         accu = *sp++;
         if (accu < low_bound) {
-          branch();
+          pc = JUMPTGT(s32pc);
           break;
         }
         pc += LONG;
         if (accu > high_bound) {
-          branch();
+          pc = JUMPTGT(s32pc);
           break;
         }
         pc += LONG;

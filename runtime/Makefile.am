@@ -16,10 +16,6 @@ H_SOURCES = jumptbl.h
 # Generated sources
 GEN_SOURCES = prims.c
 
-
-
-
-
 DOBJS=$(OBJS:.o=.d.o) debugger.d.o
 
 prims.c : primitives
