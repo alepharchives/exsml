@@ -54,7 +54,7 @@ value int_of_string(value s)          /* ML */
 value format_int(value fmt, value arg)      /* ML */
 {
   char format_buffer[32];
-  int prec;
+  size_t prec;
   char * p;
   char * dest;
   value res;

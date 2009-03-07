@@ -48,7 +48,7 @@ void Store_double_val(value val, double dbl)
 value format_float(value fmt, value arg)    /* ML */
 {
   char format_buffer[64];
-  int prec, i;
+  size_t prec, i;
   char * p;
   char * dest;
   value res;
