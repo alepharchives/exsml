@@ -61,9 +61,9 @@ value channel_size(struct channel * channel)      /* ML */
 	long end;
 
 	end = lseek(channel->fd, 0, 2);
-	if (end == -1) sys_error(NULL);
+	if (end == -1) sys_error();
 	if (lseek(channel->fd, channel->offset, 0) != channel->offset)
-		sys_error(NULL);
+		sys_error();
 
 	return Val_long(end);
 }
@@ -78,7 +78,7 @@ static void really_write(int fd, char * p, int n)
 		do { retcode = write(fd, p, n); }
 		while (retcode == -1 && errno == EINTR);
 
-		if (retcode == -1) sys_error(NULL);
+		if (retcode == -1) sys_error();
 		p += retcode;
 		n -= retcode;
 	}
@@ -174,7 +174,7 @@ value seek_out(struct channel * channel, value pos)    /* ML */
 		channel->curr = channel->buff + dest - channel->offset;
 	} else {
 		flush(channel);
-		if (lseek(channel->fd, dest, 0) != dest) sys_error(NULL);
+		if (lseek(channel->fd, dest, 0) != dest) sys_error();
 		channel->offset = dest;
 	}
 	return Atom(0);
@@ -238,9 +238,9 @@ static int really_read(int fd, char * p, unsigned n, int nonblocking)
 	if (nonblocking) {
 		nonblocking_mode(fd, 0);			/* unset non-blocking */
 		if (retcode == -1 && errno != EAGAIN)
-			sys_error(NULL);
+			sys_error();
 	} else if (retcode == -1)
-		sys_error(NULL);
+		sys_error();
 	return retcode;
 }
 
@@ -369,7 +369,7 @@ value seek_in(struct channel * channel, value pos)     /* ML */
 	    dest <= channel->offset) {
 		channel->curr = channel->max - (channel->offset - dest);
 	} else {
-		if (lseek(channel->fd, dest, 0) != dest) sys_error(NULL);
+		if (lseek(channel->fd, dest, 0) != dest) sys_error();
 		channel->offset = dest;
 		channel->curr = channel->max = channel->buff;
 	}

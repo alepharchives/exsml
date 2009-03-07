@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <string.h>
 
+#include "attributes.h"
 #include "config.h"
 #include "alloc.h"
 #include "fail.h"
@@ -37,9 +38,9 @@ char* globalexn[] = {
        "Match",
        "Io" };
 
-void sys_error(char * arg)
+void sys_error()
 {
-  char * err = strerror(errno);
+  char *err = strerror(errno);
   value exnarg;
 
   /* Raise SysErr with argument (err, SOME errno) */
@@ -79,7 +80,7 @@ value sys_open(value path, value flags, value perm) /* ML */
 
 value sys_close(value fd)             /* ML */
 {
-  if (close(Int_val(fd)) != 0) sys_error(NULL);
+  if (close(Int_val(fd)) != 0) sys_error();
   return Atom(0);
 }
 
@@ -192,7 +193,7 @@ static void mysignal(int signum, void (*handler)(int)) {
 	sigaction(signum, &sigact, 0);
 }
 
-void intr_handler(int sig)
+void intr_handler(int UNUSED(sig))
 {
 	mysignal (SIGINT, intr_handler);
 	/* sigint_pending = 1; TODO: Where did this come from? */
@@ -207,7 +208,8 @@ value sys_catch_break(value onoff)    /* ML */
   return Atom(0);
 }
 
-void float_handler(int sig)
+/* TODO: Perhaps change this one and intr_handler to something better */
+void float_handler(int UNUSED(sig))
 {
 	mysignal (SIGFPE, float_handler);
 
