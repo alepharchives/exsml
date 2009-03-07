@@ -42,12 +42,7 @@ struct parser_env {       /* Mirrors parser_env in ../mosmllib/Parsing.sml */
 #define Short(tbl,n) (((short *)(tbl))[n])
 #endif
 
-#ifdef DEBUG
-int parser_trace = 0;
-#define Trace(act) if(parser_trace) act
-#else
 #define Trace(act)
-#endif
 
 /* Input codes */
 /* Mirrors parserInput in ../mosmllib/Parsing.sml */

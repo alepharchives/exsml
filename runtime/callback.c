@@ -10,7 +10,6 @@
 #include "minor_gc.h"		/* for minor_collection */
 #include "interp.h"		/* for callback */
 
-
 /* ML closures for the functions to look up, register and unregister values */
 
 static value get_valueptr_            = (value)NULL;

@@ -13,20 +13,6 @@ extern int trace_flag;
 
 #define Debug(x) x
 
-#if defined(__STDC__)
-#define Assert(x) if (!(x)) failed_assert ( #x , __FILE__, __LINE__)
-#define Dprintx(x) printf ("expression %s %ld\n", #x, (unsigned long) (x))
-#else
-#ifndef __LINE__
-#define __LINE__ 0
-#endif
-#ifndef __FILE__
-#define __FILE__ "(?)"
-#endif
-#define Assert(x) if (!(x)) failed_assert ("(?)" , __FILE__, __LINE__)
-#define Dprintx(x) printf ("expression %ld\n", (unsigned long) (x))
-#endif /* __STDC__ */
-
 void failed_assert (char *, char *, int);
 void print_value (value);
 bytecode_t disasm_instr (bytecode_t);
@@ -41,12 +27,5 @@ unsigned long not_random (void);
 #endif /* DEBUG */
 
 #define nTrace(msg, x, y)
-
-#ifdef TRACE
-#define Trace(msg, x, y) printf (msg, x, y)
-#else
-#define Trace(msg, x, y)
-#endif
-
 
 #endif /* _debugger_ */
