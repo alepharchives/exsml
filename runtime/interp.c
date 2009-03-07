@@ -1120,21 +1120,66 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       accu = 1 | ((*sp++ - 1) >> Long_val(accu)); break;
     case SHIFTRIGHTINTUNSIGNED:
       accu = 1 | ((unsigned long)(*sp++ - 1) >> Long_val(accu)); break;
-
-#define inttest(name1,name2,tst)					     \
-    case name1:							     \
-      accu = Atom(*sp++ tst accu);					     \
-      break;								     \
-    case name2:							     \
-      if (*sp++ tst accu) { pc = JUMPTGT(s32pc); } else { pc += LONG; }                 \
-      break;
-
-      inttest(EQ,BRANCHIFEQ,==);
-      inttest(NEQ,BRANCHIFNEQ,!=);
-      inttest(LTINT,BRANCHIFLT,<);
-      inttest(GTINT,BRANCHIFGT,>);
-      inttest(LEINT,BRANCHIFLE,<=);
-      inttest(GEINT,BRANCHIFGE,>=);
+    case EQ:
+	    accu = Atom(*sp++ == accu);
+	    break;
+    case BRANCHIFEQ:
+	    if (*sp++ == accu) {
+		    pc = JUMPTGT(s32pc);
+	    } else {
+		    pc += LONG;
+	    }
+	    break;
+    case NEQ:
+	    accu = Atom(*sp++ != accu);
+	    break;
+    case BRANCHIFNEQ:
+	    if (*sp++ != accu) {
+		    pc = JUMPTGT(s32pc);
+	    } else {
+		    pc += LONG;
+	    }
+	    break;
+    case LTINT:
+	    accu = Atom(*sp++ < accu);
+	    break;
+    case BRANCHIFLT:
+	    if (*sp++ < accu) {
+		    pc = JUMPTGT(s32pc);
+	    } else {
+		    pc += LONG;
+	    }
+	    break;
+    case GTINT:
+	    accu = Atom(*sp++ > accu);
+	    break;
+    case BRANCHIFGT:
+	    if (*sp++ > accu) {
+		    pc = JUMPTGT(s32pc);
+	    } else {
+		    pc += LONG;
+	    }
+	    break;
+    case LEINT:
+	    accu = Atom(*sp++ <= accu);
+	    break;
+    case BRANCHIFLE:
+	    if (*sp++ <= accu) {
+		    pc = JUMPTGT(s32pc);
+	    } else {
+		    pc += LONG;
+	    }
+	    break;
+    case GEINT:
+	    accu = Atom(*sp++ >= accu);
+	    break;
+    case BRANCHIFGE:
+	    if (*sp++ >= accu) {
+		    pc = JUMPTGT(s32pc);
+	    } else {
+		    pc += LONG;
+	    }
+	    break;
 
     case TAGOF:
       accu = Val_long(Tag_val(accu));
