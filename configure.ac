@@ -132,4 +132,5 @@ AC_FUNC_MEMMOVE
 AC_OUTPUT(
           Makefile
 	  runtime/Makefile
+	  mosmlyac/Makefile
 )

@@ -1,47 +1,8 @@
-#include <assert.h>
-#include <ctype.h>
+#include <stdlib.h>
 #include <stdio.h>
-#ifdef ANSI
-#include <stdlib.h>
-#endif
-
-#ifdef macintosh
-#include <CursorCtl.h>
-#endif
-
-#if defined(THINK_C) || defined(__MWERKS__)
-#include "m.h"
-#include "s.h"
-#include <stdlib.h>
+#include <ctype.h>
+#include <assert.h>
 #include <string.h>
-#undef macintosh
-#define NO_UNIX
-#define outline outline_
-#define ANSI
-#else
-#ifdef macintosh
-#include ":::config:m.h"
-#include ":::config:s.h"
-#else
-#if defined(msdos)
-#include "../config.dos/m.h"
-#include "../config.dos/s.h"
-#elif defined(WIN32)
-#include "../config.w32/m.h"
-#include "../config.w32/s.h"
-#else
-#include "../config/m.h"
-#include "../config/s.h"
-#endif
-#endif
-#endif
-
-#ifdef MSDOS
-#define NO_UNIX
-#endif
-#ifdef macintosh
-#define NO_UNIX
-#endif
 
 /*  machine-dependent definitions			*/
 /*  the following definitions are for the Tahoe		*/
@@ -63,17 +24,10 @@
 #define MINSHORT	-32768
 #define MAXTABLE	32500
 
-#ifdef SIXTEEN
-#define BITS_PER_WORD	16
-#define	WORDSIZE(n)	(((n)+(BITS_PER_WORD-1))/BITS_PER_WORD)
-#define	BIT(r, n)	((((r)[(n)>>4])>>((n)&15))&1)
-#define	SETBIT(r, n)	((r)[(n)>>4]|=((unsigned)1<<((n)&15)))
-#else
 #define BITS_PER_WORD	32
 #define	WORDSIZE(n)	(((n)+(BITS_PER_WORD-1))/BITS_PER_WORD)
 #define	BIT(r, n)	((((r)[(n)>>5])>>((n)&31))&1)
 #define	SETBIT(r, n)	((r)[(n)>>5]|=((unsigned)1<<((n)&31)))
-#endif
 
 /*  character names  */
 
@@ -92,19 +46,11 @@
 
 /* defines for constructing filenames */
 
-#ifndef MSDOS
 #define CODE_SUFFIX	".code.c"
 #define	DEFINES_SUFFIX	".tab.h"
 #define OUTPUT_SUFFIX   ".sml"
 #define	VERBOSE_SUFFIX	".output"
 #define INTERFACE_SUFFIX ".sig"
-#else
-#define CODE_SUFFIX	".cod"
-#define	DEFINES_SUFFIX	".h"
-#define OUTPUT_SUFFIX   ".sml"
-#define	VERBOSE_SUFFIX	".out"
-#define INTERFACE_SUFFIX ".sig"
-#endif
 
 /* keyword codes */
 
@@ -153,11 +99,7 @@
 /*  storage allocation macros  */
 
 #define CALLOC(k,n)	(calloc((unsigned)(k),(unsigned)(n)))
-#ifdef macintosh
-#define FREE(x)         (SpinCursor ((short) 1), free((char*)(x)))
-#else
 #define	FREE(x)		(free((char*)(x)))
-#endif
 #define MALLOC(n)	(malloc((unsigned)(n)))
 #define	NEW(t)		((t*)allocate(sizeof(t)))
 #define	NEW2(n,t)	((t*)allocate((unsigned)((n)*sizeof(t))))
@@ -421,22 +363,3 @@ extern void verbose(void);
 /* warshell.c */
 
 extern void reflexive_transitive_closure(unsigned *R, int n);
-
-
-
-/* system variables */
-
-extern int errno;
-
-
-/* system functions */
-
-#ifndef ANSI
-
-extern void free();
-extern char *calloc();
-extern char *malloc();
-extern char *realloc();
-extern char *strcpy();
-
-#endif

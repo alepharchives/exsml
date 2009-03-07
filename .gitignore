@@ -1,5 +1,6 @@
 *.u[io]
 *.o
+.deps
 TAGS
 config.guess
 config.sub
@@ -22,6 +23,7 @@ config.log
 config.status
 stamp-h1
 *~
+mosmlyac/mosmlyac
 src/camlrunm
 src/compiler/Config.sml
 src/compiler/Filename.sml
@@ -49,9 +51,7 @@ src/mosmllib/Weak.sml
 src/mosmllib/Word.sml
 src/mosmllib/Word8Array.sml
 src/mosmllib/Word8Vector.sml
-src/mosmlyac/mosmlyac
 runtime/camlrunm
-runtime/jumptbl.h
 runtime/primitives
 runtime/prims.c
 runtime/Makefile
