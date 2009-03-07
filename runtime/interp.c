@@ -1180,23 +1180,27 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
 		    pc += LONG;
 	    }
 	    break;
-
     case TAGOF:
       accu = Val_long(Tag_val(accu));
       break;
-
-#define unsigntest(name, tst)    					\
-    case name:							\
-      accu = Atom((unsigned long)(*sp++) tst (unsigned long)accu);	\
-      break;								\
-
-      unsigntest(EQUNSIGN,==);
-      unsigntest(NEQUNSIGN,!=);
-      unsigntest(LTUNSIGN,<);
-      unsigntest(GTUNSIGN,>);
-      unsigntest(LEUNSIGN,<=);
-      unsigntest(GEUNSIGN,>=);
-
+    case EQUNSIGN:
+	    accu = (((value) (((header_t *) (&(first_atoms [(unsigned long)(*sp++) == (unsigned long)accu]))) + 1)));
+	    break;
+    case NEQUNSIGN:
+	    accu = (((value) (((header_t *) (&(first_atoms [(unsigned long)(*sp++) != (unsigned long)accu]))) + 1)));
+	    break;
+    case LTUNSIGN:
+	    accu = (((value) (((header_t *) (&(first_atoms [(unsigned long)(*sp++) < (unsigned long)accu]))) + 1)));
+	    break;
+    case GTUNSIGN:
+	    accu = (((value) (((header_t *) (&(first_atoms [(unsigned long)(*sp++) > (unsigned long)accu]))) + 1)));
+	    break;
+    case LEUNSIGN:
+	    accu = (((value) (((header_t *) (&(first_atoms [(unsigned long)(*sp++) <= (unsigned long)accu]))) + 1)));
+	    break;
+    case GEUNSIGN:
+	    accu = (((value) (((header_t *) (&(first_atoms [(unsigned long)(*sp++) >= (unsigned long)accu]))) + 1)));
+	    break;
     case BRANCHINTERVAL:
       { value low_bound, high_bound;
         high_bound = accu;
