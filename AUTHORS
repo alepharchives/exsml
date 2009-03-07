@@ -1,3 +1,12 @@
+Jesper Louis Andersen (jesper.louis.andersen@gmail.com)
+       Project Lead. A little bit of everything
+
+
+----------------------------------------------------------------------
+The Benchmarks and regression framework were taken from the MLton
+   project by Henry Cejtin, Matthew Fluet, Suresh Jagannathan,
+                and Stephen Weeks
+----------------------------------------------------------------------
 Moscow ML was written by
     Sergei Romanenko (roman@keldysh.ru)
     Keldysh Institute of Applied Mathematics, Russian Academy of Sciences
@@ -10,9 +19,6 @@ and Peter Sestoft (sestoft@dina.kvl.dk),
     Agricultural University, Thorvaldsensvej 40, DK-1871 Frederiksberg C,
     Denmark.  Much of the work was done at the Technical University of
     Denmark, and while visiting AT&T Bell Laboratories, New Jersey, USA.
-
-The LLVM backend was written by
-    Jesper Louis Andersen (jesper.louis.andersen@gmail.com)
 
 Moscow ML owes much to:
     * the CAML Light implementation by Xavier Leroy and Damien Doligez
