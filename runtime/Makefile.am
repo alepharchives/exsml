@@ -5,7 +5,7 @@ AM_CFLAGS = -I$(top_srcdir) -Wall -Wextra -Wunused -Wstrict-aliasing
 bin_PROGRAMS = camlrunm
 camlrunm_SOURCES = $(C_SOURCES) $(H_SOURCES) $(GEN_SOURCES)
 
-C_SOURCES = interp.c expand.c misc.c stacks.c fix_code.c main.c \
+C_SOURCES = interp.c misc.c stacks.c fix_code.c main.c \
 	fail.c signals.c freelist.c major_gc.c minor_gc.c memory.c alloc.c \
 	roots.c compare.c ints.c floats.c str.c io.c extern.c externcp.c \
 	intern.c interncp.c hash.c sys.c meta.c parsing.c lexing.c \
