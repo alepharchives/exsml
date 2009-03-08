@@ -9,6 +9,8 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 /* Moscow ML includes */
 
@@ -19,23 +21,17 @@
 #include <str.h>
 #include <signals.h>
 
-#ifdef WIN32
-#define EXTERNML __declspec(dllexport)
-#else
-#define EXTERNML
-#endif
-
 void failure() {
   switch (errno) {
-  case EFAULT : 
+  case EFAULT :
     failwith("EFAULT"); break;
   case EMFILE :
     failwith("EMFILE"); break;
-  case ENFILE : 
+  case ENFILE :
     failwith("ENFILE"); break;
-  case EAGAIN : 
+  case EAGAIN :
     failwith("EAGAIN"); break;
-  case ENOMEM : 
+  case ENOMEM :
     failwith("ENOMEM"); break;
   case EACCES:
     failwith("EACCES"); break;
@@ -84,9 +80,9 @@ char** mkcharptrvec(value strvec) {
   return argv;
 }
 
-/* ML type: string -> string vector -> string vector option 
+/* ML type: string -> string vector -> string vector option
             -> int * int * int */
-EXTERNML value unix_execute(value cmd, value args, value envopt) {
+value unix_execute(value cmd, value args, value envopt) {
   int p2c[2];			      /* Pipe from parent to child */
   int c2p[2];			      /* Pipe from child to parent */
   int pid;
@@ -95,7 +91,7 @@ EXTERNML value unix_execute(value cmd, value args, value envopt) {
   if (pipe(p2c) < 0 || pipe(c2p) < 0)
     failure();
   pid = fork();
-  if (pid < 0) 
+  if (pid < 0)
     // In the parent process; fork failed
     failure();
   else if (pid > 0) {
@@ -105,22 +101,22 @@ EXTERNML value unix_execute(value cmd, value args, value envopt) {
     free(argv);
     close(c2p[1]);		      /* Close child's ends of pipes    */
     close(p2c[0]);
-    Field(res, 0) = Val_long(pid); 
+    Field(res, 0) = Val_long(pid);
     Field(res, 1) = Val_long(c2p[0]); /* Parent reads from the c2p pipe */
     Field(res, 2) = Val_long(p2c[1]); /* Parent writes to the p2c pipe  */
     return res;
-  } else { 
+  } else {
     // In the child process
     close(p2c[1]);		      /* Close parent's ends of pipes   */
     close(c2p[0]);
     dup2(p2c[0], 0 /* STD_IN  */);    /* Child stdin from the p2c pipe  */
     dup2(c2p[1], 1 /* STD_OUT */);    /* Child stdout to the c2p pipe   */
-    if (envopt == NONE) 
+    if (envopt == NONE)
       execv(String_val(cmd), argv);
     else {
       char **envv = mkcharptrvec(Field(envopt, 0));
       execve(String_val(cmd), argv, envv);
-    }      
+    }
     printf("Could not exec %s\n", String_val(cmd));
     exit(1);
     // Never gets here
@@ -129,18 +125,18 @@ EXTERNML value unix_execute(value cmd, value args, value envopt) {
 }
 
 /* ML type: int -> int */
-EXTERNML value unix_waitpid(value pid) {
+value unix_waitpid(value pid) {
   int status;
   if (waitpid(Long_val(pid), &status, /* options = */ 0) < 0)
     failure();
-  if (WIFEXITED(status)) 
+  if (WIFEXITED(status))
     return Val_long(WEXITSTATUS(status));
   else
     return Val_long(-1);
 }
 
 /* ML type: int -> unit */
-EXTERNML value unix_kill(value pid, value sig) {
+value unix_kill(value pid, value sig) {
   if (kill(Long_val(pid), Long_val(sig)) < 0)
     failure();
   return Val_unit;

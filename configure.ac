@@ -134,4 +134,5 @@ AC_OUTPUT(
 	  runtime/Makefile
 	  mosmlyac/Makefile
 	  libcrypt/Makefile
+	  libunix/Makefile
 )
