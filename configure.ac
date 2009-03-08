@@ -133,6 +133,6 @@ AC_OUTPUT(
           Makefile
 	  runtime/Makefile
 	  mosmlyac/Makefile
-	  libcrypt/Makefile
-	  libunix/Makefile
+	  libsml_crypt/Makefile
+	  libsml_unix/Makefile
 )

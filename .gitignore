@@ -9,10 +9,10 @@ libtool
 ltmain.sh
 m4
 depcomp
-libcrypt/.libs
-libcrypt/libcrypt.la
-libunix/.libs
-libunix/libunix.la
+libsml_crypt/.libs
+libsml_crypt/libsml_crypt.la
+libsml_unix/.libs
+libsml_unix/libsml_unix.la
 runtime/.deps
 aclocal.m4
 autom4te.cache
