@@ -31,7 +31,6 @@ AC_CHECK_HEADER(dirent.h)
 AC_CHECK_HEADER(sys/param.h)
 AC_CHECK_HEADERS([asm/sigcontext.h])
 
-AC_CHECK_FUNCS([socket,socketpair,bind,listen,accept,connect])
 AC_CHECK_FUNCS([lockf])
 AC_CHECK_FUNCS([mkfifo])
 AC_CHECK_FUNCS([getpriority])
@@ -135,4 +134,5 @@ AC_OUTPUT(
 	  mosmlyac/Makefile
 	  libsml_crypt/Makefile
 	  libsml_unix/Makefile
+	  libsml_socket/Makefile
 )

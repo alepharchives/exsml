@@ -1,3 +1,3 @@
 ACLOCAL_AMFLAGS = -I m4
-SUBDIRS = runtime mosmlyac libsml_crypt libsml_unix
+SUBDIRS = runtime mosmlyac libsml_crypt libsml_unix libsml_socket
 EXTRA_DIST = autogen.sh
