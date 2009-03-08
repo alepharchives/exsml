@@ -1,5 +1,6 @@
 *.u[io]
 *.o
+*.lo
 .deps
 TAGS
 config.guess
@@ -8,6 +9,8 @@ libtool
 ltmain.sh
 m4
 depcomp
+libcrypt/.libs
+libcrypt/libcrypt.la
 runtime/.deps
 aclocal.m4
 autom4te.cache

@@ -133,4 +133,5 @@ AC_OUTPUT(
           Makefile
 	  runtime/Makefile
 	  mosmlyac/Makefile
+	  libcrypt/Makefile
 )
