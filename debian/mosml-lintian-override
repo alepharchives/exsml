@@ -1,3 +1,0 @@
-# this is no script but how the header of scripts has to look like
-mosml binary: script-not-executable ./usr/lib/mosml/header
-mosml binary: unusual-interpreter ./usr/lib/mosml/header #!/usr/bin/camlrunm
