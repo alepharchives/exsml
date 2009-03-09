@@ -1,0 +1,19 @@
+MOSMLC=mosmlc
+MOSMLLEX=mosmllex
+MOSMLYAC=mosmlyac
+MOSMLL=camlrunm mosmllnk -stdlib ../mosmllib -P none
+
+SUFFIXES = .sml .ui .uo .sig .mllex .mlyacc .mlp
+
+.sig.ui:
+	 $(MOSMLC) $(COMPFLAGS) $<
+
+.sml.uo:
+	 $(MOSMLC) $(COMPFLAGS) $<
+
+.lex.sml:
+	 $(MOSMLLEX) $<
+
+.mlyac.sml:
+	 $(MOSMLYAC) $<
+

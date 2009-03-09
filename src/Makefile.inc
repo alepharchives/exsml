@@ -156,8 +156,5 @@ CC=gcc
 .mlp.sml:
 	$(CPP) $< > $*.sml
 
-.lex.sml:
+.mllex.sml:
 	$(MOSMLLEX) $<
-
-.c.o:
-	$(CC) -c $(CFLAGS) -o $@ $<

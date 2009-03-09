@@ -15,15 +15,7 @@ and minint_int31 = ~1073741824
 
 (* The default name for executable bytecode files. *)
 
-#ifdef unix
 val default_exec_name = "a.out";
-#endif
-#ifdef macintosh
-val default_exec_name = "Mosml.out";
-#endif
-#if defined(msdos) || defined(win32)
-val default_exec_name = "mosmlout.exe";
-#endif
 
 (* Prompts *)
 
@@ -80,88 +72,14 @@ val preopenedPreloadedUnitSets = [
   ("nj93",     ["Misc", "NJ93"])
 ];
 
-#ifdef msdos
-
-val kosherUnitNames = [
-  ("Basicio",  "BasicIO"),
-  ("Binio",    "BinIO"),
-  ("Chararra", "CharArray"),
-  ("Charvect", "CharVector"),
-  ("Commandl", "CommandLine"),
-  ("Filesys",  "FileSys"),
-  ("Listpair", "ListPair"),
-  ("Nj93",     "NJ93"),
-  ("Os",       "OS"),
-  ("Pp",       "PP"),
-  ("Sml90",    "SML90"),
-  ("Stringcv", "StringCvt"),
-  ("Substrin", "Substring"),
-  ("Textio",   "TextIO"),
-  ("Word8arr", "Word8Array"),
-  ("Word8vec", "Word8Vector")
-];
-#endif
-
-#ifdef win32
-val kosherUnitNames = [
-  ("Basicio",      "BasicIO"),
-  ("Binio",        "BinIO"),
-  ("Chararray",    "CharArray"),
-  ("Charvector",   "CharVector"),
-  ("Commandline",  "CommandLine"),
-  ("Filesys",      "FileSys"),
-  ("Listpair",     "ListPair"),
-  ("Nj93",         "NJ93"),
-  ("Os",           "OS"),
-  ("Pp",           "PP"),
-  ("Sml90",        "SML90"),
-  ("Stringcvt",    "StringCvt"),
-  ("Substring",    "Substring"),
-  ("Textio",       "TextIO"),
-  ("Word8array",   "Word8Array"),
-  ("Word8vector",  "Word8Vector")
-];
-#endif
-
-#if defined(msdos) || defined(win32)
-local open CharVector; infix 9 sub; in
-
-  fun normalizedFileName s = Fnlib.stringToLower s;
-
-  fun normalizedUnitName s =
-    let val len = size s
-        val () = if len = 0 then raise SysErr("Empty unit name", NONE)
-		 else ()
-#ifdef msdos
-        val len0 = if len>8 then 8 else len
-#else
-        val len0 = len
-#endif
-        val s0 = tabulate(len0, fn i =>
-          (case i of 0 => Char.toUpper
-                   | _ => Char.toLower) (s sub i))
-    in
-      lookup s0 kosherUnitNames
-        handle Subscript => s0
-    end;
-
-end;
-
-#else
 fun normalizedFileName s = s;
 fun normalizedUnitName s = s;
-#endif
 
 (* To translate escape sequences *)
 
 val char_for_backslash = fn
-#ifdef macintosh
-(* *)    #"n" => #"\013"
-(* *)  | #"r" => #"\010"
-#else
 (* *)    #"n" => #"\010"
 (* *)  | #"r" => #"\013"
-#endif
 (* *)  | #"a" => #"\007"
 (* *)  | #"b" => #"\008"
 (* *)  | #"t" => #"\009"

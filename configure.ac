@@ -147,6 +147,7 @@ AC_SUBST([GITHEAD])
 
 AC_OUTPUT(
           Makefile
+	  compiler/Makefile
 	  runtime/Makefile
 	  mosmlyac/Makefile
 	  libsml_crypt/Makefile
