@@ -2,17 +2,7 @@
    The C side of things: how to define the C function to be invoked from SML
  */
 
-#ifdef WIN32
-#include <crypt.h>		/* For crypt       */
-#else
 #include <unistd.h>		/* For crypt       */
-#endif
-
-#ifdef WIN32
-#define EXTERNML __declspec(dllexport)
-#else
-#define EXTERNML
-#endif
 
 /* Moscow ML specific includes: */
 
@@ -21,7 +11,7 @@
 
 /* Type on the SML side: string -> string -> string */
 
-EXTERNML value ml_crypt(value mlkey, value mlsalt)
+value ml_crypt(value mlkey, value mlsalt)
 {
   /* Obtain pointers to the SML strings mlkey and mlsalt in the SML heap: */
   char *key  = String_val(mlkey);

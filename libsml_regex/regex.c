@@ -21,12 +21,6 @@
 
 int mosml_regexec();
 
-#ifdef WIN32
-#define EXTERNML __declspec(dllexport)
-#else
-#define EXTERNML
-#endif
-
 /* Representation of substrings (ML type Substring.substring): */
 
 #define base_susval(x) (Field(x, 0))
@@ -102,7 +96,7 @@ int maxnmatch(value patval) {
 
 /* ML type: unit -> word * word * word * word * word */
 
-EXTERNML value mregex_getflags(value dummy) {
+value mregex_getflags(value dummy) {
   value res = alloc_tuple(5);
   Field(res, 0) = Val_long(REG_EXTENDED);
   Field(res, 1) = Val_long(REG_ICASE);
@@ -114,7 +108,7 @@ EXTERNML value mregex_getflags(value dummy) {
 
 /* ML type: string -> word -> regex */
 
-EXTERNML value mregex_regcomp(value patval, value cflagsval) {
+value mregex_regcomp(value patval, value cflagsval) {
   regex_t* preg = (regex_t*)(malloc(sizeof(regex_t)));
   char* pat = String_val(patval);
   int cflags = Long_val(cflagsval);
@@ -215,8 +209,7 @@ value regmatch_bool(regex_t* preg, int eflags, value susval) {
 
 /* ML type: regex -> word -> substring -> substring vector option */
 
-EXTERNML value mregex_regexec_sus(value regex, value eflagsval, 
-				  value susval) {
+value mregex_regexec_sus(value regex, value eflagsval, value susval) {
   regex_t* preg = regex_val(regex);
   int nmatch = nmatch_val(regex);
   regmatch_t* pmatch = pmatch_val(regex);
@@ -226,7 +219,7 @@ EXTERNML value mregex_regexec_sus(value regex, value eflagsval,
 
 /* ML type: regex -> word -> substring -> bool */
 
-EXTERNML value mregex_regexec_bool(value regex, value eflagsval, 
+value mregex_regexec_bool(value regex, value eflagsval, 
 				   value susval) {
   regex_t* preg = regex_val(regex);
   int eflags = Long_val(eflagsval);
@@ -237,8 +230,7 @@ EXTERNML value mregex_regexec_bool(value regex, value eflagsval,
 
 /* ML type: string -> word -> word -> substring -> substring vector option */
 
-EXTERNML value mregex_regmatch_sus(value patval, value cflagsval, 
-				   value eflagsval, value susval) {
+value mregex_regmatch_sus(value patval, value cflagsval, value eflagsval, value susval) {
   regex_t patbuf;
   char* pat = String_val(patval);
   int cflags = Long_val(cflagsval);
@@ -262,8 +254,7 @@ EXTERNML value mregex_regmatch_sus(value patval, value cflagsval,
 
 /* ML type: string -> word -> word -> substring -> bool */
 
-EXTERNML value mregex_regmatch_bool(value patval, value cflagsval, 
-				    value eflagsval, value susval) {
+value mregex_regmatch_bool(value patval, value cflagsval, value eflagsval, value susval) {
   regex_t patbuf;
   char* pat = String_val(patval);
   int cflags = Long_val(cflagsval);

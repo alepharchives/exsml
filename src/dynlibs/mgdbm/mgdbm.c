@@ -16,12 +16,6 @@
 #include <str.h>
 #include <gc.h>
 
-#ifdef WIN32
-#define EXTERNML __declspec(dllexport)
-#else
-#define EXTERNML
-#endif
-
 /* Interface to GNU DBM; see also Gdbm.{sig,sml}
 
    The type Gdbm.database_ of gdbm databases is an abstract block 
@@ -74,7 +68,7 @@ void mgdbm_fatal(char *msg)
   failwith(buf);
 }
 
-EXTERNML value mgdbm_open(value nam, value flags, value perm) /* ML */
+value mgdbm_open(value nam, value flags, value perm) /* ML */
 {
   GDBM_FILE dbf;
   value res;
@@ -88,19 +82,19 @@ EXTERNML value mgdbm_open(value nam, value flags, value perm) /* ML */
   return res;
 }
 
-EXTERNML value mgdbm_close(value db)	/* ML */
+value mgdbm_close(value db)	/* ML */
 {
   gdbm_close(Gdbm_val(db));
   return Val_unit;
 }
 
-EXTERNML value mgdbm_store(value db, value k, value v, value flag) /* ML */
+value mgdbm_store(value db, value k, value v, value flag) /* ML */
 {
   return Val_long(gdbm_store(Gdbm_val(db), datum_string(k), 
 			     datum_string(v), Long_val(flag)));
 }
 
-EXTERNML value mgdbm_fetch(value db, value k) /* ML */
+value mgdbm_fetch(value db, value k) /* ML */
 {
   datum val;
   val = gdbm_fetch(Gdbm_val(db), datum_string(k));
@@ -109,17 +103,17 @@ EXTERNML value mgdbm_fetch(value db, value k) /* ML */
   return string_datum(val);
 }
 
-EXTERNML value mgdbm_exists(value db, value k) /* ML */
+value mgdbm_exists(value db, value k) /* ML */
 {
   return Val_bool(gdbm_exists(Gdbm_val(db), datum_string(k)));
 }
 
-EXTERNML value mgdbm_delete(value db, value k) /* ML */
+value mgdbm_delete(value db, value k) /* ML */
 {
   return Val_bool(gdbm_delete(Gdbm_val(db), datum_string(k)) == 0);
 }
 
-EXTERNML value mgdbm_numitems(value db)	/* ML */
+value mgdbm_numitems(value db)	/* ML */
 {
   int count = 0;
   GDBM_FILE dbf = Gdbm_val(db);
@@ -135,7 +129,7 @@ EXTERNML value mgdbm_numitems(value db)	/* ML */
   return Val_long(count);
 }
 
-EXTERNML value mgdbm_firstkey(value db) /* ML */
+value mgdbm_firstkey(value db) /* ML */
 {
   datum res;
   res = gdbm_firstkey(Gdbm_val(db));
@@ -144,7 +138,7 @@ EXTERNML value mgdbm_firstkey(value db) /* ML */
   return string_datum(res);
 }
 
-EXTERNML value mgdbm_nextkey(value db, value k) /* ML */
+value mgdbm_nextkey(value db, value k) /* ML */
 {
   datum res;
   res = gdbm_nextkey(Gdbm_val(db), datum_string(k));
@@ -153,19 +147,19 @@ EXTERNML value mgdbm_nextkey(value db, value k) /* ML */
   return string_datum(res);
 }
 
-EXTERNML value mgdbm_reorganize(value db) /* ML */
+value mgdbm_reorganize(value db) /* ML */
 {
   return Val_bool(gdbm_reorganize(Gdbm_val(db)) == 0);
 }
 
-EXTERNML value mgdbm_error(value unit)	/* ML */
+value mgdbm_error(value unit)	/* ML */
 {
   return copy_string((char*)gdbm_strerror(gdbm_errno));
 }
 
 /* Pass the constants from <gdbm.h> to the ML code: */
 
-EXTERNML value mgdbm_constants(value unit)	/* ML */
+value mgdbm_constants(value unit)	/* ML */
 {
   value res = alloc_tuple(7);
   Field(res, 0) = Val_long(GDBM_READER);

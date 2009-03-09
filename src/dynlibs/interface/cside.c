@@ -15,15 +15,9 @@
 #include <str.h>		/* For string_length                       */
 #include <interp.h>		/* For callback                            */
 
-#ifdef WIN32
-#define EXTERNML __declspec(dllexport)
-#else
-#define EXTERNML
-#endif
-
 /* SML type: unit -> unit */
 
-EXTERNML value cfu(value dummy)
+value cfu(value dummy)
 {
   return Val_unit;
 }
@@ -31,7 +25,7 @@ EXTERNML value cfu(value dummy)
 
 /* SML type: int -> int */
 
-EXTERNML value cfi(value v)
+value cfi(value v)
 {
   long i = Long_val(v);
 
@@ -41,7 +35,7 @@ EXTERNML value cfi(value v)
 
 /* SML type: char -> char */
 
-EXTERNML value cfc(value v)
+value cfc(value v)
 {
   char c = (char)Long_val(v);
 
@@ -51,7 +45,7 @@ EXTERNML value cfc(value v)
 
 /* SML type: real -> real */
 
-EXTERNML value cfr(value v)
+value cfr(value v)
 {
   double d = Double_val(v);
 
@@ -61,7 +55,7 @@ EXTERNML value cfr(value v)
 
 /* SML type: string -> string */
 
-EXTERNML value cfs(value v)
+value cfs(value v)
 {
   char *oldp, *newp, *q;
   int len;
@@ -80,7 +74,7 @@ EXTERNML value cfs(value v)
 
 /* SML type: bool -> bool */
 
-EXTERNML value cfb(value v)
+value cfb(value v)
 {
   int b = Bool_val(v);
 
@@ -90,7 +84,7 @@ EXTERNML value cfb(value v)
 
 /* SML type: int -> char -> real -> string -> bool -> int */
 
-EXTERNML value cfcur(value vi, value vc, value vr, value vs, value vb)
+value cfcur(value vi, value vc, value vr, value vs, value vb)
 {
   long i   = Long_val(vi);
   char c   = (char)Long_val(vc);
@@ -105,7 +99,7 @@ EXTERNML value cfcur(value vi, value vc, value vr, value vs, value vb)
 /* SML type: int * char * real -> int */
 /* The components of a tuple v are Field(v, 0), Field(v, 1), ... */
 
-EXTERNML value cftup(value v)
+value cftup(value v)
 {
   long i   = Long_val(Field(v, 0)); 
   char c   = (char)Long_val(Field(v, 1));
@@ -118,7 +112,7 @@ EXTERNML value cftup(value v)
 /* SML type: { age : int, givenname : string, surname : string } -> bool */
 /* A record is really a tuple, sorted lexicograhically on labels: */
 
-EXTERNML value cfrec(value v)
+value cfrec(value v)
 {
   long age       = Long_val(Field(v, 0));
   char *givennam = String_val(Field(v, 1)); 
@@ -133,7 +127,7 @@ long treesum(value v);		/* Forwards C declaration */
 /* SML type: t -> int where 
    datatype t = Br of int * t * t | Brs of t list | Lf */
 
-EXTERNML value cfdat(value v)
+value cfdat(value v)
 {
   return Val_long(treesum(v));
 }
@@ -188,7 +182,7 @@ long treesum(value v)
 
 /* SML type: (int -> string) -> int -> string */
 
-EXTERNML value cffun(value vf, value vi)
+value cffun(value vf, value vi)
 {
   int count = Val_long(vi);
   int ok = 1;
@@ -212,7 +206,7 @@ EXTERNML value cffun(value vf, value vi)
 
 /* SML type: int -> int * bool */
 
-EXTERNML value cfrtup(value vi)
+value cfrtup(value vi)
 {
   long i = Long_val(vi);
   value tup = alloc_tuple(2);	/* Allocate 2-element tuple in ML heap */
@@ -226,7 +220,7 @@ EXTERNML value cfrtup(value vi)
 /* SML type: int -> { half : int, odd : bool } */
 /* A record is a sorted tuple, so this function is identical to that above */
 
-EXTERNML value cfrrec(value vi)
+value cfrrec(value vi)
 {
   long i = Long_val(vi);
   value tup = alloc_tuple(2);	/* Allocate 2-element tuple in ML heap */
@@ -250,7 +244,7 @@ EXTERNML value cfrrec(value vi)
 /* String concatenation (without error checking).  The resulting string is
    allocated in the ML heap, so pointers must be registered with Push_roots */
 
-EXTERNML value cfconcat(value s1, value s2)
+value cfconcat(value s1, value s2)
 {
   mlsize_t len1, len2;
   value res;

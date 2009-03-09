@@ -4,12 +4,6 @@
 
 #include <stdlib.h>
 
-#ifdef WIN32
-#include <windows.h>
-#include <stdio.h>
-#include <string.h>
-#endif
-
 /* Access to the camlrunm/Moscow ML runtime data representation: */
 
 #include <mlvalues.h>
@@ -23,12 +17,6 @@
 #include "mysql.h"
 #include "mysqld_error.h"
 #include "errmsg.h"
-
-#ifdef WIN32
-#define EXTERNML __declspec(dllexport)
-#else
-#define EXTERNML
-#endif
 
 /* A connection dbconn_ is an abstract object
 
@@ -134,25 +122,25 @@ char* StringOrNull_val(value v)
 }
 
 /* ML type : dbconn_ -> string */
-EXTERNML value db_db(value conn) 
+value db_db(value conn) 
 {
   return copy_string((DBconn_val(conn))->db);
 }
 
 /* ML type : dbconn_ -> string */
-EXTERNML value db_host(value conn) 
+value db_host(value conn) 
 {
   return Val_stringornull((DBconn_val(conn))->host);
 }
 
 /* ML type : dbconn_ -> string */
-EXTERNML value db_options(value conn) 
+value db_options(value conn) 
 {
   return copy_string(""); // FOR NOW
 }
 
 /* ML type : dbconn_ -> string */
-EXTERNML value db_port(value conn) 
+value db_port(value conn) 
 {
   char strport[5];
   sprintf(strport,"%i",(DBconn_val(conn))->port);
@@ -161,13 +149,13 @@ EXTERNML value db_port(value conn)
 }
 
 /* ML type : dbconn_ -> string */
-EXTERNML value db_tty(value conn) 
+value db_tty(value conn) 
 {
   return copy_string(""); // FIXME: FOR NOW
 }
 
 /* ML type : dbconn_ -> string option */
-EXTERNML value db_errormessage(value conn) 
+value db_errormessage(value conn) 
 {
   char* msg = mysql_error(DBconn_val(conn));
   if (msg == NULL || msg[0] == '\0')
@@ -176,7 +164,7 @@ EXTERNML value db_errormessage(value conn)
 }
 
 /* ML type : dbconn_ -> unit */
-EXTERNML value db_finish(value conn) 
+value db_finish(value conn) 
 {
   mysql_close(DBconn_val(conn));
   return Val_unit;
@@ -190,14 +178,14 @@ int mysql_ping(MYSQL* dummy)
 #endif
 
 /* ML type : dbconn_ -> unit */
-EXTERNML value db_reset(value conn) 
+value db_reset(value conn) 
 {
   mysql_ping(DBconn_val(conn));
   return Val_unit;
 }
 
 /* ML type : dbconn_ -> unit */
-EXTERNML value db_status(value conn) 
+value db_status(value conn) 
 {
   mysql_ping(DBconn_val(conn));
   return Val_bool(mysql_ping(DBconn_val(conn)));
@@ -205,7 +193,7 @@ EXTERNML value db_status(value conn)
 
 
 /* ML type : dbresult_ -> int */
-EXTERNML value db_ntuples(value dbresval) 
+value db_ntuples(value dbresval) 
 {
   MYSQL_RES* dbres = DBresult_val(dbresval);
   long ntuples;
@@ -217,7 +205,7 @@ EXTERNML value db_ntuples(value dbresval)
 }
 
 /* ML type : dbresult_ -> int */
-EXTERNML value db_cmdtuples(value conn) 
+value db_cmdtuples(value conn) 
 {
   /* NB: Cast from long long int to long int: */
   long cmdtuples = (long)(mysql_affected_rows(DBconn_val(conn))); 
@@ -225,7 +213,7 @@ EXTERNML value db_cmdtuples(value conn)
 }
 
 /* ML type : dbresult_ -> int */
-EXTERNML value db_nfields(value dbresval) 
+value db_nfields(value dbresval) 
 {
   MYSQL_RES* dbres = DBresult_val(dbresval);
   if (dbres == NULL)
@@ -267,7 +255,7 @@ void checkbounds(value dbresval, value tupno, value fieldno, char* fcn)
 }
 
 /* ML type : dbresult_ -> int -> string */
-EXTERNML value db_fname(value dbresval, value fieldno) 
+value db_fname(value dbresval, value fieldno) 
 {
   MYSQL_FIELD *fields;
   checkfbound(DBresult_val(dbresval), Long_val(fieldno), "db_fname");
@@ -276,7 +264,7 @@ EXTERNML value db_fname(value dbresval, value fieldno)
 }
 
 /* ML type : dbresult_ -> string -> int */
-EXTERNML value db_fnumber(value dbresval, value fieldnameval) 
+value db_fnumber(value dbresval, value fieldnameval) 
 {
   char* fieldname = String_val(fieldnameval);
   MYSQL_RES* dbres = DBresult_val(dbresval);
@@ -295,7 +283,7 @@ EXTERNML value db_fnumber(value dbresval, value fieldnameval)
 }
 
 /* ML type : dbresult_ -> int -> int */
-EXTERNML value db_ftype(value dbresval, value fieldno) 
+value db_ftype(value dbresval, value fieldno) 
 {
   /* Fetch field information */
   // NB.   fetch_field direct doesn't work. (mysql is broken)
@@ -375,7 +363,7 @@ MYSQL_ROW seekandgetrow(value dbresval, int n) {
 }
 
 /* ML type : dbresult_ -> int -> int -> int */
-EXTERNML value db_getint(value dbresval, value tupno, value fieldno) 
+value db_getint(value dbresval, value tupno, value fieldno) 
 {
   MYSQL_ROW row;
   checkbounds(dbresval, tupno, fieldno, "db_getint");
@@ -386,7 +374,7 @@ EXTERNML value db_getint(value dbresval, value tupno, value fieldno)
 }
 
 /* ML type : dbresult_ -> int -> int -> real */
-EXTERNML value db_getreal(value dbresval, value tupno, value fieldno) 
+value db_getreal(value dbresval, value tupno, value fieldno) 
 {
   MYSQL_ROW row;
   checkbounds(dbresval, tupno, fieldno, "db_getreal");
@@ -397,7 +385,7 @@ EXTERNML value db_getreal(value dbresval, value tupno, value fieldno)
 }
 
 /* ML type : dbresult_ -> int -> int -> string */
-EXTERNML value db_getstring(value dbresval, value tupno, value fieldno) 
+value db_getstring(value dbresval, value tupno, value fieldno) 
 {
   MYSQL_ROW row;
   checkbounds(dbresval, tupno, fieldno, "db_getstring");
@@ -408,7 +396,7 @@ EXTERNML value db_getstring(value dbresval, value tupno, value fieldno)
 }
 
 /* ML type : dbresult_ -> int -> int -> bool */
-EXTERNML value db_getbool(value dbresval, value tupno, value fieldno) 
+value db_getbool(value dbresval, value tupno, value fieldno) 
 {
   MYSQL_ROW row;
   checkbounds(dbresval, tupno, fieldno, "db_getbool");
@@ -419,7 +407,7 @@ EXTERNML value db_getbool(value dbresval, value tupno, value fieldno)
 }
 
 /* ML type : dbresult_ -> int -> int -> bool */
-EXTERNML value db_getisnull(value dbresval, value tupno, value fieldno) 
+value db_getisnull(value dbresval, value tupno, value fieldno) 
 {
   MYSQL_ROW row;
   checkbounds(dbresval, tupno, fieldno, "db_getisnull");
@@ -430,7 +418,7 @@ EXTERNML value db_getisnull(value dbresval, value tupno, value fieldno)
 }
 
 /* ML type : 6-element record -> dbconn_ */
-EXTERNML value mysql_setdb(value args) 
+value mysql_setdb(value args) 
 {
   char* dbhost    = StringOrNull_val(Field(args, 0));
   char* dbname    = StringOrNull_val(Field(args, 1));
@@ -467,7 +455,7 @@ EXTERNML value mysql_setdb(value args)
 }
 
 /* ML type : dbconn_ -> string -> dbresult_ */
-EXTERNML value db_exec(value conn, value query) 
+value db_exec(value conn, value query) 
 {
   if (mysql_real_query(DBconn_val(conn), String_val(query), string_length(query)))
     failwith("db_exec query failed"); 
@@ -490,7 +478,7 @@ EXTERNML value db_exec(value conn, value query)
 #define Tuples_ok       7 
 
 /* ML type : dbconn_ -> dbresultstatus */
-EXTERNML value db_resultstatus(value conn) {
+value db_resultstatus(value conn) {
   MYSQL *mysql = DBconn_val(conn);
   switch (mysql_errno(mysql)) {
   case ER_EMPTY_QUERY:  

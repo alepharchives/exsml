@@ -17,13 +17,6 @@
 #include <callback.h>
 
 
-#ifdef WIN32
-#define EXTERNML __declspec(dllexport)
-#else
-#define EXTERNML
-#endif
-
-
 /* SML type: int -> int */
 
 value cfi(value v)
@@ -319,7 +312,7 @@ value callfunction(value startval) {
   return d;
 } 
 
-EXTERNML value initialize_callbacktest(value dummy) {
+value initialize_callbacktest(value dummy) {
   registercptr("call function",  callfunction);  
 
   registercptr("getting_notreg", getting_notreg);

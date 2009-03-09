@@ -13,12 +13,6 @@
 #include <stdlib.h>		/* For malloc */
 #include <stdio.h>		/* For stdout */
 
-#ifdef WIN32
-#define EXTERNML __declspec(dllexport)
-#else
-#define EXTERNML
-#endif
-
 /* Moscow ML specific includes: */
 
 #include <alloc.h>		/* For alloc_tuple, ...      */
@@ -69,7 +63,7 @@ value finalize_image(gdImagePtr imgptr)
 
 /* SML type: xy -> rgb -> image */
 
-EXTERNML value mgd_image(value xy, value background)
+value mgd_image(value xy, value background)
 {
   int sx = Long_val(Field(xy, 0));
   int sy = Long_val(Field(xy, 1));
@@ -86,7 +80,7 @@ EXTERNML value mgd_image(value xy, value background)
 
 /* SML type: string -> image */
 
-EXTERNML value mgd_frompng(value filename)
+value mgd_frompng(value filename)
 {
   char *filenam = String_val(filename);
   gdImagePtr imgptr;
@@ -103,7 +97,7 @@ EXTERNML value mgd_frompng(value filename)
 
 /* SML type: image -> string -> unit */
 
-EXTERNML value mgd_topng(value im, value filename)
+value mgd_topng(value im, value filename)
 {
   char *filenam = String_val(filename);
   FILE *out;
@@ -117,7 +111,7 @@ EXTERNML value mgd_topng(value im, value filename)
 
 /* SML type: image -> unit */
 
-EXTERNML value mgd_tostdoutpng(value im)
+value mgd_tostdoutpng(value im)
 {
   fprintf(stdout, "Content-type: image/png\n\n");   
   gdImagePng(Image_val(im), stdout);
@@ -131,7 +125,7 @@ EXTERNML value mgd_tostdoutpng(value im)
 
 /* SML type: image -> rgb -> color */
 
-EXTERNML value mgd_color(value im, value rgb)
+value mgd_color(value im, value rgb)
 {
   int r  = Long_val(Field(rgb, 0));
   int g  = Long_val(Field(rgb, 1));
@@ -149,7 +143,7 @@ EXTERNML value mgd_color(value im, value rgb)
 
 /* SML type: image -> color -> unit */
 
-EXTERNML value mgd_settransparentcolor(value im, value color)
+value mgd_settransparentcolor(value im, value color)
 {
   gdImageColorTransparent(Image_val(im), Long_val(color));
   return Val_unit;
@@ -157,7 +151,7 @@ EXTERNML value mgd_settransparentcolor(value im, value color)
 
 /* SML type: image -> color option */
 
-EXTERNML value mgd_gettransparentcolor(value im)
+value mgd_gettransparentcolor(value im)
 {
   int color = gdImageGetTransparent(Image_val(im));
   value res;
@@ -171,7 +165,7 @@ EXTERNML value mgd_gettransparentcolor(value im)
 
 /* SML type: image -> unit */
 
-EXTERNML value mgd_unsettransparentcolor(value im, value color)
+value mgd_unsettransparentcolor(value im, value color)
 {
   gdImageColorTransparent(Image_val(im), -1);
   return Val_unit;
@@ -180,32 +174,32 @@ EXTERNML value mgd_unsettransparentcolor(value im, value color)
 
 /* SML type: unit -> color */
 
-EXTERNML value mgd_gettransparentstyle(value v)
+value mgd_gettransparentstyle(value v)
 { return Val_long(gdTransparent); }
 
 /* SML type: unit -> color */
 
-EXTERNML value mgd_getbrushed(value v)
+value mgd_getbrushed(value v)
 { return Val_long(gdBrushed); }
 
 /* SML type: unit -> color */
 
-EXTERNML value mgd_getstyled(value v)
+value mgd_getstyled(value v)
 { return Val_long(gdStyled); }
 
 /* SML type: unit -> color */
 
-EXTERNML value mgd_getstyledbrushed(value v)
+value mgd_getstyledbrushed(value v)
 { return Val_long(gdStyledBrushed); }
 
 /* SML type: unit -> color */
 
-EXTERNML value mgd_gettiled(value v)
+value mgd_gettiled(value v)
 { return Val_long(gdTiled); }
 
 /* SML type: image -> int vector -> unit */
 
-EXTERNML value mgd_setstyle(value im, value stylevec)
+value mgd_setstyle(value im, value stylevec)
 {
   int len = Wosize_val(stylevec);
   int *styles = (int*)malloc(sizeof(int) * len); 
@@ -219,7 +213,7 @@ EXTERNML value mgd_setstyle(value im, value stylevec)
 
 /* SML type: image -> image -> unit */
 
-EXTERNML value mgd_setbrush(value im, value brush)
+value mgd_setbrush(value im, value brush)
 {
   gdImageSetBrush(Image_val(im), Image_val(brush));
   return Val_unit;
@@ -227,7 +221,7 @@ EXTERNML value mgd_setbrush(value im, value brush)
 
 /* SML type: image -> image -> unit */
 
-EXTERNML value mgd_settile(value im, value tile)
+value mgd_settile(value im, value tile)
 {
   gdImageSetTile(Image_val(im), Image_val(tile));
   return Val_unit;
@@ -235,7 +229,7 @@ EXTERNML value mgd_settile(value im, value tile)
 
 /* SML type: image -> xy -> color -> unit */
 
-EXTERNML value mgd_pixel(value im, value xy, value color)
+value mgd_pixel(value im, value xy, value color)
 {
   int x = Long_val(Field(xy, 0));
   int y = Long_val(Field(xy, 1));
@@ -245,7 +239,7 @@ EXTERNML value mgd_pixel(value im, value xy, value color)
 
 /* SML type: image -> xy -> xy -> color -> unit */
 
-EXTERNML value mgd_drawline(value im, value xy1, value xy2, value color)
+value mgd_drawline(value im, value xy1, value xy2, value color)
 {
   int x1 = Long_val(Field(xy1, 0));
   int y1 = Long_val(Field(xy1, 1));
@@ -257,7 +251,7 @@ EXTERNML value mgd_drawline(value im, value xy1, value xy2, value color)
 
 /* SML type: image -> xy -> xy -> color -> unit */
 
-EXTERNML value mgd_drawrect(value im, value xy1, value xy2, value color)
+value mgd_drawrect(value im, value xy1, value xy2, value color)
 {
   int x1 = Long_val(Field(xy1, 0));
   int y1 = Long_val(Field(xy1, 1));
@@ -269,7 +263,7 @@ EXTERNML value mgd_drawrect(value im, value xy1, value xy2, value color)
 
 /* SML type: image -> xy -> xy -> color -> unit */
 
-EXTERNML value mgd_fillrect(value im, value xy1, value xy2, value color)
+value mgd_fillrect(value im, value xy1, value xy2, value color)
 {
   int x1 = Long_val(Field(xy1, 0));
   int y1 = Long_val(Field(xy1, 1));
@@ -281,7 +275,7 @@ EXTERNML value mgd_fillrect(value im, value xy1, value xy2, value color)
 
 /* SML type: image -> xy vector -> color -> unit */
 
-EXTERNML value mgd_drawpoly(value im, value xys, value color)
+value mgd_drawpoly(value im, value xys, value color)
 {
   int len = Wosize_val(xys);
   gdPointPtr points = malloc(sizeof(gdPoint) * len);
@@ -299,7 +293,7 @@ EXTERNML value mgd_drawpoly(value im, value xys, value color)
 
 /* SML type: image -> xy vector -> color -> unit */
 
-EXTERNML value mgd_fillpoly(value im, value xys, value color)
+value mgd_fillpoly(value im, value xys, value color)
 {
   int len = Wosize_val(xys);
   gdPointPtr points = malloc(sizeof(gdPoint) * len);
@@ -317,7 +311,7 @@ EXTERNML value mgd_fillpoly(value im, value xys, value color)
 
 /* SML type: image -> xy * xy * int * int -> color -> unit */
 
-EXTERNML value mgd_drawarc(value im, value arc, value color)
+value mgd_drawarc(value im, value arc, value color)
 {
   value center = Field(arc, 0);
   int cx = Long_val(Field(center, 0));
@@ -333,7 +327,7 @@ EXTERNML value mgd_drawarc(value im, value arc, value color)
 
 /* SML type: image -> xy -> color -> unit */
 
-EXTERNML value mgd_fill(value im, value xy, value color)
+value mgd_fill(value im, value xy, value color)
 {
   int x = Long_val(Field(xy, 0));
   int y = Long_val(Field(xy, 1));
@@ -343,7 +337,7 @@ EXTERNML value mgd_fill(value im, value xy, value color)
 
 /* SML type: image -> xy -> color -> color -> unit */
 
-EXTERNML value mgd_fillborder(value im, value xy, value border, value color)
+value mgd_fillborder(value im, value xy, value border, value color)
 {
   int x = Long_val(Field(xy, 0));
   int y = Long_val(Field(xy, 1));
@@ -353,7 +347,7 @@ EXTERNML value mgd_fillborder(value im, value xy, value border, value color)
 
 /* SML type: image * xy * xy * image * xy -> unit */
 
-EXTERNML value mgd_copy(value args)
+value mgd_copy(value args)
 {
   gdImagePtr src = Image_val(Field(args, 0));
   value srcxy    = Field(args, 1);
@@ -372,7 +366,7 @@ EXTERNML value mgd_copy(value args)
 
 /* SML type: image * xy * xy * image * xy * xy -> unit */
 
-EXTERNML value mgd_copyresize(value args)
+value mgd_copyresize(value args)
 {
   gdImagePtr src = Image_val(Field(args, 0));
   value srcxy    = Field(args, 1);
@@ -407,7 +401,7 @@ gdFontPtr getfont(value fontcode)
 
 /* SML type: image -> fontcode -> xy -> char -> color -> unit */
 
-EXTERNML value mgd_char(value im, value fontcode, value xy, value ch, value color)
+value mgd_char(value im, value fontcode, value xy, value ch, value color)
 {
   int x = Long_val(Field(xy, 0));
   int y = Long_val(Field(xy, 1));
@@ -418,7 +412,7 @@ EXTERNML value mgd_char(value im, value fontcode, value xy, value ch, value colo
 
 /* SML type: image -> fontcode -> xy -> char -> color -> unit */
 
-EXTERNML value mgd_charup(value im, value fontcode, value xy, value ch, 
+value mgd_charup(value im, value fontcode, value xy, value ch, 
 		 value color)
 {
   int x = Long_val(Field(xy, 0));
@@ -430,7 +424,7 @@ EXTERNML value mgd_charup(value im, value fontcode, value xy, value ch,
 
 /* SML type: image -> fontcode -> xy -> string -> color -> unit */
 
-EXTERNML value mgd_string(value im, value fontcode, value xy, value str, 
+value mgd_string(value im, value fontcode, value xy, value str, 
 		 value color)
 {
   int x = Long_val(Field(xy, 0));
@@ -442,7 +436,7 @@ EXTERNML value mgd_string(value im, value fontcode, value xy, value str,
 
 /* SML type: image -> fontcode -> xy -> string -> color -> unit */
 
-EXTERNML value mgd_stringup(value im, value fontcode, value xy, value str, 
+value mgd_stringup(value im, value fontcode, value xy, value str, 
 		   value color)
 {
   int x = Long_val(Field(xy, 0));
@@ -454,7 +448,7 @@ EXTERNML value mgd_stringup(value im, value fontcode, value xy, value str,
 
 /* SML type: image -> color -> rgb */
 
-EXTERNML value mgd_rgb(value im, value color)
+value mgd_rgb(value im, value color)
 {
   int co = Long_val(color);
   gdImagePtr imgptr = Image_val(im);
@@ -470,7 +464,7 @@ EXTERNML value mgd_rgb(value im, value color)
 
 /* SML type: image -> xy */
 
-EXTERNML value mgd_size(value im)
+value mgd_size(value im)
 {
   gdImagePtr imgptr = Image_val(im);
   int w = gdImageSX(imgptr);
@@ -483,7 +477,7 @@ EXTERNML value mgd_size(value im)
 
 /* SML type: font -> xy */
 
-EXTERNML value mgd_charsize(value fontcode)
+value mgd_charsize(value fontcode)
 {
   gdFontPtr font = getfont(fontcode);
   int w = font->w;

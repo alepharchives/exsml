@@ -19,12 +19,6 @@
 
 #include "libpq-fe.h"
 
-#ifdef WIN32
-#define EXTERNML __declspec(dllexport)
-#else
-#define EXTERNML
-#endif
-
 /* A connection pgconn_ is an abstract object
 
               header with Abstract_tag
@@ -100,7 +94,7 @@ char* StringOrNull_val(value v)
 }
 
 /* ML type : 6-element record -> pgconn_ */
-EXTERNML value pq_setdb(value args) 
+value pq_setdb(value args) 
 {
   char* dbhost    = StringOrNull_val(Field(args, 0));
   char* dbname    = StringOrNull_val(Field(args, 1));
@@ -114,43 +108,43 @@ EXTERNML value pq_setdb(value args)
 }
 
 /* ML type : pgconn_ -> string */
-EXTERNML value pq_db(value conn) 
+value pq_db(value conn) 
 {
   return copy_string(PQdb(PGconn_val(conn)));
 }
 
 /* ML type : pgconn_ -> string */
-EXTERNML value pq_host(value conn) 
+value pq_host(value conn) 
 {
   return Val_stringornull(PQhost(PGconn_val(conn)));
 }
 
 /* ML type : pgconn_ -> string */
-EXTERNML value pq_options(value conn) 
+value pq_options(value conn) 
 {
   return copy_string(PQoptions(PGconn_val(conn)));
 }
 
 /* ML type : pgconn_ -> string */
-EXTERNML value pq_port(value conn) 
+value pq_port(value conn) 
 {
   return copy_string(PQport(PGconn_val(conn)));
 }
 
 /* ML type : pgconn_ -> string */
-EXTERNML value pq_tty(value conn) 
+value pq_tty(value conn) 
 {
   return copy_string(PQtty(PGconn_val(conn)));
 }
 
 /* ML type : pgconn_ -> bool */
-EXTERNML value pq_status(value conn) 
+value pq_status(value conn) 
 {
   return Val_bool(PQstatus(PGconn_val(conn)) == CONNECTION_OK);
 }
 
 /* ML type : pgconn_ -> string option */
-EXTERNML value pq_errormessage(value conn) 
+value pq_errormessage(value conn) 
 {
   char* msg = PQerrorMessage(PGconn_val(conn));
   if (msg == NULL || msg[0] == '\0')
@@ -159,21 +153,21 @@ EXTERNML value pq_errormessage(value conn)
 }
 
 /* ML type : pgconn_ -> unit */
-EXTERNML value pq_finish(value conn) 
+value pq_finish(value conn) 
 {
   PQfinish(PGconn_val(conn));
   return Val_unit;
 }
 
 /* ML type : pgconn_ -> unit */
-EXTERNML value pq_reset(value conn) 
+value pq_reset(value conn) 
 {
   PQreset(PGconn_val(conn));
   return Val_unit;
 }
 
 /* ML type : pgconn_ -> string -> pgresult_ */
-EXTERNML value pq_exec(value conn, value query) 
+value pq_exec(value conn, value query) 
 {
   PGresult* pgres = PQexec(PGconn_val(conn), String_val(query));
   if (pgres == NULL)
@@ -194,7 +188,7 @@ EXTERNML value pq_exec(value conn, value query)
 #define Tuples_ok       7 
 
 /* ML type : pgresult_ -> pgresultstatus */
-EXTERNML value pq_resultstatus(value pgresval) 
+value pq_resultstatus(value pgresval) 
 {
   switch (PQresultStatus(PGresult_val(pgresval))) {
   case PGRES_EMPTY_QUERY:	
@@ -219,13 +213,13 @@ EXTERNML value pq_resultstatus(value pgresval)
 }
 
 /* ML type : pgresult_ -> int */
-EXTERNML value pq_ntuples(value pgresval) 
+value pq_ntuples(value pgresval) 
 {
   return Val_long(PQntuples(PGresult_val(pgresval)));
 }
 
 /* ML type : pgresult_ -> int */
-EXTERNML value pq_cmdtuples(value pgresval) 
+value pq_cmdtuples(value pgresval) 
 {
   const char* s = PQcmdTuples(PGresult_val(pgresval));
   if (s == NULL)
@@ -234,7 +228,7 @@ EXTERNML value pq_cmdtuples(value pgresval)
 }
 
 /* ML type : pgresult_ -> int */
-EXTERNML value pq_nfields(value pgresval) 
+value pq_nfields(value pgresval) 
 {
   return Val_long(PQnfields(PGresult_val(pgresval)));
 }
@@ -270,14 +264,14 @@ void checkbounds(value pgresval, value tupno, value fieldno, char* fcn)
 }
 
 /* ML type : pgresult_ -> int -> string */
-EXTERNML value pq_fname(value pgresval, value fieldno) 
+value pq_fname(value pgresval, value fieldno) 
 {
   checkfbound(PGresult_val(pgresval), Long_val(fieldno), "pq_ftype");
   return copy_string(PQfname(PGresult_val(pgresval), Long_val(fieldno)));
 }
 
 /* ML type : pgresult_ -> string -> int */
-EXTERNML value pq_fnumber(value pgresval, value fieldname) 
+value pq_fnumber(value pgresval, value fieldname) 
 {
   return Val_long(PQfnumber(PGresult_val(pgresval), String_val(fieldname)));
 }
@@ -285,14 +279,14 @@ EXTERNML value pq_fnumber(value pgresval, value fieldname)
 /* For now, let us pretend that (32 bit) Oids are (31 bit) ML integers: */
 
 /* ML type : pgresult_ -> int -> int */
-EXTERNML value pq_ftype(value pgresval, value fieldno) 
+value pq_ftype(value pgresval, value fieldno) 
 {
   checkfbound(PGresult_val(pgresval), Long_val(fieldno), "pq_ftype");
   return Val_long(PQftype(PGresult_val(pgresval), Long_val(fieldno)));
 }
 
 /* ML type : pgresult_ -> int -> int */
-EXTERNML value pq_fsize(value pgresval, value fieldno) 
+value pq_fsize(value pgresval, value fieldno) 
 {
   checkfbound(PGresult_val(pgresval), Long_val(fieldno), "pq_ftype");
   return Val_long(PQfsize(PGresult_val(pgresval), Long_val(fieldno)));
@@ -301,7 +295,7 @@ EXTERNML value pq_fsize(value pgresval, value fieldno)
 /* See /usr/local/pgsql/include/postgres.h for the PostgreSQL C types */
 
 /* ML type : pgresult_ -> int -> int -> int */
-EXTERNML value pq_getint(value pgresval, value tupno, value fieldno) 
+value pq_getint(value pgresval, value tupno, value fieldno) 
 {
   char* v;
   checkbounds(pgresval, tupno, fieldno, "pq_getint");
@@ -313,7 +307,7 @@ EXTERNML value pq_getint(value pgresval, value tupno, value fieldno)
 }
 
 /* ML type : pgresult_ -> int -> int -> real */
-EXTERNML value pq_getreal(value pgresval, value tupno, value fieldno) 
+value pq_getreal(value pgresval, value tupno, value fieldno) 
 {
   char* v;
   checkbounds(pgresval, tupno, fieldno, "pq_getreal");
@@ -325,7 +319,7 @@ EXTERNML value pq_getreal(value pgresval, value tupno, value fieldno)
 }
 
 /* ML type : pgresult_ -> int -> int -> string */
-EXTERNML value pq_getstring(value pgresval, value tupno, value fieldno) 
+value pq_getstring(value pgresval, value tupno, value fieldno) 
 {
   char* v;
   checkbounds(pgresval, tupno, fieldno, "pq_getstring");
@@ -337,7 +331,7 @@ EXTERNML value pq_getstring(value pgresval, value tupno, value fieldno)
 }
 
 /* ML type : pgresult_ -> int -> int -> bool */
-EXTERNML value pq_getbool(value pgresval, value tupno, value fieldno) 
+value pq_getbool(value pgresval, value tupno, value fieldno) 
 {
   char* v;
   checkbounds(pgresval, tupno, fieldno, "pq_getbool");
@@ -349,7 +343,7 @@ EXTERNML value pq_getbool(value pgresval, value tupno, value fieldno)
 }
 
 /* ML type : pgresult_ -> int -> int -> bool */
-EXTERNML value pq_getisnull(value pgresval, value tupno, value fieldno) 
+value pq_getisnull(value pgresval, value tupno, value fieldno) 
 {
   checkbounds(pgresval, tupno, fieldno, "pq_getisnull");
   return Val_bool(PQgetisnull(PGresult_val(pgresval), Long_val(tupno), 
@@ -360,7 +354,7 @@ EXTERNML value pq_getisnull(value pgresval, value tupno, value fieldno)
 #define INITIALSIZE 80
 
 /* ML type : pgconn_ -> string option */
-EXTERNML value pq_getline(value conn) 
+value pq_getline(value conn) 
 {
   int bufsize = INITIALSIZE;
   char* buf = (char*)(malloc(bufsize));
@@ -383,14 +377,14 @@ EXTERNML value pq_getline(value conn)
 }
 
 /* ML type : pgconn_ -> string -> unit */
-EXTERNML value pq_putline(value conn, value line) 
+value pq_putline(value conn, value line) 
 {
   PQputline(PGconn_val(conn), String_val(line));
   return Val_unit;
 }
 
 /* ML type : pgconn_ -> unit */
-EXTERNML value pq_endcopy(value conn) 
+value pq_endcopy(value conn) 
 {
   PQendcopy(PGconn_val(conn));
   return Val_unit;
