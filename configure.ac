@@ -128,6 +128,22 @@ fi
 AX_CHECK_ALIGNED_ACCESS_REQUIRED
 AC_FUNC_MEMMOVE
 
+## Git version
+if test -d "${GIT_DIR:-${ac_top_srcdir:-./}/.git}" ; then
+    GITHEAD=`git describe 2>/dev/null`
+
+    if test -z ${GITHEAD} ; then
+        GITHEAD=`git rev-parse HEAD`
+    fi
+
+    if test -n "`git diff-index -m --name-only HEAD`" ; then
+        GITHEAD="${GITHEAD}-dirty"
+    fi
+fi
+
+AC_MSG_CHECKING([for git version])
+AC_MSG_RESULT([$GITHEAD])
+AC_SUBST([GITHEAD])
 
 AC_OUTPUT(
           Makefile
