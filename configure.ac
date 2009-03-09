@@ -17,7 +17,8 @@ AC_CONFIG_SRCDIR([runtime/interp.c])
 AC_CONFIG_MACRO_DIR([m4])
 AC_LANG([C])
 
-LT_INIT
+## Libtool
+AC_PROG_LIBTOOL
 
 ## Checks for programs.
 AC_PROG_CC
