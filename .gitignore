@@ -4,6 +4,7 @@
 core.*
 core
 .deps
+.svn
 TAGS
 ChangeLog
 config.guess
