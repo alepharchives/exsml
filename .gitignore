@@ -1,6 +1,8 @@
 *.u[io]
 *.o
 *.lo
+core.*
+core
 .deps
 TAGS
 ChangeLog
