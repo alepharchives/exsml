@@ -1,5 +1,13 @@
 #!/bin/sh
 
+generate_changelog() {
+    echo ">>> Generating ChangeLog file" 1>&2
+
+    if git rev-parse --git-dir 2>&1 > /dev/null; then
+        git log > ChangeLog
+    fi
+}
+
 run() {
     echo ">>> $@" 1>&2
 
@@ -9,6 +17,7 @@ run() {
     fi
 }
 
+generate_changelog
 run libtoolize --copy --force --automake
 run aclocal
 run autoheader

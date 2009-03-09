@@ -3,6 +3,7 @@
 *.lo
 .deps
 TAGS
+ChangeLog
 config.guess
 config.sub
 libtool
@@ -76,4 +77,3 @@ src/toolssrc/Deppars.sml
 src/toolssrc/Mosmldep.sml
 src/toolssrc/cutdeps
 src/toolssrc/mosmldep
-
