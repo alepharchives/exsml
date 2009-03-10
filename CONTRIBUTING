@@ -1,0 +1,20 @@
+Contributing
+============
+
+MoSML LLVM currently uses Git for source code management.
+
+Submitting patches
+------------------
+
+  * Configure your Git author name and email address properly. Please see `man
+    git-config` and look after `user.name` and `user.email`.
+
+  * Use a clear commit message; explain your changes and make references to
+    relevant websites, mailing lists, etc. where appropriate.
+
+  * Use the `git format-patch` command to generate patches from your local
+    repository. Please remember to add the `-M -C` options to `git
+    format-patch` to catch copies and renames. This will eventually make the
+    patch much easier to read. Remember to read `man git-format-patch`.
+
+ .. vim: set spell tw=78 : ..

@@ -1,20 +1,26 @@
-Jesper Louis Andersen (jesper.louis.andersen@gmail.com)
-       Project Lead. A little bit of everything
+Authors
+=======
 
+Jesper Louis Andersen <jesper.louis.andersen@gmail.com>
+    Project Lead. A little bit of everything.
+
+Alexander Færøy <ahf@0x90.dk>
+    Contributor.
 
 ----------------------------------------------------------------------
 The Benchmarks and regression framework were taken from the MLton
    project by Henry Cejtin, Matthew Fluet, Suresh Jagannathan,
                 and Stephen Weeks
 ----------------------------------------------------------------------
-Moscow ML was written by
-    Sergei Romanenko (roman@keldysh.ru)
+
+Moscow ML was written by:
+    Sergei Romanenko <roman@keldysh.ru>
     Keldysh Institute of Applied Mathematics, Russian Academy of Sciences
     Miusskaya Pl. 4, 125047 Moscow, Russia
-and Claudio V. Russo (Claudio.Russo@cl.cam.ac.uk), University of Cambridge.
+    and Claudio V. Russo <Claudio.Russo@cl.cam.ac.uk>, University of Cambridge.
     Thanks to Don Sannella at LFCS, Division of Informatics,
     University of Edinburgh for funding under EPSRC grant GR/K63795
-and Peter Sestoft (sestoft@dina.kvl.dk),
+    and Peter Sestoft <sestoft@dina.kvl.dk>,
     Department of Mathematics and Physics, Royal Veterinary and
     Agricultural University, Thorvaldsensvej 40, DK-1871 Frederiksberg C,
     Denmark.  Much of the work was done at the Technical University of
@@ -34,4 +40,3 @@ Moscow ML owes much to:
       from Ken Friis Larsen, but also from Jonas Barklund, Mike Gordon,
       Michael Norrish, Konrad Slind, Jakob Lichtenberg, Hans Molin, and
       numerous other people.
-
