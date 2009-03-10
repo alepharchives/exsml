@@ -1,11 +1,19 @@
 #ifndef _config_
 #define _config_
 
+#include <limits.h>
+
 #include "mosml_config.h"
+
+/* Determine if a char is unsigned or not */
+
+#if CHAR_MIN == 0
+ #define CHAR_UNSIGNED 1
+#endif
 
 /* Signed char type */
 
-#if defined(__STDC__) || !defined(UNSIGNED_CHAR)
+#if defined(__STDC__) || !defined(CHAR_UNSIGNED)
 typedef signed char schar;
 #else
 typedef char schar;
