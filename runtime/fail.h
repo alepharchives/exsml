@@ -2,7 +2,6 @@
 #define _fail_
 
 #include <setjmp.h>
-#include "misc.h"
 #include "mlvalues.h"
 
 struct longjmp_buffer {
@@ -12,14 +11,14 @@ struct longjmp_buffer {
 extern struct longjmp_buffer * external_raise;
 extern value exn_bucket;
 
-extern Noreturn mlraise(value);
-extern Noreturn raiseprimitive0(int exnindex);
-extern Noreturn raiseprimitive1(int exnindex, value arg);
-extern Noreturn raise_with_string(int exnindex, char * msg);
-extern Noreturn failwith(char *);
-extern Noreturn invalid_argument(char *);
-extern Noreturn raise_overflow(void);
-extern Noreturn raise_out_of_memory(void);
+extern void mlraise(value);
+extern void raiseprimitive0(int exnindex);
+extern void raiseprimitive1(int exnindex, value arg);
+extern void raise_with_string(int exnindex, char * msg);
+extern void failwith(char *);
+extern void invalid_argument(char *);
+extern void raise_overflow(void);
+extern void raise_out_of_memory(void);
 extern volatile int float_exn;
 
 extern double maxdouble;
