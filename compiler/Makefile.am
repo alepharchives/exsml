@@ -1,7 +1,30 @@
 # Unix Makefile for Moscow ML compiler
 
-include $(top_srcdir)/Makefile.am_sml
 include Makefile.mosml_deps
+
+## TODO: Move this away
+MOSMLC=camlrunm $(top_srcdir)/bootstrap/mosmlcmp \
+	-stdlib $(top_srcdir)/mosmllib -P none
+MOSMLLEX=mosmllex
+MOSMLYAC=mosmlyac
+MOSMLL=camlrunm $(top_srcdir)/bootstrap/mosmllnk -stdlib $(top_srcdir)/mosmllib -P none
+
+SUFFIXES = .sml .ui .uo .sig .mllex .mlyacc .mlp
+
+.sig.ui:
+	 $(MOSMLC) $(COMPFLAGS) $<
+
+.mlp.sml:
+	$(CPP) $< >$@
+
+.sml.uo:
+	 $(MOSMLC) $(COMPFLAGS) $<
+
+.lex.sml:
+	 $(MOSMLLEX) $<
+
+.mlyac.sml:
+	 $(MOSMLYAC) $<
 
 COMPFLAGS=
 # Option `-g' exports the exception table for mosmltop to read:

@@ -13,11 +13,11 @@
 #include "config.h"
 
 #if ((SIZEOF_INT == 4) && (SIZEOF_LONG == 8) && (SIZEOF_LONG_P == 8))
- #define SIXTYFOUR
+#define SIXTYFOUR
 #elif  ((SIZEOF_INT == 4) && (SIZEOF_LONG == 4) && (SIZEOF_LONG_P == 4))
- #define THIRTYTWO
+#define THIRTYTWO
 #else
- #error "Unknown architecture size"
+#error "Unknown architecture size"
 #endif
 
 

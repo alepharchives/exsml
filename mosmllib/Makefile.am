@@ -3,7 +3,6 @@
 # Library is compiled with -imptypes, even when used with value polymorphism
 COMPFLAGS=-imptypes
 
-include $(top_srcdir)/Makefile.am_sml
 include Makefile.mosml_deps
 
 # Make with the supplied compiler
@@ -29,4 +28,28 @@ all: Array.uo Array2.uo Arraysort.uo \
 # mosmldep does not see that OS depends on FileSys, Path, Process:
 
 OS.ui: FileSys.ui Path.ui Process.ui
+
+## TODO: Hoist this!
+MOSMLC=camlrunm $(top_srcdir)/bootstrap/mosmlcmp \
+	-stdlib $(top_srcdir)/mosmllib -P none
+MOSMLLEX=mosmllex
+MOSMLYAC=mosmlyac
+MOSMLL=camlrunm mosmllnk -stdlib ../mosmllnk -P none
+
+SUFFIXES = .sml .ui .uo .sig .mllex .mlyacc .mlp
+
+.sig.ui:
+	 $(MOSMLC) $(COMPFLAGS) $<
+
+.mlp.sml:
+	cpp -P $< > $@
+
+.sml.uo:
+	 $(MOSMLC) $(COMPFLAGS) $<
+
+.lex.sml:
+	 $(MOSMLLEX) $<
+
+.mlyac.sml:
+	 $(MOSMLYAC) $<
 

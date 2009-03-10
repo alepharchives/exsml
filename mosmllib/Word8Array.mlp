@@ -23,13 +23,7 @@ in
 
 type array = array_ ref;
 
-#if defined(msdos)
-#include "../config.dos/m.h"
-#elif defined(win32)
-#include "../config.w32/m.h"
-#else
-#include "../config/m.h"
-#endif
+#include "../mosml_config.h"
 
 #ifdef SIXTYFOUR
 val maxLen = 144115188075855863;  	(* = (2^54-1)*8-1, with 64 bit *)

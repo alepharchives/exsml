@@ -6,7 +6,7 @@ structure Array :> Array = struct
  * type to be right, we need to declare it a prim_EQtype:              *)
 prim_EQtype 'a array;
 
-local 
+local
     prim_type 'a array_;
 
     type 'a vector = 'a Vector.vector;
@@ -30,15 +30,9 @@ local
 
     fun from_array (a : 'a  array)  = !(magic a)    : 'a array_;
     fun make_array (a : '_a array_) = magic (ref a) : 'a array
-in 
+in
 
-#if defined(msdos)
-#include "../config.dos/m.h"
-#elif defined(win32)
-#include "../config.w32/m.h"
-#else
-#include "../config/m.h"
-#endif
+#include "../mosml_config.h"
 
 #ifdef SIXTYFOUR
 val maxLen = 18014398509481983; (* = 2^54-1, for 64-bit architectures *)
@@ -47,7 +41,7 @@ val maxLen = 4194303;   	(* = 2^22-1, for 32-bit architectures *)
 #endif
 
 fun array(n, v : '_a) =
-  if n < 0 orelse n > maxLen then raise Size 
+  if n < 0 orelse n > maxLen then raise Size
   else make_array (array_ n v) : '_a array;
 
 fun tabulate(n, f : int -> '_a) =
@@ -67,26 +61,26 @@ fun fromList (vs : '_a list) =
 fun length a = length_ (from_array a);
 
 fun sub(a, i) =
-    let val a = from_array a 
+    let val a = from_array a
     in
-	if i < 0 orelse i >= length_ a then raise Subscript 
-	else sub_ a i 
+	if i < 0 orelse i >= length_ a then raise Subscript
+	else sub_ a i
     end
 
 fun update(a, i, v) =
-    let val a = from_array a 
+    let val a = from_array a
     in
-	if i < 0 orelse i >= length_ a then raise Subscript 
+	if i < 0 orelse i >= length_ a then raise Subscript
 	else update_ a i v
     end
 
 fun extract (a : 'a array, i, slicelen) =
-    let val a = from_array a : 'a array_ 
+    let val a = from_array a : 'a array_
 	val n = case slicelen of NONE => length_ a - i | SOME n => n
-	val newvec = if i<0 orelse n<0 orelse i+n > length_ a 
+	val newvec = if i<0 orelse n<0 orelse i+n > length_ a
 			 then raise Subscript
 		     else vector_ n () : 'a vector
-	fun copy j = 
+	fun copy j =
 	    if j<n then
 		(updatev newvec j (sub_ a (i+j)); copy (j+1))
 	    else
@@ -100,16 +94,16 @@ fun copy {src=a1: 'a array, si=i1, len, dst=a2: 'a array, di=i2} =
     in
 	if n<0 orelse i1<0 orelse i1+n > length_ a1
 	    orelse i2<0 orelse i2+n > length_ a2
-	then 
+	then
 	    raise Subscript
 	else if i1 < i2 then		(* copy from high to low *)
-	         let fun hi2lo j = 
+	         let fun hi2lo j =
 		     if j >= 0 then
 			 (update_ a2 (i2+j) (sub_ a1 (i1+j)); hi2lo (j-1))
 		     else ()
 		 in hi2lo (n-1) end
 	     else                       (* i1 >= i2, copy from low to high *)
-		 let fun lo2hi j = 
+		 let fun lo2hi j =
 		     if j < n then
 			 (update_ a2 (i2+j) (sub_ a1 (i1+j)); lo2hi (j+1))
 		     else ()
@@ -122,16 +116,16 @@ fun copyVec {src=a1: 'a vector, si=i1, len, dst=a2: 'a array, di=i2} =
     in
 	if n<0 orelse i1<0 orelse i1+n > lengthv_ a1
 	       orelse i2<0 orelse i2+n > length_ a2
-	    then 
+	    then
 		raise Subscript
-	else 
+	else
 	    let fun lo2hi j = if j < n then
 		(update_ a2 (i2+j) (subv_ a1 (i1+j)); lo2hi (j+1))
 			      else ()
 	    in lo2hi 0 end
     end;
 
-fun foldl f e a = 
+fun foldl f e a =
     let val a = from_array a
 	val stop = length_ a
 	fun lr j res = if j < stop then lr (j+1) (f(sub_ a j, res))
@@ -144,59 +138,59 @@ fun foldr f e a =
 		       else res
     in rl (length_ a - 1) e end
 
-fun modify f a = 
+fun modify f a =
     let val a = from_array a
 	val stop = length_ a
 	fun lr j = if j < stop then (update_ a j (f(sub_ a j)); lr (j+1))
 		   else ()
     in lr 0 end
 
-fun app f a = 
+fun app f a =
     let val a = from_array a
 	val stop = length_ a
 	fun lr j = if j < stop then (f(sub_ a j); lr (j+1))
 		   else ()
     in lr 0 end
 
-fun sliceend (a, i, NONE) = 
+fun sliceend (a, i, NONE) =
         if i<0 orelse i>length a then raise Subscript
 	else length a
-  | sliceend (a, i, SOME n) = 
+  | sliceend (a, i, SOME n) =
 	if i<0 orelse n<0 orelse i+n>length a then raise Subscript
 	else i+n;
 
-fun foldli f e (slice as (a, i, _)) = 
+fun foldli f e (slice as (a, i, _)) =
     let val a = from_array a
 	fun loop stop =
-	    let fun lr j res = 
+	    let fun lr j res =
 		if j < stop then lr (j+1) (f(j, sub_ a j, res))
 		else res
 	    in lr i e end
     in loop (sliceend slice) end;
 
-fun foldri f e (slice as (a, i, _)) = 
+fun foldri f e (slice as (a, i, _)) =
     let val a = from_array a
 	fun loop start =
-	    let fun rl j res = 
+	    let fun rl j res =
 		    if j >= i then rl (j-1) (f(j, sub_ a j, res))
 		    else res
 	    in rl start e end;
     in loop (sliceend slice - 1) end
 
-fun modifyi f (slice as (a, i, _)) = 
+fun modifyi f (slice as (a, i, _)) =
     let val a = from_array a
 	fun loop stop =
-	    let fun lr j = 
+	    let fun lr j =
 		if j < stop then (update_ a j (f(j, sub_ a j)); lr (j+1))
 		else ()
 	    in lr i end
     in loop (sliceend slice) end;
 
-fun appi f (slice as (a, i, _)) = 
+fun appi f (slice as (a, i, _)) =
     let val a = from_array a
-	fun loop stop = 
-	    let	fun lr j = 
-		    if j < stop then (f(j, sub_ a j); lr (j+1)) 
+	fun loop stop =
+	    let	fun lr j =
+		    if j < stop then (f(j, sub_ a j); lr (j+1))
 		    else ()
 	    in lr i end
     in loop (sliceend slice) end;
