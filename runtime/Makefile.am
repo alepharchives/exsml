@@ -3,7 +3,7 @@
 AM_CFLAGS = -I$(top_srcdir) -Wall -Wextra -Wunused -Wstrict-aliasing
 
 bin_PROGRAMS = camlrunm
-camlrunm_SOURCES = $(C_SOURCES) $(GEN_SOURCES)
+camlrunm_SOURCES = $(C_SOURCES) $(GEN_SOURCES) $(GEN_HS)
 
 C_SOURCES = interp.c misc.c stacks.c fix_code.c main.c \
 	fail.c signals.c freelist.c major_gc.c minor_gc.c memory.c alloc.c \
@@ -13,6 +13,7 @@ C_SOURCES = interp.c misc.c stacks.c fix_code.c main.c \
 
 # Generated sources
 GEN_SOURCES = prims.c
+GEN_HS = opnames.h
 
 DOBJS=$(OBJS:.o=.d.o) debugger.d.o
 
@@ -55,15 +56,10 @@ primitives : $(C_SOURCES)
         fi'
 
 
-# opnames.h : instruct.h
-# 	sed -e '/\/\*/d' \
-#             -e 's/enum /char * names_of_/' \
-#             -e 's/{$$/[] = {/' \
-#             -e 's/\([A-Z][A-Z_0-9]*\)/"\1"/g' instruct.h > opnames.h
+opnames.h : instruct.h
+	sed -e '/\/\*/d' \
+             -e 's/enum /char * names_of_/' \
+             -e 's/{$$/[] = {/' \
+             -e 's/\([A-Z][A-Z_0-9]*\)/"\1"/g' instruct.h > opnames.h
 
-# .SUFFIXES: .d.o
-
-# .c.d.o:
-# 	cd .debugobj; $(CC) -c -g -I.. -I.. -DDEBUG $(OPTS) ../$<
-# 	mv .debugobj/$*.o $*.d.o
 
