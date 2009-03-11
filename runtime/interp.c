@@ -1373,8 +1373,8 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
 #define MaxChunk ((1L << ChunkLen) - 1)
 
     case SMLMULINT:
-      { register long x, y;
-        register int isNegative = 0;
+      { long x, y;
+        int isNegative = 0;
         x = Long_val(*sp++);
         y = Long_val(accu);
         if( x < 0 ) { x = -x; isNegative = 1; }
@@ -1420,7 +1420,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       break;
 
     case SMLMODINT:
-      { register long y;
+      { long y;
       y = tmp = Long_val(accu);
       accu = Long_val(*sp++);
       if (tmp == 0)

@@ -16,7 +16,7 @@ YYSTYPE yyvs[YYSTACKSIZE];
 value yyparse(tables, entrypoint, lexbuf)
      value tables, entrypoint, lexbuf;
 {
-    register int yym, yyn, yystate;
+    int yym, yyn, yystate;
 
 #define yyact FIELD(tables,0)
 #define yytransl FIELD(tables,1)

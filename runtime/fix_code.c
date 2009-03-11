@@ -15,10 +15,10 @@
 #if defined(WORDS_BIGENDIAN) && !defined(HAVE_ALIGNED_ACCESS_REQUIRED)
 
 void fixup_endianness(p, len)
-     register bytecode_t p;
+     bytecode_t p;
      asize_t len;
 {
-  register bytecode_t q;
+  bytecode_t q;
   int n;
 
   q = p + len;

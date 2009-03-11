@@ -30,8 +30,8 @@ value create_string(value len)        /* ML */
 value compare_strings(value s1, value s2)   /* ML */
 {
   mlsize_t len1, len2;
-  register mlsize_t len;
-  register unsigned char * p1, * p2;
+  mlsize_t len;
+  unsigned char * p1, * p2;
 
   len1 = string_length(s1);
   len2 = string_length(s2);
@@ -58,9 +58,9 @@ value blit_string(value s1, value offset1, value s2, value offset2, value len) /
 
 value fill_string(value s, value offset, value len, value init) /* ML */
 {
-  register char * p;
-  register mlsize_t n;
-  register char c;
+  char * p;
+  mlsize_t n;
+  char c;
 
   c = Long_val(init);
   for(p = &Byte(s, Long_val(offset)), n = Long_val(len);

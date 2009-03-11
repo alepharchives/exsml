@@ -123,8 +123,8 @@ void sflag(void)
 
 void getargs(int argc, char *argv[])
 {
-    register int i;
-    register char *s;
+    int i;
+    char *s;
 
     if (argc > 0) myname = argv[0];
     for (i = 1; i < argc; ++i)
@@ -207,7 +207,7 @@ no_more_options:;
 
 char * allocate(unsigned n)
 {
-    register char *p;
+    char *p;
 
     p = NULL;
     if (n)

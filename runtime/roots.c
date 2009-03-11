@@ -9,7 +9,7 @@
 void local_roots (copy_fn)
      void (*copy_fn) ();
 {
-  register value *sp;
+  value *sp;
 
   /* stack */
   for (sp = extern_sp; sp < stack_high; sp++) {
