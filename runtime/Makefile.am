@@ -34,22 +34,6 @@ etags:
 ctags:
 	ctags *.c *.h
 
-#camlrunm: $(OBJS) prims.o
-#	$(LD) -o camlrunm$(EXE) prims.o $(OBJS) $(LIBS)
-#	$(STRIP) camlrunm$(EXE)
-
-#camlrunmd: $(DOBJS) prims.d.o
-#	$(CC) $(CFLAGS) -o camlrunmd$(EXE) prims.d.o $(DOBJS) $(LIBS)
-
-# clean:
-# 	rm -f camlrunm$(EXE) camlrunmd$(EXE) *.o *.a
-# 	rm -f primitives prims.c opnames.h jumptbl.h
-# 	rm -f .debugobj/*.o
-
-# install:
-# 	${INSTALL_PROGRAM} camlrunm$(EXE) $(BINDIR)
-# 	${INSTALL_PROGRAM} *.h $(INCDIR)
-
 primitives : $(C_SOURCES)
 	sed -n -e '/\/\* ML \*\//s/.* \([a-zA-Z0-9_][a-zA-Z0-9_]*\) *(.*/\1/p' \
                 $(C_SOURCES) | grep -v UNUSED > primitives2
