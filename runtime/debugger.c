@@ -1,6 +1,8 @@
 #ifdef DEBUG
 
 #include <stdio.h>
+#include <stdlib.h>
+
 #include "debugger.h"
 #include "instruct.h"
 #include "memory.h"
@@ -55,8 +57,9 @@ static void print_val(v, d)
       break;
     default:
       n = Tag_val(v);
-      if (n < 26){
-	printf ("%c", n + 'A');
+      if (n < 26) {
+	      char c = (char) n + 'A';
+	      printf ("%c", c);
       }else{
         printf("tag%ld", n);
       }
