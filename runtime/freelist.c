@@ -39,20 +39,21 @@ char *fl_merge = Fl_head;        /* Current insertion pointer.  Managed
 #ifdef DEBUG
 void fl_verify ()
 {
-  char *cur, *prev;
-  int prev_found = 0, merge_found = 0;
+	char *cur, *prev;
+	int prev_found = 0, merge_found = 0;
 
-  prev = Fl_head;
-  cur = Next (prev);
-  while (cur != NULL){
-    Assert (Is_in_heap (cur));
-    if (cur == fl_prev) prev_found = 1;
-    if (cur == fl_merge) merge_found = 1;
-    prev = cur;
-    cur = Next (prev);
-  }
-  Assert (prev_found || fl_prev == Fl_head);
-  Assert (merge_found || fl_merge == Fl_head);
+	prev = Fl_head;
+	cur = Next (prev);
+	while (cur != NULL){
+		assert (Is_in_heap (cur));
+		if (cur == fl_prev) prev_found = 1;
+		if (cur == fl_merge) merge_found = 1;
+		prev = cur;
+		cur = Next (prev);
+	}
+
+	assert (prev_found || fl_prev == Fl_head);
+	assert (merge_found || fl_merge == Fl_head);
 }
 #endif
 
