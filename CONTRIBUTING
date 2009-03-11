@@ -17,4 +17,7 @@ Submitting patches
     format-patch` to catch copies and renames. This will eventually make the
     patch much easier to read. Remember to read `man git-format-patch`.
 
+  * Please discuss your ideas in #mosml-llvm on the Freenode IRC
+    network before you start working on them.
+
  .. vim: set spell tw=78 : ..
