@@ -3,6 +3,10 @@
 # Library is compiled with -imptypes, even when used with value polymorphism
 COMPFLAGS=-imptypes
 
+CLEANFILES = *.ui *.uo Array.sml Int.sml Process.sml Weak.sml Word.sml \
+	FileSys.sml Mosml.sml Strbase.sml Word8Array.sml \
+	Help.sml Path.sml Vector.sml Word8Vector.sml
+
 include Makefile.mosml_deps
 
 # Make with the supplied compiler
