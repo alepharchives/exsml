@@ -16,6 +16,7 @@ depcomp
 compiler/Opcodes.sml
 compiler/Parser.sig
 compiler/Parser.sml
+compiler/mosmlcmp
 libsml_crypt/.libs
 libsml_crypt/libsml_crypt.la
 libsml_unix/.libs
@@ -68,6 +69,7 @@ src/mosmllib/Word8Vector.sml
 runtime/camlrunm
 runtime/primitives
 runtime/prims.c
+runtime/opnames.h
 runtime/Makefile
 src/launch/camlexec
 src/launch/camlexec.c
