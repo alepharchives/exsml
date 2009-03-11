@@ -106,13 +106,13 @@ val nationalityToString =
     | German => "German"
     | Norwegian => "Norwegian"
     | Swede => "Swede"
-datatype pet = Bird | Cat | Dog | Horse | Zebra
+datatype pet = Bird | Cat | Dog | Horse | ZebraPig
 val petToString =
    fn Bird => "Bird"
     | Cat => "Cat"
     | Dog => "Dog"
     | Horse => "Horse"
-    | Zebra => "Zebra"
+    | ZebraPig => "ZebraPig"
 
 type pos = int
 val poss = [1, 2, 3, 4, 5]
@@ -140,7 +140,7 @@ fun search () =
       val colors = init [Blue, Green, Red, White, Yellow]
       val drinks = init [Beer, Coffee, Milk, Tea, Water]
       val nationalities = init [Dane, English, German, Norwegian, Swede]
-      val pets = init [Bird, Cat, Dog, Horse, Zebra]
+      val pets = init [Bird, Cat, Dog, Horse, ZebraPig]
 
       fun ''a find (r: ''a attribute ref) (x: ''a): pos option =
          Option.map #1 (peek (#known (!r), fn (_, y) => x = y))
@@ -280,7 +280,7 @@ fun search () =
       val _ = if 3342 = !num
                  then ()
               else raise Fail "bug"
-(*      val _ = display () *)
+   (*      val _ = display () *)
    in ()
    end
 
