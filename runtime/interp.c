@@ -167,8 +167,8 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
     *log_ptr++ = pc;
     if (log_ptr >= log_buffer + LOG_BUFFER_SIZE) log_ptr = log_buffer;
     disasm_instr(pc);
-    Assert(sp >= stack_low);
-    Assert(sp <= stack_high);
+    assert(sp >= stack_low);
+    assert(sp <= stack_high);
 #endif
     cur_instr = *pc++;
 
