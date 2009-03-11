@@ -15,7 +15,7 @@ C_SOURCES = interp.c misc.c stacks.c fix_code.c main.c \
 GEN_SOURCES = prims.c
 GEN_HS = opnames.h
 
-DOBJS=$(OBJS:.o=.d.o) debugger.d.o
+CLEANFILES = opnames.h prims.c
 
 prims.c : primitives
 	(echo '#include "mlvalues.h"'; \
