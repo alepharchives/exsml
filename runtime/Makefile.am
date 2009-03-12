@@ -17,6 +17,8 @@ GEN_HS = opnames.h
 
 CLEANFILES = opnames.h prims.c
 
+debugger.c: opnames.h
+
 prims.c : primitives
 	(echo '#include "mlvalues.h"'; \
 	 echo '#include "prims.h"'; \

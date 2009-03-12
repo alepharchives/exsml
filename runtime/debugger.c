@@ -93,7 +93,12 @@ extern bytecode_t start_code;
 void print_pc(pc)
      bytecode_t pc;
 {
-  printf("%6d  ", pc - start_code);
+/* TODO: Push this back into the runtime config.h */
+#ifdef SIXTYFOUR
+	printf("%6ld  ", pc - start_code);
+#else
+	printf("%6d   ", pc - start_code);
+#endif
 }
 
 /* Disassembling one instruction */
