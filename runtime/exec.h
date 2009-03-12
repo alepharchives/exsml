@@ -14,11 +14,11 @@
 #define TRAILER_SIZE 20
 
 struct exec_trailer {
-  unsigned long code_size;      /* Size of the code block (in bytes) */
-  unsigned long data_size;      /* Size of the global data table (bytes) */
-  unsigned long symbol_size;    /* Size of the symbol table (bytes) */
-  unsigned long debug_size;     /* Size of the debug infos (bytes) */
-  unsigned long magic;          /* A magic number */
+	size_t code_size;      /* Size of the code block (in bytes) */
+	size_t data_size;      /* Size of the global data table (bytes) */
+	size_t symbol_size;    /* Size of the symbol table (bytes) */
+	size_t debug_size;     /* Size of the debug infos (bytes) */
+	size_t magic;          /* A magic number */
 };
 
 /* Magic number for this release */

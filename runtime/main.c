@@ -202,6 +202,7 @@ int main(int argc, char * argv[])
     code_size = trail.code_size;
 
     start_code = (bytecode_t) stat_alloc(code_size);
+    /* TODO: This doesn't check for errors and it has signedness bugs */
     if (read(fd, (char *) start_code, code_size) != code_size)
       fatal_error("Fatal error: truncated bytecode file.\n");
 
