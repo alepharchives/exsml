@@ -3,8 +3,8 @@
 include Makefile.mosml_deps
 
 CLEANFILES = mosmlcmp mosmllnk mosmltop *.ui *.uo Opcodes.sml \
-	Parser.sml Parser.sig Parser.output Lexer.sml Config.sml \
-	Filename.sml Predef.sml Prim_c.sml Makefile.bak
+	Parser.sml Parser.sig Parser.output Lexer.sml Predef.sml \
+	Prim_c.sml Makefile.bak
 
 ## TODO: Move this away
 MOSMLC=camlrunm $(top_srcdir)/bootstrap/mosmlcmp \
