@@ -29,7 +29,7 @@ value start_interp(value may_free, value prog, value offset, value vlen) /* ML *
   {
     // Copy bytecode to memory outside the ML heap
     bytecode_t actualprog = (bytecode_t)malloc(len);
-    memmove(bprog, actualprog, len);
+    memmove(actualprog, bprog, len);
     res = interprete(/* mode=byte exec */ 1, actualprog, len, NULL);
     if (Bool_val(may_free))
       free(actualprog);		// Allocated above

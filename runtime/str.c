@@ -52,7 +52,7 @@ value compare_strings(value s1, value s2)   /* ML */
 
 value blit_string(value s1, value offset1, value s2, value offset2, value len) /* ML */
 {
-  memmove(&Byte(s1, Long_val(offset1)), &Byte(s2, Long_val(offset2)), Int_val(len));
+  memmove(&Byte(s2, Long_val(offset2)), &Byte(s1, Long_val(offset1)), Int_val(len));
   return Atom(0);
 }
 

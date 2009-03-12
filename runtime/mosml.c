@@ -336,8 +336,8 @@ value sml_concat(value s1, value s2)        /* ML */
     if( (len + sizeof (value)) / sizeof (value) > Max_wosize )
       raiseprimitive0(SYS__EXN_SIZE);
     s = alloc_string(len);
-    memmove(&Byte(r[0], 0), &Byte(s, 0), len1);
-    memmove(&Byte(r[1], 0), &Byte(s, len1), len2);
+    memmove(&Byte(s, 0), &Byte(r[0], 0), len1);
+    memmove(&Byte(s, len1), &Byte(r[1], 0), len2);
     Pop_roots();
     return s;
   }
@@ -1093,7 +1093,7 @@ value string_mlval(value val)	/* ML */
     {
       s = alloc_string(4 + extern_pos * sizeof(unsigned long));
       ((asize_t *)s)[0] = (asize_t)extern_pos;
-      memmove((char *)extern_block, &Byte(s, 4), extern_pos * sizeof(unsigned long));
+      memmove(&Byte(s, 4), (char *)extern_block, extern_pos * sizeof(unsigned long));
     }
   stat_free((char *) extern_block);
   return s;
@@ -1131,7 +1131,7 @@ value mlval_string(value s)	/* ML */
     Hd_val (res) = hd;                      /* Avoid confusing the GC. */
     failwith ("mlval_string: truncated object");
   }
-  memmove(&Byte(s, 4), Hp_val(res), bhsize);
+  memmove(Hp_val(res), &Byte(s, 4), bhsize);
   adjust_pointers((value*)(Hp_val (res)), whsize, color);
 
   return res;
