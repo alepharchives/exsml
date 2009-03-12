@@ -34,11 +34,12 @@ all: Array.uo Array2.uo Arraysort.uo \
 OS.ui: FileSys.ui Path.ui Process.ui
 
 ## TODO: Hoist this!
-MOSMLC=camlrunm $(top_srcdir)/bootstrap/mosmlcmp \
+CAMLRUNM=camlrunm
+MOSMLC=$(CAMLRUNM) $(top_srcdir)/bootstrap/mosmlcmp \
 	-stdlib $(top_srcdir)/mosmllib -P none
 MOSMLLEX=mosmllex
 MOSMLYAC=mosmlyac
-MOSMLL=camlrunm mosmllnk -stdlib ../mosmllnk -P none
+MOSMLL=$(CAMLRUNM) mosmllnk -stdlib ../mosmllnk -P none
 
 SUFFIXES = .sml .ui .uo .sig .mllex .mlyacc .mlp
 
