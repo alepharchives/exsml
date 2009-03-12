@@ -23,12 +23,12 @@ value get_next_char(lexbuf)     /* ML */
   buffer_len = string_length(lexbuf->lex_buffer);
   curr_pos = Long_val(lexbuf->lex_curr_pos);
   if (curr_pos >= buffer_len) {
-    Push_roots (r, 1);
+    PUSH_ROOTS(r, 1);
     r[0] = (value) lexbuf;
     callback(lexbuf->refill_buff, (value) lexbuf);
     lexbuf = (struct lexer_buffer *) r[0];
     curr_pos = Long_val(lexbuf->lex_curr_pos);
-    Pop_roots ();
+    POP_ROOTS();
   }
   lexbuf->lex_curr_pos += 2;
   return Val_int(Byte_u(lexbuf->lex_buffer, curr_pos));

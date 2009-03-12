@@ -45,7 +45,7 @@ void sys_error()
 
   /* Raise SysErr with argument (err, SOME errno) */
 
-  Push_roots(r, 2);
+  PUSH_ROOTS(r, 2);
   r[0] = copy_string(err);	/* The error message string	*/
 
   r[1] = alloc(1, SOMEtag);	/* The SOME errno object	*/
@@ -54,7 +54,7 @@ void sys_error()
   exnarg = alloc_tuple(2);	/* The argument tuple		*/
   Field(exnarg, 0) = r[0];
   Field(exnarg, 1) = r[1];
-  Pop_roots();
+  POP_ROOTS();
 
   raiseprimitive1(SYS__EXN_SYSERR, exnarg);
 }
@@ -137,11 +137,11 @@ static int sys_var_init[] = {
 value mkexnname(char* name) {
 	value ref;
 
-	Push_roots(r, 1);
+	PUSH_ROOTS(r, 1);
 	r[0] = copy_string(name);
 	ref = alloc_shr(1, Reference_tag);
 	modify(&Field(ref, 0), r[0]);
-	Pop_roots();
+	POP_ROOTS();
 
 	return ref;
 }

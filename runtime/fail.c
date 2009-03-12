@@ -34,12 +34,12 @@ extern void mlraise(value v)
 void raiseprimitive1(int exnindex, value arg) {
 	value exn;
 
-	Push_roots(r, 1);
+	PUSH_ROOTS(r, 1);
 	r[0] = arg;
 	exn = alloc_tuple(2);
 	modify(&Field(exn, 0), Field(global_data, exnindex));
 	modify(&Field(exn, 1), r[0]);
-	Pop_roots();
+	POP_ROOTS();
 	mlraise(exn);
 }
 

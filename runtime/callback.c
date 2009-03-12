@@ -74,11 +74,11 @@ value callbackptr3(valueptr closureptr, value arg1, value arg2, value arg3)
 void registervalue(char* nam, value mlval)
 {
 	value namval;
-	Push_roots(r, 1);
+	PUSH_ROOTS(r, 1);
 	r[0] = mlval;
 	namval = copy_string(nam);
 	callback2(get_value(reg_mlvalueptr_ptr_), namval, r[0]);
-	Pop_roots();
+	POP_ROOTS();
 }
 
 /* This calls Callback.unregister */
@@ -95,11 +95,11 @@ void unregistervalue(char* nam)
 valueptr alloc_valueptr(value v) /* ML */
 {
 	value res;
-	Push_roots(r, 1);
+	PUSH_ROOTS(r, 1);
 	r[0] = v;
 	res = alloc_shr (1, Reference_tag); // An 'a ref
 	initialize(&Field(res, 0), r[0]);
-	Pop_roots();
+	POP_ROOTS();
 	return res;
 }
 
@@ -121,11 +121,11 @@ value sml_init_register(value v)	/* ML */
 {
 	/* The closure in v may be moved if it is not in the old heap.  We
 	   force it into the old heap by requesting a minor collection: */
-	Push_roots(r, 1);
+	PUSH_ROOTS(r, 1);
 	r[0] = v;
 	minor_collection();
 	get_valueptr_         = r[0];
-	Pop_roots();
+	POP_ROOTS();
 	reg_mlvalueptr_ptr_   = get_valueptr("Callback.register");
 	unreg_mlvalueptr_ptr_ = get_valueptr("Callback.unregister");
 	return Val_unit;

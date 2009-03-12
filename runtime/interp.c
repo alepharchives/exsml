@@ -510,7 +510,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       } else {
         mlsize_t num_args, i;
         num_args = 1 + extra_args; /* arg1 + extra args */
-        Alloc_small(accu, num_args + 2, Closure_tag);
+        ALLOC_SMALL(accu, num_args + 2, Closure_tag);
         Field(accu, 1) = env;
         for (i = 0; i < num_args; i++) Field(accu, i + 2) = sp[i];
 	/* Point to the preceding RESTART instruction.  This works in the
@@ -530,7 +530,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       int nvars = u8pci;
       int i;
       if (nvars > 0) *--sp = accu;
-      Alloc_small(accu, 1 + nvars, Closure_tag);
+      ALLOC_SMALL(accu, 1 + nvars, Closure_tag);
       //      printf("pc = %d, s32pc = %d\n", pc, s32pc);
       Code_val(accu) = JUMPTGT(s32pc);
       //      printf("CLOSURE Code_val(%d) = %d\n", accu, Code_val(accu));
@@ -544,7 +544,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       int nvars = u8pci;
       int i;
       if (nvars > 0) *--sp = accu;
-      Alloc_small(accu, 2 + nvars, Closure_tag);
+      ALLOC_SMALL(accu, 2 + nvars, Closure_tag);
       Code_val(accu) = JUMPTGT(s32pc);
       //      printf("CLOSREC Code_val(%d) = %d\n", accu, Code_val(accu));
       Field(accu, 1) = Val_int(0);
@@ -560,7 +560,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
     case DUMMY: {
       int size = u16pc + 1; /* size + 1 to match CLOSURE */
       pc += SHORT;
-      Alloc_small(accu, size, 0);
+      ALLOC_SMALL(accu, size, 0);
       while (size--) Field(accu, size) = Val_long(0);
       break;
     }
@@ -758,7 +758,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
 	size = Wosize_hd(hdr);
 	tag = Tag_hd(hdr);
         if (size < Max_young_wosize) {
-          Alloc_small(tmp, size, tag);
+          ALLOC_SMALL(tmp, size, tag);
           Field(tmp, size-1) = accu;
           for (i = size-2; i >= 0; i--) Field(tmp, i) = *sp++;
           accu = tmp;
@@ -776,7 +776,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
     case MAKEBLOCK1: {
       tag_t tag = u8pci;
       value block;
-      Alloc_small(block, 1, tag);
+      ALLOC_SMALL(block, 1, tag);
       Field(block, 0) = accu;
       accu = block;
       break;
@@ -784,7 +784,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
     case MAKEBLOCK2: {
       tag_t tag = u8pci;
       value block;
-      Alloc_small(block, 2, tag);
+      ALLOC_SMALL(block, 2, tag);
       Field(block, 0) = sp[0];
       Field(block, 1) = accu;
       sp += 1;
@@ -794,7 +794,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
     case MAKEBLOCK3: {
       tag_t tag = u8pci;
       value block;
-      Alloc_small(block, 3, tag);
+      ALLOC_SMALL(block, 3, tag);
       Field(block, 0) = sp[1];
       Field(block, 1) = sp[0];
       Field(block, 2) = accu;
@@ -805,7 +805,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
     case MAKEBLOCK4: {
       tag_t tag = u8pci;
       value block;
-      Alloc_small(block, 4, tag);
+      ALLOC_SMALL(block, 4, tag);
       Field(block, 0) = sp[2];
       Field(block, 1) = sp[1];
       Field(block, 2) = sp[0];
@@ -852,7 +852,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
       modify_dest = &Field(*sp++, 0);
       modify_newval = accu;
     modify:
-      Modify(modify_dest, modify_newval);
+      modify(modify_dest, modify_newval);
       accu = Val_unit; /* Atom(0); */
       break;
     case SETFIELD1:
@@ -1254,7 +1254,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
 	dtmp = Double_val(*sp++) / dtmp;
 	Check_float(dtmp); /* Fallthrough */
     float_done:
-	Alloc_small(tmp, Double_wosize, Double_tag);
+	ALLOC_SMALL(tmp, Double_wosize, Double_tag);
 	Store_double_val(tmp, dtmp);
 	accu = tmp;
 	break;
@@ -1312,7 +1312,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
         if (size == 0)
           accu = Atom(0);
         else if (size < Max_young_wosize){
-	  Alloc_small (accu, size, 0);
+	  ALLOC_SMALL (accu, size, 0);
 	  do {size--; Field (accu, size) = *sp;} while (size != 0);
 	}else if (Is_block (*sp) && Is_young (*sp)){
 	  Setup_for_gc;
@@ -1447,7 +1447,7 @@ extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
         if (size == 0)
           accu = Atom(Reference_tag);
         else if (size < Max_young_wosize){
-          Alloc_small (accu, size, Reference_tag);
+          ALLOC_SMALL (accu, size, Reference_tag);
 	  do {size--; Field (accu, size) = *sp;} while (size != 0);
 	}else if (Is_block (*sp) && Is_young (*sp)){
 	  Setup_for_gc;

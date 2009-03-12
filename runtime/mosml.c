@@ -329,7 +329,7 @@ value sml_concat(value s1, value s2)        /* ML */
   if (len2 == 0)
     return s1;
   {
-    Push_roots(r, 2);
+    PUSH_ROOTS(r, 2);
     r[0] = s1;
     r[1] = s2;
     len = len1 + len2;
@@ -338,7 +338,7 @@ value sml_concat(value s1, value s2)        /* ML */
     s = alloc_string(len);
     memmove(&Byte(s, 0), &Byte(r[0], 0), len1);
     memmove(&Byte(s, len1), &Byte(r[1], 0), len2);
-    Pop_roots();
+    POP_ROOTS();
     return s;
   }
 }
@@ -509,7 +509,7 @@ value sml_makestring_of_string(value arg)      /* ML */
   value res;
   char *a; char *b;
   unsigned char c;
-  Push_roots(r, 1);
+  PUSH_ROOTS(r, 1);
 
   r[0] = arg;
   arg_len = string_length(arg);
@@ -569,7 +569,7 @@ value sml_makestring_of_string(value arg)      /* ML */
       }
     }
   *b++ = '"';
-  Pop_roots();
+  POP_ROOTS();
   return res;
 }
 
@@ -1190,7 +1190,7 @@ value w8vectodouble(value v)		/* ML */
 #ifdef WORDS_BIGENDIAN
   res = copy_double(Double_val(v));
 #else
-  Push_roots(r, 1);
+  PUSH_ROOTS(r, 1);
   r[0] = v;
   res = copy_double(0.0);
   {
@@ -1198,7 +1198,7 @@ value w8vectodouble(value v)		/* ML */
     for (i=0; i<8; i++)
       Byte(res, i) = Byte(r[0], 7-i);
   }
-  Pop_roots();
+  POP_ROOTS();
 #endif
 
   return res;
@@ -1209,11 +1209,11 @@ value w8vectodouble(value v)		/* ML */
 value doubletow8vec(value v)		/* ML */
 {
   value res;
-  Push_roots(r, 1);
+  PUSH_ROOTS(r, 1);
   r[0] = v;
   res = alloc_string(8);
   Store_double_val(res, Double_val(r[0]));
-  Pop_roots();
+  POP_ROOTS();
 
 #ifndef WORDS_BIGENDIAN
   {

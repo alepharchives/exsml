@@ -30,7 +30,7 @@ value sml_uname(value UNUSED(v))          /* ML */
 {
   struct utsname buf;
   value res;
-  Push_roots(r, 1);
+  PUSH_ROOTS(r, 1);
 
   if (uname(&buf) == -1)
       failwith("uname");
@@ -40,7 +40,7 @@ value sml_uname(value UNUSED(v))          /* ML */
   Field (r[0], 1) = copy_string (buf.sysname);
   Field (r[0], 2) = copy_string (buf.release);
   res = r[0];
-  Pop_roots();
+  POP_ROOTS();
   return res;
 }
 

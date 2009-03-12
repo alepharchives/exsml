@@ -21,7 +21,7 @@ value alloc (mlsize_t wosize, tag_t tag)
 	value result;
 
 	assert (wosize > 0 && wosize <= Max_young_wosize);
-	Alloc_small (result, wosize, tag);
+	ALLOC_SMALL(result, wosize, tag);
 	return result;
 }
 
@@ -37,7 +37,7 @@ value alloc_string(mlsize_t len)
 	mlsize_t wosize = (len + sizeof (value)) / sizeof (value);
 
 	if (wosize <= Max_young_wosize) {
-		Alloc_small (result, wosize, String_tag);
+		ALLOC_SMALL(result, wosize, String_tag);
 	} else {
 		result = alloc_shr (wosize, String_tag);
 	}
@@ -60,7 +60,7 @@ value copy_double(double d)
 {
 	value res;
 
-	Alloc_small(res, Double_wosize, Double_tag);
+	ALLOC_SMALL(res, Double_wosize, Double_tag);
 	Store_double_val(res, d);
 	return res;
 }
@@ -88,7 +88,7 @@ value alloc_array(value (*funct) (char *), char ** arr)
 	if (nbr == 0) {
 		return Atom(0);
 	} else {
-		Push_roots(r, 1);
+		PUSH_ROOTS(r, 1);
 		r[0] = nbr < Max_young_wosize ? alloc(nbr, 0) : alloc_shr(nbr, 0);
 		for (n = 0; n < nbr; n++)
 			Field(r[0], n) = Val_long(0);
@@ -97,7 +97,7 @@ value alloc_array(value (*funct) (char *), char ** arr)
 			modify(&Field(r[0], n), v);
 		}
 		v = r[0];
-		Pop_roots();
+		POP_ROOTS();
 		return v;
 	}
 }
