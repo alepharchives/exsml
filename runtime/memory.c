@@ -175,17 +175,17 @@ void initialize (value * fp, value val)
    the value being written is not a young block. */
 /* Never calls the GC. */
 
-void modify (value * fp, value val)
+void modify (value *fp, value val)
 {
-	value _old_ = *(fp);
-	*(fp) = (val);
+	value old = *(fp);
+	*(fp) = val;
 	if (Is_in_heap (fp)) {
 		if (gc_phase == Phase_mark) {
-			darken (_old_);
+			darken(old);
 		}
 
 		if (Is_block (val) && Is_young (val)
-		    && ! (Is_block (_old_) && Is_young (_old_))) {
+		    && ! (Is_block (old) && Is_young (old))) {
 			*ref_table_ptr++ = (fp);
 			if (ref_table_ptr >= ref_table_limit) {
 				assert (ref_table_ptr == ref_table_limit);
