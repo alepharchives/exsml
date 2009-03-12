@@ -127,13 +127,13 @@ static void make_saddr(union saddr *s, value a) {
 /* ML result type: addr */
 static value newaddr(int len, int namespace, value addrdata) {
   value res;
-  Push_roots(r,1)
+  PUSH_ROOTS(r,1)
   r[0] = addrdata;
   res = alloc_tuple(3);
   Data_addrval(res) = r[0];
   Size_addrval(res) = Val_int(len);
   Nspace_addrval(res) = Val_int(namespace);
-  Pop_roots();
+  POP_ROOTS();
   return (value) res;
 }
 
@@ -141,7 +141,7 @@ static value newaddr(int len, int namespace, value addrdata) {
 /* Return type: sinaddrport = int * ml_s_addr */
 value newsinaddrport(s_addr_t sa, value port) {
   value res;
-  Push_roots(r,1);
+  PUSH_ROOTS(r, 1);
   r[0] = alloc_tuple(2);
 
   Field(r[0], 0) = 0; /* to please the gc */
@@ -150,7 +150,7 @@ value newsinaddrport(s_addr_t sa, value port) {
   modify(&Mlsaddr_sapval(r[0]), newinaddr(sa));
   modify(&Port_sapval(r[0]), port);
   res = r[0];
-  Pop_roots();
+  POP_ROOTS();
   return res;
 }
 
@@ -307,13 +307,13 @@ value msocket_accept(value sock) {
   if (ret == -1)
     failure();
   else {
-    Push_roots(roots,2);
+    PUSH_ROOTS(roots, 2);
     roots[0] = from_saddr(&addr, len);
     roots[1] = newsocket(ret);
     res = alloc_tuple(2);
     modify(&Field(res, 0), roots[1]);
     modify(&Field(res, 1), roots[0]);
-    Pop_roots();
+    POP_ROOTS();
   }
   return res;
 }
@@ -439,12 +439,12 @@ value msocket_recvfrom(value sock, value buff, value offset,
   if (ret == -1)
     failure();
   else {
-    Push_roots(roots, 1);
+    PUSH_ROOTS(roots, 1);
     roots[0] = from_saddr(&addr, len);
     res = alloc_tuple(2);
     modify(&Field(res, 0), Val_int(len));
     modify(&Field(res, 1), roots[0]);
-    Pop_roots();
+    POP_ROOTS();
   }
 
   return res;
@@ -479,7 +479,7 @@ static value fdset_to_list(value sockv, fd_set *fds) {
 #define ys ls[1]
 #define sockv_ ls[2]
 #define sock_  ls[3]
-  Push_roots(ls, 4);
+  PUSH_ROOTS(ls, 4);
   sockv_ = sockv;
   xs = NILval;
   for (i = vlen-1; i >= 0; i--) {
@@ -493,7 +493,7 @@ static value fdset_to_list(value sockv, fd_set *fds) {
     }
   }
   res = xs;
-  Pop_roots();
+  POP_ROOTS();
 #undef xs
 #undef ys
 
@@ -527,7 +527,7 @@ value msocket_select(value rsocks, value wsocks, value esocks,
     failure();
 
   {
-    Push_roots(ls, 6);
+    PUSH_ROOTS(ls, 6);
     ls[3] = rsocks;
     ls[4] = rsocks;
     ls[5] = rsocks;
@@ -538,7 +538,7 @@ value msocket_select(value rsocks, value wsocks, value esocks,
     modify(&Field(res, 0), ls[0]);
     modify(&Field(res, 1), ls[1]);
     modify(&Field(res, 2), ls[2]);
-    Pop_roots();
+    POP_ROOTS();
   }
   return res;
 }
