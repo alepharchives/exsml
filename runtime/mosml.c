@@ -32,6 +32,17 @@
 #include "globals.h"
 #include "mosml.h"
 
+
+void fatal(char *s) {
+	if (s == NULL) {
+		perror(strerror(errno));
+		exit(EXIT_FAILURE);
+	} else {
+		perror(s);
+		exit(EXIT_FAILURE);
+	}
+}
+
 #define Raise_float_if(cond) \
   if( cond )					\
     { raiseprimitive0(float_exn); }

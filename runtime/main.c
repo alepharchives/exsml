@@ -111,14 +111,15 @@ int main(int argc, char * argv[])
 {
   int fd;
   struct exec_trailer trail;
-  int i;
+  int i, r;
   struct longjmp_buffer raise_buf;
   struct channel * chan;
   int verbose_init = 0, percent_free_init = Percent_free_def;
   long minor_heap_init = Minor_heap_def, heap_chunk_init = Heap_chunk_def;
+#ifdef DEBUG
   char * debugger_address = NULL;
 
-#ifdef DEBUG
+
   verbose_init = 1;
 #endif
 
@@ -202,9 +203,12 @@ int main(int argc, char * argv[])
     code_size = trail.code_size;
 
     start_code = (bytecode_t) stat_alloc(code_size);
-    /* TODO: This doesn't check for errors and it has signedness bugs */
-    if (read(fd, (char *) start_code, code_size) != code_size)
-      fatal_error("Fatal error: truncated bytecode file.\n");
+    r = read(fd, (char *) start_code, code_size);
+    if (r == -1) {
+	    fatal(NULL);
+    } else if ((unsigned) r != code_size) {
+	    fatal_error("Fatal error: truncated bytecode file.\n");
+    }
 
 #if defined(WORDS_BIGENDIAN) && !defined(HAVE_ALIGNED_ACCESS_REQUIRED)
     fixup_endianness(start_code, code_size);

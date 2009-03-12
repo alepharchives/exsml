@@ -4,5 +4,6 @@
 #include "mlvalues.h"
 
 char* exnmessage_aux(value);
+void fatal(char *);
 
 #endif /* _mosml_ */
