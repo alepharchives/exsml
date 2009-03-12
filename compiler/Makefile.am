@@ -2,6 +2,10 @@
 
 include Makefile.mosml_deps
 
+CLEANFILES = mosmlcmp mosmllnk mosmltop *.ui *.uo Opcodes.sml \
+	Parser.sml Parser.sig Parser.output Lexer.sml Config.sml \
+	Filename.sml Predef.sml Prim_c.sml Makefile.bak
+
 ## TODO: Move this away
 MOSMLC=camlrunm $(top_srcdir)/bootstrap/mosmlcmp \
 	-stdlib $(top_srcdir)/mosmllib -P none
@@ -102,27 +106,6 @@ Prim_c.sml : $(CAMLRT)/primitives
 mosmltop: $(COMP_OBJS) $(T_OBJS)
 	$(MOSMLL) $(LINKFLAGS) -o mosmltop Maint.uo 
 
-#clean:
-#	rm -f mosmlcmp
-#	rm -f mosmllnk
-#	rm -f mosmltop
-#	rm -f *.ui
-#	rm -f *.uo
-#	rm -f Opcodes.sml
-#	rm -f Parser.sml
-#	rm -f Parser.sig
-#	rm -f Parser.output
-#	rm -f Lexer.sml
-#	rm -f Config.sml
-#	rm -f Filename.sml
-#	rm -f Predef.sml
-#	rm -f Prim_c.sml
-#	rm -f Makefile.bak
-
-#install:
-#	${INSTALL_DATA} mosmlcmp $(LIBDIR)
-#	${INSTALL_DATA} mosmllnk $(LIBDIR)
-#	${INSTALL_DATA} mosmltop $(LIBDIR)
 
 #depend: Filename.sml Config.sml Opcodes.sml Parser.sml Parser.sig Lexer.sml \
 #    Predef.sml Prim_c.sml
