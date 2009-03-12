@@ -84,7 +84,7 @@ CODE callback3_code;
 
 /* The interpreter itself */
 
-extern value interprete(int mode, bytecode_t bprog, int code_size, CODE* rprog)
+extern value interprete(int mode, bytecode_t bprog, CODE* rprog)
 {
 
 /*  mode      = mode (0=init, 1=bytecode exec, 2=code exec)
@@ -1511,7 +1511,7 @@ extern value callback(value closure, value arg)
   extern_sp[0] = arg;
   extern_sp[1] = closure;
   /* callback_depth++; */
-  res = interprete(/* mode=exec */ 2, NULL, 0, &callback1_code);
+  res = interprete(/* mode=exec */ 2, NULL, &callback1_code);
   /* callback_depth--; */
   return res;
 }
@@ -1524,7 +1524,7 @@ extern value callback2(value closure, value arg1, value arg2)
   extern_sp[1] = arg2;
   extern_sp[2] = closure;
   /* callback_depth++; */
-  res = interprete(/* mode=exec */ 2, NULL, 0, &callback2_code);
+  res = interprete(/* mode=exec */ 2, NULL, &callback2_code);
   /* callback_depth--; */
   return res;
 }
@@ -1538,7 +1538,7 @@ extern value callback3(value closure, value arg1, value arg2, value arg3)
   extern_sp[2] = arg3;
   extern_sp[3] = closure;
   /* callback_depth++; */
-  res = interprete(/* mode=exec */ 2, NULL, 0, &callback3_code);
+  res = interprete(/* mode=exec */ 2, NULL, &callback3_code);
   /* callback_depth--; */
   return res;
 }

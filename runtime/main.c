@@ -216,8 +216,8 @@ int main(int argc, char * argv[])
     close_in(chan);
 
     sys_init(argv + i);
-    interprete(/* mode=init */ 0, NULL, 0, NULL);
-    interprete(/* mode=byte exec */ 1, start_code, code_size, NULL);
+    interprete(/* mode=init */ 0, NULL, NULL);
+    interprete(/* mode=byte exec */ 1, start_code, NULL);
     sys_exit(Val_int(0));
 
   } else {
