@@ -153,34 +153,6 @@ value mkexn0val(value exnname) {
   return exnval;
 }
 
-void sys_init(char ** argv)
-{
-  value v;
-  int i;
-
-  void init_float_handler();
-  init_float_handler();
-
-  v = copy_string_array(argv);
-  modify(&Field(global_data, SYS__COMMAND_LINE), v);
-  for (i = SYS__S_IRUSR; i <= SYS__S_IXALL; i++)
-    Field(global_data, i) = Val_long(sys_var_init[i - SYS__S_IRUSR]);
-  Field(global_data, SYS__INTERACTIVE) = Val_false;
-  Field(global_data, SYS__MAX_VECT_LENGTH) = Val_long(Max_wosize);
-  Field(global_data, SYS__MAX_STRING_LENGTH) =
-    Val_long(Max_wosize * sizeof(value) - 2);
-
-  /* Allocate the exn names for pervasize dynamic exceptions */
-  for (i = SYS__FIRST_EXN; i <= SYS__LAST_EXN ; i++) {
-    value exn = mkexnname(globalexn[i - SYS__FIRST_EXN]);
-    modify(&Field(global_data, i), exn);
-  }
-  /* Allocate some exn values for use in interprete */
-  modify(&Field(global_data, EXN_INTERRUPT), mkexn0val(SYS__EXN_INTERRUPT));
-  modify(&Field(global_data, EXN_DIV),       mkexn0val(SYS__EXN_DIV));
-  modify(&Field(global_data, EXN_OVERFLOW),  mkexn0val(SYS__EXN_OVERFLOW));
-}
-
 /* Handling of user interrupts and floating-point errors */
 
 static void mysignal(int signum, void (*handler)(int)) {
@@ -220,10 +192,38 @@ void float_handler(int UNUSED(sig))
 	}
 }
 
-void init_float_handler(void)
+static void init_float_handler(void)
 {
   mysignal(SIGFPE, float_handler);
 }
+
+void sys_init(char ** argv)
+{
+  value v;
+  int i;
+
+  init_float_handler();
+
+  v = copy_string_array(argv);
+  modify(&Field(global_data, SYS__COMMAND_LINE), v);
+  for (i = SYS__S_IRUSR; i <= SYS__S_IXALL; i++)
+    Field(global_data, i) = Val_long(sys_var_init[i - SYS__S_IRUSR]);
+  Field(global_data, SYS__INTERACTIVE) = Val_false;
+  Field(global_data, SYS__MAX_VECT_LENGTH) = Val_long(Max_wosize);
+  Field(global_data, SYS__MAX_STRING_LENGTH) =
+    Val_long(Max_wosize * sizeof(value) - 2);
+
+  /* Allocate the exn names for pervasize dynamic exceptions */
+  for (i = SYS__FIRST_EXN; i <= SYS__LAST_EXN ; i++) {
+    value exn = mkexnname(globalexn[i - SYS__FIRST_EXN]);
+    modify(&Field(global_data, i), exn);
+  }
+  /* Allocate some exn values for use in interprete */
+  modify(&Field(global_data, EXN_INTERRUPT), mkexn0val(SYS__EXN_INTERRUPT));
+  modify(&Field(global_data, EXN_DIV),       mkexn0val(SYS__EXN_DIV));
+  modify(&Field(global_data, EXN_OVERFLOW),  mkexn0val(SYS__EXN_OVERFLOW));
+}
+
 
 /* Search path function */
 char * searchpath(char * name)
