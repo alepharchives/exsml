@@ -135,13 +135,15 @@ static int sys_var_init[] = {
    possibly in C malloc space */
 
 value mkexnname(char* name) {
-  value ref;
-  Push_roots(r, 1);
-  r[0] = copy_string(name);
-  ref = alloc_shr(1, Reference_tag);
-  modify(&Field(ref, 0), r[0]);
-  Pop_roots();
-  return ref;
+	value ref;
+
+	Push_roots(r, 1);
+	r[0] = copy_string(name);
+	ref = alloc_shr(1, Reference_tag);
+	modify(&Field(ref, 0), r[0]);
+	Pop_roots();
+
+	return ref;
 }
 
 /* Create an exn value = a pair of a string ref and () : unit */
