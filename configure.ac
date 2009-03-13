@@ -1,5 +1,6 @@
 AC_PREREQ(2.61)
 AC_INIT([runtime/interp.c])
+AC_CONFIG_AUX_DIR(config)
 
 VERSION_MAJOR=0
 VERSION_MINOR=1

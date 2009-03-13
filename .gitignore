@@ -7,12 +7,12 @@ core
 .svn
 TAGS
 ChangeLog
+/config
 config.guess
 config.sub
 libtool
 ltmain.sh
 m4
-depcomp
 compiler/Opcodes.sml
 compiler/Parser.sig
 compiler/Parser.sml
@@ -28,8 +28,6 @@ aclocal.m4
 autom4te.cache
 config.h.in
 configure
-install-sh
-missing
 Makefile
 Makefile.in
 config.h
