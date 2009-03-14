@@ -1,6 +1,7 @@
 *.u[io]
 *.o
 *.lo
+*.patch
 core.*
 core
 .deps
