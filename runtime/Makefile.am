@@ -15,7 +15,7 @@ C_SOURCES = interp.c misc.c stacks.c fix_code.c main.c \
 GEN_SOURCES = prims.c
 GEN_HS = opnames.h
 
-CLEANFILES = opnames.h prims.c
+CLEANFILES = opnames.h prims.c primitives
 
 debugger.c: opnames.h
 
