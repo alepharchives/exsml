@@ -108,9 +108,17 @@ void print_pc(pc)
 
 bytecode_t disasm_instr(bytecode_t pc)
 {
+	value accu;
+	printf("Executing %s\n", names_of_instructions[*pc]);
+
 	switch (*pc) {
+	case GETGLOBAL:
+		accu = Field(global_data, u16(pc));
+		printf("Global %d : ", u16(pc));
+		print_value(accu);
+		break;
 	default:
-		printf("Executing %s\n", names_of_instructions[*pc]);
+		break;
 	}
 
 	return pc;
