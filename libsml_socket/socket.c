@@ -172,65 +172,6 @@ static value from_saddr(union saddr *s, int len) {
   }
 }
 
-void failure()
-{
-  switch (errno) {
-  case EPROTONOSUPPORT :
-    failwith("EPROTONOSUPPORT"); break;
-  case EMFILE :
-    failwith("EMFILE"); break;
-  case ENFILE :
-    failwith("ENFILE"); break;
-  case EACCES :
-    failwith("EACCES"); break;
-  case ENOBUFS :
-    failwith("ENOBUFS"); break;
-  case EBADF:
-    failwith("EBADF"); break;
-  case ENOTSOCK:
-    failwith("ENOTSOCK"); break;
-  case EOPNOTSUPP:
-    failwith("EOPNOTSUPP"); break;
-  case EWOULDBLOCK:
-    failwith("EWOULDBLOCK"); break;
-  case EADDRNOTAVAIL:
-    failwith("EADDRNOTAVAIL"); break;
-  case EADDRINUSE:
-    failwith("EADDRINUSE"); break;
-  case EINVAL:
-    failwith("EINVAL"); break;
-  case EAFNOSUPPORT:
-    failwith("EAFNOSUPPORT"); break;
-  case EISCONN:
-    failwith("EISCONN"); break;
-  case ETIMEDOUT:
-    failwith("ETIMEDOUT"); break;
-  case ECONNREFUSED:
-    failwith("ECONNREFUSED"); break;
-  case ENETUNREACH:
-    failwith("ENETUNREACH"); break;
-  case EINPROGRESS:
-    failwith("EINPROGRESS"); break;
-  case EALREADY:
-    failwith("EALREADY"); break;
-  case ENOENT:
-    failwith("ENOENT"); break;
-  case EINTR:
-    failwith("EINTR"); break;
-  case EMSGSIZE:
-    failwith("EMSGSIZE"); break;
-  case ENOTCONN:
-    failwith("ENOTCONN"); break;
-  case EPIPE:
-    failwith("EPIPE"); break;
-  case ECONNRESET:
-    failwith("ECONNRESET"); break;
-  default:
-    failwith("EUNSPECIFIED"); break;
-  }
-
-}
-
 /* ML type: sock_ -> sock_ -> int */
 value msocket_desccmp(value sockval1, value sockval2) {
   int sock1 = Sock_val(sockval1);
@@ -280,7 +221,7 @@ value msocket_newinetaddr(value name, value port) {
 value msocket_socket(value namespace, value style) {
   int result = socket(Int_val(namespace), Int_val(style), 0);
   if (result < 0)
-    failure();
+    failwith(strerror(errno));
   return newsocket(result);
 }
 
@@ -305,7 +246,7 @@ value msocket_accept(value sock) {
   ret = accept(Sock_val(sock), &addr.sockaddr_gen, &len);
   leave_blocking_section();
   if (ret == -1)
-    failure();
+    failwith(strerror(errno));
   else {
     PUSH_ROOTS(roots, 2);
     roots[0] = from_saddr(&addr, len);
@@ -326,7 +267,7 @@ value msocket_bind(value socket, value address) {
   size  = Int_val(Size_addrval(address));
   ret = bind(Sock_val(socket), &addr.sockaddr_gen, size);
   if (ret == -1)
-    failure();
+    failwith(strerror(errno));
   return Val_unit;
 }
 
@@ -341,7 +282,7 @@ value msocket_connect(value socket, value address) {
   /* should enter_blocking_section() be inserted? */
   ret = connect(Sock_val(socket), &addr.sockaddr_gen, size);
   if (ret == -1)
-    failure();
+    failwith(strerror(errno));
   return Val_unit;
 }
 
@@ -350,7 +291,7 @@ value msocket_listen(value sock, value queuelength) {
   int ret;
   ret =listen(Sock_val(sock), Int_val(queuelength));
   if (ret == -1)
-    failure();
+    failwith(strerror(errno));
   return Val_unit;
 }
 
@@ -366,7 +307,7 @@ value msocket_shutdown(value sock, value how) {
   int ret;
   ret = shutdown(Sock_val(sock), Int_val(how));
   if (ret == -1)
-    failure();
+    failwith(strerror(errno));
   return Val_unit;
 }
 
@@ -383,7 +324,7 @@ value msocket_send(value sock, value buff, value offset, value size,
              Int_val(flags));
   leave_blocking_section();
   if (ret == -1)
-    failure();
+    failwith(strerror(errno));
   return Val_int(ret);
 }
 
@@ -403,7 +344,7 @@ value msocket_sendto(value sock, value buff, value tup, value flags,
                &addr.sockaddr_gen, Int_val(Size_addrval(address)));
   leave_blocking_section();
   if (ret == -1)
-    failure();
+    failwith(strerror(errno));
   return Val_int(ret);
 }
 
@@ -417,7 +358,7 @@ value msocket_recv(value sock, value buff, value offset,
              Int_val(flags));
   leave_blocking_section();
   if (ret == -1)
-    failure();
+    failwith(strerror(errno));
   return Val_int(ret);
 }
 
@@ -437,7 +378,7 @@ value msocket_recvfrom(value sock, value buff, value offset,
   leave_blocking_section();
 
   if (ret == -1)
-    failure();
+    failwith(strerror(errno));
   else {
     PUSH_ROOTS(roots, 1);
     roots[0] = from_saddr(&addr, len);
@@ -524,7 +465,7 @@ value msocket_select(value rsocks, value wsocks, value esocks,
   ret = select(FD_SETSIZE, &rfd, &wfd, &efd, top);
 
   if (ret == -1)
-    failure();
+    failwith(strerror(errno));
 
   {
     PUSH_ROOTS(ls, 6);
