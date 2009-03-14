@@ -21,7 +21,6 @@
 #include "str.h"
 #include "unalignd.h"
 #include "interp.h"
-#include "expand.h"
 #include "globals.h"
 
 #ifdef DEBUG
