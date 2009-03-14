@@ -60,7 +60,7 @@ static void oldify (value *p, value v)
   mlsize_t i;
 
  tail_call:
-  if (Is_block (v) && Is_young (v)){
+  if (IS_BLOCK(v) && Is_young (v)){
     assert (Hp_val (v) < young_ptr);
     if (Is_blue_val (v)){    /* Already forwarded ? */
       *p = Field (v, 0);     /* Then the forward pointer is the first field. */

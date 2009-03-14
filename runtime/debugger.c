@@ -40,8 +40,8 @@ static void print_val(value v, long d)
 		return;
 	}
 
-	if (Is_long(v)) {
-		printf("%ld", Long_val(v));
+	if (IS_LONG(v)) {
+		printf("%ld", VAL_TO_LONG(v));
 	} else if (!Is_in_heap (v) && !Is_young (v)) {
 		printf("0x%lx", v);
 	} else {
@@ -108,6 +108,7 @@ void print_pc(pc)
 
 bytecode_t disasm_instr(bytecode_t pc)
 {
+	
 	return pc;
 }
 

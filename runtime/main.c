@@ -143,7 +143,7 @@ int main(int argc, char * argv[])
       case 'V':
         fprintf(stderr, "The Caml Light runtime system, version %s\n",
                 VERSION);
-	sys_exit(Val_int(0));
+	sys_exit(INT_TO_VAL(0));
       default:
         fatal_error_arg("Unknown option %s.\n", argv[i]);
       }
@@ -222,7 +222,7 @@ int main(int argc, char * argv[])
     sys_init(argv + i);
     interprete(/* mode=init */ 0, NULL, NULL);
     interprete(/* mode=byte exec */ 1, start_code, NULL);
-    sys_exit(Val_int(0));
+    sys_exit(INT_TO_VAL(0));
 
   } else {
     if (Field(exn_bucket, 0) == Field(global_data, SYS__EXN_MEMORY))

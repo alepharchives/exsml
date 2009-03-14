@@ -24,8 +24,8 @@ static unsigned long size_64;  /* Size in words of 64-bit block for struct. */
 static void emit_compact(struct channel * chan, value v)
 {
  tailcall:
-  if (Is_long(v)) {
-    long n = Long_val(v);
+  if (IS_LONG(v)) {
+    long n = VAL_TO_LONG(v);
     if (n >= 0 && n < 0x40) {
       putch(chan, PREFIX_SMALL_INT + n);
     } else if (n >= -(1 << 7) && n < (1 << 7)) {

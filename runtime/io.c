@@ -48,12 +48,12 @@ struct channel * open_descr(int fd)
 
 value open_descriptor(value fd)       /* ML */
 {
-	return (value) open_descr(Int_val(fd));
+	return (value) open_descr(VAL_TO_INT(fd));
 }
 
 value channel_descriptor(struct channel * channel)   /* ML */
 {
-	return Val_long(channel->fd);
+	return LONG_TO_VAL(channel->fd);
 }
 
 value channel_size(struct channel * channel)      /* ML */
@@ -65,7 +65,7 @@ value channel_size(struct channel * channel)      /* ML */
 	if (lseek(channel->fd, channel->offset, 0) != channel->offset)
 		sys_error();
 
-	return Val_long(end);
+	return LONG_TO_VAL(end);
 }
 
 /* Output */
@@ -108,7 +108,7 @@ void flush_stdouterr(void)
 
 value output_char(struct channel * channel, value ch)  /* ML */
 {
-	putch(channel, Long_val(ch));
+	putch(channel, VAL_TO_LONG(ch));
 	return Atom(0);
 }
 
@@ -122,7 +122,7 @@ void putword(struct channel * channel, uint32_t w)
 
 value output_int(struct channel * channel, value w)    /* ML */
 {
-	putword(channel, Long_val(w));
+	putword(channel, VAL_TO_LONG(w));
 	return Atom(0);
 }
 
@@ -159,8 +159,8 @@ void putblock(struct channel * channel, char * p, unsigned n)
 value output(value channel, value buff, value start, value length) /* ML */
 {
 	putblock((struct channel *) channel,
-		 &Byte(buff, Long_val(start)),
-		 (unsigned) Long_val(length));
+		 &Byte(buff, VAL_TO_LONG(start)),
+		 (unsigned) VAL_TO_LONG(length));
 	return Atom(0);
 }
 
@@ -168,7 +168,7 @@ value seek_out(struct channel * channel, value pos)    /* ML */
 {
 	long dest;
 
-	dest = Long_val(pos);
+	dest = VAL_TO_LONG(pos);
 	if (dest >= channel->offset &&
 	    dest <= channel->offset + channel->max - channel->buff) {
 		channel->curr = channel->buff + dest - channel->offset;
@@ -182,7 +182,7 @@ value seek_out(struct channel * channel, value pos)    /* ML */
 
 value pos_out(struct channel * channel)          /* ML */
 {
-	return Val_long(channel->offset + channel->curr - channel->buff);
+	return LONG_TO_VAL(channel->offset + channel->curr - channel->buff);
 }
 
 value close_out(struct channel * channel)     /* ML */
@@ -261,7 +261,7 @@ value input_char(struct channel * channel)       /* ML */
 {
 	unsigned char c;
 	c = getch(channel);
-	return Val_long(c);
+	return LONG_TO_VAL(c);
 }
 
 uint32_t getword(struct channel * channel)
@@ -283,7 +283,7 @@ value input_int(struct channel * channel)        /* ML */
 #ifdef SIXTYFOUR
 	i = (i << 32) >> 32;          /* Force sign extension */
 #endif
-	return Val_long(i);
+	return LONG_TO_VAL(i);
 }
 
 int getblock(struct channel * channel, char * p, unsigned n,
@@ -339,23 +339,23 @@ int really_getblock(struct channel * chan, char * p, unsigned long n)
 
 value input(value channel, value buff, value start, value length) /* ML */
 {
-	return Val_long(getblock((struct channel *) channel,
-				 &Byte(buff, Long_val(start)),
-				 (unsigned) Long_val(length),
+	return LONG_TO_VAL(getblock((struct channel *) channel,
+				 &Byte(buff, VAL_TO_LONG(start)),
+				 (unsigned) VAL_TO_LONG(length),
 				 /* nonblocking = */ 0));
 }
 
 value input_nonblocking(value channel, value buff, value start, value length) /* ML */
 {
 	int n = getblock((struct channel *) channel,
-			 &Byte(buff, Long_val(start)),
-			 (unsigned) Long_val(length),
+			 &Byte(buff, VAL_TO_LONG(start)),
+			 (unsigned) VAL_TO_LONG(length),
 			 /* nonblocking = */ 1);
 	if (n == -1)		/* Non-blocking read returned no data */
 		return NONE;
 	else {
 		value res = alloc(1, SOMEtag);
-		Field(res, 0) = Val_long(n);
+		Field(res, 0) = LONG_TO_VAL(n);
 		return res;
 	}
 }
@@ -364,7 +364,7 @@ value seek_in(struct channel * channel, value pos)     /* ML */
 {
 	long dest;
 
-	dest = Long_val(pos);
+	dest = VAL_TO_LONG(pos);
 	if (dest >= channel->offset - (channel->max - channel->buff) &&
 	    dest <= channel->offset) {
 		channel->curr = channel->max - (channel->offset - dest);
@@ -379,7 +379,7 @@ value seek_in(struct channel * channel, value pos)     /* ML */
 
 value pos_in(struct channel * channel)           /* ML */
 {
-	return Val_long(channel->offset - (channel->max - channel->curr));
+	return LONG_TO_VAL(channel->offset - (channel->max - channel->curr));
 }
 
 value close_in(struct channel * channel)     /* ML */
@@ -411,7 +411,7 @@ value input_scan_line(struct channel * channel)       /* ML */
 				/* Buffer is full, no room to read more characters from the input.
 				   Return the number of characters in the buffer, with negative
 				   sign to indicate that no newline was encountered. */
-				return Val_long(-(channel->max - channel->curr));
+				return LONG_TO_VAL(-(channel->max - channel->curr));
 			}
 			/* Fill the buffer as much as possible */
 			n = really_read(channel->fd, channel->max, channel->end - channel->max,
@@ -420,12 +420,12 @@ value input_scan_line(struct channel * channel)       /* ML */
 				/* End-of-file encountered. Return the number of characters in the
 				   buffer, with negative sign since we haven't encountered
 				   a newline. */
-				return Val_long(-(channel->max - channel->curr));
+				return LONG_TO_VAL(-(channel->max - channel->curr));
 			}
 			channel->offset += n;
 			channel->max += n;
 		}
 	} while (*p++ != '\n');
 	/* Found a newline. Return the length of the line, newline included. */
-	return Val_long(p - channel->curr);
+	return LONG_TO_VAL(p - channel->curr);
 }

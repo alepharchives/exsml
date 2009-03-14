@@ -60,13 +60,13 @@ static int sml_equal_aux(value v1, value v2)
 
  again:
   if (v1 == v2) return 1;
-  if (Is_long(v1) || Is_long(v2)) return 0;
+  if (IS_LONG(v1) || IS_LONG(v2)) return 0;
   if (!Is_in_heap(v1) && !Is_young(v1)) return 0;
   if (!Is_in_heap(v2) && !Is_young(v2)) return 0;
   if (Tag_val(v1) != Tag_val(v2)) return 0;
   switch(Tag_val(v1)) {
   case String_tag:
-    return (compare_strings(v1, v2) == Val_long(0));
+    return (compare_strings(v1, v2) == LONG_TO_VAL(0));
   case Double_tag:
     return (Double_val(v1) == Double_val(v2));
   case Reference_tag:  /* Different reference cells are not equal! */
@@ -100,15 +100,15 @@ value sml_not_equal(value v1, value v2) /* ML */
 
 value sml_system(value cmd)        /* ML */
 {
-  return Val_int(system(String_val(cmd)));
+  return INT_TO_VAL(system(String_val(cmd)));
 }
 
 value sml_abs_int(value x)          /* ML */
 { value tmp, v;
-  tmp = Long_val(x);
+  tmp = VAL_TO_LONG(x);
   if( tmp < 0 ) tmp = -tmp;
-  v = Val_long(tmp);
-  if( Long_val(v) != tmp )
+  v = LONG_TO_VAL(tmp);
+  if( VAL_TO_LONG(v) != tmp )
     raise_overflow();
   return v;
 }
@@ -119,17 +119,17 @@ value sml_floor(value f)              /* ML */
   value v;
   r = Double_val(f);
   if( r >= 0.0 )
-    { if( r >= ((double) Max_long + 1) ) goto raise_floor;
+    { if( r >= ((double) MAX_TAGGED_LONG + 1) ) goto raise_floor;
       i = (long) r;
     }
   else
     {
-      if( r < ((double) Min_long) ) goto raise_floor;
+      if( r < ((double) MIN_TAGGED_LONG) ) goto raise_floor;
       i = (long) r;
       if( r < ((double) i) ) i -= 1;
     }
-  v = Val_long(i);
-  if( Long_val(v) != i )  goto raise_floor;
+  v = LONG_TO_VAL(i);
+  if( VAL_TO_LONG(v) != i )  goto raise_floor;
   return v;
 
 raise_floor:
@@ -143,16 +143,16 @@ value sml_ceil(value f)              /* ML */
   value v;
   r = Double_val(f);
   if( r >= 0.0 )
-    { if( r > ((double) (Max_long)) ) goto raise_ceil;
+    { if( r > ((double) (MAX_TAGGED_LONG)) ) goto raise_ceil;
       i = (long) r;
       if( r > ((double) i) ) i += 1;
     }
   else
-    { if( r <= ((double) (Min_long-1)) ) goto raise_ceil;
+    { if( r <= ((double) (MIN_TAGGED_LONG-1)) ) goto raise_ceil;
       i = (long) r;
     }
-  v = Val_long(i);
-  if( Long_val(v) != i )  goto raise_ceil;
+  v = LONG_TO_VAL(i);
+  if( VAL_TO_LONG(v) != i )  goto raise_ceil;
   return v;
 
 raise_ceil:
@@ -167,11 +167,12 @@ value sml_round(value f)              /* ML */
 	value v;
 
 	r = rint(Double_val(f));
-	if ((r > (double) (Max_long)) || (r < (double)(Min_long)))
+	if ((r > (double) (MAX_TAGGED_LONG))
+	    || (r < (double)(MIN_TAGGED_LONG)))
 		goto raise_round;
 
 	i = (long) r;
-	v = Val_long(i);
+	v = LONG_TO_VAL(i);
 
 	return v;
 
@@ -185,10 +186,10 @@ value sml_trunc(value f)              /* ML */
   long i;
   value v;
   r = Double_val(f);
-  if ((r >= (double) (Max_long+1)) || (r <= (double)(Min_long-1)))
+  if ((r >= (double) (MAX_TAGGED_LONG+1)) || (r <= (double)(MIN_TAGGED_LONG-1)))
     goto raise_trunc;
   i = (long) r;
-  v = Val_long(i);
+  v = LONG_TO_VAL(i);
   return v;
 
 raise_trunc:
@@ -318,9 +319,9 @@ value sml_int_of_string(value s)          /* ML */
     sign = -1;
     p++;
   }
-  res = sign * scandec(p, (unsigned long)Min_long);
-  v = Val_long(res);
-  if( Long_val(v) != res )
+  res = sign * scandec(p, (unsigned long) MIN_TAGGED_LONG);
+  v = LONG_TO_VAL(res);
+  if( VAL_TO_LONG(v) != res )
     goto raise_failure;
   return v;
 
@@ -358,7 +359,7 @@ value sml_chr(value v)          /* ML */
 {
   long i;
   value s;
-  i = Long_val(v);
+  i = VAL_TO_LONG(v);
   if( i < 0 || i > 255 )
     raiseprimitive0(SYS__EXN_CHR);
   s = alloc_string(1);
@@ -372,7 +373,7 @@ value sml_ord(value s)          /* ML */
   if( string_length(s) == 0 )
     raiseprimitive0(SYS__EXN_ORD);
   i = (unsigned char) *(&Byte(s,0));
-  return Val_long(i);
+  return LONG_TO_VAL(i);
 }
 
 value sml_float_of_string(value s)        /* ML */
@@ -451,7 +452,7 @@ value sml_string_of_int(value arg)      /* ML */
 {
   char format_buffer[32];
 
-  sprintf(format_buffer, "%ld", Long_val(arg));
+  sprintf(format_buffer, "%ld", VAL_TO_LONG(arg));
   mkSMLMinus(format_buffer);
   return copy_string(format_buffer);
 }
@@ -479,7 +480,7 @@ value sml_makestring_of_char(value arg)      /* ML */
   unsigned char c;
   char buff[8];
 
-  c = Int_val(arg);
+  c = VAL_TO_INT(arg);
   switch (c)
     {
     case '"':   return copy_string("#\"\\\"\"");
@@ -600,8 +601,8 @@ value sml_getrealtime (value v) /* ML */
 
   gettimeofday(&tp, NULL);
   res = alloc (2, 0);
-  Field (res, 0) = Val_long (tp.tv_sec+TIMEBASE);
-  Field (res, 1) = Val_long (tp.tv_usec);
+  Field (res, 0) = LONG_TO_VAL (tp.tv_sec+TIMEBASE);
+  Field (res, 1) = LONG_TO_VAL (tp.tv_usec);
   return res;
 }
 
@@ -612,13 +613,13 @@ value sml_getrutime (value v) /* ML */
   struct rusage rusages;
   getrusage(RUSAGE_SELF, &rusages);
   res = alloc (6, 0);
-  Field (res, 2) = Val_long (rusages.ru_stime.tv_sec);
-  Field (res, 3) = Val_long (rusages.ru_stime.tv_usec);
-  Field (res, 4) = Val_long (rusages.ru_utime.tv_sec);
-  Field (res, 5) = Val_long (rusages.ru_utime.tv_usec);
+  Field (res, 2) = LONG_TO_VAL (rusages.ru_stime.tv_sec);
+  Field (res, 3) = LONG_TO_VAL (rusages.ru_stime.tv_usec);
+  Field (res, 4) = LONG_TO_VAL (rusages.ru_utime.tv_sec);
+  Field (res, 5) = LONG_TO_VAL (rusages.ru_utime.tv_usec);
 
-  Field (res, 0) = Val_long (gc_time.tv_sec);
-  Field (res, 1) = Val_long (gc_time.tv_usec);
+  Field (res, 0) = LONG_TO_VAL (gc_time.tv_sec);
+  Field (res, 1) = LONG_TO_VAL (gc_time.tv_usec);
 
   return res;
 }
@@ -626,7 +627,7 @@ value sml_getrutime (value v) /* ML */
 
 value sml_errno(value arg)          /* ML */
 {
-  return Val_long(errno);
+  return LONG_TO_VAL(errno);
 }
 
 value sml_getdir(value arg)		/* ML */
@@ -719,7 +720,7 @@ value sml_settime(value path, value time)          /* ML */
 value sml_access(value path, value permarg)          /* ML */
 {
   long perms;
-  long perm = Long_val(permarg);
+  long perm = VAL_TO_LONG(permarg);
 
   perms  = ((0x1 & perm) ? R_OK : 0);
   perms |= ((0x2 & perm) ? W_OK : 0);
@@ -745,7 +746,7 @@ value sml_tmpnam(value v)          /* ML */
 value sml_errormsg(value err)   /* ML */
 {
   int errnum;
-  errnum = Long_val(err);
+  errnum = VAL_TO_LONG(err);
   return copy_string(strerror(errnum));
 }
 
@@ -788,7 +789,7 @@ value sml_pow(value f1, value f2)           /* ML */
   if (r1 == 0.0 && r2 == 0.0)
     return copy_double(1.0);
   if (   (r1 == 0.0 && r2 < 0.0)
-      || (r1 < 0.0 && (   fabs(r2) > (double) (Max_long)
+      || (r1 < 0.0 && (   fabs(r2) > (double) (MAX_TAGGED_LONG)
 		       || r2 != (double)(long)r2)))
     raiseprimitive0(float_exn);
   r = pow(r1, r2);
@@ -806,15 +807,15 @@ value sml_localtime (value v) /* ML */
   time_t clock = (long) (Double_val(v));
   tmr = localtime(&clock);
   res = alloc (9, 0);
-  Field (res, 0) = Val_long ((*tmr).tm_hour);
-  Field (res, 1) = Val_long ((*tmr).tm_isdst);
-  Field (res, 2) = Val_long ((*tmr).tm_mday);
-  Field (res, 3) = Val_long ((*tmr).tm_min);
-  Field (res, 4) = Val_long ((*tmr).tm_mon);
-  Field (res, 5) = Val_long ((*tmr).tm_sec);
-  Field (res, 6) = Val_long ((*tmr).tm_wday);
-  Field (res, 7) = Val_long ((*tmr).tm_yday);
-  Field (res, 8) = Val_long ((*tmr).tm_year);
+  Field (res, 0) = LONG_TO_VAL ((*tmr).tm_hour);
+  Field (res, 1) = LONG_TO_VAL ((*tmr).tm_isdst);
+  Field (res, 2) = LONG_TO_VAL ((*tmr).tm_mday);
+  Field (res, 3) = LONG_TO_VAL ((*tmr).tm_min);
+  Field (res, 4) = LONG_TO_VAL ((*tmr).tm_mon);
+  Field (res, 5) = LONG_TO_VAL ((*tmr).tm_sec);
+  Field (res, 6) = LONG_TO_VAL ((*tmr).tm_wday);
+  Field (res, 7) = LONG_TO_VAL ((*tmr).tm_yday);
+  Field (res, 8) = LONG_TO_VAL ((*tmr).tm_year);
 
   return res;
 }
@@ -826,15 +827,15 @@ value sml_gmtime (value v) /* ML */
   time_t clock = (long) (Double_val(v));
   tmr = gmtime(&clock);
   res = alloc (9, 0);
-  Field (res, 0) = Val_long ((*tmr).tm_hour);
-  Field (res, 1) = Val_long ((*tmr).tm_isdst);
-  Field (res, 2) = Val_long ((*tmr).tm_mday);
-  Field (res, 3) = Val_long ((*tmr).tm_min);
-  Field (res, 4) = Val_long ((*tmr).tm_mon);
-  Field (res, 5) = Val_long ((*tmr).tm_sec);
-  Field (res, 6) = Val_long ((*tmr).tm_wday);
-  Field (res, 7) = Val_long ((*tmr).tm_yday);
-  Field (res, 8) = Val_long ((*tmr).tm_year);
+  Field (res, 0) = LONG_TO_VAL ((*tmr).tm_hour);
+  Field (res, 1) = LONG_TO_VAL ((*tmr).tm_isdst);
+  Field (res, 2) = LONG_TO_VAL ((*tmr).tm_mday);
+  Field (res, 3) = LONG_TO_VAL ((*tmr).tm_min);
+  Field (res, 4) = LONG_TO_VAL ((*tmr).tm_mon);
+  Field (res, 5) = LONG_TO_VAL ((*tmr).tm_sec);
+  Field (res, 6) = LONG_TO_VAL ((*tmr).tm_wday);
+  Field (res, 7) = LONG_TO_VAL ((*tmr).tm_yday);
+  Field (res, 8) = LONG_TO_VAL ((*tmr).tm_year);
   return res;
 }
 
@@ -842,15 +843,15 @@ value sml_mktime (value v) /* ML */
 {
   struct tm tmr;
 
-  tmr.tm_hour  = Long_val(Field (v, 0));
-  tmr.tm_isdst = Long_val(Field (v, 1));
-  tmr.tm_mday  = Long_val(Field (v, 2));
-  tmr.tm_min   = Long_val(Field (v, 3));
-  tmr.tm_mon   = Long_val(Field (v, 4));
-  tmr.tm_sec   = Long_val(Field (v, 5));
-  tmr.tm_wday  = Long_val(Field (v, 6));
-  tmr.tm_yday  = Long_val(Field (v, 7));
-  tmr.tm_year  = Long_val(Field (v, 8));
+  tmr.tm_hour  = VAL_TO_LONG(Field (v, 0));
+  tmr.tm_isdst = VAL_TO_LONG(Field (v, 1));
+  tmr.tm_mday  = VAL_TO_LONG(Field (v, 2));
+  tmr.tm_min   = VAL_TO_LONG(Field (v, 3));
+  tmr.tm_mon   = VAL_TO_LONG(Field (v, 4));
+  tmr.tm_sec   = VAL_TO_LONG(Field (v, 5));
+  tmr.tm_wday  = VAL_TO_LONG(Field (v, 6));
+  tmr.tm_yday  = VAL_TO_LONG(Field (v, 7));
+  tmr.tm_year  = VAL_TO_LONG(Field (v, 8));
 
   return copy_double((double) mktime(&tmr));
 }
@@ -860,15 +861,15 @@ value sml_asctime (value v) /* ML */
   struct tm tmr;
   char *res;
 
-  tmr.tm_hour  = Long_val(Field (v, 0));
-  tmr.tm_isdst = Long_val(Field (v, 1));
-  tmr.tm_mday  = Long_val(Field (v, 2));
-  tmr.tm_min   = Long_val(Field (v, 3));
-  tmr.tm_mon   = Long_val(Field (v, 4));
-  tmr.tm_sec   = Long_val(Field (v, 5));
-  tmr.tm_wday  = Long_val(Field (v, 6));
-  tmr.tm_yday  = Long_val(Field (v, 7));
-  tmr.tm_year  = Long_val(Field (v, 8));
+  tmr.tm_hour  = VAL_TO_LONG(Field (v, 0));
+  tmr.tm_isdst = VAL_TO_LONG(Field (v, 1));
+  tmr.tm_mday  = VAL_TO_LONG(Field (v, 2));
+  tmr.tm_min   = VAL_TO_LONG(Field (v, 3));
+  tmr.tm_mon   = VAL_TO_LONG(Field (v, 4));
+  tmr.tm_sec   = VAL_TO_LONG(Field (v, 5));
+  tmr.tm_wday  = VAL_TO_LONG(Field (v, 6));
+  tmr.tm_yday  = VAL_TO_LONG(Field (v, 7));
+  tmr.tm_year  = VAL_TO_LONG(Field (v, 8));
 
   res = asctime(&tmr);
   if (res == NULL)
@@ -883,15 +884,15 @@ value sml_strftime (value fmt, value v) /* ML */
   char buf[BUFSIZE];
   long ressize;
 
-  tmr.tm_hour  = Long_val(Field (v, 0));
-  tmr.tm_isdst = Long_val(Field (v, 1));
-  tmr.tm_mday  = Long_val(Field (v, 2));
-  tmr.tm_min   = Long_val(Field (v, 3));
-  tmr.tm_mon   = Long_val(Field (v, 4));
-  tmr.tm_sec   = Long_val(Field (v, 5));
-  tmr.tm_wday  = Long_val(Field (v, 6));
-  tmr.tm_yday  = Long_val(Field (v, 7));
-  tmr.tm_year  = Long_val(Field (v, 8));
+  tmr.tm_hour  = VAL_TO_LONG(Field (v, 0));
+  tmr.tm_isdst = VAL_TO_LONG(Field (v, 1));
+  tmr.tm_mday  = VAL_TO_LONG(Field (v, 2));
+  tmr.tm_min   = VAL_TO_LONG(Field (v, 3));
+  tmr.tm_mon   = VAL_TO_LONG(Field (v, 4));
+  tmr.tm_sec   = VAL_TO_LONG(Field (v, 5));
+  tmr.tm_wday  = VAL_TO_LONG(Field (v, 6));
+  tmr.tm_yday  = VAL_TO_LONG(Field (v, 7));
+  tmr.tm_year  = VAL_TO_LONG(Field (v, 8));
 
   ressize = strftime(buf, BUFSIZE, String_val(fmt), &tmr);
   if (ressize == 0 || ressize == BUFSIZE)
@@ -925,7 +926,7 @@ value sml_filesize(value path)          /* ML */
 
   if (stat(String_val(path), &buf) == -1)
       failwith("stat");
-  return (Val_long (buf.st_size));
+  return (LONG_TO_VAL (buf.st_size));
 }
 
 value sml_int_of_hex(value s)          /* ML */
@@ -945,9 +946,9 @@ value sml_int_of_hex(value s)          /* ML */
   /* skip 0x in s */
   p += 2;
 
-  res = sign * scanhex(p, (unsigned long)Min_long);
-  v = Val_long(res);
-  if( Long_val(v) != res )
+  res = sign * scanhex(p, (unsigned long)MIN_TAGGED_LONG);
+  v = LONG_TO_VAL(res);
+  if( VAL_TO_LONG(v) != res )
     goto raise_failure;
   return v;
 
@@ -967,8 +968,8 @@ value sml_word_of_hex(value s)          /* ML */
   /* skip 0wx in s */
   p += 3;
 
-  res = scanhex(p, 2 * (unsigned long)Min_long);
-  v = Val_long((long)res);
+  res = scanhex(p, 2 * (unsigned long)MIN_TAGGED_LONG);
+  v = LONG_TO_VAL((long)res);
   return v;
 }
 
@@ -982,8 +983,8 @@ value sml_word_of_dec(value s)          /* ML */
   /* skip 0w in s */
   p += 2;
 
-  res = (long)scandec(p, 2 * (unsigned long)Min_long);
-  v = Val_long((long)res);
+  res = (long)scandec(p, 2 * (unsigned long)MIN_TAGGED_LONG);
+  v = LONG_TO_VAL((long)res);
   return v;
 }
 
@@ -991,7 +992,7 @@ value sml_hexstring_of_word(value arg)      /* ML */
 {
   char format_buffer[32];
 
-  sprintf(format_buffer, "0wx%lX", Long_val((unsigned long)arg));
+  sprintf(format_buffer, "0wx%lX", VAL_TO_LONG((unsigned long)arg));
   return copy_string(format_buffer);
 }
 
@@ -1042,12 +1043,12 @@ int isdead(value v)
 {
   return v == (value)NULL
          || (gc_phase == Phase_weak
-	     && Is_block(v) && Is_in_heap(v) && Is_white_val(v));
+	     && IS_BLOCK(v) && Is_in_heap(v) && Is_white_val(v));
 }
 
 value weak_sub(value arr, value index)			/* ML */
 {
-  value v = Field(arr, Long_val(index));
+  value v = Field(arr, VAL_TO_LONG(index));
   if (isdead(v))
     failwith("Dangling weak pointer");
   else
@@ -1058,7 +1059,7 @@ value weak_sub(value arr, value index)			/* ML */
 
 value weak_isdead(value arr, value index)             /* ML */
 {
-  return Val_bool(isdead(Field(arr, Long_val(index))));
+  return Val_bool(isdead(Field(arr, VAL_TO_LONG(index))));
 }
 
 value weak_arr(value size)				/* ML */
@@ -1066,7 +1067,7 @@ value weak_arr(value size)				/* ML */
   value res;
   mlsize_t sz, i;
 
-  sz = Long_val(size);
+  sz = VAL_TO_LONG(size);
   if (sz == 0) return Atom(Weak_tag);
   res = alloc_shr(sz, Weak_tag);	/* Must go in the major heap */
   for (i = 0; i < sz; i++)
@@ -1124,7 +1125,7 @@ value mlval_string(value s)	/* ML */
 
   if (whsize == 0) {
     res = (value) ((mlsize_t *)s)[1];
-    if (Is_long(res))
+    if (IS_LONG(res))
       return res;
     else
       return Atom(res >> 2);
@@ -1290,7 +1291,7 @@ char* exnmessage_aux(value exn)
 	     String_val(nameval), causetxt);
     free(causetxt);
     return buf;
-  } else if (Is_block(argval)) {
+  } else if (IS_BLOCK(argval)) {
     if (Tag_val(argval) == String_tag) {
       snprintf(buf, BUFSIZE, "%s: %s", String_val(strval), String_val(argval));
       return buf;

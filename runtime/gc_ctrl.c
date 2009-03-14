@@ -91,20 +91,20 @@ value gc_stat (value v) /* ML */
   assert (live_words + free_words + fragments == Wsize_bsize (stat_heap_size));
   /* Order of elements changed for Moscow ML */
   res = alloc (13, 0);
-  Field (res, 11) = Val_long (stat_minor_words
+  Field (res, 11) = LONG_TO_VAL (stat_minor_words
                              + Wsize_bsize (young_ptr - young_start));
-  Field (res, 12) = Val_long (stat_promoted_words);
-  Field (res,  9) = Val_long (stat_major_words + allocated_words);
-  Field (res, 10) = Val_long (stat_minor_collections);
-  Field (res,  8) = Val_long (stat_major_collections);
-  Field (res,  4) = Val_long (Wsize_bsize (stat_heap_size));
-  Field (res,  3) = Val_long (heap_chunks);
-  Field (res,  7) = Val_long (live_words);
-  Field (res,  6) = Val_long (live_blocks);
-  Field (res,  2) = Val_long (free_words);
-  Field (res,  1) = Val_long (free_blocks);
-  Field (res,  5) = Val_long (largest_free);
-  Field (res,  0) = Val_long (fragments);
+  Field (res, 12) = LONG_TO_VAL(stat_promoted_words);
+  Field (res,  9) = LONG_TO_VAL (stat_major_words + allocated_words);
+  Field (res, 10) = LONG_TO_VAL(stat_minor_collections);
+  Field (res,  8) = LONG_TO_VAL(stat_major_collections);
+  Field (res,  4) = LONG_TO_VAL (Wsize_bsize (stat_heap_size));
+  Field (res,  3) = LONG_TO_VAL(heap_chunks);
+  Field (res,  7) = LONG_TO_VAL(live_words);
+  Field (res,  6) = LONG_TO_VAL(live_blocks);
+  Field (res,  2) = LONG_TO_VAL(free_words);
+  Field (res,  1) = LONG_TO_VAL(free_blocks);
+  Field (res,  5) = LONG_TO_VAL(largest_free);
+  Field (res,  0) = LONG_TO_VAL(fragments);
   return res;
 }
 
@@ -115,9 +115,9 @@ value gc_get (value v) /* ML */
   assert (v == Atom (0));
   /* Order of elements changed for Moscow ML */
   res = alloc (4, 0);
-  Field (res, 1) = Wsize_bsize (Val_long (minor_heap_size));
-  Field (res, 0) = Wsize_bsize (Val_long (major_heap_increment));
-  Field (res, 2) = Val_long (percent_free);
+  Field (res, 1) = Wsize_bsize (LONG_TO_VAL(minor_heap_size));
+  Field (res, 0) = Wsize_bsize (LONG_TO_VAL(major_heap_increment));
+  Field (res, 2) = LONG_TO_VAL(percent_free);
   Field (res, 3) = Val_bool (verb_gc);
   return res;
 }
@@ -148,21 +148,21 @@ value gc_set (value v) /* ML */
   /* Order of elements changed for Moscow ML */
   verb_gc = Bool_val (Field (v, 3));
 
-  newpf = norm_pfree (Long_val (Field (v, 2)));
+  newpf = norm_pfree (VAL_TO_LONG (Field (v, 2)));
   if (newpf != percent_free){
     percent_free = newpf;
     gc_message ("New space overhead: %d%%\n", percent_free);
   }
 
-  if (Bsize_wsize (Long_val (Field (v, 0))) != major_heap_increment){
-    major_heap_increment = norm_heapincr (Bsize_wsize (Long_val (Field(v,0))));
+  if (Bsize_wsize (VAL_TO_LONG (Field (v, 0))) != major_heap_increment){
+    major_heap_increment = norm_heapincr (Bsize_wsize (VAL_TO_LONG (Field(v,0))));
     gc_message ("New heap increment size: %ldk\n", major_heap_increment/1024);
   }
 
     /* Minor heap size comes last because it will trigger a minor collection
        (thus invalidating [v]) and it can raise [Out_of_memory]. */
-  if (Bsize_wsize (Long_val (Field (v, 1))) != minor_heap_size){
-    long new_size = norm_minsize (Bsize_wsize (Long_val (Field (v, 1))));
+  if (Bsize_wsize (VAL_TO_LONG (Field (v, 1))) != minor_heap_size){
+    long new_size = norm_minsize (Bsize_wsize (VAL_TO_LONG (Field (v, 1))));
     gc_message ("New minor heap size: %ldk\n", new_size/1024);
     set_minor_heap_size (new_size);
   }

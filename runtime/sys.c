@@ -49,7 +49,7 @@ void sys_error()
   r[0] = copy_string(err);	/* The error message string	*/
 
   r[1] = alloc(1, SOMEtag);	/* The SOME errno object	*/
-  Field(r[1], 0) = Val_long(errno);
+  Field(r[1], 0) = LONG_TO_VAL(errno);
 
   exnarg = alloc_tuple(2);	/* The argument tuple		*/
   Field(exnarg, 0) = r[0];
@@ -62,7 +62,7 @@ void sys_error()
 void sys_exit(value retcode)          /* ML */
 {
   flush_stdouterr();
-  exit(Int_val(retcode));
+  exit(VAL_TO_INT(retcode));
 }
 
 static int sys_open_flags[] = {
@@ -73,14 +73,14 @@ value sys_open(value path, value flags, value perm) /* ML */
 {
 	int ret;
 	ret = open(String_val(path), convert_flag_list(flags, sys_open_flags),
-		   Int_val(perm));
+		   VAL_TO_INT(perm));
 	if (ret == -1) sys_error(String_val(path));
-	return Val_long(ret);
+	return LONG_TO_VAL(ret);
 }
 
 value sys_close(value fd)             /* ML */
 {
-  if (close(Int_val(fd)) != 0) sys_error();
+  if (close(VAL_TO_INT(fd)) != 0) sys_error();
   return Atom(0);
 }
 
@@ -120,7 +120,7 @@ value sys_system_command(value command)   /* ML */
 {
   int retcode = system(String_val(command));
   if (retcode == -1) sys_error(String_val(command));
-  return Val_int(retcode);
+  return INT_TO_VAL(retcode);
 }
 
 static int sys_var_init[] = {
@@ -209,11 +209,11 @@ void sys_init(char ** argv)
 	v = copy_string_array(argv);
 	modify(&Field(global_data, SYS__COMMAND_LINE), v);
 	for (i = SYS__S_IRUSR; i <= SYS__S_IXALL; i++)
-		Field(global_data, i) = Val_long(sys_var_init[i - SYS__S_IRUSR]);
+		Field(global_data, i) = LONG_TO_VAL(sys_var_init[i - SYS__S_IRUSR]);
 	Field(global_data, SYS__INTERACTIVE) = Val_false;
-	Field(global_data, SYS__MAX_VECT_LENGTH) = Val_long(Max_wosize);
+	Field(global_data, SYS__MAX_VECT_LENGTH) = LONG_TO_VAL(Max_wosize);
 	Field(global_data, SYS__MAX_STRING_LENGTH) =
-		Val_long(Max_wosize * sizeof(value) - 2);
+		LONG_TO_VAL(Max_wosize * sizeof(value) - 2);
 
 	/* Allocate the exn names for pervasize dynamic exceptions */
 	for (i = SYS__FIRST_EXN; i <= SYS__LAST_EXN ; i++) {

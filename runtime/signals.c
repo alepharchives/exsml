@@ -23,7 +23,7 @@ void execute_signal(void)
     clos = alloc(Closure_wosize, Closure_tag);
     Code_val(clos) = signal_handler;
     Env_val(clos) = Atom(0);
-    callback(clos, Val_int(signal_number));
+    callback(clos, INT_TO_VAL(signal_number));
   } else {
     signal_is_pending = 1;
     something_to_do = 1;

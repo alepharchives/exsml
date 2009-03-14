@@ -62,7 +62,7 @@ static void read_compact(struct channel * chan, value * dest)
       }
     } else {
       /* Small integer */
-      v = Val_int(code & 0x3F);
+      v = INT_TO_VAL(code & 0x3F);
     }
   } else {
     if (code >= PREFIX_SMALL_STRING) {
@@ -81,17 +81,17 @@ static void read_compact(struct channel * chan, value * dest)
     } else {
       switch(code) {
       case CODE_INT8:
-        v = Val_long(input_bytes(chan, 1, 1));
+        v = LONG_TO_VAL(input_bytes(chan, 1, 1));
         break;
       case CODE_INT16:
-        v = Val_long(input_bytes(chan, 2, 1));
+        v = LONG_TO_VAL(input_bytes(chan, 2, 1));
         break;
       case CODE_INT32:
-        v = Val_long(input_bytes(chan, 4, 1));
+        v = LONG_TO_VAL(input_bytes(chan, 4, 1));
         break;
       case CODE_INT64:
 #ifdef SIXTYFOUR
-        v = Val_long(input_bytes(chan, 8, 1));
+        v = LONG_TO_VAL(input_bytes(chan, 8, 1));
         break;
 #else
         stat_free((char *) intern_obj_table);

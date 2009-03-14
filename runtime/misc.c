@@ -30,14 +30,14 @@ void fatal_error (char * msg)
 {
   flush_stdouterr();
   fprintf (stderr, "%s", msg);
-  sys_exit(Val_int(2));
+  sys_exit(INT_TO_VAL(2));
 }
 
 void fatal_error_arg (char * fmt, char * arg)
 {
   flush_stdouterr();
   fprintf (stderr, fmt, arg);
-  sys_exit(Val_int(2));
+  sys_exit(INT_TO_VAL(2));
 }
 
 char *aligned_malloc (size_t size, int modulo)

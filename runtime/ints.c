@@ -48,7 +48,7 @@ value int_of_string(value s)          /* ML */
   }
   if (*p != 0)
     failwith("int_of_string");
-  return Val_long(sign < 0 ? -res : res);
+  return LONG_TO_VAL(sign < 0 ? -res : res);
 }
 
 value format_int(value fmt, value arg)      /* ML */
@@ -71,7 +71,7 @@ value format_int(value fmt, value arg)      /* ML */
   } else {
     dest = stat_alloc(prec);
   }
-  sprintf(dest, String_val(fmt), Long_val(arg));
+  sprintf(dest, String_val(fmt), VAL_TO_LONG(arg));
   res = copy_string(dest);
   if (dest != format_buffer) {
     stat_free(dest);

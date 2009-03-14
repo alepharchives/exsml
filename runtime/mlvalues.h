@@ -43,17 +43,17 @@ typedef unsigned long color_t;
 typedef unsigned long mark_t;
 
 /* Longs vs blocks. */
-#define Is_long(x)   (((x) & 1) == 1)
-#define Is_block(x)  (((x) & 1) == 0)
+#define IS_LONG(x)   (((x) & 1) == 1)
+#define IS_BLOCK(x)  (((x) & 1) == 0)
 
 /* Conversion macro names are always of the form  "to_from". */
 /* Example: Val_long as in "Val from long" or "Val of long". */
-#define Val_long(x)     (((long)(x) << 1) + 1)
-#define Long_val(x)     ((x) >> 1)
-#define Max_long ((long)((1L << (8 * sizeof(value) - 2)) - 1))
-#define Min_long ((long) -(1L << (8 * sizeof(value) - 2)))
-#define Val_int Val_long
-#define Int_val(x) ((int) Long_val(x))
+#define LONG_TO_VAL(x)     (((long)(x) << 1) + 1)
+#define VAL_TO_LONG(x)     ((x) >> 1)
+#define MAX_TAGGED_LONG ((long)((1L << (8 * sizeof(value) - 2)) - 1))
+#define MIN_TAGGED_LONG ((long) -(1L << (8 * sizeof(value) - 2)))
+#define INT_TO_VAL(x)      ((x) >> 1)
+#define VAL_TO_INT(x) ((int) VAL_TO_LONG(x))
 
 /* Structure of the header:
 

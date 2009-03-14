@@ -91,7 +91,7 @@ value alloc_array(value (*funct) (char *), char ** arr)
 		PUSH_ROOTS(r, 1);
 		r[0] = nbr < Max_young_wosize ? alloc(nbr, 0) : alloc_shr(nbr, 0);
 		for (n = 0; n < nbr; n++)
-			Field(r[0], n) = Val_long(0);
+			Field(r[0], n) = LONG_TO_VAL(0);
 		for (n = 0; n < nbr; n++) {
 			v = funct(arr[n]);
 			modify(&Field(r[0], n), v);

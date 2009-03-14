@@ -24,7 +24,7 @@ mlsize_t string_length(value s)
 
 value create_string(value len)        /* ML */
 {
-  return alloc_string(Long_val(len));
+  return alloc_string(VAL_TO_LONG(len));
 }
 
 value compare_strings(value s1, value s2)   /* ML */
@@ -41,18 +41,18 @@ value compare_strings(value s1, value s2)   /* ML */
        len > 0;
        len--, p1++, p2++)
     if (*p1 != *p2)
-      return (*p1 < *p2 ? Val_long(-1) : Val_long(1));
+      return (*p1 < *p2 ? LONG_TO_VAL(-1) : LONG_TO_VAL(1));
   if (len1 == len2)
-    return Val_long(0);
+    return LONG_TO_VAL(0);
   else if (len1 < len2)
-    return Val_long(-2);
+    return LONG_TO_VAL(-2);
   else
-    return Val_long(2);
+    return LONG_TO_VAL(2);
 }
 
 value blit_string(value s1, value offset1, value s2, value offset2, value len) /* ML */
 {
-  memmove(&Byte(s2, Long_val(offset2)), &Byte(s1, Long_val(offset1)), Int_val(len));
+  memmove(&Byte(s2, VAL_TO_LONG(offset2)), &Byte(s1, VAL_TO_LONG(offset1)), VAL_TO_INT(len));
   return Atom(0);
 }
 
@@ -62,8 +62,8 @@ value fill_string(value s, value offset, value len, value init) /* ML */
   mlsize_t n;
   char c;
 
-  c = Long_val(init);
-  for(p = &Byte(s, Long_val(offset)), n = Long_val(len);
+  c = VAL_TO_LONG(init);
+  for(p = &Byte(s, VAL_TO_LONG(offset)), n = VAL_TO_LONG(len);
       n > 0; n--, p++)
     *p = c;
   return Atom(0);
@@ -85,6 +85,6 @@ value is_printable(value chr) /* ML */
   }
   printable_chars = iso_charset ? printable_chars_iso : printable_chars_ascii;
 
-  c = Int_val(chr);
+  c = VAL_TO_INT(chr);
   return Val_bool(printable_chars[c >> 3] & (1 << (c & 7)));
 }

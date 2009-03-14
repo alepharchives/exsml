@@ -447,7 +447,7 @@ static value intern_fast_val(struct channel * chan, unsigned long magic)
   whsize = getword(chan);
   if (whsize == 0) {
     res = (value) getword(chan);
-    if (Is_long(res))
+    if (IS_LONG(res))
       return res;
     else
       return Atom(res >> 2);

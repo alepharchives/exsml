@@ -93,7 +93,7 @@ static void realloc_weak_arrays (void)
 
 void darken (value v)
 {
-  if (Is_block (v) && Is_in_heap (v) && Is_white_val (v)){
+  if (IS_BLOCK(v) && Is_in_heap (v) && Is_white_val (v)){
     Hd_val (v) = Grayhd_hd (Hd_val (v));
     *gray_vals_cur++ = v;
     if (gray_vals_cur >= gray_vals_end) realloc_gray_vals ();
@@ -184,7 +184,7 @@ static void weak_phase()
       for (i=0; i < len; i++)
 	{
 	  value v = Field(arr, i);
-	  if (Is_block(v) && Is_in_heap(v) && Is_white_val(v))
+	  if (IS_BLOCK(v) && Is_in_heap(v) && Is_white_val(v))
 	    Field(arr, i) = (value)NULL;
 	}
     }

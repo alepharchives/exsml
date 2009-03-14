@@ -52,7 +52,7 @@ char * stat_resize (char *, size_t);     /* Size in bytes. */
 
 #define PUSH_ROOTS(name, size)						      \
    value name [(size) + 2];						      \
-   { long _; for (_ = 0; _ < (size); name [_++] = Val_long (0)); }	      \
+   { long _; for (_ = 0; _ < (size); name [_++] = LONG_TO_VAL (0)); }	      \
    name [(size)] = (value) (size);					      \
    name [(size) + 1] = (value) c_roots_head;				      \
    c_roots_head = &(name [(size)]);

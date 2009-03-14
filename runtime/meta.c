@@ -16,8 +16,8 @@ extern value interprete(int mode, bytecode_t bprog,
 
 value start_interp(value may_free, value prog, value offset, value vlen) /* ML */
 {
-  bytecode_t bprog = (bytecode_t)&Byte(prog, Long_val(offset)); // In ML heap
-  int len = Long_val(vlen);
+  bytecode_t bprog = (bytecode_t)&Byte(prog, VAL_TO_LONG(offset)); // In ML heap
+  int len = VAL_TO_LONG(vlen);
   value res;
 
 #if defined(WORDS_BIGENDIAN) && !defined(HAVE_ALIGNED_ACCESS_REQUIRED)
@@ -42,7 +42,7 @@ value realloc_global(size)      /* ML */
   mlsize_t requested_size, actual_size, i;
   value new_global_data;
 
-  requested_size = Long_val(size);
+  requested_size = VAL_TO_LONG(size);
   actual_size = Wosize_val(global_data);
   if (requested_size >= actual_size) {
     requested_size = (requested_size + 0x100) & 0xFFFFFF00;
@@ -50,7 +50,7 @@ value realloc_global(size)      /* ML */
     for (i = 0; i < actual_size; i++)
       initialize(&Field(new_global_data, i), Field(global_data, i));
     for (i = actual_size; i < requested_size; i++){
-      Field (new_global_data, i) = Val_long (0);
+      Field (new_global_data, i) = LONG_TO_VAL (0);
     }
     modify(&Field(new_global_data, GLOBAL_DATA), new_global_data);
     global_data = new_global_data;
@@ -62,7 +62,7 @@ value realloc_global(size)      /* ML */
 value static_alloc(size)        /* ML */
      value size;
 {
-  return (value) stat_alloc((size_t) Long_val(size));
+  return (value) stat_alloc((size_t) VAL_TO_LONG(size));
 }
 
 value static_free(blk)          /* ML */
@@ -75,13 +75,13 @@ value static_free(blk)          /* ML */
 value static_resize(blk, new_size) /* ML */
      value blk, new_size;
 {
-  return (value) stat_resize((char *) blk, (size_t) Long_val(new_size));
+  return (value) stat_resize((char *) blk, (size_t) VAL_TO_LONG(new_size));
 }
 
 value obj_is_block(arg)             /* ML */
      value arg;
 {
-  return Atom(Is_block(arg));
+  return Atom(IS_BLOCK(arg));
 }
 
 value obj_block(tag, size) /* ML */
@@ -91,12 +91,12 @@ value obj_block(tag, size) /* ML */
   mlsize_t sz, i;
   tag_t tg;
 
-  sz = Long_val(size);
-  tg = Long_val(tag);
+  sz = VAL_TO_LONG(size);
+  tg = VAL_TO_LONG(tag);
   if (sz == 0) return Atom(tg);
   res = alloc(sz, tg);
   for (i = 0; i < sz; i++)
-    Field(res, i) = Val_long(0);
+    Field(res, i) = LONG_TO_VAL(0);
 
   return res;
 }

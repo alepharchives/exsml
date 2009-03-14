@@ -78,34 +78,34 @@ value parse_engine(tables, env, cmd, arg) /* ML */
 
   case START:
     state = 0;
-    sp = Int_val(env->sp);
+    sp = VAL_TO_INT(env->sp);
 
   loop:
     Trace(printf("Loop %d\n", state));
     n = Short(tables->defred, state);
     if (n != 0) goto reduce;
-    if (Int_val(env->curr_char) >= 0) goto testshift;
+    if (VAL_TO_INT(env->curr_char) >= 0) goto testshift;
     return READ_TOKEN;
                                 /* The ML code calls the lexer and updates */
                                 /* symb_start and symb_end */
   case TOKEN_READ:
     env->curr_char = Field(tables->transl, Tag_val(arg));
     if (Wosize_val(arg) == 0) {
-      env->lval = Val_long(0);
+      env->lval = LONG_TO_VAL(0);
     } else {
       modify(&env->lval, Field(arg, 0));
     }
-    Trace(printf("Token %d (0x%lx)\n", Int_val(env->curr_char), env->lval));
+    Trace(printf("Token %d (0x%lx)\n", VAL_TO_INT(env->curr_char), env->lval));
 
   testshift:
     n1 = Short(tables->sindex, state);
-    n2 = n1 + Int_val(env->curr_char);
-    if (n1 != 0 && n2 >= 0 && n2 <= Int_val(tables->tablesize) &&
-        Short(tables->check, n2) == Int_val(env->curr_char)) goto shift;
+    n2 = n1 + VAL_TO_INT(env->curr_char);
+    if (n1 != 0 && n2 >= 0 && n2 <= VAL_TO_INT(tables->tablesize) &&
+        Short(tables->check, n2) == VAL_TO_INT(env->curr_char)) goto shift;
     n1 = Short(tables->rindex, state);
-    n2 = n1 + Int_val(env->curr_char);
-    if (n1 != 0 && n2 >= 0 && n2 <= Int_val(tables->tablesize) &&
-        Short(tables->check, n2) == Int_val(env->curr_char)) {
+    n2 = n1 + VAL_TO_INT(env->curr_char);
+    if (n1 != 0 && n2 >= 0 && n2 <= VAL_TO_INT(tables->tablesize) &&
+        Short(tables->check, n2) == VAL_TO_INT(env->curr_char)) {
       n = Short(tables->table, n2);
       goto reduce;
     }
@@ -115,38 +115,38 @@ value parse_engine(tables, env, cmd, arg) /* ML */
     state = Short(tables->table, n2);
     Trace(printf("Shift %d\n", state));
     sp++;
-    assert(Long_val(env->stacksize) >= 0);
-    if (sp < (unsigned) Long_val(env->stacksize)) goto push;
+    assert(VAL_TO_LONG(env->stacksize) >= 0);
+    if (sp < (unsigned) VAL_TO_LONG(env->stacksize)) goto push;
     return GROW_STACKS_1;
                                 /* The ML code resizes the stacks */
   case STACKS_GROWN_1:
   push:
-    Field(env->s_stack, sp) = Val_int(state);
+    Field(env->s_stack, sp) = INT_TO_VAL(state);
     modify(&Field(env->v_stack, sp), env->lval);
     Field(env->symb_start_stack, sp) = env->symb_start;
     Field(env->symb_end_stack, sp) = env->symb_end;
-    env->curr_char = Val_int(-1);
+    env->curr_char = INT_TO_VAL(-1);
     goto loop;
 
   reduce:
     Trace(printf("Reduce %d\n", n));
     m = Short(tables->len, n);
-    env->sp = Val_int(sp);
-    env->rule_number = Val_int(n);
-    env->rule_len = Val_int(m);
+    env->sp = INT_TO_VAL(sp);
+    env->rule_number = INT_TO_VAL(n);
+    env->rule_len = INT_TO_VAL(m);
     sp = sp - m + 1;
     m = Short(tables->lhs, n);
-    state1 = Int_val(Field(env->s_stack, sp - 1));
+    state1 = VAL_TO_INT(Field(env->s_stack, sp - 1));
     n1 = Short(tables->gindex, m);
     n2 = n1 + state1;
-    if (n1 != 0 && n2 >= 0 && n2 <= Int_val(tables->tablesize) &&
+    if (n1 != 0 && n2 >= 0 && n2 <= VAL_TO_INT(tables->tablesize) &&
         Short(tables->check, n2) == state1) {
       state = Short(tables->table, n2);
     } else {
       state = Short(tables->dgoto, m);
     }
-    assert(Long_val(env->stacksize) >= 0);
-    if (sp < (unsigned) Long_val(env->stacksize)) goto semantic_action;
+    assert(VAL_TO_LONG(env->stacksize) >= 0);
+    if (sp < (unsigned) VAL_TO_LONG(env->stacksize)) goto semantic_action;
     return GROW_STACKS_2;
                                 /* The ML code resizes the stacks */
   case STACKS_GROWN_2:
@@ -154,10 +154,10 @@ value parse_engine(tables, env, cmd, arg) /* ML */
     return COMPUTE_SEMANTIC_ACTION;
                                 /* The ML code calls the semantic action */
   case SEMANTIC_ACTION_COMPUTED:
-    Field(env->s_stack, sp) = Val_int(state);
+    Field(env->s_stack, sp) = INT_TO_VAL(state);
     modify(&Field(env->v_stack, sp), arg);
     Field(env->symb_end_stack, sp) =
-      Field(env->symb_end_stack, Int_val(env->sp));
+      Field(env->symb_end_stack, VAL_TO_INT(env->sp));
     goto loop;
   }
   return Val_unit;		/* Can't reach return */

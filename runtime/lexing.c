@@ -21,16 +21,16 @@ value get_next_char(lexbuf)     /* ML */
   mlsize_t buffer_len, curr_pos;
 
   buffer_len = string_length(lexbuf->lex_buffer);
-  curr_pos = Long_val(lexbuf->lex_curr_pos);
+  curr_pos = VAL_TO_LONG(lexbuf->lex_curr_pos);
   if (curr_pos >= buffer_len) {
     PUSH_ROOTS(r, 1);
     r[0] = (value) lexbuf;
     callback(lexbuf->refill_buff, (value) lexbuf);
     lexbuf = (struct lexer_buffer *) r[0];
-    curr_pos = Long_val(lexbuf->lex_curr_pos);
+    curr_pos = VAL_TO_LONG(lexbuf->lex_curr_pos);
     POP_ROOTS();
   }
   lexbuf->lex_curr_pos += 2;
-  return Val_int(Byte_u(lexbuf->lex_buffer, curr_pos));
+  return INT_TO_VAL(Byte_u(lexbuf->lex_buffer, curr_pos));
 }
 

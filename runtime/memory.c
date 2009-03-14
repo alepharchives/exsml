@@ -162,7 +162,7 @@ void initialize (value * fp, value val)
 {
   *fp = val;
   assert (Is_in_heap (fp));
-  if (Is_block (val) && Is_young (val)){
+  if (IS_BLOCK(val) && Is_young (val)){
     *ref_table_ptr++ = fp;
     if (ref_table_ptr >= ref_table_limit){
       realloc_ref_table ();
@@ -184,8 +184,8 @@ void modify (value *fp, value val)
 			darken(old);
 		}
 
-		if (Is_block (val) && Is_young (val)
-		    && ! (Is_block (old) && Is_young (old))) {
+		if (IS_BLOCK(val) && Is_young (val)
+		    && ! (IS_BLOCK(old) && Is_young (old))) {
 			*ref_table_ptr++ = (fp);
 			if (ref_table_ptr >= ref_table_limit) {
 				assert (ref_table_ptr == ref_table_limit);

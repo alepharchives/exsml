@@ -139,12 +139,12 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 #define s32pc s32(pc)
 #define u32pc u32(pc)
 #define JUMPTGT(offset) (bytecode_t)(pc + offset)
-#define JUMPSWITCHINDEX(pc, accu) (bytecode_t)(pc + s32(pc + 4 * Long_val(accu)))
+#define JUMPSWITCHINDEX(pc, accu) (bytecode_t)(pc + s32(pc + 4 * VAL_TO_LONG(accu)))
 
   sp = extern_sp;
   extra_args = 0;
   env = null_env;
-  accu = Val_long(0);
+  accu = LONG_TO_VAL(0);
   initial_c_roots_head = c_roots_head;
   initial_sp_offset = stack_high - sp;
   initial_external_raise = external_raise;
@@ -251,7 +251,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
       sp[0] = accu;
       sp[1] = (value)pc;
       sp[2] = env;
-      sp[3] = Val_long(extra_args);
+      sp[3] = LONG_TO_VAL(extra_args);
       extra_args = 0;
       accu = Field(env, 1);
       goto apply;
@@ -264,7 +264,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
       sp[1] = arg2;
       sp[2] = (value)pc;
       sp[3] = env;
-      sp[4] = Val_long(extra_args);
+      sp[4] = LONG_TO_VAL(extra_args);
       extra_args = 1;
       accu = Field(env, 1);
       goto apply;
@@ -279,7 +279,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
       sp[2] = arg3;
       sp[3] = (value)pc;
       sp[4] = env;
-      sp[5] = Val_long(extra_args);
+      sp[5] = LONG_TO_VAL(extra_args);
       extra_args = 2;
       accu = Field(env, 1);
       goto apply;
@@ -296,7 +296,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
       sp[3] = arg4;
       sp[4] = (value)pc;
       sp[5] = env;
-      sp[6] = Val_long(extra_args);
+      sp[6] = LONG_TO_VAL(extra_args);
       extra_args = 3;
       accu = Field(env, 1);
       goto apply;
@@ -353,7 +353,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
       sp -= 3;
       sp[0] = (value) (JUMPTGT(s32pc));
       sp[1] = env;
-      sp[2] = Val_long(extra_args);
+      sp[2] = LONG_TO_VAL(extra_args);
       pc += LONG;
       break;
     }
@@ -367,7 +367,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
       sp[0] = arg1;
       sp[1] = (value)pc;
       sp[2] = env;
-      sp[3] = Val_long(extra_args);
+      sp[3] = LONG_TO_VAL(extra_args);
       extra_args = 0;
       goto apply;
     }
@@ -379,7 +379,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
       sp[1] = arg2;
       sp[2] = (value)pc;
       sp[3] = env;
-      sp[4] = Val_long(extra_args);
+      sp[4] = LONG_TO_VAL(extra_args);
       extra_args = 1;
       goto apply;
     }
@@ -393,7 +393,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
       sp[2] = arg3;
       sp[3] = (value)pc;
       sp[4] = env;
-      sp[5] = Val_long(extra_args);
+      sp[5] = LONG_TO_VAL(extra_args);
       extra_args = 2;
       goto apply;
     }
@@ -409,7 +409,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
       sp[3] = arg4;
       sp[4] = (value)pc;
       sp[5] = env;
-      sp[6] = Val_long(extra_args);
+      sp[6] = LONG_TO_VAL(extra_args);
       extra_args = 3;
       goto apply;
     }
@@ -478,7 +478,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
       } else {
         pc = (bytecode_t)(sp[0]);
         env = sp[1];
-        extra_args = Long_val(sp[2]);
+        extra_args = VAL_TO_LONG(sp[2]);
 	sp += 3;
 	if (something_to_do) goto process_signal;
       }
@@ -519,7 +519,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
         sp += num_args;
         pc = (bytecode_t)(sp[0]);
         env = sp[1];
-        extra_args = Long_val(sp[2]);
+        extra_args = VAL_TO_LONG(sp[2]);
         sp += 3;
       }
       break;
@@ -546,7 +546,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
       ALLOC_SMALL(accu, 2 + nvars, Closure_tag);
       Code_val(accu) = JUMPTGT(s32pc);
       //      printf("CLOSREC Code_val(%d) = %d\n", accu, Code_val(accu));
-      Field(accu, 1) = Val_int(0);
+      Field(accu, 1) = INT_TO_VAL(0);
       for (i = 0; i < nvars; i++) Field(accu, i + 2) = sp[i];
       sp += nvars;
       modify(&Field(accu, 1), accu);
@@ -560,7 +560,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
       int size = u16pc + 1; /* size + 1 to match CLOSURE */
       pc += SHORT;
       ALLOC_SMALL(accu, size, 0);
-      while (size--) Field(accu, size) = Val_long(0);
+      while (size--) Field(accu, size) = LONG_TO_VAL(0);
       break;
     }
     case UPDATE: {
@@ -593,7 +593,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
       pc += SHORT;
       sp[1] = (value)pc;
       sp[2] = env;
-      sp[3] = Val_long(extra_args);
+      sp[3] = LONG_TO_VAL(extra_args);
       extra_args = 0;
     }
     apply:
@@ -626,7 +626,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
       pc += SHORT;
       sp[2] = (value)pc;
       sp[3] = env;
-      sp[4] = Val_long(extra_args);
+      sp[4] = LONG_TO_VAL(extra_args);
       extra_args = 1;
       goto apply;
     }
@@ -642,7 +642,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
       pc += SHORT;
       sp[3] = (value)pc;
       sp[4] = env;
-      sp[5] = Val_long(extra_args);
+      sp[5] = LONG_TO_VAL(extra_args);
       extra_args = 2;
       goto apply;
     }
@@ -659,7 +659,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
       pc += SHORT;
       sp[4] = (value)pc;
       sp[5] = env;
-      sp[6] = Val_long(extra_args);
+      sp[6] = LONG_TO_VAL(extra_args);
       extra_args = 3;
       goto apply;
     }
@@ -875,14 +875,14 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 /* Array operations */
 
     case VECTLENGTH:
-      accu = Val_long(Wosize_val(accu));
+      accu = LONG_TO_VAL(Wosize_val(accu));
       break;
     case GETVECTITEM:
-      accu = Field(sp[0], Long_val(accu));
+      accu = Field(sp[0], VAL_TO_LONG(accu));
       sp += 1;
       break;
     case SETVECTITEM:
-      modify_dest = &Field(sp[1], Long_val(sp[0]));
+      modify_dest = &Field(sp[1], VAL_TO_LONG(sp[0]));
       modify_newval = accu;
       sp += 2;
       goto modify;
@@ -890,11 +890,11 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 /* String operations */
 
     case GETSTRINGCHAR:
-      accu = Val_int(Byte_u(sp[0], Long_val(accu)));
+      accu = INT_TO_VAL(Byte_u(sp[0], VAL_TO_LONG(accu)));
       sp += 1;
       break;
     case SETSTRINGCHAR:
-      Byte_u(sp[1], Long_val(sp[0])) = Int_val(accu);
+      Byte_u(sp[1], VAL_TO_LONG(sp[0])) = VAL_TO_INT(accu);
       accu = Atom(0);
       sp += 2;
       break;
@@ -919,7 +919,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
       if (Tag_val(accu) != u8pci) pc = JUMPTGT(s32pc); else pc += LONG;
       break;
     case SWITCH:
-      assert(Long_val(accu) >= 0 && Long_val(accu) < *pc);
+      assert(VAL_TO_LONG(accu) >= 0 && VAL_TO_LONG(accu) < *pc);
       pc++;
       //      printf("SWITCH: JUMPSWITCHINDEX(pc, %d) = %d\n", accu, JUMPSWITCHINDEX(pc, accu));
       pc = JUMPSWITCHINDEX(pc, accu);
@@ -935,7 +935,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
       Trap_pc(sp) = JUMPTGT(s32pc);
       Trap_link(sp) = trapsp;
       sp[2] = env;
-      sp[3] = Val_long(extra_args);
+      sp[3] = LONG_TO_VAL(extra_args);
       trapsp = sp;
       pc += LONG;
       break;
@@ -961,7 +961,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
       pc = Trap_pc(sp);
       trapsp = Trap_link(sp);
       env = sp[2];
-      extra_args = Long_val(sp[3]);
+      extra_args = VAL_TO_LONG(sp[3]);
       sp += 4;
       break;
 
@@ -980,10 +980,10 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
         if (signal_number) {
           /* Push a return frame to the current code location */
           sp -= 4;
-          sp[0] = Val_int(signal_number);
+          sp[0] = INT_TO_VAL(signal_number);
           sp[1] = (value) pc;
           sp[2] = env;
-          sp[3] = Val_long(extra_args);
+          sp[3] = LONG_TO_VAL(extra_args);
           /* Branch to the signal handler */
           /* e -- signal_handler should be a closure, but isn't in 1.31.
           env = (value )signal_handler;  // env = Field(signal_handlers, signal_number);
@@ -1059,20 +1059,20 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 /* Integer constants */
 
     case PUSHCONST0: *--sp = accu; /* Fallthrough */
-    case CONST0: accu = Val_int(0); break;
+    case CONST0: accu = INT_TO_VAL(0); break;
 
     case PUSHCONST1: *--sp = accu; /* Fallthrough */
-    case CONST1: accu = Val_int(1); break;
+    case CONST1: accu = INT_TO_VAL(1); break;
 
     case PUSHCONST2: *--sp = accu; /* Fallthrough */
-    case CONST2: accu = Val_int(2); break;
+    case CONST2: accu = INT_TO_VAL(2); break;
 
     case PUSHCONST3: *--sp = accu; /* Fallthrough */
-    case CONST3: accu = Val_int(3); break;
+    case CONST3: accu = INT_TO_VAL(3); break;
 
     case PUSHCONSTINT: *--sp = accu; /* Fallthrough */
     case CONSTINT:
-      accu = Val_int(s32pc);
+      accu = INT_TO_VAL(s32pc);
       pc += LONG;
       break;
 
@@ -1093,7 +1093,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
         accu = Field(global_data, EXN_DIV);
         goto raise_exception;
       }
-      accu = Val_long((unsigned long) ((unsigned long) (*sp++ - 1)
+      accu = LONG_TO_VAL((unsigned long) ((unsigned long) (*sp++ - 1)
 				       / (unsigned long) tmp));
       break;
 
@@ -1114,11 +1114,11 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
     case XORINT:
       accu = 1 + (accu ^ *sp++); break;
     case SHIFTLEFTINT:
-      accu = 1 + ((*sp++ - 1) << Long_val(accu)); break;
+      accu = 1 + ((*sp++ - 1) << VAL_TO_LONG(accu)); break;
     case SHIFTRIGHTINTSIGNED:
-      accu = 1 | ((*sp++ - 1) >> Long_val(accu)); break;
+      accu = 1 | ((*sp++ - 1) >> VAL_TO_LONG(accu)); break;
     case SHIFTRIGHTINTUNSIGNED:
-      accu = 1 | ((unsigned long)(*sp++ - 1) >> Long_val(accu)); break;
+      accu = 1 | ((unsigned long)(*sp++ - 1) >> VAL_TO_LONG(accu)); break;
     case EQ:
 	    accu = Atom(*sp++ == accu);
 	    break;
@@ -1180,7 +1180,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 	    }
 	    break;
     case TAGOF:
-      accu = Val_long(Tag_val(accu));
+      accu = LONG_TO_VAL(Tag_val(accu));
       break;
     case EQUNSIGN:
 	    accu = (((value) (((header_t *) (&(first_atoms [(unsigned long)(*sp++) == (unsigned long)accu]))) + 1)));
@@ -1226,7 +1226,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
       { accu = Field(global_data, EXN_OVERFLOW); goto raise_exception; }
 
     case FLOATOFINT:
-	dtmp = (double) Long_val(accu); goto float_done;
+	dtmp = (double) VAL_TO_LONG(accu); goto float_done;
 
     case SMLNEGFLOAT:
 	dtmp = -Double_val(accu);
@@ -1261,7 +1261,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
     /* --- Moscow SML changes end --- */
 
     case INTOFFLOAT:
-      accu = Val_long((long)Double_val(accu)); break;
+      accu = LONG_TO_VAL((long)Double_val(accu)); break;
 
     case EQFLOAT:
 	    accu = (((value) (((header_t *) (&(first_atoms [(* (double *) (*sp++)) == (* (double *) (accu))]))) + 1)));
@@ -1282,7 +1282,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 	    accu = (((value) (((header_t *) (&(first_atoms [(* (double *) (*sp++)) >= (* (double *) (accu))]))) + 1)));
 	    break;
     case STRINGLENGTH:
-      accu = Val_long(string_length(accu));
+      accu = LONG_TO_VAL(string_length(accu));
       break;
 
     case EQSTRING:
@@ -1305,7 +1305,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 	    break;
 
     case MAKEVECTOR:
-      { mlsize_t size = Long_val(sp[0]);
+      { mlsize_t size = VAL_TO_LONG(sp[0]);
         /* Make sure that the object referred to by sp[0] survives gc: */
         sp[0] = accu;
         if (size == 0)
@@ -1313,7 +1313,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
         else if (size < Max_young_wosize){
 	  ALLOC_SMALL (accu, size, 0);
 	  do {size--; Field (accu, size) = *sp;} while (size != 0);
-	}else if (Is_block (*sp) && Is_young (*sp)){
+	}else if (IS_BLOCK(*sp) && Is_young (*sp)){
 	  Setup_for_gc;
 	  minor_collection ();
 	  tmp = alloc_shr (size, 0);
@@ -1334,9 +1334,9 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 /* --- Additional instructions for Moscow SML --- */
 
     case SMLNEGINT:
-      tmp =  - Long_val(accu);
-      accu = Val_long(tmp);
-      if( Long_val(accu) != tmp )
+      tmp =  - VAL_TO_LONG(accu);
+      accu = LONG_TO_VAL(tmp);
+      if( VAL_TO_LONG(accu) != tmp )
 	goto raise_overflow;
       break;
     raise_overflow:
@@ -1344,27 +1344,27 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
       goto raise_exception;
 
     case SMLSUCCINT:
-      tmp =  Long_val(accu) + 1;
-      accu = Val_long(tmp);
-      if( Long_val(accu) != tmp )
+      tmp =  VAL_TO_LONG(accu) + 1;
+      accu = LONG_TO_VAL(tmp);
+      if( VAL_TO_LONG(accu) != tmp )
 	goto raise_overflow;
       break;
     case SMLPREDINT:
-      tmp =  Long_val(accu) - 1;
-      accu = Val_long(tmp);
-      if( Long_val(accu) != tmp )
+      tmp =  VAL_TO_LONG(accu) - 1;
+      accu = LONG_TO_VAL(tmp);
+      if( VAL_TO_LONG(accu) != tmp )
         goto raise_overflow;
       break;
     case SMLADDINT:
-      tmp = Long_val(*sp++) + Long_val(accu);
-      accu = Val_long(tmp);
-      if( Long_val(accu) != tmp )
+      tmp = VAL_TO_LONG(*sp++) + VAL_TO_LONG(accu);
+      accu = LONG_TO_VAL(tmp);
+      if( VAL_TO_LONG(accu) != tmp )
 	goto raise_overflow;
       break;
     case SMLSUBINT:
-      tmp = Long_val(*sp++) - Long_val(accu);
-      accu = Val_long(tmp);
-      if( Long_val(accu) != tmp )
+      tmp = VAL_TO_LONG(*sp++) - VAL_TO_LONG(accu);
+      accu = LONG_TO_VAL(tmp);
+      if( VAL_TO_LONG(accu) != tmp )
 	goto raise_overflow;
       break;
 
@@ -1374,31 +1374,31 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
     case SMLMULINT:
       { long x, y;
         int isNegative = 0;
-        x = Long_val(*sp++);
-        y = Long_val(accu);
+        x = VAL_TO_LONG(*sp++);
+        y = VAL_TO_LONG(accu);
         if( x < 0 ) { x = -x; isNegative = 1; }
         if( y < 0 ) { y = -y; isNegative = !isNegative; }
         if( y > x ) { tmp = y; y = x; x = tmp; }
         if( y > MaxChunk )
 	  goto raise_overflow;
         if( x <= MaxChunk )
-	{ accu = Val_long(isNegative?(-(x * y)):(x * y)); }
+	{ accu = LONG_TO_VAL(isNegative?(-(x * y)):(x * y)); }
         else /* x > MaxChunk */
           { tmp = (x >> ChunkLen) * y;
             if( tmp > MaxChunk + 1)
 	      goto raise_overflow;
             tmp = (tmp << ChunkLen) + (x & MaxChunk) * y;
             if( isNegative ) tmp = - tmp;
-            accu = Val_long(tmp);
-            if( Long_val(accu) != tmp )
+            accu = LONG_TO_VAL(tmp);
+            if( VAL_TO_LONG(accu) != tmp )
 	      goto raise_overflow;
           }
       }
       break;
 
     case SMLDIVINT:
-      tmp = Long_val(accu);
-      accu = Long_val(*sp++);
+      tmp = VAL_TO_LONG(accu);
+      accu = VAL_TO_LONG(*sp++);
       if (tmp == 0)
 	{ accu = Field(global_data, EXN_DIV);
 	  goto raise_exception;
@@ -1413,15 +1413,15 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
           else
             tmp = - (accu / tmp) - 1;
         }
-      accu = Val_long(tmp);
-      if( Long_val(accu) != tmp )
+      accu = LONG_TO_VAL(tmp);
+      if( VAL_TO_LONG(accu) != tmp )
 	goto raise_overflow;
       break;
 
     case SMLMODINT:
       { long y;
-      y = tmp = Long_val(accu);
-      accu = Long_val(*sp++);
+      y = tmp = VAL_TO_LONG(accu);
+      accu = VAL_TO_LONG(*sp++);
       if (tmp == 0)
 	{ accu = Field(global_data, EXN_DIV);
 	  goto raise_exception;
@@ -1434,21 +1434,21 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 		tmp = ( accu == 0 )?( 0 ) :( tmp - accu );
         }
       if( y < 0 ) tmp = -tmp;
-      accu = Val_long(tmp);
-      if( Long_val(accu) != tmp )
+      accu = LONG_TO_VAL(tmp);
+      if( VAL_TO_LONG(accu) != tmp )
 	goto raise_overflow;
       }
       break;
 
     case MAKEREFVECTOR:
-      { mlsize_t size = Long_val(sp[0]);
+      { mlsize_t size = VAL_TO_LONG(sp[0]);
         sp[0] = accu;
         if (size == 0)
           accu = Atom(Reference_tag);
         else if (size < Max_young_wosize){
           ALLOC_SMALL (accu, size, Reference_tag);
 	  do {size--; Field (accu, size) = *sp;} while (size != 0);
-	}else if (Is_block (*sp) && Is_young (*sp)){
+	}else if (IS_BLOCK (*sp) && Is_young (*sp)){
 	  Setup_for_gc;
 	  minor_collection ();
           tmp = alloc_shr (size, Reference_tag);
@@ -1473,8 +1473,8 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 	  goto raise_exception;
 	}
       tmp = (*sp++ - 1) / tmp;
-      accu = Val_long(tmp);
-      if( Long_val(accu) != tmp )
+      accu = LONG_TO_VAL(tmp);
+      if( VAL_TO_LONG(accu) != tmp )
 	goto raise_overflow;
       break;
     case SMLREMINT:

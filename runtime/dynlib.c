@@ -10,7 +10,7 @@ value dynlib_dlopen(value libname, value flagval) /* ML */
 {
 	void *handle;
 
-	int mlflags = Long_val(flagval);
+	int mlflags = VAL_TO_LONG(flagval);
 	int cflags;
 	if (1 & mlflags)
 		cflags = RTLD_NOW;

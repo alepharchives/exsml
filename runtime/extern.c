@@ -63,7 +63,7 @@ static byteoffset_t emit(v)
   byteoffset_t * q;
   size_t end_pos;
 
-  if (Is_long(v)) return (byteoffset_t) v;
+  if (IS_LONG(v)) return (byteoffset_t) v;
   size = Wosize_val(v);
   if (size == 0) return (Tag_val(v) << 2) + 2;
   if (2 * extern_table_used >= extern_table_size) resize_extern_table();

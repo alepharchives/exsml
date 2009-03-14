@@ -12,11 +12,11 @@ static void hash_aux();
 value hash_univ_param(count, limit, obj) /* ML */
      value obj, count, limit;
 {
-  hash_univ_limit = Long_val(limit);
-  hash_univ_count = Long_val(count);
+  hash_univ_limit = VAL_TO_LONG(limit);
+  hash_univ_count = VAL_TO_LONG(count);
   hash_accu = 0;
   hash_aux(obj);
-  return Val_long(hash_accu & 0x3FFFFFFF);
+  return LONG_TO_VAL(hash_accu & 0x3FFFFFFF);
   /* The & has two purposes: ensure that the return value is positive
      and give the same result on 32 bit and 64 bit architectures. */
 }
@@ -36,9 +36,9 @@ static void hash_aux(obj)
   hash_univ_limit--;
   if (hash_univ_count < 0 || hash_univ_limit < 0) return;
 
-  if (Is_long(obj)) {
+  if (IS_LONG(obj)) {
     hash_univ_count--;
-    Combine(Long_val(obj));
+    Combine(VAL_TO_LONG(obj));
     return;
   }
 
