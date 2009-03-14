@@ -42,7 +42,7 @@ static void emit_compact(struct channel * chan, value v)
     header_t hd = Hd_val(v);
     tag_t tag = Tag_hd(hd);
     mlsize_t sz = Wosize_hd(hd);
-      asize_t h;
+      size_t h;
     /* Atoms are treated specially for two reasons: they are not allocated
        in the externed block, and they are automatically shared. */
     if (sz == 0) {

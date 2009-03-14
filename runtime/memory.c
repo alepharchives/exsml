@@ -122,7 +122,7 @@ extern value alloc_shr (mlsize_t wosize, tag_t tag)
 
   assert (Is_in_heap (Val_hp (hp)));
 
-  if (gc_phase == Phase_mark || (addr)hp >= (addr)gc_sweep_hp){
+  if (gc_phase == Phase_mark || (char *)hp >= (char *)gc_sweep_hp){
     Hd_hp (hp) = Make_header (wosize, tag, Black);
   }else{
     Hd_hp (hp) = Make_header (wosize, tag, White);
@@ -195,7 +195,7 @@ void modify (value *fp, value val)
 	}
 }
 
-char *stat_alloc(asize_t sz)
+char *stat_alloc(size_t sz)
 {
   char *result = (char *) malloc (sz);
 
@@ -208,7 +208,7 @@ void stat_free(char * blk)
   free (blk);
 }
 
-char *stat_resize (char * blk, asize_t sz)
+char *stat_resize (char * blk, size_t sz)
 {
   char *result = (char *) realloc (blk, sz);
 

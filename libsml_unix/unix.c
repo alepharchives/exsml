@@ -11,6 +11,7 @@
 #include <sys/wait.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 /* Moscow ML includes */
 
@@ -20,53 +21,6 @@
 #include <fail.h>
 #include <str.h>
 #include <signals.h>
-
-void failure() {
-  switch (errno) {
-  case EFAULT :
-    failwith("EFAULT"); break;
-  case EMFILE :
-    failwith("EMFILE"); break;
-  case ENFILE :
-    failwith("ENFILE"); break;
-  case EAGAIN :
-    failwith("EAGAIN"); break;
-  case ENOMEM :
-    failwith("ENOMEM"); break;
-  case EACCES:
-    failwith("EACCES"); break;
-  case ENOEXEC:
-    failwith("ENOEXEC"); break;
-  case EPERM:
-    failwith("EPERM"); break;
-  case E2BIG:
-    failwith("E2BIG"); break;
-  case ENAMETOOLONG:
-    failwith("ENAMETOOLONG"); break;
-  case ENOENT:
-    failwith("ENOENT"); break;
-  case ENOTDIR:
-    failwith("ENOTDIR"); break;
-  case ELOOP:
-    failwith("ELOOP"); break;
-  case EIO:
-    failwith("EIO"); break;
-  case EINVAL:
-    failwith("EINVAL"); break;
-  case EISDIR:
-    failwith("EISDIR"); break;
-  case ELIBBAD:
-    failwith("ELIBBAD"); break;
-  case ECHILD:
-    failwith("ECHILD"); break;
-  case EINTR:
-    failwith("EINTR"); break;
-  case ESRCH:
-    failwith("ESRCH"); break;
-  default:
-    failwith("EUNSPECIFIED"); break;
-  }
-}
 
 char** mkcharptrvec(value strvec) {
   int i;
@@ -89,11 +43,11 @@ value unix_execute(value cmd, value args, value envopt) {
   char **argv = mkcharptrvec(args);
 
   if (pipe(p2c) < 0 || pipe(c2p) < 0)
-    failure();
+    failwith(strerror(errno));
   pid = fork();
   if (pid < 0)
     // In the parent process; fork failed
-    failure();
+    failwith(strerror(errno));
   else if (pid > 0) {
     // In the parent process; fork succeeded
     value res = alloc_tuple(3);
@@ -128,7 +82,7 @@ value unix_execute(value cmd, value args, value envopt) {
 value unix_waitpid(value pid) {
   int status;
   if (waitpid(Long_val(pid), &status, /* options = */ 0) < 0)
-    failure();
+    failwith(strerror(errno));
   if (WIFEXITED(status))
     return Val_long(WEXITSTATUS(status));
   else
@@ -138,7 +92,7 @@ value unix_waitpid(value pid) {
 /* ML type: int -> unit */
 value unix_kill(value pid, value sig) {
   if (kill(Long_val(pid), Long_val(sig)) < 0)
-    failure();
+    failwith(strerror(errno));
   return Val_unit;
 }
 

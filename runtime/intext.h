@@ -68,15 +68,15 @@ struct extern_obj {
 };
 
 extern struct extern_obj * extern_table;
-extern asize_t extern_table_size, extern_table_used;
+extern size_t extern_table_size, extern_table_used;
 
 extern byteoffset_t * extern_block;
-extern asize_t extern_size, extern_pos;
+extern size_t extern_size, extern_pos;
 
 #ifdef SIXTYFOUR
-#define Hash(v) (((asize_t) ((v) >> 3)) % extern_table_size)
+#define Hash(v) (((size_t) ((v) >> 3)) % extern_table_size)
 #else
-#define Hash(v) (((asize_t) ((v) >> 2)) % extern_table_size)
+#define Hash(v) (((size_t) ((v) >> 2)) % extern_table_size)
 #endif
 
 void alloc_extern_table (void);

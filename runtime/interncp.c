@@ -12,7 +12,7 @@
 #include "reverse.h"
 
 static header_t * intern_ptr;
-static asize_t obj_counter;
+static size_t obj_counter;
 static value * intern_obj_table;
 static unsigned int intern_color;
 static header_t intern_header;
@@ -36,7 +36,7 @@ static void read_compact(struct channel * chan, value * dest)
   tag_t tag;
   mlsize_t size, len, ofs_ind;
   value v = Val_unit;
-  asize_t ofs;
+  size_t ofs;
   header_t header;
 
  tailcall:

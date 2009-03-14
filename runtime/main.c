@@ -26,7 +26,7 @@
 
 header_t first_atoms[256];
 bytecode_t start_code;
-asize_t code_size;
+size_t code_size;
 
 static void init_atoms(void)
 {

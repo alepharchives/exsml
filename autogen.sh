@@ -18,6 +18,7 @@ run() {
 }
 
 generate_changelog
+run mkdir -p config
 run libtoolize --copy --force --automake
 run aclocal
 run autoheader
