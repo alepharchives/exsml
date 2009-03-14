@@ -79,7 +79,7 @@ bytecode_t callback3_code;
 #define Setup_for_gc { sp -= 2; sp[0] = accu; sp[1] = env; extern_sp = sp; }
 #define Restore_after_gc { accu = sp[0]; env = sp[1]; sp += 2; }
 #define SETUP_FOR_C_CALL { *--sp = env; extern_sp = sp; }
-#define Restore_after_c_call { sp = extern_sp; env = *sp++; }
+#define RESTORE_AFTER_C_CALL { sp = extern_sp; env = *sp++; }
 
 /* The interpreter itself */
 
@@ -1008,35 +1008,35 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
     case C_CALL1:
 	    SETUP_FOR_C_CALL;
 	    accu = (cprim[u16pc])(accu);
-	    Restore_after_c_call;
+	    RESTORE_AFTER_C_CALL;
 	    pc += SHORT;
 	    break;
     case C_CALL2:
 	    SETUP_FOR_C_CALL;
 	    /* sp[0] temporarily holds the environment pointer */
 	    accu = (cprim[u16pc])(sp[1], accu);
-	    Restore_after_c_call;
+	    RESTORE_AFTER_C_CALL;
 	    pc += SHORT;
 	    sp += 1;
 	    break;
     case C_CALL3:
 	    SETUP_FOR_C_CALL;
 	    accu = (cprim[u16pc])(sp[2], sp[1], accu);
-	    Restore_after_c_call;
+	    RESTORE_AFTER_C_CALL;
 	    pc += SHORT;
 	    sp += 2;
 	    break;
     case C_CALL4:
 	    SETUP_FOR_C_CALL;
 	    accu = (cprim[u16pc])(sp[3], sp[2], sp[1], accu);
-	    Restore_after_c_call;
+	    RESTORE_AFTER_C_CALL;
 	    pc += SHORT;
 	    sp += 3;
 	    break;
     case C_CALL5:
 	    SETUP_FOR_C_CALL;
 	    accu = (cprim[u16pc])(sp[4], sp[3], sp[2], sp[1], accu);
-	    Restore_after_c_call;
+	    RESTORE_AFTER_C_CALL;
 	    pc += SHORT;
 	    sp += 4;
 	    break;
@@ -1051,7 +1051,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 	      for (i = 0; i < n; i++)
 		      args[i] = sp[n-i];
 	      accu = (cprim[u16pc])(args, n);
-	      Restore_after_c_call;
+	      RESTORE_AFTER_C_CALL;
 	      pc += SHORT;
 	      free(args);
 	      sp += n;
