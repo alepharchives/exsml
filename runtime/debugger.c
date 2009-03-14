@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "main.h"
 #include "debugger.h"
 #include "instruct.h"
 #include "memory.h"
@@ -10,8 +11,6 @@
 #include "opnames.h"
 #include "stacks.h"
 #include "unalignd.h"
-
-extern bytecode_t start_code;
 
 bytecode_t log_buffer[LOG_BUFFER_SIZE];
 bytecode_t * log_ptr;
