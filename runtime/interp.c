@@ -162,19 +162,23 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 
   while (1) {
 #ifdef DEBUG
-    if (icount-- == 0) stop_here ();
-    *log_ptr++ = pc;
-    if (log_ptr >= log_buffer + LOG_BUFFER_SIZE) log_ptr = log_buffer;
-    disasm_instr(pc);
-    assert(sp >= stack_low);
-    assert(sp <= stack_high);
+	  if (icount-- == 0) {
+		  stop_here ();
+	  }
+
+	  *log_ptr++ = pc;
+	  if (log_ptr >= log_buffer + LOG_BUFFER_SIZE) {
+		  log_ptr = log_buffer;
+	  }
+	  disasm_instr(pc);
+	  assert(sp >= stack_low);
+	  assert(sp <= stack_high);
 #endif
     cur_instr = *pc++;
 
     switch (cur_instr) {
 
 /* Basic stack operations */
-
     case SWAP:
     { value tmp = accu;
       accu = sp[0];

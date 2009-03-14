@@ -108,7 +108,11 @@ void print_pc(pc)
 
 bytecode_t disasm_instr(bytecode_t pc)
 {
-	
+	switch (*pc) {
+	default:
+		printf("Executing %s\n", names_of_instructions[*pc]);
+	}
+
 	return pc;
 }
 
