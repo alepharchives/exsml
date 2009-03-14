@@ -6,8 +6,6 @@
 #include "runtime_config.h"
 #include <stddef.h>
 
-typedef char * addr;
-
 extern int verb_gc;
 extern int volatile something_to_do;
 extern int volatile force_minor_flag;

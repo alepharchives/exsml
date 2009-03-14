@@ -122,7 +122,7 @@ extern value alloc_shr (mlsize_t wosize, tag_t tag)
 
   assert (Is_in_heap (Val_hp (hp)));
 
-  if (gc_phase == Phase_mark || (addr)hp >= (addr)gc_sweep_hp){
+  if (gc_phase == Phase_mark || (char *)hp >= (char *)gc_sweep_hp){
     Hd_hp (hp) = Make_header (wosize, tag, Black);
   }else{
     Hd_hp (hp) = Make_header (wosize, tag, White);

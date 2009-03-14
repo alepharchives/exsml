@@ -9,7 +9,7 @@ extern value **ref_table_ptr, **ref_table_limit;
 extern size_t minor_heap_size;
 
 #define Is_young(val) \
-  ((addr)(val) > (addr)young_start && (addr)(val) < (addr)young_end)
+  ((char *)(val) > (char *)young_start && (char *)(val) < (char *)young_end)
 
 extern void set_minor_heap_size (size_t);
 extern void minor_collection (void);
