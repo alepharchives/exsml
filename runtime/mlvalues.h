@@ -145,11 +145,9 @@ bits  63    10 9     8 7   0
 /* A sequence of bytecodes */
 typedef unsigned char * bytecode_t;
 
-#define CODE bytecode_t
-
 #define Closure_wosize 2
 #define Closure_tag (No_scan_tag - 2)
-#define Code_val(val) (((CODE *) (val)) [0])     /* Also an l-value. */
+#define Code_val(val) (((bytecode_t *) (val)) [0])     /* Also an l-value. */
 #define Env_val(val) (Field(val, 1))               /* Also an l-value. */
 
 /* --- Reference cells are used in Moscow SML --- */

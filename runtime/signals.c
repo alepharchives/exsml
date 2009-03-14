@@ -9,12 +9,12 @@
 
 volatile int signal_is_pending = 0;
 int in_blocking_section = 0;
-volatile CODE signal_handler;
+volatile bytecode_t signal_handler;
 volatile int signal_number;
 
 /* This is set by interprete in interp.c on initialization: */
 
-CODE raise_break_exn;
+bytecode_t raise_break_exn;
 
 void execute_signal(void)
 {

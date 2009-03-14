@@ -12,7 +12,7 @@
 #include "prims.h"
 
 extern value interprete(int mode, bytecode_t bprog,
-			int code_size, CODE* rprog);
+			int code_size, bytecode_t* rprog);
 
 value start_interp(value may_free, value prog, value offset, value vlen) /* ML */
 {

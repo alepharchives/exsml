@@ -70,9 +70,9 @@ static opcode_t byte_callback3_code[] = { ACC3, APPLY3, POP, 1, 0, STOP };
 #define RAISE_CODE_LEN 4
 #define CALLBACK_CODE_LEN 6
 
-CODE callback1_code;		/* Set by interprete on initialization */
-CODE callback2_code;
-CODE callback3_code;
+bytecode_t callback1_code;		/* Set by interprete on initialization */
+bytecode_t callback2_code;
+bytecode_t callback3_code;
 
 /* GC interface */
 
@@ -83,7 +83,7 @@ CODE callback3_code;
 
 /* The interpreter itself */
 
-extern value interprete(int mode, bytecode_t bprog, CODE* rprog)
+extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 {
 
 /*  mode      = mode (0=init, 1=bytecode exec, 2=code exec)
@@ -96,7 +96,7 @@ extern value interprete(int mode, bytecode_t bprog, CODE* rprog)
    The most heavily used registers come first.
 */
 
-  CODE pc = bprog;
+  bytecode_t pc = bprog;
   value accu;
   value * sp;
 
@@ -476,7 +476,7 @@ extern value interprete(int mode, bytecode_t bprog, CODE* rprog)
         pc = Code_val(accu);
         env = accu;
       } else {
-        pc = (CODE)(sp[0]);
+        pc = (bytecode_t)(sp[0]);
         env = sp[1];
         extra_args = Long_val(sp[2]);
 	sp += 3;
@@ -517,7 +517,7 @@ extern value interprete(int mode, bytecode_t bprog, CODE* rprog)
 	   three slots: RESTART, GRAB, n; and pc pointing past n now. */
         Code_val(accu) = pc - 3;
         sp += num_args;
-        pc = (CODE)(sp[0]);
+        pc = (bytecode_t)(sp[0]);
         env = sp[1];
         extra_args = Long_val(sp[2]);
         sp += 3;

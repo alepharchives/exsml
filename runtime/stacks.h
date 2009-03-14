@@ -16,7 +16,7 @@ extern value * trapsp;
 
 extern value global_data;
 
-#define Trap_pc(tp) (((CODE *)(tp))[0])
+#define Trap_pc(tp) (((bytecode_t *)(tp))[0])
 #define Trap_link(tp) (((value **)(tp))[1])
 
 void reset_roots (void);
