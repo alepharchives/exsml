@@ -15,8 +15,7 @@ struct lexer_buffer {
   value lex_last_action;
 };
 
-value get_next_char(lexbuf)     /* ML */
-     struct lexer_buffer * lexbuf;
+value get_next_char(struct lexer_buffer *lexbuf)     /* ML */
 {
   mlsize_t buffer_len, curr_pos;
 
