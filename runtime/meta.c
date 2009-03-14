@@ -14,8 +14,6 @@
 extern value interprete(int mode, bytecode_t bprog,
 			int code_size, CODE* rprog);
 
-extern realcode_t interp_realcode;	/* In interp.c */
-
 value start_interp(value may_free, value prog, value offset, value vlen) /* ML */
 {
   bytecode_t bprog = (bytecode_t)&Byte(prog, Long_val(offset)); // In ML heap

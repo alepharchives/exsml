@@ -145,9 +145,6 @@ bits  63    10 9     8 7   0
 /* A sequence of bytecodes */
 typedef unsigned char * bytecode_t;
 
-/* A sequence of real machine instruction addresses */
-typedef void ** realcode_t;
-
 #define CODE bytecode_t
 
 #define Closure_wosize 2
