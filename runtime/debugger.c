@@ -3,14 +3,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "main.h"
 #include "debugger.h"
 #include "instruct.h"
+#include "main.h"
 #include "memory.h"
 #include "mlvalues.h"
 #include "opnames.h"
+#include "prims.h"
 #include "stacks.h"
 #include "unalignd.h"
+
 
 bytecode_t log_buffer[LOG_BUFFER_SIZE];
 bytecode_t * log_ptr;
@@ -106,55 +108,37 @@ void print_pc(pc)
 
 /* Disassembling one instruction */
 
-bytecode_t disasm_instr(bytecode_t pc)
+bytecode_t disasm_instr(int cur_instr, bytecode_t pc, value accu)
 {
-	value accu;
-	printf("Executing %s\n", names_of_instructions[*pc]);
+	value accu_l;
+	printf("Executing %s\n", names_of_instructions[cur_instr]);
 
-	switch (*pc) {
+	switch (cur_instr) {
 	case GETGLOBAL:
-		accu = Field(global_data, u16(pc));
-		printf("Global %d : ", u16(pc));
+		accu_l = Field(global_data, u16(pc));
+		printf("  Global %i : ", u16(pc));
+		print_value(accu_l);
+		break;
+	case SETGLOBAL:
+		printf("  Global %i : ", u16(pc));
 		print_value(accu);
+		break;
+	case MAKEBLOCK1:
+		printf("  Tag: %i\n", (unsigned char)(*pc));
+		printf("  Value: ");
+		print_value(accu);
+		break;
+	case C_CALL1:
+		printf("  u16-pc: %i", u16(pc));
+		printf("  Value: ");
+		print_value(accu);
+		printf("  C-fn: %i (%s)\n", u16(pc), names_of_cprim[u16(pc)]);
 		break;
 	default:
 		break;
 	}
 
 	return pc;
-}
-
-void disasm(bytecode_t pc)
-{
-	int i;
-
-	for (i = 0; i < 20; i++) {
-		pc = disasm_instr(pc);
-	}
-}
-
-void post_mortem(int n)
-{
-	bytecode_t * p;
-
-	if (n > LOG_BUFFER_SIZE) n = LOG_BUFFER_SIZE;
-	for (p = log_buffer +
-		     (unsigned) (log_ptr - log_buffer - n) % LOG_BUFFER_SIZE;
-	     n > 0;
-	     n--) {
-		disasm_instr(*p);
-		p++;
-		if (p >= log_buffer + LOG_BUFFER_SIZE) {
-			p = log_buffer;
-		}
-	}
-}
-
-void failed_assert (char *expr, char *file, int line)
-{
-	fprintf (stderr, "Assertion failed: %s; file %s; line %d\n",
-		 expr, file, line);
-	exit (100);
 }
 
 static unsigned long seed = 0x12345;

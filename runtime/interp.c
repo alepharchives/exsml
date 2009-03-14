@@ -78,7 +78,7 @@ bytecode_t callback3_code;
 
 #define Setup_for_gc { sp -= 2; sp[0] = accu; sp[1] = env; extern_sp = sp; }
 #define Restore_after_gc { accu = sp[0]; env = sp[1]; sp += 2; }
-#define Setup_for_c_call { *--sp = env; extern_sp = sp; }
+#define SETUP_FOR_C_CALL { *--sp = env; extern_sp = sp; }
 #define Restore_after_c_call { sp = extern_sp; env = *sp++; }
 
 /* The interpreter itself */
@@ -170,11 +170,13 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 	  if (log_ptr >= log_buffer + LOG_BUFFER_SIZE) {
 		  log_ptr = log_buffer;
 	  }
-	  disasm_instr(pc);
 	  assert(sp >= stack_low);
 	  assert(sp <= stack_high);
+	  cur_instr = *pc++;
+	  disasm_instr(cur_instr, pc, accu);
+#else
+	  cur_instr = *pc++
 #endif
-    cur_instr = *pc++;
 
     switch (cur_instr) {
 
@@ -1004,55 +1006,57 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 /* Calling C functions */
 
     case C_CALL1:
-      Setup_for_c_call;
-      accu = (cprim[u16pc])(accu);
-      Restore_after_c_call;
-      pc += SHORT;
-      break;
+	    SETUP_FOR_C_CALL;
+	    accu = (cprim[u16pc])(accu);
+	    Restore_after_c_call;
+	    pc += SHORT;
+	    break;
     case C_CALL2:
-      Setup_for_c_call;
-      /* sp[0] temporarily holds the environment pointer */
-      accu = (cprim[u16pc])(sp[1], accu);
-      Restore_after_c_call;
-      pc += SHORT;
-      sp += 1;
-      break;
+	    SETUP_FOR_C_CALL;
+	    /* sp[0] temporarily holds the environment pointer */
+	    accu = (cprim[u16pc])(sp[1], accu);
+	    Restore_after_c_call;
+	    pc += SHORT;
+	    sp += 1;
+	    break;
     case C_CALL3:
-      Setup_for_c_call;
-      accu = (cprim[u16pc])(sp[2], sp[1], accu);
-      Restore_after_c_call;
-      pc += SHORT;
-      sp += 2;
-      break;
+	    SETUP_FOR_C_CALL;
+	    accu = (cprim[u16pc])(sp[2], sp[1], accu);
+	    Restore_after_c_call;
+	    pc += SHORT;
+	    sp += 2;
+	    break;
     case C_CALL4:
-      Setup_for_c_call;
-      accu = (cprim[u16pc])(sp[3], sp[2], sp[1], accu);
-      Restore_after_c_call;
-      pc += SHORT;
-      sp += 3;
-      break;
+	    SETUP_FOR_C_CALL;
+	    accu = (cprim[u16pc])(sp[3], sp[2], sp[1], accu);
+	    Restore_after_c_call;
+	    pc += SHORT;
+	    sp += 3;
+	    break;
     case C_CALL5:
-      Setup_for_c_call;
-      accu = (cprim[u16pc])(sp[4], sp[3], sp[2], sp[1], accu);
-      Restore_after_c_call;
-      pc += SHORT;
-      sp += 4;
-      break;
+	    SETUP_FOR_C_CALL;
+	    accu = (cprim[u16pc])(sp[4], sp[3], sp[2], sp[1], accu);
+	    Restore_after_c_call;
+	    pc += SHORT;
+	    sp += 4;
+	    break;
     case C_CALLN:
-      { int n = u8pci;
-        value * args;
-	int i;
-        *--sp = accu;
-        Setup_for_c_call;
-	args = (value*)malloc(n * sizeof(value));
-	for (i = 0; i < n; i++)
-	  args[i] = sp[n-i];
-        accu = (cprim[u16pc])(args, n);
-        Restore_after_c_call;
-        pc += SHORT;
-	free(args);
-        sp += n;
-        break; }
+      {
+	      int n = u8pci;
+	      value * args;
+	      int i;
+	      *--sp = accu;
+	      SETUP_FOR_C_CALL;
+	      args = (value*)malloc(n * sizeof(value));
+	      for (i = 0; i < n; i++)
+		      args[i] = sp[n-i];
+	      accu = (cprim[u16pc])(args, n);
+	      Restore_after_c_call;
+	      pc += SHORT;
+	      free(args);
+	      sp += n;
+	      break;
+      }
 
 /* small values */
 

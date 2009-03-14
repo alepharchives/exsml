@@ -143,7 +143,7 @@ bits  63    10 9     8 7   0
 #define Field(x, i) (((value *)(x)) [i])           /* Also an l-value. */
 
 /* A sequence of bytecodes */
-typedef unsigned char * bytecode_t;
+typedef unsigned char *bytecode_t;
 
 #define Closure_wosize 2
 #define Closure_tag (No_scan_tag - 2)
