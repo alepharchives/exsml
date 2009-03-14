@@ -1097,13 +1097,13 @@ value string_mlval(value val)	/* ML */
   if (extern_pos == 0)
     {
       s = alloc_string(8);
-      ((asize_t *)s)[0] = (asize_t)extern_pos;
-      ((asize_t *)s)[1] = (asize_t)res;
+      ((size_t *)s)[0] = (size_t)extern_pos;
+      ((size_t *)s)[1] = (size_t)res;
     }
   else
     {
       s = alloc_string(4 + extern_pos * sizeof(unsigned long));
-      ((asize_t *)s)[0] = (asize_t)extern_pos;
+      ((size_t *)s)[0] = (size_t)extern_pos;
       memmove(&Byte(s, 4), (char *)extern_block, extern_pos * sizeof(unsigned long));
     }
   stat_free((char *) extern_block);

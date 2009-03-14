@@ -19,9 +19,9 @@ value alloc_shr (mlsize_t, tag_t);
 void adjust_gc_speed (mlsize_t, mlsize_t);
 void modify (value *, value);
 void initialize (value *, value);
-char * stat_alloc (asize_t);	         /* Size in bytes. */
+char * stat_alloc (size_t);	         /* Size in bytes. */
 void stat_free (char *);
-char * stat_resize (char *, asize_t);     /* Size in bytes. */
+char * stat_resize (char *, size_t);     /* Size in bytes. */
 
 
 #define ALLOC_SMALL(result, wosize, tag) {				      \

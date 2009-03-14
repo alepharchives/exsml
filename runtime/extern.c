@@ -9,11 +9,11 @@
 #include "mlvalues.h"
 
 struct extern_obj * extern_table;
-asize_t extern_table_size, extern_table_used;
+size_t extern_table_size, extern_table_used;
 
 void alloc_extern_table()
 {
-  asize_t i;
+  size_t i;
 
   extern_table = (struct extern_obj *)
     stat_alloc(extern_table_size * sizeof(struct extern_obj));
@@ -23,9 +23,9 @@ void alloc_extern_table()
 
 void resize_extern_table()
 {
-  asize_t oldsize;
+  size_t oldsize;
   struct extern_obj * oldtable;
-  asize_t i, h;
+  size_t i, h;
 
   oldsize = extern_table_size;
   oldtable = extern_table;
@@ -44,7 +44,7 @@ void resize_extern_table()
 }
 
 byteoffset_t * extern_block;
-asize_t extern_size, extern_pos;
+size_t extern_size, extern_pos;
 
 static void resize_result()
 {
@@ -57,11 +57,11 @@ static byteoffset_t emit(v)
      value v;
 {
   mlsize_t size;
-  asize_t h;
+  size_t h;
   byteoffset_t res;
   value * p;
   byteoffset_t * q;
-  asize_t end_pos;
+  size_t end_pos;
 
   if (Is_long(v)) return (byteoffset_t) v;
   size = Wosize_val(v);
@@ -90,7 +90,7 @@ static byteoffset_t emit(v)
 
 byteoffset_t emit_all(value root)
 {
-  asize_t read_pos;
+  size_t read_pos;
   byteoffset_t res;
   header_t hd;
   mlsize_t sz;

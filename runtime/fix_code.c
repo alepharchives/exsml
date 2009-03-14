@@ -16,7 +16,7 @@
 
 void fixup_endianness(p, len)
      bytecode_t p;
-     asize_t len;
+     size_t len;
 {
   bytecode_t q;
   int n;

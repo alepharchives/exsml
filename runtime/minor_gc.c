@@ -17,13 +17,13 @@
 
 #include "runtime.h"
 
-asize_t minor_heap_size;
+size_t minor_heap_size;
 char *young_start = NULL, *young_end, *young_ptr = NULL;
 static value **ref_table = NULL, **ref_table_end, **ref_table_threshold;
 value **ref_table_ptr = NULL, **ref_table_limit;
-static asize_t ref_table_size, ref_table_reserve;
+static size_t ref_table_size, ref_table_reserve;
 
-void set_minor_heap_size (asize_t size)
+void set_minor_heap_size (size_t size)
 {
   char *new_heap;
   value **new_table;
@@ -146,8 +146,8 @@ void realloc_ref_table (void)
 	} else {
 		/* This will never happen. */
 		assert(0);
-		asize_t sz;
-		asize_t cur_ptr = ref_table_ptr - ref_table;
+		size_t sz;
+		size_t cur_ptr = ref_table_ptr - ref_table;
 		assert (force_minor_flag);
 		assert (something_to_do);
 		ref_table_reserve += 1024;

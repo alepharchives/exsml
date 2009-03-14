@@ -195,7 +195,7 @@ void modify (value *fp, value val)
 	}
 }
 
-char *stat_alloc(asize_t sz)
+char *stat_alloc(size_t sz)
 {
   char *result = (char *) malloc (sz);
 
@@ -208,7 +208,7 @@ void stat_free(char * blk)
   free (blk);
 }
 
-char *stat_resize (char * blk, asize_t sz)
+char *stat_resize (char * blk, size_t sz)
 {
   char *result = (char *) realloc (blk, sz);
 

@@ -6,7 +6,7 @@
 #include "misc.h"
 
 typedef struct {
-  asize_t size;
+  size_t size;
   char *next;
 } heap_chunk_head;
 
@@ -22,7 +22,7 @@ extern char *heap_start;
 extern char *heap_end;
 extern unsigned long total_heap_size;
 extern char *page_table;
-extern asize_t page_table_size;
+extern size_t page_table_size;
 extern char *gc_sweep_hp;
 
 #define In_heap 1
@@ -33,8 +33,8 @@ extern char *gc_sweep_hp;
   ((addr)(p) >= (addr)heap_start && (addr)(p) < (addr)heap_end \
    && page_table [Page (p)] == In_heap)
 
-void init_major_heap (asize_t);
-asize_t round_heap_chunk_size (asize_t);
+void init_major_heap (size_t);
+size_t round_heap_chunk_size (size_t);
 void darken (value);
 void major_collection_slice (void);
 void major_collection (void);

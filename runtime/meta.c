@@ -23,7 +23,7 @@ value start_interp(value may_free, value prog, value offset, value vlen) /* ML *
   value res;
 
 #if defined(WORDS_BIGENDIAN) && !defined(HAVE_ALIGNED_ACCESS_REQUIRED)
-  fixup_endianness(&Byte(prog, 0), (asize_t) len);
+  fixup_endianness(&Byte(prog, 0), (size_t) len);
 #endif
 
   {
@@ -64,7 +64,7 @@ value realloc_global(size)      /* ML */
 value static_alloc(size)        /* ML */
      value size;
 {
-  return (value) stat_alloc((asize_t) Long_val(size));
+  return (value) stat_alloc((size_t) Long_val(size));
 }
 
 value static_free(blk)          /* ML */
@@ -77,7 +77,7 @@ value static_free(blk)          /* ML */
 value static_resize(blk, new_size) /* ML */
      value blk, new_size;
 {
-  return (value) stat_resize((char *) blk, (asize_t) Long_val(new_size));
+  return (value) stat_resize((char *) blk, (size_t) Long_val(new_size));
 }
 
 value obj_is_block(arg)             /* ML */

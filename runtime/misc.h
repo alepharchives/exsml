@@ -6,7 +6,6 @@
 #include "runtime_config.h"
 #include <stddef.h>
 
-typedef size_t asize_t;
 typedef char * addr;
 
 extern int verb_gc;
@@ -18,7 +17,7 @@ void gc_message(char *, unsigned long);
 void fatal_error(char *);
 void fatal_error_arg(char *, char *);
 void memmov(char *, char *, unsigned long);
-char * aligned_malloc(asize_t, int);
+char * aligned_malloc(size_t, int);
 
 
 #endif /* _misc_ */
