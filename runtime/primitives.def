@@ -1,3 +1,5 @@
+## C primitives which can be called form the mosml bytecode engine
+## One primitive per line
 compare
 equal
 notequal
