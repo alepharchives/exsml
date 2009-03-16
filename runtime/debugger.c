@@ -8,7 +8,6 @@
 #include "main.h"
 #include "memory.h"
 #include "mlvalues.h"
-#include "opnames.h"
 #include "prims.h"
 #include "stacks.h"
 #include "unalignd.h"

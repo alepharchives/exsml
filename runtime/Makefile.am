@@ -3,7 +3,7 @@
 AM_CFLAGS = -I$(top_srcdir) -Wall -Wextra -Wunused -Wstrict-aliasing
 
 bin_PROGRAMS = camlrunm
-camlrunm_SOURCES = $(C_SOURCES) $(GEN_SOURCES) $(GEN_HS)
+camlrunm_SOURCES = $(GEN_SOURCES) $(GEN_HS) $(C_SOURCES)
 
 C_SOURCES = interp.c misc.c stacks.c fix_code.c main.c \
 	fail.c signals.c freelist.c major_gc.c minor_gc.c memory.c alloc.c \
@@ -12,26 +12,25 @@ C_SOURCES = interp.c misc.c stacks.c fix_code.c main.c \
 	gc_ctrl.c mosml.c unix.c runtime.c md5sum.c callback.c debugger.c
 
 # Generated sources
-GEN_SOURCES = prims.c
-GEN_HS = opnames.h
+GEN_SOURCES = prims.c instruct.c
+GEN_HS = instruct.h
 
-CLEANFILES = opnames.h prims.c
+CLEANFILES = instruct.h instruct.c prims.c
 
-debugger.c: opnames.h
+debugger.c: instruct.h
 
 prims.c : primitives.def
 	${AWK} -f gen_prims_c.awk primitives.def > prims.c
+
+instruct.h : opcodes.def
+	${AWK} -f gen_instruct_h.awk opcodes.def > instruct.h
+
+instruct.c : opcodes.def
+	${AWK} -f gen_instruct_c.awk opcodes.def > instruct.c
 
 etags:
 	etags *.c *.h
 
 ctags:
 	ctags *.c *.h
-
-opnames.h : instruct.h
-	sed -e '/\/\*/d' \
-             -e 's/enum /char * names_of_/' \
-             -e 's/{$$/[] = {/' \
-             -e 's/\([A-Z][A-Z_0-9]*\)/"\1"/g' instruct.h > opnames.h
-
 

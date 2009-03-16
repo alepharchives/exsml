@@ -24,7 +24,6 @@ libsml_unix/.libs
 libsml_unix/libsml_unix.la
 libsml_socket/.libs
 libsml_socket/libsml_socket.la
-runtime/.deps
 aclocal.m4
 autom4te.cache
 config.h.in
@@ -65,9 +64,11 @@ src/mosmllib/Weak.sml
 src/mosmllib/Word.sml
 src/mosmllib/Word8Array.sml
 src/mosmllib/Word8Vector.sml
+runtime/.deps
 runtime/camlrunm
 runtime/prims.c
-runtime/opnames.h
+runtime/instruct.h
+runtime/instruct.c
 runtime/Makefile
 src/launch/camlexec
 src/launch/camlexec.c
