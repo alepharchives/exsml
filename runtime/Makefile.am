@@ -15,35 +15,18 @@ C_SOURCES = interp.c misc.c stacks.c fix_code.c main.c \
 GEN_SOURCES = prims.c
 GEN_HS = opnames.h
 
-CLEANFILES = opnames.h prims.c primitives
+CLEANFILES = opnames.h prims.c
 
 debugger.c: opnames.h
 
-prims.c : primitives
-	(echo '#include "mlvalues.h"'; \
-	 echo '#include "prims.h"'; \
-	 sed -e 's/.*/extern value &();/' primitives; \
-	 echo 'c_primitive cprim[] = {'; \
-	 sed -e 's/.*/  &,/' primitives; \
-	 echo '  0 };'; \
-         echo 'char * names_of_cprim[] = {'; \
-	 sed -e 's/.*/  "&",/' primitives; \
-	 echo '  0 };') > prims.c
+prims.c : primitives.def
+	${AWK} -f gen_prims_c.awk primitives.def > prims.c
 
 etags:
 	etags *.c *.h
 
 ctags:
 	ctags *.c *.h
-
-primitives : $(C_SOURCES)
-	sed -n -e '/\/\* ML \*\//s/.* \([a-zA-Z0-9_][a-zA-Z0-9_]*\) *(.*/\1/p' \
-                $(C_SOURCES) | grep -v UNUSED > primitives2
-	sh -c 'if cmp -s primitives primitives2; \
-        then rm primitives2; \
-        else mv primitives2 primitives; \
-        fi'
-
 
 opnames.h : instruct.h
 	sed -e '/\/\*/d' \
