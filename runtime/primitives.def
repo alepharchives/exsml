@@ -1,5 +1,6 @@
 ## C primitives which can be called form the mosml bytecode engine
 ## One primitive per line
+## The order of primitives matter! Until we get that bug fixed at least.
 compare
 equal
 notequal
@@ -7,8 +8,8 @@ lessthan
 lessequal
 greaterthan
 greaterequal
-int_of_string
-format_int
+extern_val
+extern_compact_val
 format_float
 float_of_string
 exp_float
@@ -22,11 +23,16 @@ asin_float
 acos_float
 atan_float
 atan2_float
-create_string
-compare_strings
-blit_string
-fill_string
-is_printable
+gc_stat
+gc_get
+gc_set
+gc_minor
+gc_major
+gc_full_major
+hash_univ_param
+intern_val
+int_of_string
+format_int
 open_descriptor
 channel_descriptor
 channel_size
@@ -45,19 +51,7 @@ seek_in
 pos_in
 close_in
 input_scan_line
-extern_val
-extern_compact_val
-intern_val
-hash_univ_param
-sys_exit
-sys_open
-sys_close
-sys_remove
-sys_rename
-sys_chdir
-sys_getenv
-sys_system_command
-sys_catch_break
+get_next_char
 start_interp
 realloc_global
 static_alloc
@@ -67,13 +61,20 @@ obj_is_block
 obj_block
 available_primitives
 parse_engine
-get_next_char
-gc_stat
-gc_get
-gc_set
-gc_minor
-gc_major
-gc_full_major
+create_string
+compare_strings
+blit_string
+fill_string
+is_printable
+sys_exit
+sys_open
+sys_close
+sys_remove
+sys_rename
+sys_chdir
+sys_getenv
+sys_system_command
+sys_catch_break
 sml_equal
 sml_not_equal
 sml_system
@@ -144,9 +145,11 @@ sml_localoffset
 sml_exnname
 sml_exnmessage
 sml_realpath
+sml_uname
 sml_islink
 sml_readlink
 sml_devinode
+sml_setdisk
 md5sum
 alloc_valueptr
 sml_init_register
@@ -156,3 +159,6 @@ cfun_app2
 cfun_app3
 cfun_app4
 cfun_app5
+dynlib_dlopen
+dynlib_dlclose
+dynlib_dlsym
