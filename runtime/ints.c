@@ -23,7 +23,7 @@ value int_of_string(value s)          /* ML */
 		sign = -1;
 		p++;
 	}
-	base = n10;
+	base = 10;
 	if (*p == '0') {
 		switch (p[1]) {
 		case 'x': case 'X':
