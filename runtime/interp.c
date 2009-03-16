@@ -175,7 +175,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 	  cur_instr = *pc++;
 	  disasm_instr(cur_instr, pc, accu);
 #else
-	  cur_instr = *pc++
+	  cur_instr = *pc++;
 #endif
 
     switch (cur_instr) {
