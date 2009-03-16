@@ -134,6 +134,9 @@ AC_MSG_CHECKING([for git version])
 AC_MSG_RESULT([$GITHEAD])
 AC_SUBST([GITHEAD])
 
+GENERATED_FILE=misc/generated-file.txt
+AC_SUBST_FILE(GENERATED_FILE)
+
 AC_OUTPUT(
           Makefile
 	  compiler/Makefile
