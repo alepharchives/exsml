@@ -31,6 +31,7 @@ AM_CONFIG_HEADER(config.h)
 
 ## Checks for libs
 AC_CHECK_LIB(m, cos)
+AC_CHECK_LIB(dl, dlopen)
 AC_CHECK_HEADER(unistd.h)
 AC_CHECK_HEADER(dirent.h)
 AC_CHECK_HEADER(sys/param.h)
