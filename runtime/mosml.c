@@ -29,7 +29,7 @@
 #include "intext.h"
 #include "debugger.h"
 #include "interp.h"
-#include "globals.h"
+#include "global_tbl.h"
 #include "mosml.h"
 
 

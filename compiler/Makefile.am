@@ -98,8 +98,9 @@ Parser.sml Parser.sig: Parser.mlyac
 mosmllnk: $(L_OBJS)
 	$(MOSMLL) $(LINKFLAGS) -o mosmllnk Mainl.uo
 
-Predef.sml : $(top_srcdir)/runtime/globals.h
-	$(PERL) $(MOSMLTOOLS)/mksmlpre $(top_srcdir)/runtime/globals.h > Predef.sml
+Predef.sml : $(top_srcdir)/runtime/globals.def
+	${AWK} -f gen_predef_sml.awk $(top_srcdir)/runtime/globals.def \
+	  > Predef.sml
 
 Prim_c.sml : $(top_srcdir)/runtime/primitives.def
 	${AWK} -f gen_prim_c_sml.awk $(top_srcdir)/runtime/primitives.def \

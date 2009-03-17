@@ -4,7 +4,7 @@
 #include <string.h>
 #include "config.h"
 #include "alloc.h"
-#include "globals.h"
+#include "global_tbl.h"
 #include "major_gc.h"
 #include "memory.h"
 #include "minor_gc.h"

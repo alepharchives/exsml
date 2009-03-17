@@ -14,7 +14,7 @@
 #include "fail.h"
 #include "gc.h"
 #include "gc_ctrl.h"
-#include "globals.h"
+#include "global_tbl.h"
 #include "intext.h"
 #include "io.h"
 #include "misc.h"

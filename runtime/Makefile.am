@@ -15,9 +15,9 @@ C_SOURCES = interp.c misc.c stacks.c fix_code.c main.c \
 
 # Generated sources
 GEN_SOURCES = prims.c instruct.c
-GEN_HS = instruct.h
+GEN_HS = instruct.h global_tbl.h
 
-CLEANFILES = instruct.h instruct.c prims.c
+CLEANFILES = instruct.h instruct.c prims.c global_tbl.h
 
 debugger.c: instruct.h
 
@@ -29,6 +29,9 @@ instruct.h : opcodes.def
 
 instruct.c : opcodes.def
 	${AWK} -f gen_instruct_c.awk opcodes.def > instruct.c
+
+global_tbl.h : globals.def
+	${AWK} -f gen_global_table_h.awk globals.def > global_tbl.h
 
 etags:
 	etags *.c *.h

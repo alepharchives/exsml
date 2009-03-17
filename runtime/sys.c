@@ -13,7 +13,7 @@
 #include "config.h"
 #include "alloc.h"
 #include "fail.h"
-#include "globals.h"
+#include "global_tbl.h"
 #include "instruct.h"
 #include "mlvalues.h"
 #include "signals.h"

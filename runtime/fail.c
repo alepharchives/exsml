@@ -8,7 +8,7 @@
 #include "memory.h"
 #include "mlvalues.h"
 #include "signals.h"
-#include "globals.h"
+#include "global_tbl.h"
 
 
 /* float_exn is an exception index from globals.h.  The exception

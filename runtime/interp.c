@@ -21,7 +21,7 @@
 #include "str.h"
 #include "unalignd.h"
 #include "interp.h"
-#include "globals.h"
+#include "global_tbl.h"
 
 #ifdef DEBUG
 static long icount = 0;

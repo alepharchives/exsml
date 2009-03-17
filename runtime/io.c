@@ -15,7 +15,7 @@
 #include "mlvalues.h"
 #include "signals.h"
 #include "sys.h"
-#include "globals.h"
+#include "global_tbl.h"
 
 /* Common functions. */
 
