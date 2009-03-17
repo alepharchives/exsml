@@ -89,8 +89,8 @@ all: mosmlcmp mosmllnk mosmltop
 mosmlcmp: $(COMP_OBJS) $(LLVM_OBJS) $(C_OBJS)
 	$(MOSMLL) $(LINKFLAGS) -o mosmlcmp Mainc.uo
 
-Opcodes.sml: $(top_srcdir)/runtime/instruct.h
-	perl $(top_srcdir)/src/tools/mksmlopc $(top_srcdir)/runtime/instruct.h > Opcodes.sml
+Opcodes.sml: $(top_srcdir)/runtime/opcodes.def
+	${AWK} -f gen_opcodes_sml.awk $(top_srcdir)/runtime/opcodes.def > Opcodes.sml
 
 Parser.sml Parser.sig: Parser.mlyac
 
