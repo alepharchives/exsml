@@ -1,0 +1,48 @@
+## Definition of global values in the runtime.
+## This part defines the global values we have access to in our system.
+## Format is TYPE, NAME, NUMBER, AFFILIATION and FUNCTION.
+global GLOBAL_DATA   	   	0    meta       global_data
+global SYS__S_IRUSR  	   	1    sys        s_irusr
+global SYS__S_IWUSR  	   	2    sys	s_iwusr
+global SYS__S_IXUSR  	   	3    sys	s_ixusr
+global SYS__S_IRGRP  	   	4    sys	s_irgrp
+global SYS__S_IWGRP  	    	5    sys	s_iwgrp
+global SYS__S_IXGRP  	   	6    sys	s_ixgrp
+global SYS__S_IROTH  	   	7    sys	s_iroth
+global SYS__S_IWOTH  	   	8    sys	s_iwoth
+global SYS__S_IXOTH  	   	9    sys	s_ixoth
+global SYS__S_ISUID  	   	10   sys	s_isuid
+global SYS__S_ISGID  	   	11   sys	s_isgid
+global SYS__S_IRALL  	   	12   sys	s_irall
+global SYS__S_IWALL  	   	13   sys	s_iwall
+global SYS__S_IXALL  	   	14   sys	s_ixall
+global SYS__COMMAND_LINE  	15   sys	command_line
+global SYS__INTERACTIVE   	16   sys	interactive
+global SYS__MAX_STRING_LENGTH 	17   sys	max_string_length
+global SYS__MAX_VECT_LENGTH 	18   sys	max_vect_length
+## Exception index names for pervasive dynamic exceptions. The corresponding
+## exn names (string refs) are allocated by sys_init()
+exn SYS__EXN_MEMORY      	19   sys	exn_memory
+exn SYS__EXN_ARGUMENT       	20   sys	exn_argument
+exn SYS__EXN_GRAPHIC        	21   sys	exn_graphic
+exn SYS__EXN_SYSERR         	22   sys	exn_syserr
+exn SYS__EXN_FAIL           	23   sys	exn_fail
+exn SYS__EXN_SIZE           	24   sys	exn_size
+exn SYS__EXN_INTERRUPT      	25   sys	exn_interrupt
+exn SYS__EXN_SUBSCRIPT      	26   sys	exn_subscript
+exn SYS__EXN_CHR            	27   sys	exn_chr
+exn SYS__EXN_DIV            	28   sys	exn_div
+exn SYS__EXN_DOMAIN         	29   sys	exn_domain
+exn SYS__EXN_ORD            	30   sys	exn_ord
+exn SYS__EXN_OVERFLOW       	31   sys	exn_overflow
+exn SYS__EXN_BIND           	32   sys	exn_bind
+exn SYS__EXN_MATCH          	33   sys	exn_match
+exn SYS__EXN_IO             	34   sys	exn_io
+## Frequently used exception values (NOT exn indexes); allocated by sys_init()
+exn_val EXN_INTERRUPT	      	35   sys    val_exn_interrupt
+exn_val EXN_DIV             	36   sys    val_exn_div
+exn_val EXN_OVERFLOW        	37   sys    val_exn_overflow
+## First and last exception, these ought to be computed via awk
+first_exception 19
+last_exception  34
+
