@@ -18,6 +18,10 @@ compiler/Opcodes.sml
 compiler/Parser.sig
 compiler/Parser.sml
 compiler/mosmlcmp
+compiler/Predef.sml
+compiler/Prim_c.sml
+compiler/mosmllnk
+compiler/mosmltop
 libsml_crypt/.libs
 libsml_crypt/libsml_crypt.la
 libsml_unix/.libs

@@ -1,3 +1,5 @@
+#!/usr/bin/env perl
+
 print "local open Const in\n";
 print "val predef_variables = [\n";
 

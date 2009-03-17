@@ -12,6 +12,7 @@ MOSMLC=camlrunm $(top_srcdir)/bootstrap/mosmlcmp \
 MOSMLLEX=mosmllex
 MOSMLYAC=mosmlyac
 MOSMLL=camlrunm $(top_srcdir)/bootstrap/mosmllnk -stdlib $(top_srcdir)/mosmllib -P none
+MOSMLTOOLS= $(top_srcdir)/src/tools
 
 SUFFIXES = .sml .ui .uo .sig .mllex .mlyacc .mlp
 
@@ -97,11 +98,12 @@ Parser.sml Parser.sig: Parser.mlyac
 mosmllnk: $(L_OBJS)
 	$(MOSMLL) $(LINKFLAGS) -o mosmllnk Mainl.uo
 
-Predef.sml : $(CAMLRT)/globals.h
-	$(PERL) $(MOSMLTOOLS)/mksmlpre $(CAMLRT)/globals.h > Predef.sml
+Predef.sml : $(top_srcdir)/runtime/globals.h
+	$(PERL) $(MOSMLTOOLS)/mksmlpre $(top_srcdir)/runtime/globals.h > Predef.sml
 
-Prim_c.sml : $(CAMLRT)/primitives
-	$(PERL) $(MOSMLTOOLS)/mksmlprc $(CAMLRT)/primitives > Prim_c.sml
+Prim_c.sml : $(top_srcdir)/runtime/primitives.def
+	$(PERL) $(MOSMLTOOLS)/mksmlprc $(top_srcdir)/runtime/primitives.def \
+	 > Prim_c.sml
 
 mosmltop: $(COMP_OBJS) $(T_OBJS)
 	$(MOSMLL) $(LINKFLAGS) -o mosmltop Maint.uo 
