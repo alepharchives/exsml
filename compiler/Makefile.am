@@ -102,7 +102,7 @@ Predef.sml : $(top_srcdir)/runtime/globals.h
 	$(PERL) $(MOSMLTOOLS)/mksmlpre $(top_srcdir)/runtime/globals.h > Predef.sml
 
 Prim_c.sml : $(top_srcdir)/runtime/primitives.def
-	$(PERL) $(MOSMLTOOLS)/mksmlprc $(top_srcdir)/runtime/primitives.def \
+	${AWK} -f gen_prim_c_sml.awk $(top_srcdir)/runtime/primitives.def \
 	 > Prim_c.sml
 
 mosmltop: $(COMP_OBJS) $(T_OBJS)
