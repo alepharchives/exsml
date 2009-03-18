@@ -32,13 +32,7 @@ local
     fun make_array (a : '_a array_) = magic (ref a) : 'a array
 in
 
-#include "../mosml_config.h"
-
-#ifdef SIXTYFOUR
-val maxLen = 18014398509481983; (* = 2^54-1, for 64-bit architectures *)
-#else
-val maxLen = 4194303;   	(* = 2^22-1, for 32-bit architectures *)
-#endif
+val maxLen = @MAX_ARRAY_LEN@;
 
 fun array(n, v : '_a) =
   if n < 0 orelse n > maxLen then raise Size

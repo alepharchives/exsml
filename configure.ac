@@ -131,6 +131,7 @@ if test -d "${GIT_DIR:-${ac_top_srcdir:-./}/.git}" ; then
     fi
 fi
 
+
 AC_MSG_CHECKING([for git version])
 AC_MSG_RESULT([$GITHEAD])
 AC_SUBST([GITHEAD])
@@ -138,10 +139,18 @@ AC_SUBST([GITHEAD])
 GENERATED_FILE=misc/generated-file.txt
 AC_SUBST_FILE(GENERATED_FILE)
 
+if test "$ac_cv_sizeof_long_p" -eq 8 ; then
+   MAX_ARRAY_LEN=18014398509481983
+else
+   MAX_ARRAY_LEN=4194303
+fi
+AC_SUBST(MAX_ARRAY_LEN)
+
 AC_OUTPUT(
           Makefile
 	  compiler/Makefile
 	  mosmllib/Makefile
+	  mosmllib/Array.sml
 	  runtime/Makefile
 	  mosmlyac/Makefile
 	  libsml_crypt/Makefile
