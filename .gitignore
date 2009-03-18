@@ -45,9 +45,7 @@ src/camlrunm
 src/config/m.h
 src/config/s.h
 mosmllib/Array.sml
-mosmllib/FileSys.sml
 mosmllib/Help.sml
-mosmllib/Int.sml
 mosmllib/Mosml.sml
 mosmllib/Path.sml
 mosmllib/Process.sml
