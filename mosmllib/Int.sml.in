@@ -4,17 +4,9 @@ type int = int
 
 #include "../mosml_config.h"
 
-#ifdef SIXTYFOUR
-(* 64-bit architecture: *)
-val precision = SOME 63;
-val minInt    = SOME ~4611686018427387904;
-val maxInt    = SOME  4611686018427387903;
-#else
-(* 32-bit architecture: *)
-val precision = SOME 31;
-val minInt    = SOME ~1073741824;
-val maxInt    = SOME  1073741823;
-#endif
+val precision = SOME @INT_PRECISION@;
+val minInt    = SOME @INT_MIN@;
+val maxInt    = SOME @INT_MAX@;
 
 local
     open StringCvt

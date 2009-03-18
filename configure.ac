@@ -141,16 +141,26 @@ AC_SUBST_FILE(GENERATED_FILE)
 
 if test "$ac_cv_sizeof_long_p" -eq 8 ; then
    MAX_ARRAY_LEN=18014398509481983
+   INT_PRECISION=63
+   INT_MIN='~4611686018427387904'
+   INT_MAX=4611686018427387903
 else
    MAX_ARRAY_LEN=4194303
+   INT_PRECISION=31
+   INT_MIN='~1073741824'
+   INT_MAX=1073741823
 fi
 AC_SUBST(MAX_ARRAY_LEN)
+AC_SUBST(INT_PRECISION)
+AC_SUBST(INT_MIN)
+AC_SUBST(INT_MAX)
 
 AC_OUTPUT(
           Makefile
 	  compiler/Makefile
 	  mosmllib/Makefile
 	  mosmllib/Array.sml
+	  mosmllib/Int.sml
 	  runtime/Makefile
 	  mosmlyac/Makefile
 	  libsml_crypt/Makefile
