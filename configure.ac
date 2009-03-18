@@ -161,6 +161,7 @@ AC_OUTPUT(
 	  mosmllib/Makefile
 	  mosmllib/Array.sml
 	  mosmllib/Int.sml
+	  mosmllib/Weak.sml
 	  runtime/Makefile
 	  mosmlyac/Makefile
 	  libsml_crypt/Makefile

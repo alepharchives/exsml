@@ -17,13 +17,7 @@ prim_val magic    : 'a -> 'b                       = 1 "identity"
 fun from_array (a : 'a  array)  = !(magic a)    : 'a array_
 fun make_array (a : '_a array_) = magic (ref a) : 'a array
 
-#include "../mosml_config.h"
-
-#ifdef SIXTYFOUR
-val maxLen = 18014398509481983; (* = 2^54-1, for 64-bit architectures *)
-#else
-val maxLen = 4194303;   	(* = 2^22-1, for 32-bit architectures *)
-#endif
+val maxLen = @MAX_ARRAY_LEN@;
 
 prim_val weak2arr : 'a weak -> 'a array_ = 1 "identity"
 prim_val arr2weak : 'a array_ -> 'a weak = 1 "identity";
