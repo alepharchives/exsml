@@ -1,9 +1,9 @@
 (* FileSys -- 1995-06-16, 1998-05-07 *)
 
-local 
+local
 
     (* The type of directory structures, as handled by the OS: *)
-    prim_type dirstruct_; 
+    prim_type dirstruct_;
 
     (* Primitives from runtime/sys.c -- raise Io on error *)
     prim_val chdir_  : string -> unit            = 1 "sys_chdir";
@@ -12,7 +12,7 @@ local
 
     (* Primitives from runtime/mosml.c -- raise Fail on error *)
     prim_val access_    : string -> int -> bool  = 2 "sml_access";
-    prim_val getdir_    : unit -> string         = 1 "sml_getdir"; 
+    prim_val getdir_    : unit -> string         = 1 "sml_getdir";
     prim_val isdir_     : string -> bool         = 1 "sml_isdir";
     prim_val mkdir_     : string -> unit         = 1 "sml_mkdir";
     prim_val tmpnam_    : unit -> string         = 1 "sml_tmpnam";
@@ -38,13 +38,13 @@ local
     (* Raise SysErr with OS specific explanation if errno <> 0 *)
     fun raiseSys mlOp operand reason =
 	let prim_val errno_    : unit -> int        = 1 "sml_errno";
-	    prim_val errormsg_ : int -> string      = 1 "sml_errormsg"; 
+	    prim_val errormsg_ : int -> string      = 1 "sml_errormsg";
 	    prim_val mkerrno_  : int -> syserror    = 1 "identity";
             val errno = errno_ ()
 	in
 	    if errno = 0 then raiseSysML mlOp operand reason
-	    else raise SysErr 
-		(formatErr mlOp operand (errormsg_ errno), 
+	    else raise SysErr
+		(formatErr mlOp operand (errormsg_ errno),
 		 SOME (mkerrno_ errno))
 	end
 in
@@ -55,143 +55,57 @@ in
     fun access (path, perm) =
 	let fun mem p = if List.exists (fn q => p=q) perm then 1 else 0
 	    val permcode = mem A_READ + 2 * mem A_WRITE + 4 * mem A_EXEC
-	in 
-	    (access_ path permcode) 
+	in
+	    (access_ path permcode)
 	    handle Fail s => raiseSys "access" (SOME path) s
 	end;
 
     fun getDir () =
-	(getdir_ ()) 
+	(getdir_ ())
 	handle Fail s => raiseSys "getDir" NONE s;
 
-    fun isDir p = 
+    fun isDir p =
 	(isdir_ p) handle Fail s => raiseSys "isDir" (SOME p) s;
 
-    fun mkDir p = 
+    fun mkDir p =
 	(mkdir_ p) handle Fail s => raiseSys "mkDir" (SOME p) s;
 
-#ifdef unix
     fun chDir p =
 	(chdir_ p)
 	handle SysErr _ => raiseSys "chDir" (SOME p) "chdir";
 
-    fun mosmlFullPath p = 
+    fun mosmlFullPath p =
 	let prim_val islink_   : string -> bool   = 1 "sml_islink"
 	    prim_val readlink_ : string -> string = 1 "sml_readlink"
             val links = ref 0
-	    fun incrlink () = 
+	    fun incrlink () =
 		if !links < 30 then links := !links + 1
 		else raise Fail "Too many symbolic links encountered"
 	    open Path
-	    fun expand p = 
+	    fun expand p =
 		let val {vol, arcs, isAbs} = Path.fromString p
 		    val root = if isAbs then vol ^ "/" else vol
 		in mkCanonical (List.foldl followlink root arcs) end
-	    and followlink (a, p) = 
+	    and followlink (a, p) =
 		let val file = concat(p, a)
 		in
-		    if islink_ file then 
-			(incrlink(); 
+		    if islink_ file then
+			(incrlink();
 			 expand(mkAbsolute(readlink_ file, p)))
 		    else
 			file
 		end
-	in 
+	in
 	    (expand(mkAbsolute(p, getDir())))
 	    handle Fail s => raiseSys "fullPath" (SOME p) s
 	end;
 
     fun fullPath p =
 	let prim_val realpath_ : string -> string = 1 "sml_realpath"
-	in 
-	    (realpath_ p) 
+	in
+	    (realpath_ p)
 	    handle Fail "realpath not supported" => mosmlFullPath p
-		 | Fail s => raiseSys "fullPath" (SOME p) s 
-	end;
-	
-    fun isLink p =
-	let prim_val islink_ : string -> bool = 1 "sml_islink"
-        in (islink_ p) handle Fail s => raiseSys "isLink" (SOME p) s end;
-
-    fun readLink p =
-	let prim_val readlink_ : string -> string = 1 "sml_readlink"
-	in (readlink_ p) handle Fail s => raiseSys "readLink" (SOME p) s end;
-
-    type file_id = real;  (* Namely, 2^17 * device id  + inode number *)
-
-    fun fileId p : file_id =
-	let prim_val devinode_ : string -> real = 1 "sml_devinode"
-	in (devinode_ p) handle Fail s => raiseSys "fileId" (SOME p) s end;
-
-    fun hash (fid : file_id) = 
-	let prim_val hash_param : int -> int -> 'a -> word
-						= 3 "hash_univ_param";
-	in hash_param 50 500 fid end;
-
-    fun compare (fid1 : file_id, fid2) =
-	if fid1 < fid2 then LESS
-	else if fid1 > fid2 then GREATER
-	else EQUAL    
-#endif
-#if defined(msdos) || defined(win32)
-    fun chDir p =
-	let prim_val setdisk_ : int -> unit = 1 "sml_setdisk"
-	    fun failvol () = raiseSys "chDir" (SOME p) "Illegal volume name"
-	    fun volno c =		(* A = 0, B = 1, ... *)
-		if Char.isAlpha c then (Char.ord c - 65) mod 32
-		else failvol ()
-	    val vol = Path.getVolume p
-	in 
-	    if vol = "" then ()
-	    else (setdisk_ (volno (String.sub(vol, 0))))
-		 handle Fail s => failvol ();
-	    (chdir_ p) handle SysErr _ => raiseSys "chDir" (SOME p) "chdir"
-	end;
-
-    fun fullPath p =
-	let open Path 
-	    val realp = mkCanonical(mkAbsolute(p, getDir()))
-	in 
-	    if access (realp, []) then realp 
-	    else raise raiseSys "fullPath" (SOME realp) 
-		                "No such file or directory"
-	end
-
-    fun isLink p =
-	if access_ p 0 then false 
-	else raiseSys "isLink" (SOME p) "No such file";
-
-    fun readLink p =
-	raiseSys "readLink" (SOME p) "No symlinks";
-
-    type file_id = string * word; (* The full path and the hash value *)
-
-    fun fileId p : file_id =
-	let prim_val hash_param : int -> int -> 'a -> word
-						= 3 "hash_univ_param"
-            fun stringToLower s = CharVector.tabulate(size s, 
-			          fn i => Char.toLower(CharVector.sub(s, i)));
-            val p' = stringToLower (fullPath p) 
-		     handle SysErr(s, _) => raiseSys "fileId" (SOME p) s 
-	in (p', hash_param 50 500 p') end
-
-    fun hash ((_, hashval) : file_id) = hashval
-
-    fun compare ((p1, h1) : file_id, (p2, h2)) =
-	if h1 = h2 then String.compare(p1, p2)
-	else if h1 < h2 then LESS
-	else GREATER
-#endif
-#ifdef macintosh
-    fun chDir p =
-	(chdir_ p)
-	handle SysErr _ => raiseSys "chDir" (SOME p) "chdir";
-
-    fun fullPath p =
-	let prim_val realpath_ : string -> string = 1 "sml_realpath"
-	in 
-	    (realpath_ p) 
-	    handle Fail s => raiseSys "fullPath" (SOME p) s 
+		 | Fail s => raiseSys "fullPath" (SOME p) s
 	end;
 
     fun isLink p =
@@ -208,7 +122,7 @@ in
 	let prim_val devinode_ : string -> real = 1 "sml_devinode"
 	in (devinode_ p) handle Fail s => raiseSys "fileId" (SOME p) s end;
 
-    fun hash (fid : file_id) = 
+    fun hash (fid : file_id) =
 	let prim_val hash_param : int -> int -> 'a -> word
 						= 3 "hash_univ_param";
 	in hash_param 50 500 fid end;
@@ -216,56 +130,52 @@ in
     fun compare (fid1 : file_id, fid2) =
 	if fid1 < fid2 then LESS
 	else if fid1 > fid2 then GREATER
-	else EQUAL    
-#endif
+	else EQUAL
 
     fun realPath p =
 	if Path.isAbsolute p then fullPath p
 	else Path.mkRelative(fullPath p, getDir());
 
-    fun rmDir p = 
+    fun rmDir p =
 	(rmdir_ p) handle Fail s => raiseSys "rmDir" (SOME p) s;
 
     fun tmpName () =
 	(tmpnam_ ())
 	handle Fail s => raiseSys "tmpName" NONE s
 
-    fun modTime p = 
+    fun modTime p =
 	(Time.fromReal (modtime_ p))
 	handle Fail s => raiseSys "modTime" (SOME p) s;
 
     fun fileSize p =
-	(filesize_ p) 
+	(filesize_ p)
 	handle Fail s => raiseSys "fileSize" (SOME p) s;
 
-    fun remove p = 
+    fun remove p =
 	(remove_ p)
 	handle SysErr _ => raiseSys "remove" (SOME p) "unlink";
 
-    fun rename {old, new} = 
-	(rename_ old new) 
+    fun rename {old, new} =
+	(rename_ old new)
 	handle SysErr _ => raiseSys "rename" (SOME old) "rename";
 
     fun setTime (path, time) =
-	let val tsec = 
+	let val tsec =
 	    Time.toReal (case time of NONE => Time.now() | SOME t => t)
 	in
-	    (settime_ path tsec) 
+	    (settime_ path tsec)
 	    handle Fail s => raiseSys "setTime" (SOME path) s
 	end;
 
-    fun openDir path = 
+    fun openDir path =
 	(ref (SOME (opendir_ path)))
 	handle Fail s => raiseSys "openDir" (SOME path) s;
 
     fun mkOpt "" = NONE
       | mkOpt s  = SOME s
 
-    fun readDir (ref NONE) = 
+    fun readDir (ref NONE) =
 	raiseSysML "readDir" NONE "Directory stream is closed"
-#ifdef macintosh
-      | readDir (ref (SOME dstr)) = mkOpt (readdir_ dstr);
-#else
       | readDir (arg as ref (SOME dstr)) =
         let val entry = readdir_ dstr
         in
@@ -274,13 +184,12 @@ in
             else
                 readDir arg
         end
-#endif
- 
+
     fun rewindDir (ref NONE) =
 	raiseSysML "rewindDir" NONE "Directory stream is closed"
       | rewindDir (ref (SOME dstr)) = rewinddir_ dstr;
 
     fun closeDir (ref NONE) = ()
-      | closeDir (r as ref (SOME dstr)) = 
+      | closeDir (r as ref (SOME dstr)) =
 	(r := NONE; closedir_ dstr);
 end;
