@@ -3,9 +3,9 @@
 Invoking `help s' has the following effect:
 
  (a) s is normalized to lower case
- (b) if s is the empty string, then the help browser is invoked with the 
+ (b) if s is the empty string, then the help browser is invoked with the
      message !welcome;
- (c) otherwise, if the term s appears in !specialfiles, then the browser 
+ (c) otherwise, if the term s appears in !specialfiles, then the browser
      is invoked with the file associated with s;
  (d) otherwise, if the term appears in one of the index files in
      !indexfiles, then the help system asks the user to choose which
@@ -14,7 +14,7 @@ Invoking `help s' has the following effect:
  (e) otherwise, a standard error message is shown.
 
 The help system looks for help files in the -stdlib and in the
-directories in !helpdirs.  
+directories in !helpdirs.
 
 The browser can open a file on a specified line, attempting to center
 that lines in the display (assuming the display can hold !displayLines
@@ -43,22 +43,22 @@ val helpdirs = ref [] : string list ref
 val slash = #"/"
 
 fun joinDirFile dir file =
-    let open String 
-    in 
-	if dir <> "" andalso sub(dir, size dir - 1) = slash then 
+    let open String
+    in
+	if dir <> "" andalso sub(dir, size dir - 1) = slash then
 	    dir ^ file
 	else
-	    dir ^ str slash ^ file        
+	    dir ^ str slash ^ file
     end
 
 (* Find the standard library directory: *)
 
-fun getstdlib () = 
+fun getstdlib () =
     let open Vector
 	prim_val argv_ : string vector = 0 "command_line";
 	val stop = length argv_ - 1;
-	fun h i = 
-	    if i < stop then 
+	fun h i =
+	    if i < stop then
 		if sub(argv_, i) = "-stdlib" then sub(argv_, i+1)
 		else h (i+1)
 	    else
@@ -75,7 +75,7 @@ val specialfiles = ref [{term="lib", file="README", title="Overview"}];
 
 (* The help system's response to help "" : *)
 
-val welcome = 
+val welcome =
     ref #["Moscow ML library browser: \n",
 	  "\n",
 	  "   help \"lib\";   gives an overview of the library units\n",
@@ -89,7 +89,7 @@ fun print s = TextIO.print s
  * to avoid loading yet another structure.  Types MUST agree with unit
  * Database in mosml/examples/helpsigs. *)
 
-datatype component = 
+datatype component =
     Str					(* structure                       *)
   | Exc of string			(* exception constructor with name *)
   | Typ of string			(* type constructor with name      *)
@@ -108,7 +108,7 @@ datatype 'contents table =
 type database = entry list table
 
 fun readbase filename =
-    let prim_type in_channel 
+    let prim_type in_channel
 	type instream_  = { closed: bool, ic: in_channel } ref
 	prim_val input_value_ : in_channel -> 'a = 1 "intern_val"
 	prim_val fromI : BasicIO.instream -> instream_   = 1 "identity"
@@ -126,9 +126,9 @@ fun readbase filename =
 (* Make sure tilde gets collated as a symbol, before "A": *)
 
 fun caseless(#"~", #"~") = EQUAL
-  | caseless(#"~", c2) = 
+  | caseless(#"~", c2) =
     if Char.toLower c2 < #"a" then GREATER else LESS
-  | caseless(c1, #"~") = 
+  | caseless(c1, #"~") =
     if Char.toLower c1 < #"a" then LESS else GREATER
   | caseless(c1, c2) = Char.compare(Char.toLower c1, Char.toLower c2)
 
@@ -155,7 +155,7 @@ fun natFromString s =
 	fun h []      res = SOME res
 	  | h (c::cr) res = if Char.isDigit c then h cr (decval c + 10 * res)
 			    else SOME res
-    in 
+    in
 	case skipWS (String.explode s) of
 	    []    => NONE
 	  | c::cr => if Char.isDigit c then h cr (decval c)
@@ -163,9 +163,9 @@ fun natFromString s =
     end
 
 fun natToString n =
-    (if n > 9 then natToString (n div 10) else "") 
+    (if n > 9 then natToString (n div 10) else "")
      ^ String.str (Char.chr(48 + n mod 10))
-    
+
 fun normalize []           = []
   | normalize (#"\n" :: _) = []
   | normalize (c :: cr)    = Char.toLower c :: normalize cr
@@ -174,7 +174,7 @@ fun toLower s = String.implode (normalize (String.explode s))
 
 (* The signature browser: *)
 
-fun show name centerline initiallySought (strs : string Vector.vector) = 
+fun show name centerline initiallySought (strs : string Vector.vector) =
     let prim_val sub_ : string -> int -> char = 2 "get_nth_char";
 	prim_val int_to_string : int -> string = 1 "sml_string_of_int";
 
@@ -182,53 +182,53 @@ fun show name centerline initiallySought (strs : string Vector.vector) =
 	val sought = ref initiallySought
 	fun instr s str =
 	    let val len = String.size s
-		fun eq j k = 
-		    j >= len orelse 
+		fun eq j k =
+		    j >= len orelse
 		    sub_ s j = Char.toLower (sub_ str k) andalso eq (j+1) (k+1)
 		val stop = String.size str - len
 		fun cmp k = k<=stop andalso (eq 0 k orelse cmp(k+1))
 	    in cmp 0 end;
-	fun occurshere str = 
+	fun occurshere str =
 	    case !sought of
 		NONE   => false
 	      | SOME s => instr s str
-	fun findline s curr = 
-	    let fun h i = 
+	fun findline s curr =
+	    let fun h i =
 		if i >= lines then NONE
-		else if instr s (Vector.sub(strs, (i+curr) mod lines)) then 
+		else if instr s (Vector.sub(strs, (i+curr) mod lines)) then
 		    SOME ((i + curr) mod lines)
 		else h(i+1)
 	    in h 0 end
 	val portion = max(!displayLines, 5) - 1
-	fun wait next = 
-	    let val prompt = 
-		"---- " ^ name ^ "[" ^ 
-		int_to_string((100 * next) div lines) 
+	fun wait next =
+	    let val prompt =
+		"---- " ^ name ^ "[" ^
+		int_to_string((100 * next) div lines)
 		^ "%]: down, up, bottom, top, /(find), next, quit: "
-		fun toend () = (print "\n....\n"; 
+		fun toend () = (print "\n....\n";
 				nextpart (lines - portion) portion)
 		fun tobeg () = (print "\n....\n"; nextpart 0 portion)
-		fun up   ()  = (print "\n....\n"; 
+		fun up   ()  = (print "\n....\n";
 				nextpart (next-3*portion div 2) portion)
 		fun down ()  = if next=lines then toend()
 			       else nextpart next (portion div 2)
 		fun find s =
 		    case findline s next of
-			NONE      => 
-			    (print ("**** String \"" ^ s ^ "\" not found\n"); 
+			NONE      =>
+			    (print ("**** String \"" ^ s ^ "\" not found\n");
 			     wait next)
-		      | SOME line => 
+		      | SOME line =>
 			    (print "\n....\n";
 			     nextpart (line - portion div 2) portion)
-		fun search chars = 
+		fun search chars =
 		    let val s = String.implode (normalize chars)
 		    in sought := SOME s; find s end
 		fun findnext () =
 		    (case !sought of
-			 NONE   => (print "**** No previous search string\n"; 
+			 NONE   => (print "**** No previous search string\n";
 				    wait next)
 		       | SOME s => find s)
-	    in 
+	    in
 		print prompt;
 		case String.explode(BasicIO.input_line BasicIO.std_in) of
 		    []        => ()
@@ -244,20 +244,20 @@ fun show name centerline initiallySought (strs : string Vector.vector) =
 		  | _         => if next=lines then toend ()
 				 else nextpart next portion
 	    end
-	and nextpart first amount = 
+	and nextpart first amount =
 	    let val start = max(0, min(lines - amount + 1, first))
 		val stop  = min(start + amount, lines)
 	    in prt wait start stop end
-	and prt wait i stop = 
+	and prt wait i stop =
 	    if i >= stop then wait i
-	    else 
-		let val line = Vector.sub(strs, i) 
-		in 
+	    else
+		let val line = Vector.sub(strs, i)
+		in
 		    if occurshere line then print "@>" else print "+ ";
-		    print line; 
+		    print line;
 		    prt wait (i+1) stop
 		end
-    in 
+    in
 	print "\n";
 	if lines <= portion then prt ignore 0 lines
 	else nextpart (centerline - portion div 2) portion
@@ -265,8 +265,8 @@ fun show name centerline initiallySought (strs : string Vector.vector) =
 
 (* Read a signature file from the standard library: *)
 
-fun readfile file = 
-    let fun openFile [] = 
+fun readfile file =
+    let fun openFile [] =
 	    raise Fail ("Help.readFile: help file `" ^ file ^ "' not found")
 	  | openFile (dir1 :: dirr) =
 		(BasicIO.open_in (joinDirFile dir1 file))
@@ -278,13 +278,13 @@ fun readfile file =
 
 (* Invoke the browser on a particular line of a signature: *)
 
-fun showFile sought entry = 
-    (case entry of 
-	 {comp = Str, file, ...} => 
+fun showFile sought entry =
+    (case entry of
+	 {comp = Str, file, ...} =>
 	     show file 0 NONE (readfile (file ^ ".sig"))
-       | {comp = Term _, file, line} => 
+       | {comp = Term _, file, line} =>
 	     show file line NONE (readfile file)
-       | {comp, file, line} => 
+       | {comp, file, line} =>
 	     show file line (SOME sought) (readfile (file ^ ".sig")))
     handle SysErr _ => raise Fail "Help.showFile: inconsistent help database"
 
@@ -293,15 +293,15 @@ fun showFile sought entry =
 fun choose sought entries =
     let val _ = print "\nChoose number to browse, or quit: ";
 	val response = BasicIO.input_line BasicIO.std_in
-    in 
+    in
 	case natFromString response of
 	    NONE => (case String.explode response of
 			  []        => ()
 	                | [#"\n"]   => ()
-			| #"Q" :: _ => () 
-			| #"q" :: _ => () 
+			| #"Q" :: _ => ()
+			| #"q" :: _ => ()
 			| _         => choose sought entries)
-	  | SOME choice => 
+	  | SOME choice =>
 		if choice = 0 then ()
 		else showFile sought (List.nth(entries, choice - 1))
     end
@@ -309,12 +309,12 @@ fun choose sought entries =
 	 | Overflow  => choose sought entries;
 
 (* Display the menu of identifiers matching the given one, or
- * invoke the browser directly if these is only one match: 
+ * invoke the browser directly if these is only one match:
  *)
 
 fun display sought []                  = raise Fail "Help.display"
   | display sought [entry]             = showFile sought entry
-  | display sought (entries as e0::er) = 
+  | display sought (entries as e0::er) =
     let fun render (entry as {comp, file, ...}) =
 	    case comp of
 		Str    => "structure " ^ file
@@ -325,7 +325,7 @@ fun display sought []                  = raise Fail "Help.display"
 	      | Term (id, NONE)      => id ^ " (" ^ file ^ ")"
 	      | Term (id, SOME kind) => kind ^ " " ^ id ^ " (" ^ file ^ ")"
 	fun maxlen []         max = max
-	  | maxlen (e1 :: er) max = 
+	  | maxlen (e1 :: er) max =
 	    let val len = size (render e1)
 	    in maxlen er (if len > max then len else max) end
 	val maxwidth = maxlen er (size (render e0))
@@ -334,14 +334,14 @@ fun display sought []                  = raise Fail "Help.display"
 
 	fun prline lin [] = ()
 	  | prline lin (e1 :: rest) =
-	    (print "    | "; 
-	     print (StringCvt.padLeft #" " 3 (natToString lin)); 
+	    (print "    | ";
+	     print (StringCvt.padLeft #" " 3 (natToString lin));
 	     print " | ";
-	     print (StringCvt.padRight #" " maxwidth (render e1)); 
+	     print (StringCvt.padRight #" " maxwidth (render e1));
 	     print " |\n";
 	     prline (lin+1) rest)
-    in 
-	print "\n"; 
+    in
+	print "\n";
 	print horizontal;
 	prline 1 entries;
 	print horizontal;
@@ -351,27 +351,27 @@ fun display sought []                  = raise Fail "Help.display"
 in
 
 (* Main help function: search for a string in the signature index database: *)
-			
+
 fun defaultBrowser ""    = show "help"     0 NONE (!welcome)
   | defaultBrowser "lib" = show "Overview" 0 NONE (readfile "README")
-  | defaultBrowser id    = 
-    let fun getdb filename = 
+  | defaultBrowser id    =
+    let fun getdb filename =
 	    (readbase filename)
 	    handle SysErr _ => raise Fail "Cannot read help database!"
 	val sought = toLower id
 	fun lookone(dbn, res) = lookup(getdb dbn, sought) :: res
-	fun tryspecial [] = 
+	fun tryspecial [] =
 	    (case List.concat(List.foldl lookone [] (!indexfiles)) of
-		 [] => 
+		 [] =>
 		     print ("\nSorry, no help on identifier `" ^ id ^ "'\n\n")
 	       | entries  => display sought entries)
 	  | tryspecial ({term, file, title} :: rest) =
 	    if term = sought then show title 0 NONE (readfile file)
 	    else tryspecial rest
-    in 
+    in
 	tryspecial (!specialfiles)
     end
 val browser = ref defaultBrowser
-fun help s = !browser s  
+fun help s = !browser s
 
 end
