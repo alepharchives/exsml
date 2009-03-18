@@ -4,26 +4,22 @@ type status = int
 
 val success : status = 0;
 
-#if defined(win32)
-val failure : status = 1;
-#else
 val failure : status = ~1;
-#endif
 
 prim_val system : string -> status = 1 "sml_system";
 
 local
     prim_val getenv_ : string -> string = 1 "sys_getenv";
 in
-    fun getEnv s = 
+    fun getEnv s =
 	(SOME (getenv_ s)) handle _ => NONE
 end
 
 val terminate = BasicIO.exit;
 
-local 
+local
     val exittasks = (ref []) : (unit -> unit) list ref
-in 
+in
     fun atExit newtask =
 	exittasks := newtask :: !exittasks;
     fun exit status =

@@ -3,7 +3,7 @@
 # Library is compiled with -imptypes, even when used with value polymorphism
 COMPFLAGS=-imptypes
 
-CLEANFILES = *.ui *.uo Process.sml Weak.sml Word.sml \
+CLEANFILES = *.ui *.uo Weak.sml Word.sml \
 	Mosml.sml Strbase.sml Word8Array.sml Help.sml \
 	Vector.sml Word8Vector.sml
 
