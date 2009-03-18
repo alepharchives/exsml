@@ -5,17 +5,8 @@
 
 type word = word;
 
-#include "../mosml_config.h"
-
-#ifdef SIXTYFOUR
-#define WORDSIZE 63
-#define MAXPOS 0wx3FFFFFFFFFFFFFFF
-#else
-#define WORDSIZE 31
-#define MAXPOS 0wx3FFFFFFF
-#endif
-
-val wordSize = WORDSIZE;
+val wordSize = @WORD_WORDSIZE@;
+val max_pos = @WORD_MAXPOS@;
 
 local
     prim_val orb_       : word -> word -> word = 2 "or";
@@ -45,15 +36,15 @@ in
 
 
     fun << (w, k) = 
-	if toInt k >= WORDSIZE orelse toInt k < 0 then fromInt 0
+	if toInt k >= wordSize orelse toInt k < 0 then fromInt 0
 	else lshift_ w k;
 
     fun >> (w, k) = 
-	if toInt k >= WORDSIZE orelse toInt k < 0 then fromInt 0
+	if toInt k >= wordSize orelse toInt k < 0 then fromInt 0
 	else rshiftuns_ w k;
 
     fun ~>> (w, k) = 
-	if toInt k >= WORDSIZE orelse toInt k < 0 then 
+	if toInt k >= wordSize orelse toInt k < 0 then 
 	    if toInt w >= 0 then	(* msbit = 0 *)
 		fromInt 0
 	    else			(* msbit = 1 *)
@@ -156,7 +147,7 @@ in
     val op <=   : word * word -> bool = op <=;
 
     fun toInt w = 
-	if w > MAXPOS then raise Overflow
+	if w > max_pos then raise Overflow
 	else toIntX w
 
 end

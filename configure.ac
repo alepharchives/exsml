@@ -144,16 +144,22 @@ if test "$ac_cv_sizeof_long_p" -eq 8 ; then
    INT_PRECISION=63
    INT_MIN='~4611686018427387904'
    INT_MAX=4611686018427387903
+   WORD_WORDSIZE=63
+   WORD_MAXPOS='0wx3FFFFFFFFFFFFFFF'
 else
    MAX_ARRAY_LEN=4194303
    INT_PRECISION=31
    INT_MIN='~1073741824'
    INT_MAX=1073741823
+   WORD_WORDSIZE=31
+   WORD_MAXPOS='0wx3FFFFFFF'
 fi
 AC_SUBST(MAX_ARRAY_LEN)
 AC_SUBST(INT_PRECISION)
 AC_SUBST(INT_MIN)
 AC_SUBST(INT_MAX)
+AC_SUBST(WORD_WORDSIZE)
+AC_SUBST(WORD_MAXPOS)
 
 AC_OUTPUT(
           Makefile
@@ -162,6 +168,7 @@ AC_OUTPUT(
 	  mosmllib/Array.sml
 	  mosmllib/Int.sml
 	  mosmllib/Weak.sml
+	  mosmllib/Word.sml
 	  runtime/Makefile
 	  mosmlyac/Makefile
 	  libsml_crypt/Makefile
