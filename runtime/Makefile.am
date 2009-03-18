@@ -20,6 +20,7 @@ GEN_HS = instruct.h global_tbl.h
 CLEANFILES = instruct.h instruct.c prims.c global_tbl.h
 
 debugger.c: instruct.h
+interp.c: instruct.h global_tbl.h
 
 prims.c : primitives.def
 	${AWK} -f gen_prims_c.awk primitives.def > prims.c
