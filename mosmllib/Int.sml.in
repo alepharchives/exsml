@@ -2,8 +2,6 @@
 
 type int = int
 
-#include "../mosml_config.h"
-
 val precision = SOME @INT_PRECISION@;
 val minInt    = SOME @INT_MIN@;
 val maxInt    = SOME @INT_MAX@;

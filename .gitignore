@@ -47,6 +47,7 @@ src/config/s.h
 mosmllib/Array.sml
 mosmllib/Help.sml
 mosmllib/Mosml.sml
+mosmllib/Int.sml
 mosmllib/Strbase.sml
 mosmllib/Vector.sml
 mosmllib/Weak.sml
