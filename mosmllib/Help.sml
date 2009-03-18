@@ -40,11 +40,7 @@ val displayLines = ref 24
 
 val helpdirs = ref [] : string list ref
 
-#ifdef macintosh
-val slash = #":"
-#else (* DOS/UNIX *)
 val slash = #"/"
-#endif  
 
 fun joinDirFile dir file =
     let open String 

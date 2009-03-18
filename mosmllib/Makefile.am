@@ -4,7 +4,7 @@
 COMPFLAGS=-imptypes
 
 CLEANFILES = *.ui *.uo Mosml.sml Strbase.sml Word8Array.sml \
-	Help.sml Vector.sml Word8Vector.sml
+	Vector.sml Word8Vector.sml
 
 include Makefile.mosml_deps
 
