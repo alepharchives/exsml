@@ -144,13 +144,8 @@ fun fromMLescape getc source =
 	  | SOME(#"a", rest)  => SOME(#"\007", rest) (* BEL *)
 	  | SOME(#"b", rest)  => SOME(#"\008", rest) (* BS  *)
 	  | SOME(#"t", rest)  => SOME(#"\009", rest) (* HT  *)
-#ifdef macintosh
-	  | SOME(#"r", rest)  => SOME(#"\010", rest) (* LF  *)
-	  | SOME(#"n", rest)  => SOME(#"\013", rest) (* CR  *)
-#else
 	  | SOME(#"n", rest)  => SOME(#"\010", rest) (* LF  *)
 	  | SOME(#"r", rest)  => SOME(#"\013", rest) (* CR  *)
-#endif
 	  | SOME(#"v", rest)  => SOME(#"\011", rest) (* VT  *)
 	  | SOME(#"f", rest)  => SOME(#"\012", rest) (* FF  *)
 	  | SOME(#"\"", rest) => SOME(#"\"", rest)
@@ -191,13 +186,8 @@ fun fromMLescape getc source =
 (* *)		     #"\007" => "\\a"			(* BEL,  7 *)
 		   | #"\008" => "\\b"			(* BS,   8 *)
 		   | #"\009" => "\\t"			(* HT,   9 *)
-#ifdef macintosh
-		   | #"\010" => "\\r"			(* LF,  10 *)
-		   | #"\013" => "\\n"			(* CR,  13 *)
-#else
 		   | #"\010" => "\\n"			(* LF,  10 *)
 		   | #"\013" => "\\r"			(* CR,  13 *)
-#endif
 		   | #"\011" => "\\v"			(* VT,  11 *)
 		   | #"\012" => "\\f"			(* FF,  12 *)
                    | _       => let val n = ord_ c 
@@ -223,13 +213,8 @@ fun fromMLescape getc source =
 	    if #"\032" <= c andalso c <= #"\126" then str c
 	    else 
 		(case c of 
-#ifdef macintosh
-		     #"\010" => "\\r"			(* LF,  10 *)
-		   | #"\013" => "\\n"			(* CR,  13 *)
-#else
 (* *)		     #"\010" => "\\n"			(* LF,  10 *)
 		   | #"\013" => "\\r"			(* CR,  13 *)
-#endif
 		   | #"\009" => "\\t"			(* HT,   9 *)
 		   | #"\011" => "\\v"			(* VT,  11 *)
 		   | #"\008" => "\\b"			(* BS,   8 *)
@@ -264,13 +249,8 @@ fun fromMLescape getc source =
 	in
 	    case getc src of
 		 NONE              => raise BadEscape
-#ifdef macintosh
-	       | SOME(#"r",  src1) => (#"\010", src1)
-	       | SOME(#"n",  src1) => (#"\013", src1)
-#else
 	       | SOME(#"n",  src1) => (#"\n",   src1)
 	       | SOME(#"r",  src1) => (#"\013", src1)
-#endif
 	       | SOME(#"t",  src1) => (#"\009", src1) 
 	       | SOME(#"v",  src1) => (#"\011", src1)
 	       | SOME(#"b",  src1) => (#"\008", src1)
