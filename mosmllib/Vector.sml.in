@@ -2,13 +2,7 @@
 
 type 'a vector = 'a vector;
 
-#include "../mosml_config.h"
-
-#ifdef SIXTYFOUR
-val maxLen = 18014398509481983; (* = 2^54-1, for 64-bit architectures *)
-#else
-val maxLen = 4194303;   	(* = 2^22-1, for 32-bit architectures *)
-#endif
+val maxLen = @MAX_ARRAY_LEN@; (* = 2^54-1, for 64-bit architectures *)
 
 local
     prim_val vector_ : int -> 'x -> 'a vector         = 2 "make_vect";
@@ -29,6 +23,7 @@ fun tabulate(n, f : int -> 'a) =
   if n < 0 orelse n > maxLen then raise Size else
   let val a = vector_ n () : 'a vector
       fun init i = if i >= n then () else (update_ a i (f i); init (i+1))
+
   in (init 0; a) end;
 
 fun sub(v, i) =

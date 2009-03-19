@@ -170,6 +170,7 @@ AC_OUTPUT(
 	  mosmllib/Makefile
 	  mosmllib/Array.sml
 	  mosmllib/Int.sml
+	  mosmllib/Vector.sml
 	  mosmllib/Weak.sml
 	  mosmllib/Word.sml
 	  mosmllib/Strbase.sml
