@@ -38,8 +38,12 @@ MOSMLC=$(CAMLRUNM) $(top_srcdir)/bootstrap/mosmlcmp \
 MOSMLLEX=mosmllex
 MOSMLYAC=mosmlyac
 MOSMLL=$(CAMLRUNM) mosmllnk -stdlib ../mosmllnk -P none
+MOSMLDEP=$(CAMLRUNM) ../bootstrap/mosmldep
 
 SUFFIXES = .sml .ui .uo .sig .mllex .mlyacc .mlp
+
+depend:
+	$(MOSMLDEP) > Makefile.mosml_deps
 
 .sig.ui:
 	 $(MOSMLC) $(COMPFLAGS) $<
