@@ -44,6 +44,7 @@ mosmlyac/mosmlyac
 src/camlrunm
 src/config/m.h
 src/config/s.h
+mosmllib/Architecture.sml
 mosmllib/Array.sml
 mosmllib/Int.sml
 mosmllib/Strbase.sml

@@ -174,6 +174,7 @@ AC_OUTPUT(
           Makefile
 	  compiler/Makefile
 	  mosmllib/Makefile
+	  mosmllib/Architecture.sml
 	  mosmllib/Array.sml
 	  mosmllib/Int.sml
 	  mosmllib/Vector.sml
