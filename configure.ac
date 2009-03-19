@@ -174,6 +174,7 @@ AC_OUTPUT(
 	  mosmllib/Weak.sml
 	  mosmllib/Word.sml
 	  mosmllib/Strbase.sml
+	  mosmllib/Word8Array.sml
 	  runtime/Makefile
 	  mosmlyac/Makefile
 	  libsml_crypt/Makefile

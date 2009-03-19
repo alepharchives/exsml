@@ -23,13 +23,7 @@ in
 
 type array = array_ ref;
 
-#include "../mosml_config.h"
-
-#ifdef SIXTYFOUR
-val maxLen = 144115188075855863;  	(* = (2^54-1)*8-1, with 64 bit *)
-#else
-val maxLen = 16777211;  		(* = (2^22-1)*4-1, with 32 bit *)
-#endif
+val maxLen = @MAX_STRING_LEN@
 
 val array0 = ref (array_ 0);
 
