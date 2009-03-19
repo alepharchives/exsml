@@ -40,7 +40,7 @@ void fatal_error_arg (char * fmt, char * arg)
   sys_exit(INT_TO_VAL(2));
 }
 
-char *aligned_malloc (size_t size, int modulo)
+char *aligned_malloc (size_t size, unsigned int modulo)
 {
   char *raw_mem;
   unsigned long aligned_mem;

@@ -15,7 +15,7 @@ void gc_message(char *, unsigned long);
 void fatal_error(char *);
 void fatal_error_arg(char *, char *);
 void memmov(char *, char *, unsigned long);
-char * aligned_malloc(size_t, int);
+char * aligned_malloc(size_t, unsigned int);
 
 
 #endif /* _misc_ */
