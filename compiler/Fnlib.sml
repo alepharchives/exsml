@@ -108,12 +108,12 @@ fun lookup k [] = raise Subscript
 (* The vector vec must be sorted *)
 
 fun binlookup (name : string) (vec : (string * 'a) Vector.vector) =
-    let fun search a b = 
+    let fun search a b =
 	    if a > b then raise Subscript
 	    else
 		let val i = (a+b) div 2
 		    val (key, v) = Vector.sub(vec, i)
-		in 
+		in
 		    if name < key      then search a (i-1)
 		    else if key < name then search (i+1) b
 		    else v

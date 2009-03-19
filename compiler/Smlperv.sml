@@ -69,19 +69,19 @@ and sc_exn =
   trivial_scheme type_exn
 ;
 
-(* cvr: TODO dummy schemes for overloaded val ids *) 
+(* cvr: TODO dummy schemes for overloaded val ids *)
 (* TODO: perhaps make
    these more meaningful than sc_bogus: this is not essential since
    they'll never be reported to the user anyway...
-*) 
-val sc_OVL1NNo = sc_bogus; 
-val sc_OVL1NSo = sc_bogus; 
-val sc_OVL2NNBo = sc_bogus; 
+*)
+val sc_OVL1NNo = sc_bogus;
+val sc_OVL1NSo = sc_bogus;
+val sc_OVL2NNBo = sc_bogus;
 val sc_OVL2NNNo = sc_bogus;
 
 fun VEofCE (ConEnv CE) =
-    map (fn ci => 
-	 let val coninfo =  #info(ci) 
+    map (fn ci =>
+	 let val coninfo =  #info(ci)
 	 in
 	     (hd (#id(#qualid ci)), ((#conType(! coninfo)),CONname coninfo))
 	 end)
@@ -95,7 +95,7 @@ val initial_eq_VE =
           type_arrow (type_pair a a) type_bool)),
         VARname OVL2EEBo)),
   ("<>", ((scheme_1u_eq (fn a =>
-           type_arrow (type_pair a a) type_bool)), 
+           type_arrow (type_pair a a) type_bool)),
           VARname OVL2EEBo))
 ];
 
@@ -142,13 +142,13 @@ val initial_real_VE =
   ("round",  (trivial_scheme (type_arrow type_real type_int),
               PRIMname (mkPrimInfo 1  (MLPccall(1, "sml_round"))))),
   ("real",   (trivial_scheme (type_arrow type_int type_real),
-              PRIMname (mkPrimInfo 1 
+              PRIMname (mkPrimInfo 1
                           (MLPprim(1, Pfloatprim Pfloatofint)))))
 ];
 
 val initial_string_VE =
 [
-  ("^",          (sc_ss_s, 
+  ("^",          (sc_ss_s,
 		  PRIMname (mkPrimInfo 1 (MLPconcat)))),
   ("size",       (sc_s_i,
 		  PRIMname (mkPrimInfo 1 (MLPprim(1, Pstringlength))))),
@@ -161,7 +161,7 @@ val initial_string_VE =
 val initial_ref_VE =
 [
   ("ref", (scheme_1u_imp (fn a =>
-             type_arrow a (type_ref a)), 
+             type_arrow a (type_ref a)),
            REFname)),
   ("!", (scheme_1u (fn a =>
            type_arrow (type_ref a) a),
@@ -176,7 +176,7 @@ val sml_initial_VE = concat
   VEofCE initial_bool_CE,
   initial_eq_VE, (* cvr: cf. the original if this doesn't work *)
   initial_int_VE,
-  initial_real_VE, 
+  initial_real_VE,
   initial_string_VE,
   VEofCE initial_list_CE,
   VEofCE initial_option_CE,
@@ -191,7 +191,7 @@ val sml_initial_VE = concat
   initial_OVL1NNo_VE,
   initial_OVL2NNNo_VE,
   initial_OVL2NNBo_VE,
-  initial_OVL1NSo_VE 
+  initial_OVL1NSo_VE
 ];
 
 
@@ -199,7 +199,7 @@ val sml_initial_TE =
 [
    ("unit",     (APPtyfun (NAMEtyapp tyname_unit), ConEnv [])),
    ("bool",      (APPtyfun (NAMEtyapp tyname_bool), initial_bool_CE)),
-   ("int",       (APPtyfun (NAMEtyapp tyname_int), ConEnv [])), 
+   ("int",       (APPtyfun (NAMEtyapp tyname_int), ConEnv [])),
    ("syserror",  (APPtyfun (NAMEtyapp tyname_syserror), ConEnv [])),
    ("word",      (APPtyfun (NAMEtyapp tyname_word), ConEnv [])),
    ("word8",     (APPtyfun (NAMEtyapp tyname_word8), ConEnv [])),
@@ -217,14 +217,14 @@ val sml_initial_TE =
    ("ppstream",  (APPtyfun (NAMEtyapp tyname_ppstream), ConEnv []))
 ];
 
-val sml_initial_T = 
-    map (fn (_,(APPtyfun (NAMEtyapp tn),_)) =>  tn 
+val sml_initial_T =
+    map (fn (_,(APPtyfun (NAMEtyapp tn),_)) =>  tn
          | _ => fatalError "sml_initial_T")
         sml_initial_TE;
 
 val () =
   app (fn (id, scis) =>
-         Hasht.insert (#uVarEnv unit_General) id 
+         Hasht.insert (#uVarEnv unit_General) id
            { qualid={qual="General", id=[id]}, info=scis })
       sml_initial_VE
 ;
@@ -251,10 +251,10 @@ val predefExceptions = [
   ("Out_of_memory",    ("exn_memory",    0, sc_exn)),
   ("Invalid_argument", ("exn_argument",  1, sc_str_exn)),
   ("Graphic",          ("exn_graphic",   1, sc_str_exn)),
-  ("SysErr",           ("exn_syserr",    1, 
-                        trivial_scheme (type_arrow type_of_syserror_exn 
+  ("SysErr",           ("exn_syserr",    1,
+                        trivial_scheme (type_arrow type_of_syserror_exn
                                         type_exn))),
-  ("Io",               ("exn_io",        1, 
+  ("Io",               ("exn_io",        1,
 			trivial_scheme(type_arrow type_of_io_exn type_exn))),
   ("Fail",             ("exn_fail",      1, sc_str_exn)),
   ("Size",             ("exn_size",      0, sc_exn)),
@@ -270,8 +270,8 @@ val predefExceptions = [
 ];
 
 val () =
-  app (fn (smlid, (globid, arity, sc)) => 
-          let val sc = { qualid={qual="General", id=[globid]}, 
+  app (fn (smlid, (globid, arity, sc)) =>
+          let val sc = { qualid={qual="General", id=[globid]},
 			 info=(sc, EXNname(mkEi arity)) }
 	  in Hasht.insert (#uVarEnv unit_General) smlid sc end)
        predefExceptions

@@ -19,9 +19,9 @@ fun decode_string (v : obj) = (magic_obj v : string);
 
 (* Exceptions *)
 
-fun decode_exn (v : obj) (c0 : QualifiedIdent -> unit) 
+fun decode_exn (v : obj) (c0 : QualifiedIdent -> unit)
                          (c1 : QualifiedIdent -> obj -> Type option -> unit) =
-    let val strref = getExnStrref v 
+    let val strref = getExnStrref v
 	val arg = obj_field v 1
 	fun prExn exnPrName NONE         = c0 exnPrName
 	  | prExn exnPrName (SOME argTy) = c1 exnPrName arg (SOME argTy)
@@ -159,13 +159,13 @@ fun prVal (depth: int) (prior: int) (tau: Type) (v: obj) =
 	             (fn q => fn va => fn tyOpt =>
 		              (prP "(";
 			       printVQ q; msgString " ";
-			       (case tyOpt of 
+			       (case tyOpt of
 				    NONE    => prGeneric va
-				  | SOME ty => prVal (depth-1) 1 ty va); 
+				  | SOME ty => prVal (depth-1) 1 ty va);
 			       prP ")" ))
       fun prettyprint printer pp_out v =
 	  printer pp_out v
-	  handle e => (msgString "<installed prettyprinter failed: "; 
+	  handle e => (msgString "<installed prettyprinter failed: ";
 		       prExn (repr e); msgString ">")
       val tau = normType tau
   in
@@ -183,20 +183,20 @@ fun prVal (depth: int) (prior: int) (tau: Type) (v: obj) =
             (prD (fn() =>
                prSeq "{" "}" (prField (depth-1)) "," fs vs))
         end
-    | CONt(ts, tyapp) => 
+    | CONt(ts, tyapp) =>
         (case conEnvOfTyApp tyapp of
-           NONE => 
+           NONE =>
             (case tyapp of
 		 NAMEtyapp tyname =>
 		     (case findInstalledPrinter tyname of
-			  SOME printer => prettyprint printer pp_out v 
+			  SOME printer => prettyprint printer pp_out v
 			| NONE =>
 				if (isEqTN tyname tyname_int) then (prP " "; prInt v)
-				else if (isEqTN tyname tyname_word)   
+				else if (isEqTN tyname tyname_word)
 					 then (prP " "; prWord v)
-                                else if (isEqTN tyname tyname_word8)  
+                                else if (isEqTN tyname tyname_word8)
 					 then (prP " "; prWord v)
-				else if (isEqTN tyname tyname_char)  
+				else if (isEqTN tyname tyname_char)
 					 then (prP " "; prChar v)
 				else if (isEqTN tyname tyname_real)
 					 then (prP " "; prReal v)
@@ -207,7 +207,7 @@ fun prVal (depth: int) (prior: int) (tau: Type) (v: obj) =
 				    let val t = hd ts
 					val x = obj_field v 0
 				    in
-					prD (fn() => 
+					prD (fn() =>
 					     (prP "(";printVQ (#qualid tyname);
 					      prVal (depth-1) 1 t x; prP ")"))
 				    end
@@ -216,22 +216,22 @@ fun prVal (depth: int) (prior: int) (tau: Type) (v: obj) =
 					prD (fn() =>
 					     (prP " ";
 					      prVector (depth-1)
-					               (!printLength) 
-						       (hd ts) 
+					               (!printLength)
+						       (hd ts)
 						       vs))
 				    end
 				else
 				    (msgString "<";
 				     msgString (hd (#id (#qualid tyname)));
 				     msgString ">"))
-	       | APPtyapp _ =>(msgString "<"; 
-			       prTyApp 0 tyapp; 
+	       | APPtyapp _ =>(msgString "<";
+			       prTyApp 0 tyapp;
 			       msgString ">"))
          | SOME (ConEnv CE) =>
-             ( if (case tyapp of 
+             ( if (case tyapp of
 		       NAMEtyapp tyname =>
 			 (case findInstalledPrinter tyname of
-			       SOME printer => (prettyprint printer pp_out v;true) 
+			       SOME printer => (prettyprint printer pp_out v;true)
 			     | NONE => false)
 		      | _ => false)
 		then ()
@@ -261,7 +261,7 @@ fun prVal (depth: int) (prior: int) (tau: Type) (v: obj) =
                           val {qualid, info} = ci
                           val {conArity, conIsGreedy, conType, ...} = !info
                       in
-                       if case tyapp of 
+                       if case tyapp of
 			   NAMEtyapp tyname =>
 			       if (isEqTN tyname tyname_list) then
 				   (prD (fn() =>

@@ -5,7 +5,7 @@ open List Fnlib Mixture Const Prim Lambda Globals Units Types Asynt Asyntfn;
 type RenEnv = (string * int) list;
 
 datatype AccessPath =
-    Path_rec of int 
+    Path_rec of int
   | Path_local of int
   | Path_global of (QualifiedIdent * int)
   | Path_son of int * AccessPath
@@ -16,7 +16,7 @@ type TranslEnv = (Const.Id, AccessPath) Env * int;
 
 
 fun lookupRenEnv asId q =
-  let val {qual, id = lid} = q 
+  let val {qual, id = lid} = q
       val id = (longIdentAsIdent lid "lookupRenEnv")
       val mangled_id = mangle (asId id)
   in (* cvr: TODO treat lond ids *)
@@ -43,12 +43,12 @@ local  (* cvr: TODO copied from Front.sml ---- code should be shared *)
     fun mkDynexn exnname =
 	Lprim(Pmakeblock (CONtag(0,1)),
 	      [exnname, Lconst constUnit])
-    val bindExn  = 
+    val bindExn  =
 	mkDynexn (Lprim(Pget_global ({qual="General", id=["exn_bind"]}, 0), []));
     val bindRaiser  = Lprim(Praise, [bindExn])
 in
 fun translatePath depth = fn
-    Path_rec i => 
+    Path_rec i =>
 	Llet([Lprim(Pfield 0,[Lvar (depth-(i+1))])],
 	     Lswitch(2,Lvar 0,
 		     [(CONtag(0,2),bindRaiser),
@@ -97,17 +97,17 @@ fun translateAccess asId (rho, depth) q =
 
 (* cvr: added *)
 
-fun translateLongAccess asId env (ii:IdInfo) = 
+fun translateLongAccess asId env (ii:IdInfo) =
     let val {info={idKind,idFields,...}, ...} = ii
         val {qualid, ...} = !idKind
-    in 
-    case qualid of 
+    in
+    case qualid of
        {qual,id=[]} => Lstruct []
     |  {qual,id=[_]} => translateAccess asId env qualid
-    |  {qual,id} => 
-         let fun trLongAccess [id] _ = 
+    |  {qual,id} =>
+         let fun trLongAccess [id] _ =
                     translateAccess ModId env {qual = qual,id = [id]}
-               | trLongAccess (id::ids) (field::fields) = 
+               | trLongAccess (id::ids) (field::fields) =
                     Lprim(Pfield field, [trLongAccess ids fields])
                | trLongAccess _ _ = fatalError "trLongAccess"
          in trLongAccess id (!idFields)

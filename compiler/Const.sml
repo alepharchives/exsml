@@ -7,7 +7,7 @@ in
 type QualifiedIdent =
 {
   id: string list,
-  qual: string 
+  qual: string
 };
 
 (* cvr: REVISE uses of this function should eventually be removed once we introduce a proper
@@ -50,7 +50,7 @@ fun intOfAtom (INTscon i) = i
 fun intOfAbsoluteTag (CONtag(i,_)) = i
 ;
 
-(* Id is used distinguish between name spaces 
+(* Id is used distinguish between name spaces
    for compiled var, structure and functor values *)
 
 datatype Id = ModId of string | ValId of string | FunId of string
@@ -82,7 +82,7 @@ fun printSeq printEl sep =
 
 local fun show_id [] = ""
         | show_id [i] =  i
-        | show_id (modid::modids) = 
+        | show_id (modid::modids) =
              (show_id modids) ^ "." ^ modid
 in
 fun showQualId {qual="", id=id} = show_id id
@@ -91,7 +91,7 @@ end;
 
 local fun print_id [] = ()
         | print_id [i] = msgString i
-        | print_id (i::id) = 
+        | print_id (i::id) =
             (print_id id;  msgString "." ; msgString i)
 in
 fun printQualId {qual="", id=id} =

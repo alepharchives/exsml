@@ -5,7 +5,7 @@ local
 
 (* Must be sorted for efficient binary search lookup *)
 
-val primitive_names = 
+val primitive_names =
 #[
   ("!=", Ptest Pnoteq_test),
   ("*int", Psmlmulint),

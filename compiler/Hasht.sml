@@ -133,7 +133,7 @@ fun peek h key =
                 if code = c3 andalso key = k3 then SOME d3 else
                 let fun peek Empty = NONE
                       | peek (Cons(k, c, d, rest)) =
-                          if code = c andalso key = k then SOME d 
+                          if code = c andalso key = k then SOME d
 			  else peek rest
                 in peek rest3 end
   end;
@@ -154,9 +154,9 @@ fun apply f h =
 fun fold f e h =
   let val {data, max_len : int} = !h
       fun fold_bucket (Empty, res) = res
-	| fold_bucket (Cons(k, c, d, rest), res) = 
+	| fold_bucket (Cons(k, c, d, rest), res) =
 	  fold_bucket (rest, f k d res)
   in
-      Array.foldl fold_bucket e data 
+      Array.foldl fold_bucket e data
   end
 ;

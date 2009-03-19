@@ -4,9 +4,9 @@ fun merge order =
   let fun loop [] ys = ys
         | loop xs [] = xs
         | loop (xs as x::xr) (ys as y::yr) =
-            if order x y then 
-              x :: loop xr ys 
-            else 
+            if order x y then
+              x :: loop xr ys
+            else
               y :: loop xs yr
   in loop end;
 

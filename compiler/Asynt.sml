@@ -3,7 +3,7 @@ local
 in
 
 datatype IdKindDesc =
-    VARik 
+    VARik
   | FUNik
   | STRik
   | PRIMik of PrimInfo
@@ -28,7 +28,7 @@ type IdInfo = IdDesc global;
 type LocString = Location * string;
 
 type VId = LocString;  (* this should really just be string... *)
-type TyCon = LocString; (* this should really just be Locstring... *) 
+type TyCon = LocString; (* this should really just be Locstring... *)
 
 type ModId = LocString;
 type FunId = LocString;
@@ -39,25 +39,25 @@ type LongModIdInfo = IdInfo * ((Environment option) ref);
 type LongVId = IdInfo;
 type LongTyCon = IdInfo;
 
-type TyVar = IdInfo; 
+type TyVar = IdInfo;
 type TyVarSeq = TyVar list;
 
 
-datatype TyConPath' =  
+datatype TyConPath' =
     LONGtyconpath of LongTyCon
-  | WHEREtyconpath of LongTyCon * ModId * ModExp               
-   
+  | WHEREtyconpath of LongTyCon * ModId * ModExp
+
 and Ty' =
     TYVARty of TyVar
   | RECty of Ty Row
   | CONty of Ty list * TyConPath
   | FNty of Ty * Ty
-  | PACKty of SigExp 
+  | PACKty of SigExp
   | PARty of Ty
 
 
 and InfixPat =
-    UNRESinfixpat of Pat list 
+    UNRESinfixpat of Pat list
   | RESinfixpat of Pat
 and Pat' =
     SCONpat of SCon * Type option ref
@@ -84,7 +84,7 @@ and VIdPathInfo =
     RESvidpath of LongVId
   | OVLvidpath of LongVId * OvlType * Type
 and InfixExp =
-    UNRESinfixexp of Exp list 
+    UNRESinfixexp of Exp list
   | RESinfixexp of Exp
 and Exp' =
     SCONexp of SCon * Type option ref
@@ -113,10 +113,10 @@ and RecExp =
 
 and MRule = MRule of (Pat list ref) * Exp
 
-and FunDec = 
+and FunDec =
     UNRESfundec of TyVarSeq *  (FValBind list)
   | RESfundec of Dec
-               
+
 and Dec' =
     VALdec of TyVarSeq * (ValBind list * ValBind list)
   | PRIM_VALdec of TyVarSeq * (PrimValBind list)
@@ -148,26 +148,26 @@ and ExBind =
 
 and ModBind = MODBINDmodbind of ModId * ModExp
             | ASmodbind of ModId * SigExp * Exp
-and FunBind = 
+and FunBind =
               FUNBINDfunbind of FunId * ModExp
             | ASfunbind of FunId * SigExp * Exp
 and SigBind = SIGBINDsigbind of SigId * SigExp
-and FunctorSort = 
+and FunctorSort =
     Generative of bool (* true if conforms to SML 97 *)
   | Applicative
-and ModExp' = 
+and ModExp' =
     DECmodexp of Dec
   | LONGmodexp of LongModId
-  | LETmodexp of Dec * ModExp 
+  | LETmodexp of Dec * ModExp
   | PARmodexp of ModExp
   | CONmodexp of ModExp *  SigExp
-  | ABSmodexp of ModExp *  SigExp 
+  | ABSmodexp of ModExp *  SigExp
   | FUNCTORmodexp of FunctorSort *  ModId * (IdKindDesc ref) * SigExp * ModExp
   | APPmodexp of ModExp * ModExp
   | RECmodexp of ModId * (RecStr option) ref * SigExp * ModExp
 and ModDesc = MODDESCmoddesc of ModId * SigExp
 and FunDesc = FUNDESCfundesc of FunId * SigExp
-and SigExp' = 
+and SigExp' =
     SPECsigexp of Spec
   | SIGIDsigexp of SigId
   | WHEREsigexp of SigExp * TyVarSeq * LongTyCon * Ty
@@ -192,9 +192,9 @@ and Spec' =
   | SHARINGspec of Spec * (Location * LongModId list)
   | FIXITYspec of InfixStatus * string list
   | SIGNATUREspec of SigBind list
- 
 
-and Sig = 
+
+and Sig =
     NamedSig of {locsigid : SigId, sigexp: SigExp}
   | AnonSig of Spec list
   | TopSpecs of Spec list
@@ -202,7 +202,7 @@ and Sig =
 and Struct =
     NamedStruct of {locstrid : ModId, locsigid : SigId option,
 		    decs : Dec list}
-  | Abstraction of {locstrid : ModId, locsigid : SigId, 
+  | Abstraction of {locstrid : ModId, locsigid : SigId,
 		    decs : Dec list}
   | AnonStruct of Dec list
   | TopDecs of Dec list
@@ -214,14 +214,14 @@ and Exp = Location * Exp'
 and ModExp = Location * (ModExp' * (ExMod option) ref)
 and SigExp = Location * SigExp'
 and Spec = Location * Spec'
-and ValDesc = IdInfo * (Location * Ty') 
+and ValDesc = IdInfo * (Location * Ty')
            (* IdInfo * Ty *)
-and ExDesc = IdInfo * (Location * Ty') option 
+and ExDesc = IdInfo * (Location * Ty') option
           (* IdInfo * Ty option *)
 and LocString = Location * string
 and Match = MRule list
 and Dec = Location * Dec'
-and PrimValBind = IdInfo * (Location * Ty') * int * string 
+and PrimValBind = IdInfo * (Location * Ty') * int * string
                (* IdInfo * Ty * int * string *)
 and FValBind = Location * FClause list
 and TypBind = TyVarSeq * TyCon * (Location * Ty')

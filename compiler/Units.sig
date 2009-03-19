@@ -7,23 +7,23 @@ type CSig =
   uMode:       Mode, (* true if compiled as a structure, false if compiled as
 			     top dec *)
   uName:       string, (* the normalized basename of the filename *)
-  uIdent:      string ref, (* the (non-normalized) 
-			    ML structure and signature identifier 
+  uIdent:      string ref, (* the (non-normalized)
+			    ML structure and signature identifier
 			    for the unit if uMode = STRmode *)
   uIBas:       (string,InfixStatus) Hasht.t,
   uVarEnv:     (string, VarInfo) Hasht.t,
-  uTyEnv:      (string, TyInfo) Hasht.t, 
-  uModEnv:     (string, ModInfo) Hasht.t,   
-  uFunEnv:     (string, FunInfo) Hasht.t,   
-  uSigEnv:     (string, SigInfo) Hasht.t,    
-  (* uTyNameSet is the set of names introduced in the unit's implementation, 
+  uTyEnv:      (string, TyInfo) Hasht.t,
+  uModEnv:     (string, ModInfo) Hasht.t,
+  uFunEnv:     (string, FunInfo) Hasht.t,
+  uSigEnv:     (string, SigInfo) Hasht.t,
+  (* uTyNameSet is the set of names introduced in the unit's implementation,
      or the set of names bound in the unit's interface (if any).
   *)
-  uTyNameSet:    TyNameSet ref,  
+  uTyNameSet:    TyNameSet ref,
   (* The optional Str uStrOpt comes from the unit's optional interface.
      It is the body of the signature to be matched against.
    *)
-  uStrOpt:     RecStr option ref, 
+  uStrOpt:     RecStr option ref,
   uStamp:      SigStamp option ref,
                     (* present, if this signature comes from a .ui file *)
   uMentions:   (string, SigStamp) Hasht.t
@@ -78,7 +78,7 @@ val updateCurrentStaticT : TyNameSet -> unit;
 val updateCurrentInfixBasis : InfixBasis -> unit;
 val extendCurrentStaticIBas : InfixBasis -> unit;
 val updateCurrentStaticVE : VarEnv -> unit;
-val extendCurrentStaticVE : VarEnv -> unit; 
+val extendCurrentStaticVE : VarEnv -> unit;
 val updateCurrentStaticTE : TyEnv -> unit;
 val extendCurrentStaticTE : TyEnv -> unit;
 val updateCurrentStaticME : ModEnv -> unit;

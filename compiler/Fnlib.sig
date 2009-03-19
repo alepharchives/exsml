@@ -28,10 +28,10 @@ val exists_field : ('a -> bool) -> ('b * 'a) list -> bool;
 val app_field : ('a -> unit) -> ('b * 'a) list -> unit;
 val member : ''a -> ''a list -> bool
 val remove : ''a -> ''a list -> ''a list
-val drop : ('a -> bool) -> 'a list -> 'a list 
+val drop : ('a -> bool) -> 'a list -> 'a list
 val lookup : ''a -> (''a * 'b) list -> 'b   (* May raise Subscript *)
-val binlookup  : string -> (string * 'b) Vector.vector -> 'b   (* Subscript *) 
-val exists: ('a -> bool) -> 'a list -> bool 
+val binlookup  : string -> (string * 'b) Vector.vector -> 'b   (* Subscript *)
+val exists: ('a -> bool) -> 'a list -> bool
 val choose: ('a -> bool) -> 'a list -> 'a   (* May raise Subscript *)
 val find : ('a -> bool) -> ('a * 'b) list -> 'b   (* May raise Subscript *)
 val foldInt : (int -> 'b -> 'b) -> 'b -> int -> 'b

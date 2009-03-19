@@ -63,7 +63,7 @@ fun tryEvalLoad name =
         prim_val set_nth_char_  : string -> int -> char -> unit
                                                 = 3 "set_nth_char"
       in
-        open_after_loading := 
+        open_after_loading :=
             (modeOfSig sign = TOPDECmode andalso (not already_loaded));
         if #cu_sig_stamp tables <> getOption (!(#uStamp sign)) then
            raise Fail ("load: compiled body of unit "^uname^
@@ -87,10 +87,10 @@ fun tryEvalLoad name =
         (close_in is; raise x)
     (* Initialize the unit.                                               *)
     (* In case this fails, remove it from the unit and signature tables:  *)
-    val res = 
+    val res =
 	(do_code false (!code) 0 (!block_len);
 	 if !open_after_loading then
-	     execToplevelOpen nilLocation uname 
+	     execToplevelOpen nilLocation uname
 	 else ())
 	 handle x => (Hasht.remove (!currentSigTable) uname;
 		      Hasht.remove (!watchDog) uname;
@@ -147,7 +147,7 @@ fun smartEvalLoad s =
 ;
 
 fun evalLoaded () : string list =
-    Hasht.fold (fn k => fn _ => fn res => k :: res) [] (!watchDog) 
+    Hasht.fold (fn k => fn _ => fn res => k :: res) [] (!watchDog)
 
 fun protect_current_input fct =
   let val saved_input_name = !input_name
@@ -182,8 +182,8 @@ fun evalUse filename =
        handle Fail msg =>
          (msgIBlock 0; errPrompt msg; msgEOL(); msgEBlock(); msgFlush();
           raise Toplevel))
-    val () = 
-	if not (!Exec_phr.quietdec) then 
+    val () =
+	if not (!Exec_phr.quietdec) then
 	    (msgIBlock 0;
 	     msgString "[opening file \""; msgString truename;
 	     msgString "\"]"; msgEOL(); msgEBlock(); msgFlush())
@@ -192,7 +192,7 @@ fun evalUse filename =
     val lexbuf = Compiler.createLexerStream is
     fun closeIn() =
       (close_in is;
-       if not (!Exec_phr.quietdec) then 
+       if not (!Exec_phr.quietdec) then
 	   (msgIBlock 0;
 	    msgString "[closing file \""; msgString truename;
 	    msgString "\"]"; msgEOL(); msgEBlock(); msgFlush())
@@ -227,7 +227,7 @@ fun tryEvalCompile mode context s =
       let val filename = Filename.chop_suffix s ".sml" in
         compileUnitBody context
           (normalizedUnitName (Filename.basename filename))
-          mode						      
+          mode
           filename
       end
     else
@@ -246,7 +246,7 @@ fun evalCompile mode context s =
 (* cvr: TODO
    it would be better if smltop_con_basis, sml_VE and the global dynamic
    env were initialised from a single association list instead of three
-   possibly inconsistent ones 
+   possibly inconsistent ones
 *)
 
 val smltop_con_basis =
@@ -283,13 +283,13 @@ val smltop_VE =
    ("use",         trivial_scheme(type_arrow type_string type_unit)),
    ("load",        trivial_scheme(type_arrow type_string type_unit)),
    ("loadOne",     trivial_scheme(type_arrow type_string type_unit)),
-   ("loaded",      trivial_scheme(type_arrow type_unit 
+   ("loaded",      trivial_scheme(type_arrow type_unit
 				             (type_list type_string))),
    ("compile",     trivial_scheme(type_arrow type_string type_unit)),
    ("compileStructure",trivial_scheme(type_arrow (type_list type_string)
-				                (type_arrow type_string 
+				                (type_arrow type_string
 						            type_unit))),
-   ("compileToplevel",trivial_scheme(type_arrow (type_list type_string)	
+   ("compileToplevel",trivial_scheme(type_arrow (type_list type_string)
    	                                        (type_arrow type_string
 						            type_unit))),
    ("verbose",     trivial_scheme(type_ref type_bool)),
@@ -297,14 +297,14 @@ val smltop_VE =
    ("loadPath",    trivial_scheme(type_ref (type_list type_string))),
    ("quotation",   trivial_scheme(type_ref type_bool)),
    ("valuepoly",   trivial_scheme(type_ref type_bool)),
-   ("printVal",    sc_bogus),  
+   ("printVal",    sc_bogus),
    ("printDepth",  trivial_scheme(type_ref type_int)),
    ("printLength", trivial_scheme(type_ref type_int)),
    ("quit",        trivial_scheme(type_arrow type_unit type_unit)),
    ("orthodox",    trivial_scheme(type_arrow type_unit type_unit)),
    ("conservative",trivial_scheme(type_arrow type_unit type_unit)),
    ("liberal",     trivial_scheme(type_arrow type_unit type_unit)),
-   ("installPP",   sc_bogus)  
+   ("installPP",   sc_bogus)
 ];
 
 val unit_smltop = newSig "Meta" "Meta" STRmode;
@@ -312,7 +312,7 @@ val unit_smltop = newSig "Meta" "Meta" STRmode;
 val () =
     app
     (fn (id, sc) => let val {qualid,info} = lookup id smltop_con_basis
-                    in Hasht.insert (#uVarEnv unit_smltop) id 
+                    in Hasht.insert (#uVarEnv unit_smltop) id
                                     {qualid = qualid, info = (sc, info)}
 		    end)
     smltop_VE

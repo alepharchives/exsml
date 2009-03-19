@@ -51,7 +51,7 @@ fun exportValAsVal os valRenList id (infStatus : ConStatus) (specStatus : ConSta
 
 fun exportPrimAsVal os valRenList id (pi : PrimInfo) (specStatus : ConStatus) =
   let val vid =  Const.mangle (Const.ValId id)
-      val lam = Lprim(Pset_global (#qualid specStatus, 0), 
+      val lam = Lprim(Pset_global (#qualid specStatus, 0),
 		      [trPrimVar (#primOp pi)])
   in emit_phrase os (compileLambda true lam);
      drop (fn (name,stamp) => name = vid) valRenList
@@ -60,7 +60,7 @@ fun exportPrimAsVal os valRenList id (pi : PrimInfo) (specStatus : ConStatus) =
 
 fun exportConAsVal os valRenList id (ci : ConInfo) (specStatus : ConStatus) =
   let val vid =  Const.mangle (Const.ValId id)
-      val lam = Lprim(Pset_global (#qualid specStatus, 0), 
+      val lam = Lprim(Pset_global (#qualid specStatus, 0),
 		      [trConVar ci])
   in emit_phrase os (compileLambda true lam);
      drop (fn (name,stamp) => name = vid) valRenList
@@ -68,9 +68,9 @@ fun exportConAsVal os valRenList id (ci : ConInfo) (specStatus : ConStatus) =
 ;
 
 fun exportExConAsVal os valRenList id (ei : ExConInfo) (infStatus : ConStatus) (specStatus : ConStatus) =
-    let val vid =  Const.mangle (Const.ValId id) 
+    let val vid =  Const.mangle (Const.ValId id)
 	val en = Lprim(Pget_global(#qualid infStatus,lookup vid valRenList),[])
-	val lam = Lprim(Pset_global (#qualid specStatus, 0), 
+	val lam = Lprim(Pset_global (#qualid specStatus, 0),
 			[trTopDynExConVar ei en])
     in
 	emit_phrase os (compileLambda true lam);
@@ -79,11 +79,11 @@ fun exportExConAsVal os valRenList id (ei : ExConInfo) (infStatus : ConStatus) (
 
 (* cvr: TODO simplify to remove error checking (now done during matching in Types.sml) *)
 
-fun exportVar os valRenList id {info = (_,infInfo),qualid = infQualid} 
+fun exportVar os valRenList id {info = (_,infInfo),qualid = infQualid}
                      {info = (_,specInfo),qualid = specQualid} =
   let
       val {qual=infQual, ...} = infQualid
-      val {qual=specQual, ...} = specQualid 
+      val {qual=specQual, ...} = specQualid
       val infStatus = {qualid = infQualid, info = infInfo}
       val specStatus = {qualid = specQualid, info = specInfo}
   in
@@ -144,11 +144,11 @@ fun exportVar os valRenList id {info = (_,infInfo),qualid = infQualid}
              | REFname => valRenList)
   end
 ;
- 
-fun exportMod os valRenList id 
+
+fun exportMod os valRenList id
     {info = RS,qualid = infQualid} {info = RS',qualid = specQualid} =
   let val {qual=infQual, id=_} = infQualid
-      val {qual=specQual,id=_} = specQualid 
+      val {qual=specQual,id=_} = specQualid
   in
   let val mid = Const.mangle (Const.ModId id)
       val strlam = Lprim(Pget_global({qual=infQual,id =[mid]},
@@ -157,7 +157,7 @@ fun exportMod os valRenList id
       val lam =
 	  Lprim(Pset_global ({qual=specQual,id = [mid]}, 0),
 		[coerceRecStr strlam RS RS'])
-  in  
+  in
       (*   msgIBlock 0; Pr_lam.printLam lam; msgEOL(); msgEBlock(); (* cvr: TODO remove*) *)
       emit_phrase os (compileLambda true lam);
       drop (fn (name,stamp) => name = mid) valRenList
@@ -165,10 +165,10 @@ fun exportMod os valRenList id
   end
 ;
 
-fun exportGenFun os valRenList id 
+fun exportGenFun os valRenList id
           {info = F,qualid = infQualid} {info = F',qualid = specQualid} =
   let val {qual=infQual, id=_} = infQualid
-      val {qual=specQual,id=_} = specQualid 
+      val {qual=specQual,id=_} = specQualid
   in
   let val fid = Const.mangle (Const.FunId id)
       val funlam = Lprim(Pget_global({qual=infQual, id = [fid]},
@@ -186,7 +186,7 @@ fun exportGenFun os valRenList id
 
 fun matchModes (inferredSig : CSig) (specSig : CSig) =
   case (modeOfSig inferredSig,modeOfSig specSig) of
-      (STRmode,STRmode) => 
+      (STRmode,STRmode) =>
 	 if !(#uIdent(inferredSig)) = !(#uIdent(specSig))
 	     then ()
 	 else
@@ -198,7 +198,7 @@ fun matchModes (inferredSig : CSig) (specSig : CSig) =
           errPrompt "but its interface was compiled as the declaration of the signature"; msgEOL();
 	  errPrompt "  "; msgString (!(#uIdent specSig));msgEOL();
 	  errPrompt "The declarations should agree on the identifier";
-	  msgEOL();	  
+	  msgEOL();
           msgEBlock();
           raise Toplevel)
   |   (TOPDECmode,TOPDECmode) => ()
@@ -213,7 +213,7 @@ fun matchModes (inferredSig : CSig) (specSig : CSig) =
           raise Toplevel)
   |   (TOPDECmode,STRmode) =>
          (msgIBlock 0;
-          errPrompt "Mode mismatch: the implementation of "; 
+          errPrompt "Mode mismatch: the implementation of ";
 	  msgString (#uName inferredSig);msgEOL();
           errPrompt "was compiled as a sequence of top level declarations";msgEOL();
           errPrompt "but its interface was compiled as a signature declaration"; msgEOL();
@@ -249,7 +249,7 @@ fun matchSignature os valRenList (inferredSig : CSig) (specSig : CSig) =
    matchStamps inferredSig specSig;
   (* Matching of components *)
    (matchCSig  inferredSig specSig
-    handle MatchError matchReason => 
+    handle MatchError matchReason =>
 	(msgIBlock 0;
 	 errPrompt "Interface mismatch: the implementation of unit ";msgString (#uName inferredSig);msgEOL();
 	 errPrompt "does not match its interface, because ... ";
@@ -260,28 +260,28 @@ fun matchSignature os valRenList (inferredSig : CSig) (specSig : CSig) =
   (* warn of any un(der)specified (co-variant) declarations in a topdec unit *)
   checkCSig inferredSig specSig;
   (* coercions *)
-  let 
+  let
       (* value matching may cause some code to be generated, *)
       (* if a primitive function or a value constructor is *)
       (* exported as a value. *)
-      val valRenList = 
+      val valRenList =
 	  Hasht.fold (fn id => fn specSc => fn valRenList =>
 		      exportVar os valRenList id
 		      (Hasht.find (varEnvOfSig inferredSig) id) specSc)
 	  valRenList (varEnvOfSig specSig);
       (* structure matching may cause some coercion code to be generated. *)
-      val valRenList = 
+      val valRenList =
 	  Hasht.fold (fn id => fn specInfo => fn valRenList =>
-		      exportMod os valRenList id 
+		      exportMod os valRenList id
 		      (Hasht.find (modEnvOfSig inferredSig) id) specInfo)
 	  valRenList (modEnvOfSig specSig);
       (* functor matching may cause some coercion code to be generated. *)
-      val valRenList = 
+      val valRenList =
 	  Hasht.fold (fn id => fn specInfo => fn valRenList =>
-		      exportGenFun os valRenList id 
+		      exportGenFun os valRenList id
 		      (Hasht.find (funEnvOfSig inferredSig) id) specInfo)
 	  valRenList (funEnvOfSig specSig)
-  in valRenList 
+  in valRenList
   end)
 ;
 

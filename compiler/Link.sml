@@ -8,7 +8,7 @@ val verbose  = ref false
 
 (* First pass: check the consistency of files *)
 
-fun read_file name = 
+fun read_file name =
     let val truename = find_in_path name
 	val is = open_in_bin truename
 	val tables =
@@ -28,7 +28,7 @@ fun read_file name =
 
 exception WrongStamp and NotYet
 
-fun check_file name stampOpt pending processed = 
+fun check_file name stampOpt pending processed =
   let val simplename = Filename.chop_suffix name ".uo"
       val uname = normalizedUnitName(Filename.basename simplename)
       val () =
@@ -40,40 +40,40 @@ fun check_file name stampOpt pending processed =
 	      raise Fail ("Unit "^uname^" is built-in, and cannot be linked")
 	  else ()
 
-      val already = (SOME (Hasht.find (!watchDog) uname)) 
-	            handle Subscript => NONE 
+      val already = (SOME (Hasht.find (!watchDog) uname))
+	            handle Subscript => NONE
 
       fun needs subuname substamp processed =
-	  (check_file (subuname ^ ".uo") (SOME substamp) 
+	  (check_file (subuname ^ ".uo") (SOME substamp)
 	              (uname :: pending) processed)
-	  handle WrongStamp => 
-	              raise Fail ("Compiled body of unit " ^ uname 
+	  handle WrongStamp =>
+	              raise Fail ("Compiled body of unit " ^ uname
 				    ^ " is incompatible with unit "^ subuname)
-	       | NotYet => 
+	       | NotYet =>
 		      raise Fail ("Unit " ^ subuname ^ " is mentioned by "
 				  ^ uname ^ " but not yet linked")
-  in 
+  in
       case already of
 	  SOME stamp' =>
 	      (case stampOpt of
-		   SOME stamp => 
-		       if stamp <> stamp' then raise WrongStamp 
+		   SOME stamp =>
+		       if stamp <> stamp' then raise WrongStamp
 		       else processed
-		 | NONE => 
+		 | NONE =>
                        (msgIBlock 0;
 			errPrompt "Warning: unit ";
-			msgString uname; 
+			msgString uname;
 			msgString " is needed by a unit preceding it";
 			msgEOL();
 			msgEBlock();
 			processed))
 	| NONE => let val implicit = case stampOpt of NONE => false | _ => true
-		      val _ = if not(!autolink) andalso implicit 
+		      val _ = if not(!autolink) andalso implicit
 			      then raise NotYet else ()
 		      val (truename, tables) = read_file name
-		      val precedingUnits = 
+		      val precedingUnits =
 			  Hasht.fold needs processed (#cu_mentions tables)
-		   in 
+		   in
 		      Hasht.insert (!watchDog) uname (#cu_sig_stamp tables);
 		      (uname, truename, tables) :: precedingUnits
 		  end
@@ -125,7 +125,7 @@ fun scan_val uname (id, stamp) tolink =
 
 fun scan_phrase (phr : compiled_phrase) tolink =
     let val (_, otherlist) = #cph_reloc phr
-    in 
+    in
 	if not (#cph_pure phr) orelse List.exists is_required otherlist then
 	    (List.app remove_required otherlist;
 	     List.app add_required otherlist;
@@ -198,10 +198,10 @@ val stand_alone   = ref false; (* cvr: 144 merge *)
 
 fun reportLinked toscan =
     let fun reportUnit (uname, _, _) = (msgString uname; msgString ".uo ")
-    in 
-	msgIBlock 0; 
+    in
+	msgIBlock 0;
 	msgString "Linking: ";
-	List.app reportUnit (rev toscan); 
+	List.app reportUnit (rev toscan);
 	msgEOL(); msgEBlock()
     end
 
@@ -211,18 +211,18 @@ fun link unit_list exec_name =
       val toscan = foldL check_file [] unit_list
       val _ = if !verbose then reportLinked toscan else ()
       val tolink = foldL scan_file [] toscan
-      val os = if !no_header andalso not (!stand_alone) then 
+      val os = if !no_header andalso not (!stand_alone) then
 	           open_out_bin exec_name
-	       else 
+	       else
 		   open_out_exe exec_name
       fun copy name =
 	  let val buff = CharArray.array(4096, #"\000")
 	      val is = open_in_bin (Filename.concat (!path_library) name)
-	      fun loop () = 
+	      fun loop () =
 		  case buff_input is buff 0 4096 of
 		      0 => ()
 		    | n => (buff_output os buff 0 n; loop ())
-	  in 
+	  in
 	      (loop (); close_in is) handle x => (close_in is; raise x)
 	  end
   in

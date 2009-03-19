@@ -1,6 +1,6 @@
 (* Handlings of local labels and backpatching *)
 
-local 
+local
   open Fnlib Instruct Buffcode
 in
 
@@ -18,7 +18,7 @@ fun reset_label_table () =
 
 fun extend_label_table needed =
   let val old = Array.length (!label_table)
-      val new_table = 
+      val new_table =
         Array.array((needed div old + 1) * old, Label_undefined [])
   in
     Array.copy { src= !label_table, si=0, len = NONE, dst= new_table, di=0 };
@@ -27,7 +27,7 @@ fun extend_label_table needed =
 
 fun define_label lbl =
 (
-  if lbl < Array.length (!label_table) then () else 
+  if lbl < Array.length (!label_table) then () else
     extend_label_table lbl;
   case Array.sub(!label_table, lbl) of
       Label_defined _ =>
@@ -38,7 +38,7 @@ fun define_label lbl =
           case L of
               [] => ()
             |  _ => (* Backpatching the list L of pending labels: *)
-              (List.app (fn (pos,orig) => 
+              (List.app (fn (pos,orig) =>
                            (out_position := pos;
                             out_long (currpos - orig)))
                         L;
@@ -48,7 +48,7 @@ fun define_label lbl =
 
 fun out_label_with_orig orig lbl =
 (
-  if lbl = Nolabel then 
+  if lbl = Nolabel then
     fatalError "out_label: undefined label"
   else if lbl >= Array.length (!label_table) then
     extend_label_table lbl

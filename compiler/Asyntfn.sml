@@ -203,10 +203,10 @@ fun printTyVarSeq [] = ()
 ;
 
 
-fun printTyConPath (_, tyconpath') = 
+fun printTyConPath (_, tyconpath') =
   case tyconpath' of
     LONGtyconpath ii =>
-       printIdInfo ii 
+       printIdInfo ii
   | WHEREtyconpath (ii,(loc,modid),modexp) =>
       (printIdInfo ii;
        msgString " where ";
@@ -225,12 +225,12 @@ and printTy (_, ty') =
   | FNty(t, t') =>
       (msgString "("; printTy t; msgString " -> "; printTy t';
        msgString ")")
-  | PACKty sigexp => 
+  | PACKty sigexp =>
       (msgString "{";  printSigExp sigexp;
-       msgString "}")    
-  | PARty ty => 
+       msgString "}")
+  | PARty ty =>
       (msgString "(";  printTy ty;
-       msgString ")")    
+       msgString ")")
 
 and printRecTyField (lab, ty) =
   (msgIBlock 0; printLab lab; msgString " :"; msgBreak(1, 2); printTy ty;
@@ -260,13 +260,13 @@ and printOvlType ovltype tau =
 )
 
 
-and printVIdPathInfo (ref(RESvidpath longvid)) = 
+and printVIdPathInfo (ref(RESvidpath longvid)) =
       printIdInfo longvid
   | printVIdPathInfo (ref(OVLvidpath (longvid,ovltype,tau))) =
       (printIdInfo longvid;
-       printOvlType ovltype tau)       
+       printOvlType ovltype tau)
 
-and printInfixExp ie = 
+and printInfixExp ie =
   case ie of
     UNRESinfixexp es =>
       (msgString "(UNRES ";
@@ -340,7 +340,7 @@ and printExpField (lab, e) =
 and printMRule (MRule(ref ps, e)) =
       (printSeq printPat " => " ps; msgString " => "; printExp e)
 
-and printInfixPat ip = 
+and printInfixPat ip =
   case ip of
     UNRESinfixpat ps =>
       (msgString "(UNRES ";
@@ -395,17 +395,17 @@ and printPatField (lab, pat) =
 and printDec (_, dec') =
   case dec' of
     VALdec (tvs, (pvbs, rvbs)) =>
-      (msgString "val "; printTyVarSeq tvs; 
+      (msgString "val "; printTyVarSeq tvs;
        case (pvbs, rvbs) of
           (_, []) => printValBindSeq pvbs
         | ([], _) => (msgString "rec "; printValBindSeq rvbs)
         | (_, _) => (printValBindSeq pvbs; msgString " and rec ";
                      printValBindSeq rvbs))
   | PRIM_VALdec (tvs,vbs) =>
-      (msgString "prim_val "; printTyVarSeq tvs; 
+      (msgString "prim_val "; printTyVarSeq tvs;
        printSeq printPrimValBind " and " vbs)
   | FUNdec (ref (UNRESfundec (tvs, fvalbind))) =>
-      (msgString "fun "; printTyVarSeq tvs; 
+      (msgString "fun "; printTyVarSeq tvs;
        printSeq printFValBind " and " fvalbind)
   | FUNdec (ref (RESfundec dec)) =>
       printDec dec
@@ -426,7 +426,7 @@ and printDec (_, dec') =
   | DATATYPErepdec(tycon,tyconpath) =>
       (msgString "datatype ";
        printTyCon tycon;
-       msgString " = datatype "; 
+       msgString " = datatype ";
        printTyConPath tyconpath
       )
   | ABSTYPEdec(dbs, tbs_opt, dec) =>
@@ -514,15 +514,15 @@ and printModBind (MODBINDmodbind(modid, me)) =
   (msgIBlock 0; printModId modid; msgString " ="; msgBreak(1, 2);
    printModExp me; msgEBlock())
   | printModBind (ASmodbind(modid,sigexp,exp)) =
-  (msgIBlock 0; printModId modid;msgString " as"; msgBreak(1,2); 
-   printSigExp sigexp; msgString " ="; 
-   msgBreak(1, 2);printExp exp; 
+  (msgIBlock 0; printModId modid;msgString " as"; msgBreak(1,2);
+   printSigExp sigexp; msgString " =";
+   msgBreak(1, 2);printExp exp;
    msgEBlock())
 
 and (*
   printFunBind (FUNBINDfunbind(funid, modid, sigexp, modexp)) =
-  (msgIBlock 0; printFunId funid; 
-                msgString "("; printModId modid; msgString ":"; 
+  (msgIBlock 0; printFunId funid;
+                msgString "("; printModId modid; msgString ":";
                                printSigExp sigexp;
                 msgString ")";
    msgString " ="; msgBreak(1, 2);
@@ -531,9 +531,9 @@ and (*
   (msgIBlock 0; printFunId funid; msgString " ="; msgBreak(1, 2);
    printModExp me; msgEBlock())
  | printFunBind (ASfunbind(funid,sigexp,exp)) =
-  (msgIBlock 0; printFunId funid;msgString " as"; msgBreak(1,2); 
-   printSigExp sigexp; msgString " ="; 
-   msgBreak(1, 2);printExp exp; 
+  (msgIBlock 0; printFunId funid;msgString " as"; msgBreak(1,2);
+   printSigExp sigexp; msgString " =";
+   msgBreak(1, 2);printExp exp;
    msgEBlock())
 
 and printSigBind (SIGBINDsigbind(sigid, sigexp)) =

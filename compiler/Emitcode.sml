@@ -12,13 +12,13 @@ prim_val rshiftuns_ : int -> int -> int = 2 "shift_right_unsigned";
 
 (* Generation of bytecode for .uo files *)
 
-fun tooManyError kind = 
+fun tooManyError kind =
     (msgIBlock 0;
      errPrompt ("Too many " ^ kind ^ "; unable to generate bytecode");
      msgEOL();
      msgEBlock();
      raise Toplevel);
-    
+
 fun checkArguments n =
     if n > maxint_byte then tooManyError "arguments" else ()
 
@@ -139,8 +139,8 @@ fun emit_zam zam =
          out_short z)
     | Kpop n    => (checkLocals n; out POP; out_short n)
     | Kgrab n   => (checkArguments n; out GRAB; out n)
-    | Kreturn n => 
-	(checkLocals n; 
+    | Kreturn n =>
+	(checkLocals n;
 	 if n < 3 then out(RETURN1 + n - 1) else (out RETURN; out_short n))
     | Kmakeblock(tag,n) =>
         (if n <= 0 then
@@ -265,16 +265,16 @@ fun emit zams =
          emit C)
     | Kpush :: Kenvacc 0 :: Kapply n :: C =>
         (checkArguments n;
-         if n < 5 then 
+         if n < 5 then
 	     out(PUSH_ENV1_APPLY1 + n - 1)
-	 else 
+	 else
 	     (out PUSHENV1;
 	      out APPLY; out n);
          emit C)
     | Kpush :: Kenvacc 0 :: Kappterm (n,z) :: C =>
-        ((if n < 5 then 
+        ((if n < 5 then
 	      out(PUSH_ENV1_APPTERM1 + n - 1)
-	  else 
+	  else
 	      (checkArguments n; out PUSHENV1; out APPTERM; out n));
          checkLocals z; out_short z;
          emit C)
@@ -286,22 +286,22 @@ fun emit zams =
           emit C
         end
     | Kpush :: Kget_global uid :: Kapply n :: C =>
-        (if n < 5 then 
+        (if n < 5 then
 	     (out(PUSH_GETGLOBAL_APPLY1 + n - 1);
 	      slot_for_get_global uid)
-	 else 
+	 else
 	     (checkArguments n;
 	      out PUSH_GETGLOBAL;
 	      slot_for_get_global uid;
 	      out APPLY; out n);
          emit C)
     | Kpush :: Kget_global uid :: Kappterm (n,z) :: C =>
-        (if n < 5 then 
+        (if n < 5 then
 	     (out(PUSH_GETGLOBAL_APPTERM1 + n - 1);
 	      checkLocals z; out_short z;
 	      slot_for_get_global uid)
-	 else 
-	     (checkArguments n; 
+	 else
+	     (checkArguments n;
 	      out PUSH_GETGLOBAL;
 	      slot_for_get_global uid;
 	      out APPTERM; out n;
@@ -312,13 +312,13 @@ fun emit zams =
         (out PUSH_GETGLOBAL;
          slot_for_get_global uid;
          emit C)
-    | Kgetfield 0 :: Kgetfield 0 :: C => 
+    | Kgetfield 0 :: Kgetfield 0 :: C =>
 	(out GETFIELD0_0; emit C)
-    | Kgetfield 0 :: Kgetfield 1 :: C => 
+    | Kgetfield 0 :: Kgetfield 1 :: C =>
 	(out GETFIELD0_1; emit C)
-    | Kgetfield 1 :: Kgetfield 0 :: C => 
+    | Kgetfield 1 :: Kgetfield 0 :: C =>
 	(out GETFIELD1_0; emit C)
-    | Kgetfield 1 :: Kgetfield 1 :: C => 
+    | Kgetfield 1 :: Kgetfield 1 :: C =>
 	(out GETFIELD1_1; emit C)
     | zam :: C =>
        (emit_zam zam; emit C)

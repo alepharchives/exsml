@@ -14,10 +14,10 @@ fun lookup_iBas (iBas : InfixBasis) id =
 
 fun asId_Exp (_, VIDPATHexp(ref (RESvidpath  ii))) =
       let val { qualid, info } = ii in
-        if #qual qualid <> "" 
-           orelse #withOp info 
+        if #qual qualid <> ""
+           orelse #withOp info
            orelse case (#id qualid) of [_] => false | _ => true
-      then NONE 
+      then NONE
       else SOME ii
       end
   | asId_Exp (_, _) = NONE
@@ -51,7 +51,7 @@ fun resolveInfixExp (iBas : InfixBasis) loc exps =
 fun asId_Pat (_, VARpat ii) =
       let val { qualid, info } = ii in
         if #qual qualid <> ""
-           orelse #withOp info 
+           orelse #withOp info
            orelse case #id qualid of [_] => false | _ => true
        then NONE else SOME ii
       end
@@ -222,12 +222,12 @@ and resolveVIdPathInfoOp iBas (RESvidpath vidpath') =
 and resolveExpOp iBas (exp as (loc, exp')) =
   case exp' of
     SCONexp _ => ()
-  | VIDPATHexp (ref vidpathinfo) => 
+  | VIDPATHexp (ref vidpathinfo) =>
       resolveVIdPathInfoOp iBas vidpathinfo
   | FNexp mrules =>
       app (resolveMRuleOp iBas) mrules
   | APPexp(e1, e2) =>
-      (resolveExpOp iBas e1; 
+      (resolveExpOp iBas e1;
        resolveExpOp iBas e2)
   | LETexp(dec, body) =>
       let val iBas' = resolveDecOp iBas dec in
@@ -256,7 +256,7 @@ and resolveExpOp iBas (exp as (loc, exp')) =
   | ORELSEexp(e1, e2) =>
       (resolveExpOp iBas e1; resolveExpOp iBas e2)
   | HANDLEexp(e, mrules) =>
-      (resolveExpOp iBas e; 
+      (resolveExpOp iBas e;
        app (resolveMRuleOp iBas) mrules)
   | RAISEexp e =>
       resolveExpOp iBas e
@@ -279,14 +279,14 @@ and resolveMRuleOp iBas (MRule(ref pats,exp)) =
 and resolveDecOp (iBas : InfixBasis) (dec as (loc, dec')) =
   case dec' of
     VALdec (tvs, (pvbs, rvbs)) =>
-      (app (resolveValBindOp iBas) pvbs; 
+      (app (resolveValBindOp iBas) pvbs;
        app (resolveValBindOp iBas) rvbs;
        NILenv)
-  | PRIM_VALdec (tvs,pvbs) => 
-      (app (fn (idinfo,ty,i,s) => resolveTyOp iBas ty) pvbs; 
+  | PRIM_VALdec (tvs,pvbs) =>
+      (app (fn (idinfo,ty,i,s) => resolveTyOp iBas ty) pvbs;
        NILenv)
   | FUNdec (fundec as (ref (UNRESfundec (tvs, fvbs)))) =>
-      let val rvbs = map  (resolveFValBind iBas) fvbs 
+      let val rvbs = map  (resolveFValBind iBas) fvbs
       in
           fundec :=  RESfundec (loc, VALdec (tvs,([],rvbs)));
           NILenv
@@ -309,13 +309,13 @@ and resolveDecOp (iBas : InfixBasis) (dec as (loc, dec')) =
   | EXCEPTIONdec ebs => (app (resolveExBindOp iBas) ebs; NILenv)
   | LOCALdec(dec1, dec2) =>
       let val iBas' = resolveDecOp iBas dec1
-          val iBas'' = resolveDecOp (plusEnv iBas iBas') dec2 
+          val iBas'' = resolveDecOp (plusEnv iBas iBas') dec2
       in iBas'' end
   | OPENdec modids => NILenv
   | EMPTYdec  => NILenv
   | SEQdec(dec1, dec2) =>
       let val iBas'  = resolveDecOp iBas dec1
-          val iBas'' = resolveDecOp (plusEnv iBas iBas') dec2 
+          val iBas'' = resolveDecOp (plusEnv iBas iBas') dec2
       in plusEnv iBas' iBas'' end
   | FIXITYdec(status, ids) =>
       (checkInfixIds loc ids "An identifier appears twice in a fixity declaration";
@@ -335,34 +335,34 @@ and resolveValBindOp iBas (ValBind(ref pat, exp)) =
 and resolveExBindOp iBas (EXDECexbind (ii, SOME ty)) =
       resolveTyOp iBas ty
   | resolveExBindOp iBas _ = ()
-and resolveTyOp iBas (_,ty') = 
+and resolveTyOp iBas (_,ty') =
     case ty' of
       TYVARty _ => ()
     | RECty tyrow => (app_field (resolveTyOp iBas) tyrow)
-    | CONty (tys,tyconpath) => 
+    | CONty (tys,tyconpath) =>
         (app (resolveTyOp iBas) tys;
          resolveTyConPathOp iBas tyconpath)
-    | FNty (ty1,ty2) => 
+    | FNty (ty1,ty2) =>
         (resolveTyOp iBas ty1; resolveTyOp iBas ty2)
     | PACKty sigexp =>  resolveSigExpOp iBas sigexp
     | PARty ty => resolveTyOp iBas ty
 
-and resolveTyConPathOp iBas (_,tyconpath) = 
+and resolveTyConPathOp iBas (_,tyconpath) =
     case tyconpath of
       LONGtyconpath _ => ()
-    | WHEREtyconpath (_,_,modexp) => 
+    | WHEREtyconpath (_,_,modexp) =>
         resolveModExpOp iBas modexp
 and resolveVIdPath'Op iBas vidpath = ()
-and resolveModExpOp iBas (_,(modexp,_)) = 
+and resolveModExpOp iBas (_,(modexp,_)) =
     case modexp of
-      DECmodexp dec => 
+      DECmodexp dec =>
         (resolveDecOp iBas dec; ())
     | LONGmodexp _ => ()
     | LETmodexp (dec,modexp) =>
-        let val iBas' = resolveDecOp iBas dec 
+        let val iBas' = resolveDecOp iBas dec
         in
-            resolveModExpOp (plusEnv iBas iBas') modexp 
-        end  
+            resolveModExpOp (plusEnv iBas iBas') modexp
+        end
    | PARmodexp modexp => resolveModExpOp iBas modexp
    | CONmodexp (modexp,sigexp) =>
        (resolveModExpOp iBas modexp; resolveSigExpOp iBas sigexp)
@@ -388,10 +388,10 @@ and resolveFunBindOp iBas (FUNBINDfunbind(funid,modexp)) =
        resolveExpOp iBas exp)
 and resolveSigExpOp iBas (loc,sigexp) =
   case sigexp of
-    SPECsigexp spec => 
-	(foldEnv (fn id => fn _ =>  fn ids => 
+    SPECsigexp spec =>
+	(foldEnv (fn id => fn _ =>  fn ids =>
 	   if member id ids
-	      then (errorMsg loc 
+	      then (errorMsg loc
 		    ("Illegal duplicate fixity specification for identifier "^id))
 	   else id::ids) [] (resolveSpecOp iBas spec);
 	 ())
@@ -404,55 +404,55 @@ and resolveSigExpOp iBas (loc,sigexp) =
            (resolveSigExpOp iBas sigexp;resolveSigExpOp iBas sigexp')
 and resolveSpecOp (iBas : InfixBasis) (spec as (loc, spec')) =
   case spec' of
-    VALspec (tvs, vds) => 
+    VALspec (tvs, vds) =>
      (app (fn (ii,ty) => resolveTyOp iBas ty) vds;
       NILenv)
-  | PRIM_VALspec (tvs,pvbs) => 
+  | PRIM_VALspec (tvs,pvbs) =>
      (app (fn (idinfo,ty,i,s) => resolveTyOp iBas ty) pvbs;
       NILenv)
-  | TYPEDESCspec _ => 
+  | TYPEDESCspec _ =>
       NILenv
-  | TYPEspec tbds => 
+  | TYPEspec tbds =>
       (app (resolveTypBindOp iBas) tbds;
        NILenv)
-  | DATATYPEspec (dbds,SOME tbd) => 
+  | DATATYPEspec (dbds,SOME tbd) =>
       (app (resolveDatBindOp iBas) dbds;
        app (resolveTypBindOp iBas) tbd;
        NILenv)
-  | DATATYPEspec (dbds,NONE) => 
+  | DATATYPEspec (dbds,NONE) =>
       (app (resolveDatBindOp iBas) dbds;
        NILenv)
   | DATATYPErepspec (tycon, tyconpath) =>
       (resolveTyConPathOp iBas tyconpath;
        NILenv)
-  | EXCEPTIONspec eds => 
+  | EXCEPTIONspec eds =>
       (app (resolveExDescOp iBas) eds;
        NILenv)
   | LOCALspec(spec1, spec2) =>
       (resolveSpecOp iBas spec1;
        resolveSpecOp iBas spec2;
        NILenv)
-  | OPENspec _ => 
+  | OPENspec _ =>
        NILenv
-  | EMPTYspec => 
+  | EMPTYspec =>
        NILenv
   | SEQspec(spec1, spec2) =>
       let val iBas'  = resolveSpecOp iBas spec1
-          val iBas'' = resolveSpecOp (plusEnv iBas iBas') spec2 
+          val iBas'' = resolveSpecOp (plusEnv iBas iBas') spec2
       in plusEnv iBas' iBas'' end
-  | INCLUDEspec sigexp => 
+  | INCLUDEspec sigexp =>
       (resolveSigExpOp iBas sigexp;
        NILenv)
-  | STRUCTUREspec moddescs => 
+  | STRUCTUREspec moddescs =>
       (app (resolveModDescOp iBas) moddescs;
        NILenv)
-  | FUNCTORspec fundescs => 
+  | FUNCTORspec fundescs =>
       (app (resolveFunDescOp iBas) fundescs;
        NILenv)
-  | SHARINGTYPEspec (spec, longtycons) => 
+  | SHARINGTYPEspec (spec, longtycons) =>
       (resolveSpecOp iBas spec;
        NILenv)
-  | SHARINGspec (spec, longmodids) => 
+  | SHARINGspec (spec, longmodids) =>
       (resolveSpecOp iBas spec;
        NILenv)
   | FIXITYspec(status, ids) =>

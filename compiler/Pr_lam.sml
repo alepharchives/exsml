@@ -66,7 +66,7 @@ val rec printPrim = fn
   | Patom t     => (msgString "atom "; msgInt t)
   | Psmlquotint => (msgString "smlquotint")
   | Psmlremint  => (msgString "smlremint")
-  | Pclosure (lbl,sz) => 
+  | Pclosure (lbl,sz) =>
       (msgString "closure "; msgInt lbl; msgString " "; msgInt sz)
   | Pswap => msgString "swap"
 

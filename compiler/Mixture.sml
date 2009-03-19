@@ -23,7 +23,7 @@ fun msgFlush() = flush_ppstream pp_out;
 val msgString = add_string pp_out;
 
 fun msgChar (i : char) = msgString (String.str i);
-local 
+local
     prim_val sml_string_of_int    : int  -> string = 1 "sml_string_of_int";
     prim_val sml_string_of_float  : real -> string = 1 "sml_string_of_float";
     prim_val sml_hexstring_of_word : word -> string = 1 "sml_hexstring_of_word";
@@ -60,8 +60,8 @@ val msgStyle = ref "default";
 val path_library = ref "";
 val load_path = ref ([] : string list);
 
-(* This MUST be ref false; the default (value polymorphism/imperative types) 
- * is set in files Mainc.sml and Maint.sml instead: 
+(* This MUST be ref false; the default (value polymorphism/imperative types)
+ * is set in files Mainc.sml and Maint.sml instead:
  *)
 val value_polymorphism = ref false;
 
@@ -213,9 +213,9 @@ fun mapEnv f env0 =
 	(* This can be improved by simply making a copy of the hash table *)
 	let val newx = Hasht.new 17
 	    fun ins k v = Hasht.insert newx k (f k v)
-	in 
-            Hasht.apply ins x; 
-	    TOPenv(newx, mapEnv f env) 
+	in
+            Hasht.apply ins x;
+	    TOPenv(newx, mapEnv f env)
 	end
     | COMPenv(env1, env2) =>
         COMPenv(mapEnv f env1, mapEnv f env2)
@@ -236,15 +236,15 @@ fun mkHashEnv n env =
     if n < 7 then env
     else
 	let val hashenv = Hasht.new n
-	in 
+	in
 	    traverseEnv (Hasht.insert hashenv) (revEnv env);
 	    mk1TopEnv hashenv
 	end
 
 fun cleanEnv env =
     foldEnv (fn k => fn v => fn cont =>
-	       fn acc => 
-	       if (member k acc) 
+	       fn acc =>
+	       if (member k acc)
 		   then  cont acc
 	       else  bindInEnv (cont (k::acc)) k v)
             (fn acc => NILenv) env [];
@@ -297,15 +297,15 @@ val currentMode = ref STRmode
 
 (* vanilla SML compliance levels *)
 
-datatype Compliance = 
+datatype Compliance =
     Orthodox (* SML only, reject extensions *)
   | Conservative (* warn of any extensions *)
   | Liberal (* anything goes *);
 
-val currentCompliance = ref Liberal; 
+val currentCompliance = ref Liberal;
 
 
-   
+
 
 
 

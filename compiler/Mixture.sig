@@ -66,9 +66,9 @@ val revEnv : ('a, 'b) Env -> ('a, 'b) Env;
 val traverseEnv : (''_a -> 'b -> unit) -> (''_a, 'b) Env -> unit;
 val mapEnv : (''_a -> 'b -> 'c) -> (''_a, 'b) Env -> (''_a, 'c) Env;
 val foldEnv : (''_a -> 'b -> 'c -> 'c) -> 'c -> (''_a, 'b) Env -> 'c;
-val cleanEnv : (''_a, 'b) Env -> (''_a, 'b) Env; 
+val cleanEnv : (''_a, 'b) Env -> (''_a, 'b) Env;
 val sortEnv : (string, 'b) Env -> (string,'b) Env;
-val lookupEnvWithPos : ('b -> int) -> 
+val lookupEnvWithPos : ('b -> int) ->
                        (''a, 'b) Env -> ''a -> int -> (int * 'b);
 
 type SigStamp = string;
@@ -91,7 +91,7 @@ val currentMode : Mode ref
 
 (* vanilla SML compliance levels *)
 
-datatype Compliance = 
+datatype Compliance =
     Orthodox (* SML only, reject extensions *)
   | Conservative (* warn of any extensions *)
   | Liberal (* anything goes *);

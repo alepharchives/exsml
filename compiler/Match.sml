@@ -24,12 +24,12 @@ fun splitPath n obj =
 (* To skip type constraints and aliases, and translate exnname accesses *)
 
 (* cvr: TODO revise:
-      translating a long exception name under 
-      the pattern matching function can lead to a space leak --- 
-      do it eagerly! 
+      translating a long exception name under
+      the pattern matching function can lead to a space leak ---
+      do it eagerly!
 *)
-  
-fun mkExnPat loc env ii arg = 
+
+fun mkExnPat loc env ii arg =
     let val exnname = Tr_env.translateExName env ii
     in RECpat(ref (TUPLErp [(loc, EXNAMEpat exnname), arg])) end
 
@@ -41,12 +41,12 @@ fun simplifyPat env (loc, pat') =
       | TYPEDpat(p,_)    => simplifyPat env p
       | LAYEREDpat(_, p) => simplifyPat env p
       | EXNILpat ii      => mkExnPat loc env ii (loc, WILDCARDpat)
-      | EXCONSpat(ii, p) => mkExnPat loc env ii p 
+      | EXCONSpat(ii, p) => mkExnPat loc env ii p
       | _                => pat';
 
 (* Constructors *)
 
-datatype con = 
+datatype con =
     SCon of Const.SCon
   | Tup of int				(* arity                *)
   | Vec of int				(* matching tag = arity *)
@@ -79,9 +79,9 @@ fun bots n = List.tabulate(n, fn _ => Bot)
 (* Contexts, or inside-out partial term descriptions:
  * Example: The context [(c2, [a2, a1]), (c1, [b2, b1])] represents
  * a term description with a hole, of the form
- *           c1(b1, b2, c1(a1, a2, Bot, ..., Bot), Bot, ..., Bot) 
+ *           c1(b1, b2, c1(a1, a2, Bot, ..., Bot), Bot, ..., Bot)
  * where the number of Bots is determined by the arity of c1 and c2.
- *) 
+ *)
 
 type context = (con * termd list) list
 
@@ -89,17 +89,17 @@ type context = (con * termd list) list
 
 datatype matchresult = Yes | No | Maybe
 
-fun staticmatch pcon (Pos(scon, _)) = 
-    if pcon = scon then Yes 
+fun staticmatch pcon (Pos(scon, _)) =
+    if pcon = scon then Yes
     else (case pcon of
 	      EExn _ => Maybe	(* Different excons may have same name *)
 	    | _      => No)
   | staticmatch pcon (Neg nonset)   =
-    if Fnlib.member pcon nonset then 
+    if Fnlib.member pcon nonset then
         No
-    else if span pcon = 1 + List.length nonset then 
+    else if span pcon = 1 + List.length nonset then
         Yes
-    else 
+    else
         Maybe
 
 (* Managing partial terms and contexts *)
@@ -108,8 +108,8 @@ fun addneg (Neg nonset) con = Neg(con :: nonset)
   | addneg dsc            _ = dsc
 
 fun apply []                  dsc = []
-  | apply ((con, args)::rest) dsc = 
-    if arity con = List.length args + 1 then 
+  | apply ((con, args)::rest) dsc =
+    if arity con = List.length args + 1 then
         apply rest (Pos(con, List.rev(dsc :: args)))
     else
         (con, dsc :: args) :: rest
@@ -118,7 +118,7 @@ fun revappend []      res = res
   | revappend (x::xr) res = revappend xr (x::res)
 
 fun builddsc []                  dsc []                      = dsc
-  | builddsc ((con, args)::rest) dsc ((_, _, sargs) :: work) = 
+  | builddsc ((con, args)::rest) dsc ((_, _, sargs) :: work) =
     builddsc rest (Pos(con, revappend args (dsc :: sargs))) work
   | builddsc _                   _   _ = Fnlib.fatalError "Match.builddsc"
 
@@ -130,7 +130,7 @@ datatype dec =
     Failure
   | Success of Lambda			(* right-hand side *)
   | IfEq of access * con * decision * decision
-withtype decision = 
+withtype decision =
     {tree : dec, refs : int ref, lamRef : Lambda option ref} ref
 
 fun shared (ref {refs as ref count, ...}   : decision) = count > 1
@@ -143,22 +143,22 @@ fun mkDecision t = ref {tree = t, refs = ref 0, lamRef = ref NONE}
 
 val table = Hasht.new 37 : (dec, decision) Hasht.t
 
-fun unique (node as IfEq(_, _, t1, t2)) = 
+fun unique (node as IfEq(_, _, t1, t2)) =
     if t1 = t2 then t1
     else (Hasht.find table node
-	  handle Subscript => 
+	  handle Subscript =>
 	      let val rnode = mkDecision node
-	      in 
-		  incrnode t1; incrnode t2; 
+	      in
+		  incrnode t1; incrnode t2;
 		  Hasht.insert table node rnode;
 		  rnode
 	      end)
   | unique _ = Fnlib.fatalError "Match.unique";
 
-fun makedag env failure ([] : (Asynt.Pat list * decision) list) : decision = 
+fun makedag env failure ([] : (Asynt.Pat list * decision) list) : decision =
     Fnlib.fatalError "Match.makedag: no rules"
-  | makedag env failure (allmrules as (pats1, _) :: _) = 
-let 
+  | makedag env failure (allmrules as (pats1, _) :: _) =
+let
 val noOfPats = List.length pats1
 val objs1 = List.rev (List.tabulate(noOfPats, Lvar))
 
@@ -171,11 +171,11 @@ fun fail _              []                          = failure
   | fail _ _ = Fnlib.fatalError "Match.fail"
 
 and succeed ctx []                rhs rules = rhs
-  | succeed ctx (work1::workrest) rhs rules = 
-    case work1 of 
+  | succeed ctx (work1::workrest) rhs rules =
+    case work1 of
 	([], [], []) => succeed ctx workrest rhs rules
       | (pat1::patrest, obj1::objrest, dsc1::dscrest) =>
-	    match pat1 obj1 dsc1 ctx 
+	    match pat1 obj1 dsc1 ctx
 	    ((patrest, objrest, dscrest) :: workrest) rhs rules
       | _ => Fnlib.fatalError "Match.succeed"
 
@@ -183,15 +183,15 @@ and mktest pcon obj dsc ctx work rhs rules conequal =
     case staticmatch pcon dsc of
 	Yes   => conequal dsc
       | No    => fail (builddsc ctx dsc work) rules
-      | Maybe => 
-	    unique(IfEq(obj, pcon, 
+      | Maybe =>
+	    unique(IfEq(obj, pcon,
 			conequal (Pos(pcon, bots (arity pcon))),
 			fail (builddsc ctx (addneg dsc pcon) work) rules))
 
 and match pat obj dsc ctx work rhs rules =
     case simplifyPat env pat of
-	SCONpat (scon, _) => 
-	    let fun conequal newdsc = 
+	SCONpat (scon, _) =>
+	    let fun conequal newdsc =
 		succeed (apply ctx newdsc) work rhs rules
 	    in mktest (SCon scon) obj dsc ctx work rhs rules conequal end
 
@@ -203,22 +203,22 @@ and match pat obj dsc ctx work rhs rules =
 		fun conequal newdsc =
 		    case pats of
 			[] => succeed (apply ctx newdsc) work rhs rules
-		      | _  => succeed ((pcon, []) :: ctx) 
-			              ((pats, splitPath arity obj, getsargs dsc) 
+		      | _  => succeed ((pcon, []) :: ctx)
+			              ((pats, splitPath arity obj, getsargs dsc)
 				       :: work)
 				      rhs rules
-	    in 
-		mktest pcon (Lprim(Prim.Pvectlength, [obj])) dsc ctx work rhs 
+	    in
+		mktest pcon (Lprim(Prim.Pvectlength, [obj])) dsc ctx work rhs
 		       rules conequal
 	    end
 
       | WILDCARDpat =>
 	    succeed (apply ctx dsc) work rhs rules
-	    
+
       | NILpat ii =>
 	    let val ci = !(Asyntfn.getConInfo ii)
 		val pcon = CCon(Const.CONtag(#conTag ci, #conSpan ci), 0)
-		fun conequal newdsc = 
+		fun conequal newdsc =
 		    succeed (apply ctx newdsc) work rhs rules
 	    in mktest pcon obj dsc ctx work rhs rules conequal end
 
@@ -230,7 +230,7 @@ and match pat obj dsc ctx work rhs rules =
 		fun getsargs (Neg _)           = [ Bot ]
 		  | getsargs (Pos(con, sargs)) = sargs
 		fun conequal newdsc =
-		    succeed ((pcon, []) :: ctx) 
+		    succeed ((pcon, []) :: ctx)
 		            (([pat], [oarg], getsargs dsc) :: work)
 			    rhs rules
 	    in mktest pcon obj dsc ctx work rhs rules conequal end
@@ -238,7 +238,7 @@ and match pat obj dsc ctx work rhs rules =
       | EXNILpat ii         => Fnlib.fatalError "match EXNILpat"
       | EXCONSpat (ii, pat) => Fnlib.fatalError "match EXCONSpat"
       | EXNAMEpat ii =>
-	    let fun conequal newdsc = 
+	    let fun conequal newdsc =
 		    succeed (apply ctx newdsc) work rhs rules
 	    in mktest (EExn ii) obj dsc ctx work rhs rules conequal end
 
@@ -247,18 +247,18 @@ and match pat obj dsc ctx work rhs rules =
 
       | RECpat(ref (TUPLErp pats)) =>
 	    let val arity = List.length pats
-		val sargs = case dsc of 
+		val sargs = case dsc of
 		                  Neg _         => bots arity
 				| Pos(_, sargs) => sargs
-	    in 
+	    in
 		succeed ((Tup arity, []) :: ctx)
-		        ((pats, splitPath arity obj, sargs) :: work) 
+		        ((pats, splitPath arity obj, sargs) :: work)
 			rhs rules
 	    end
 
       | RECpat(ref (RECrp _)) => Fnlib.fatalError "match 1"
       | _                     => Fnlib.fatalError "match 2"
-in 
+in
     fail (Pos(topCon, bots noOfPats)) allmrules
 end
 
@@ -274,23 +274,23 @@ fun tolambda (ref {tree, ...} : decision) (failLam : Lambda) : Lambda =
 	  | getVec _                 = Fnlib.fatalError "Match.getVec"
 
 	fun collect getcon last cases
-		 (otherwise as 
+		 (otherwise as
 		  ref {tree = IfEq(obj, con, thenact, elseact), ...}) =
-	    if obj = last andalso not (shared otherwise) then 
+	    if obj = last andalso not (shared otherwise) then
 		collect getcon last ((getcon con, thenact) :: cases) elseact
 	    else
-		(cases, otherwise) 
-	  | collect _ _ cases otherwise = 
+		(cases, otherwise)
+	  | collect _ _ cases otherwise =
 		(cases, otherwise)
 
-	fun revmap f xys = 
+	fun revmap f xys =
 	    let fun loop []            res = res
 		  | loop ((x, y)::xyr) res = loop xyr ((x, f y) :: res)
 	    in loop xys [] end
 
 	fun toseq Failure       = failLam
 	  | toseq (Success rhs) = rhs
-	  | toseq t = mkSwitch t	
+	  | toseq t = mkSwitch t
 
 	and share (node as ref {tree, lamRef as ref lamOpt, ...}) =
 	    if shared node then
@@ -298,35 +298,35 @@ fun tolambda (ref {tree, ...} : decision) (failLam : Lambda) : Lambda =
 		    NONE     => let val lam = shared_lambda (toseq tree)
 				in lamRef := SOME lam; lam end
 		  | SOME lam => lam
-	    else 
+	    else
 		toseq tree
 
-	and mkSwitch (IfEq(obj, SCon scon, thenact, elseact)) = 
-	    let val (cases, otherwise) = collect getSCon obj [] elseact 
-	    in 
+	and mkSwitch (IfEq(obj, SCon scon, thenact, elseact)) =
+	    let val (cases, otherwise) = collect getSCon obj [] elseact
+	    in
 		Lstatichandle(Lcase(obj, (scon, share thenact)
 				         :: revmap share cases),
 			      share otherwise)
 	    end
-	  | mkSwitch (IfEq(obj, con as Vec _, thenact, elseact)) = 
-	    let val (cases, otherwise) = collect getVec obj [] elseact 
-	    in 
+	  | mkSwitch (IfEq(obj, con as Vec _, thenact, elseact)) =
+	    let val (cases, otherwise) = collect getVec obj [] elseact
+	    in
 		Lstatichandle(Lcase(obj, (getVec con, share thenact)
                                          :: revmap share cases),
 			      share otherwise)
 	    end
 
-	  | mkSwitch (IfEq(obj, con as CCon _, thenact, elseact)) = 
-	    let val (cases, otherwise) = collect getCCon obj [] elseact 
-	    in 
-		Lstatichandle(Lswitch(span con, obj, 
+	  | mkSwitch (IfEq(obj, con as CCon _, thenact, elseact)) =
+	    let val (cases, otherwise) = collect getCCon obj [] elseact
+	    in
+		Lstatichandle(Lswitch(span con, obj,
 				      (getCCon con, share thenact)
 				      ::revmap share cases),
 			      share otherwise)
 	    end
-	  | mkSwitch (IfEq(obj, EExn exnname, thenact, elseact)) = 
-	    Lif(Lprim(Prim.Ptest Prim.Peq_test, [obj, exnname]), 
-		share thenact, 
+	  | mkSwitch (IfEq(obj, EExn exnname, thenact, elseact)) =
+	    Lif(Lprim(Prim.Ptest Prim.Peq_test, [obj, exnname]),
+		share thenact,
 		share elseact)
 	  | mkSwitch tree = toseq tree
 
@@ -336,9 +336,9 @@ fun tolambda (ref {tree, ...} : decision) (failLam : Lambda) : Lambda =
 
 fun translateMatch (env : Tr_env.TranslEnv) failure_code loc mrules =
   let val failure = mkDecision Failure
-      val uniqmrules = 
+      val uniqmrules =
 	  List.map (fn (pats, rhs) => (pats, mkDecision (Success rhs))) mrules
-      val decdag = makedag env failure uniqmrules 
+      val decdag = makedag env failure uniqmrules
       val _ = incrnode decdag;
       val _ = Hasht.clear table		(* Discard memo-table *)
       open Mixture

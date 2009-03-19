@@ -21,7 +21,7 @@ datatype AccessPath =
 type TranslEnv = (Const.Id, AccessPath) Env * int;
 val translateLocalAccess : (string -> Const.Id) -> TranslEnv -> string -> Lambda;
 val translateAccess : (string -> Const.Id) -> TranslEnv -> QualifiedIdent -> Lambda;
-val translateLongAccess : (string -> Const.Id) -> TranslEnv -> IdInfo ->  Lambda; 
+val translateLongAccess : (string -> Const.Id) -> TranslEnv -> IdInfo ->  Lambda;
 
 val translateExName : TranslEnv -> IdInfo -> Lambda;
 val mkEnvOfRecPats : int -> Pat list -> TranslEnv;

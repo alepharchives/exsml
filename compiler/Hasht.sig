@@ -39,8 +39,8 @@ val apply : ('a -> 'b -> unit) -> ('a, 'b) t -> unit;
            are passed to [f] is unpredictable. *)
 
 val fold : ('a -> 'b -> 'c -> 'c) -> 'c -> ('a, 'b) t -> 'c
-        (* [fold f e tbl] computes f k1 d1 (f k2 d2 (...(f kn dn c)...)) 
-           where (k1, d1), (k2, d2), ..., (kn, dn) are the bindings of 
+        (* [fold f e tbl] computes f k1 d1 (f k2 d2 (...(f kn dn c)...))
+           where (k1, d1), (k2, d2), ..., (kn, dn) are the bindings of
 	   tbl in some unpredictable order. *)
 
 (*** The polymorphic hash primitive *)

@@ -2,15 +2,15 @@ local
   open Const Code_dec Buffcode;
 in
 
-type reloc_table = 
-    { literals  : (StructConstant, int list ref) Hasht.t, 
+type reloc_table =
+    { literals  : (StructConstant, int list ref) Hasht.t,
       reloclist : (reloc_info * int) list ref };
 
-val reloc_info : reloc_table = 
+val reloc_info : reloc_table =
     { literals = Hasht.new 17, reloclist = ref [] }
 
 fun reloc_reset () =
-    let val { literals, reloclist } = reloc_info 
+    let val { literals, reloclist } = reloc_info
     in Hasht.clear literals; reloclist := [] end
 
 fun enter info =
@@ -18,7 +18,7 @@ fun enter info =
     in reloclist := (info, !out_position) :: !reloclist end
 
 fun slot_for_literal sc =
-    let val { literals, reloclist } = reloc_info 
+    let val { literals, reloclist } = reloc_info
     in
 	(case Hasht.peek literals sc of
 	     SOME addrs => addrs := !out_position :: !addrs
@@ -39,9 +39,9 @@ fun slot_for_c_prim name =
 ;
 
 fun get_reloc_info () =
-    let val { literals, reloclist } = reloc_info 
+    let val { literals, reloclist } = reloc_info
 	fun getlitaddrs sc (ref addrs) acc = (sc, addrs) :: acc
-	val res = (Hasht.fold getlitaddrs [] literals, 
+	val res = (Hasht.fold getlitaddrs [] literals,
 		   List.rev (!reloclist))
     in
 	reloc_reset();

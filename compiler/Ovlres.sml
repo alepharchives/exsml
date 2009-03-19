@@ -84,7 +84,7 @@ fun resolveWordOvlId loc "+"    OVL2NNNo = addWord
   | resolveWordOvlId loc "<="   OVL2NNBo = leWord
   | resolveWordOvlId loc ">="   OVL2NNBo = geWord
   | resolveWordOvlId loc "makestring" OVL1NSo = makestringWord
-  | resolveWordOvlId loc id     _        = 
+  | resolveWordOvlId loc id     _        =
       errorOverloadingType loc id type_word;
 
 (* Temporary implementation of Word8.{+,-,*} operations: *)
@@ -103,7 +103,7 @@ fun resolveWord8OvlId loc "+"    OVL2NNNo = addWord8
   | resolveWord8OvlId loc "<="   OVL2NNBo = leWord
   | resolveWord8OvlId loc ">="   OVL2NNBo = geWord
   | resolveWord8OvlId loc "makestring" OVL1NSo = makestringWord
-  | resolveWord8OvlId loc id     _        = 
+  | resolveWord8OvlId loc id     _        =
       errorOverloadingType loc id type_word8;
 
 val makestringChar = mkPrimInfo 1 (MLPccall(1, "sml_makestring_of_char"));
@@ -139,7 +139,7 @@ fun resolveRealOvlId loc "~"    OVL1NNo  = negReal
   | resolveRealOvlId loc ">"    OVL2NNBo = gtReal
   | resolveRealOvlId loc "<="   OVL2NNBo = leReal
   | resolveRealOvlId loc ">="   OVL2NNBo = geReal
-  | resolveRealOvlId loc id _ = 
+  | resolveRealOvlId loc id _ =
       errorOverloadingType loc id type_real
 ;
 
@@ -183,25 +183,25 @@ fun resolveOvlId loc id ovltype tau =
             CONt([], NAMEtyapp tyname) =>
               if isEqTN tyname tyname_int orelse isEqTN tyname tyname_char then
 		  eqInt
-              else if (isEqTN tyname tyname_word 
+              else if (isEqTN tyname tyname_word
 		       orelse isEqTN tyname tyname_word8) then
 		  eqWord
 	      else
 		  eqPoly
-          | _ => 
+          | _ =>
 		eqPoly)
     | (OVL2EEBo, "<>") =>
         (case normType tau of
             CONt([], NAMEtyapp tyname) =>
-              if isEqTN tyname tyname_int 
+              if isEqTN tyname tyname_int
 		  orelse isEqTN tyname tyname_char then
 		  noteqInt
-              else if isEqTN tyname tyname_word 
+              else if isEqTN tyname tyname_word
 		  orelse isEqTN tyname tyname_word8 then
 		  noteqWord
 	      else
 		  noteqPoly
-          | _ => 
+          | _ =>
 		noteqPoly)
     | (_,_) =>
         (case normType tau of
@@ -220,13 +220,13 @@ fun resolveOvlId loc id ovltype tau =
                 resolveWord8OvlId loc id ovltype
               else
 	        errorOverloadingType loc id tau
-          | VARt _ => 
+          | VARt _ =>
 		  (* OK because "/" is not overloaded on `real' types: *)
 		  (unify tau type_int;
 		   resolveIntOvlId loc id ovltype)
 	  | _ => errorOverloadingType loc id tau);
 
-fun resolveWord8OvlScon loc w = 
+fun resolveWord8OvlScon loc w =
     if w > 0w255 then errorConstTooLarge loc "Word8.word"
     else ();
 
@@ -237,13 +237,13 @@ fun resolveOvlScon loc (scon as WORDscon w, ref (SOME tau)) =
 		 ()
 	     else if (isEqTN tyname tyname_word8) then
 		 resolveWord8OvlScon loc w
-	     else 
+	     else
 		 errorOverloadingScon loc "word" tau
        | VARt _ => unify tau type_word
        | _      => errorOverloadingScon loc "word" tau)
   | resolveOvlScon loc (WORDscon w, ref NONE) =
 	 fatalError "resolveOvlScon"
-  | resolveOvlScon _ _ = (); 
+  | resolveOvlScon _ _ = ();
 
 fun resolve3Dot (loc: Location) fs rho =
   let val (fields, unresolved) = contentsOfRowType rho
@@ -270,36 +270,36 @@ fun resolveOvlPat firstpass (loc, pat') =
       (case !rp of
            RECrp(fs, NONE) =>
              (app_field (resolveOvlPat firstpass) fs;
-	      if firstpass 
+	      if firstpass
 	      then rp := TUPLErp(map snd (sortRow fs))
 	      else ())
          | RECrp(fs, SOME rho) =>
              (app_field (resolveOvlPat firstpass) fs;
-              if firstpass 
-	      then rp := TUPLErp(map snd (sortRow (resolve3Dot loc fs rho))) 
+              if firstpass
+	      then rp := TUPLErp(map snd (sortRow (resolve3Dot loc fs rho)))
 	      else ())
          | TUPLErp pats =>
 	     if firstpass
-	     then fatalError "resolveOvlPat:2" 
+	     then fatalError "resolveOvlPat:2"
 	     else app (resolveOvlPat firstpass) pats)
   | VECpat ps => app (resolveOvlPat firstpass) ps
   | PARpat p => resolveOvlPat firstpass p
   | INFIXpat _ => fatalError "resolveOvlPat:3"
-  | TYPEDpat(p,t) => 
+  | TYPEDpat(p,t) =>
       (resolveOvlPat firstpass p;
        resolveOvlTy firstpass t)
   | LAYEREDpat(p1, p2) =>
-      (resolveOvlPat firstpass p1; 
+      (resolveOvlPat firstpass p1;
        resolveOvlPat firstpass p2)
 and resolveOvlExp firstpass (loc, exp') =
   case exp' of
-    SCONexp sconInfo => 
+    SCONexp sconInfo =>
 	if firstpass then resolveOvlScon loc sconInfo else ()
   | VIDPATHexp (ref (RESvidpath vidpath)) => ()
-  | VIDPATHexp (r as ref (OVLvidpath vidpathinfo)) => 
+  | VIDPATHexp (r as ref (OVLvidpath vidpathinfo)) =>
     (case vidpathinfo of
        (ii,ovltype,tau) =>
-        if firstpass then 
+        if firstpass then
 	   ()
         else
 	  let val {qualid, info} = ii
@@ -321,8 +321,8 @@ and resolveOvlExp firstpass (loc, exp') =
        if isTupleRow fs then
          r := TUPLEre(map snd fs)
        else ())
-  | RECexp(ref (TUPLEre es)) => 
-      if firstpass then fatalError "resolveOvlExp" 
+  | RECexp(ref (TUPLEre es)) =>
+      if firstpass then fatalError "resolveOvlExp"
       else app (resolveOvlExp firstpass) es
   | VECexp es =>
       app (resolveOvlExp firstpass) es
@@ -352,34 +352,34 @@ and resolveOvlExp firstpass (loc, exp') =
   | FUNCTORexp(modexp,sigexp,_) =>
       (resolveOvlModExp firstpass modexp;resolveOvlSigExp firstpass sigexp)
 and resolveOvlMRule firstpass (MRule(ref pats, exp)) =
-    (app (resolveOvlPat firstpass) pats; 
-     resolveOvlExp firstpass exp) 
+    (app (resolveOvlPat firstpass) pats;
+     resolveOvlExp firstpass exp)
 and resolveOvlDec firstpass (_, dec') =
   case dec' of
     VALdec (_, (pvbs, rvbs)) =>
-      (app (resolveOvlValBind firstpass) pvbs; 
+      (app (resolveOvlValBind firstpass) pvbs;
        app (resolveOvlValBind firstpass) rvbs)
-  | PRIM_VALdec (_,pbds) => 
+  | PRIM_VALdec (_,pbds) =>
       resolveOvlPrimValBindList firstpass pbds
   | FUNdec (ref (UNRESfundec _)) => fatalError "resolveOvlDec"
   | FUNdec (ref (RESfundec dec)) => resolveOvlDec firstpass dec
-  | TYPEdec tbds => resolveOvlTypBindList firstpass tbds   
+  | TYPEdec tbds => resolveOvlTypBindList firstpass tbds
   | PRIM_TYPEdec _ => ()
-  | DATATYPEdec (dbds,SOME tbds) => 
+  | DATATYPEdec (dbds,SOME tbds) =>
        (resolveOvlDatBindList firstpass dbds;
 	resolveOvlTypBindList firstpass tbds)
-  | DATATYPEdec (dbds,NONE) => 
-       (resolveOvlDatBindList firstpass dbds)      
-  | DATATYPErepdec(_,tyconpath) => 
+  | DATATYPEdec (dbds,NONE) =>
+       (resolveOvlDatBindList firstpass dbds)
+  | DATATYPErepdec(_,tyconpath) =>
       resolveOvlTyConPath firstpass tyconpath
   | ABSTYPEdec(dbds,NONE, dec2) =>
-      (resolveOvlDatBindList firstpass dbds;      
+      (resolveOvlDatBindList firstpass dbds;
        resolveOvlDec firstpass dec2)
   | ABSTYPEdec(dbds,SOME tbds , dec2) =>
-      (resolveOvlDatBindList firstpass dbds;      
+      (resolveOvlDatBindList firstpass dbds;
        resolveOvlTypBindList firstpass tbds;
        resolveOvlDec firstpass dec2)
-  | EXCEPTIONdec ebs => 
+  | EXCEPTIONdec ebs =>
       resolveOvlExBindList firstpass ebs
   | LOCALdec(dec1, dec2) =>
       (resolveOvlDec firstpass dec1; resolveOvlDec firstpass dec2)
@@ -388,34 +388,34 @@ and resolveOvlDec firstpass (_, dec') =
   | SEQdec(dec1, dec2) =>
       (resolveOvlDec firstpass dec1; resolveOvlDec firstpass dec2)
   | FIXITYdec _ => ()
-  | STRUCTUREdec mbs => 
+  | STRUCTUREdec mbs =>
       resolveOvlModBindList firstpass mbs
-  | FUNCTORdec fbs => 
+  | FUNCTORdec fbs =>
       resolveOvlFunBindList firstpass fbs
-  | SIGNATUREdec sbs => 
+  | SIGNATUREdec sbs =>
       resolveOvlSigBindList firstpass sbs
 and resolveOvlValBind firstpass (ValBind(ref pat, exp)) =
        (resolveOvlPat firstpass pat;
-	resolveOvlExp firstpass exp) 
+	resolveOvlExp firstpass exp)
 and resolveOvlExBindList firstpass ebs  =
     app (fn EXDECexbind(_, SOME ty) => resolveOvlTy firstpass ty
 	 | EXDECexbind(_, NONE) => ()
 	 | EXEQUALexbind(_,_) => ()) ebs
-and resolveOvlModBindList firstpass mbs = 
+and resolveOvlModBindList firstpass mbs =
       app (resolveOvlModBind firstpass) mbs
 and resolveOvlModBind firstpass (MODBINDmodbind (_,modexp)) =
       resolveOvlModExp firstpass modexp
   | resolveOvlModBind firstpass (ASmodbind (modid,sigexp,exp)) =
       (resolveOvlSigExp firstpass sigexp;
-       resolveOvlExp firstpass exp)     
-and resolveOvlFunBindList firstpass fbs = 
+       resolveOvlExp firstpass exp)
+and resolveOvlFunBindList firstpass fbs =
     app (resolveOvlFunBind firstpass) fbs
 and resolveOvlFunBind firstpass (FUNBINDfunbind (funid,modexp)) =
       resolveOvlModExp firstpass modexp
   | resolveOvlFunBind firstpass (ASfunbind (funid,sigexp,exp)) =
       (resolveOvlSigExp firstpass sigexp;
-       resolveOvlExp firstpass exp)     
-and resolveOvlSigBindList firstpass sbs = 
+       resolveOvlExp firstpass exp)
+and resolveOvlSigBindList firstpass sbs =
     app (resolveOvlSigBind firstpass) sbs
 and resolveOvlSigBind firstpass (SIGBINDsigbind (_,sigexp)) =
     resolveOvlSigExp firstpass sigexp
@@ -423,25 +423,25 @@ and resolveOvlModExp firstpass (loc,(modexp',_)) =
     case modexp' of
       DECmodexp dec => resolveOvlDec firstpass dec
     | LONGmodexp _ => ()
-    | CONmodexp (modexp,sigexp) => 
-       (resolveOvlModExp firstpass modexp;resolveOvlSigExp firstpass sigexp) 
-    | ABSmodexp (modexp,sigexp) => 
-       (resolveOvlModExp firstpass modexp;resolveOvlSigExp firstpass sigexp) 
-    | LETmodexp (dec,modexp) => 
+    | CONmodexp (modexp,sigexp) =>
+       (resolveOvlModExp firstpass modexp;resolveOvlSigExp firstpass sigexp)
+    | ABSmodexp (modexp,sigexp) =>
+       (resolveOvlModExp firstpass modexp;resolveOvlSigExp firstpass sigexp)
+    | LETmodexp (dec,modexp) =>
        (resolveOvlDec firstpass dec;resolveOvlModExp firstpass modexp)
-    | PARmodexp modexp => 
+    | PARmodexp modexp =>
        resolveOvlModExp firstpass modexp
-    | FUNCTORmodexp (_,modid,_,sigexp,modexp) => 
+    | FUNCTORmodexp (_,modid,_,sigexp,modexp) =>
        (resolveOvlSigExp firstpass sigexp;
 	resolveOvlModExp firstpass modexp)
-    | APPmodexp (funmodexp,modexp) => 
+    | APPmodexp (funmodexp,modexp) =>
        (resolveOvlModExp firstpass funmodexp;
 	resolveOvlModExp firstpass modexp)
-    | RECmodexp (modid,_,sigexp,modexp) => 
+    | RECmodexp (modid,_,sigexp,modexp) =>
        (resolveOvlSigExp firstpass sigexp;
 	resolveOvlModExp firstpass modexp)
 and resolveOvlTyConPath firstpass (_, LONGtyconpath _) =  ()
-  | resolveOvlTyConPath firstpass (_, WHEREtyconpath (_,_,modexp)) = 
+  | resolveOvlTyConPath firstpass (_, WHEREtyconpath (_,_,modexp)) =
       resolveOvlModExp firstpass modexp
 and resolveOvlTy firstpass (_, ty') =
   case ty' of
@@ -451,7 +451,7 @@ and resolveOvlTy firstpass (_, ty') =
   | CONty(tys, _) =>
       app (resolveOvlTy firstpass) tys
   | FNty(ty1, ty2) =>
-      (resolveOvlTy firstpass ty1; 
+      (resolveOvlTy firstpass ty1;
        resolveOvlTy firstpass ty2)
   | PACKty(sigexp) =>
        resolveOvlSigExp firstpass sigexp
@@ -462,7 +462,7 @@ and resolveOvlSigExp firstpass (_,sigexp) =
     SPECsigexp spec => resolveOvlSpec firstpass spec
   | SIGIDsigexp _ => ()
   | WHEREsigexp (sigexp, tyvarseq, longtycon, ty) =>
-     (resolveOvlSigExp firstpass sigexp; 
+     (resolveOvlSigExp firstpass sigexp;
       resolveOvlTy firstpass ty)
   | FUNSIGsigexp (_,modid, sigexp,sigexp') =>
      (resolveOvlSigExp firstpass sigexp;
@@ -470,20 +470,20 @@ and resolveOvlSigExp firstpass (_,sigexp) =
   | RECsigexp (modid, sigexp,sigexp') =>
      (resolveOvlSigExp firstpass sigexp;
       resolveOvlSigExp firstpass sigexp')
-and resolveOvlSpec firstpass (_, spec') = 
+and resolveOvlSpec firstpass (_, spec') =
   case spec' of
     VALspec (_,vds) => resolveOvlValDescList firstpass vds
   | PRIM_VALspec (_,pbs) => resolveOvlPrimValBindList firstpass pbs
   | TYPEDESCspec _ => ()
-  | TYPEspec tbds => resolveOvlTypBindList firstpass tbds   
-  | DATATYPEspec (dbds,SOME tbds) => 
+  | TYPEspec tbds => resolveOvlTypBindList firstpass tbds
+  | DATATYPEspec (dbds,SOME tbds) =>
        (resolveOvlDatBindList firstpass dbds;
 	resolveOvlTypBindList firstpass tbds)
-  | DATATYPEspec (dbds,NONE) => 
-       (resolveOvlDatBindList firstpass dbds)      
-  | DATATYPErepspec (_,tyconpath) =>       
+  | DATATYPEspec (dbds,NONE) =>
+       (resolveOvlDatBindList firstpass dbds)
+  | DATATYPErepspec (_,tyconpath) =>
         resolveOvlTyConPath firstpass tyconpath
-  | EXCEPTIONspec eds => 
+  | EXCEPTIONspec eds =>
       resolveOvlExDescList firstpass eds
   | LOCALspec(spec1, spec2) =>
       (resolveOvlSpec firstpass spec1;
@@ -493,38 +493,38 @@ and resolveOvlSpec firstpass (_, spec') =
   | SEQspec(spec1, spec2) =>
        (resolveOvlSpec firstpass spec1;
 	resolveOvlSpec firstpass spec2)
-  | INCLUDEspec sigexp => 
+  | INCLUDEspec sigexp =>
        resolveOvlSigExp firstpass sigexp
-  | STRUCTUREspec moddescs => 
+  | STRUCTUREspec moddescs =>
        resolveOvlModDescList firstpass moddescs
-  | FUNCTORspec fundescs => 
+  | FUNCTORspec fundescs =>
        resolveOvlFunDescList firstpass fundescs
-  | SHARINGTYPEspec (spec, longtycons) => 
+  | SHARINGTYPEspec (spec, longtycons) =>
        resolveOvlSpec firstpass spec
-  | SHARINGspec (spec, longmodids) => 
+  | SHARINGspec (spec, longmodids) =>
        resolveOvlSpec firstpass spec
   | FIXITYspec _ => ()
   | SIGNATUREspec sigdescs =>
        resolveOvlSigBindList firstpass sigdescs
-and resolveOvlModDescList firstpass mds = 
+and resolveOvlModDescList firstpass mds =
     app (fn MODDESCmoddesc(modid,sigexp) =>
-	 resolveOvlSigExp firstpass sigexp) 
+	 resolveOvlSigExp firstpass sigexp)
         mds
 and resolveOvlFunDescList firstpass fds =
-    app (fn FUNDESCfundesc(modid,sigexp) => 
-	 resolveOvlSigExp firstpass sigexp) 
+    app (fn FUNDESCfundesc(modid,sigexp) =>
+	 resolveOvlSigExp firstpass sigexp)
         fds
 and resolveOvlTypBindList firstpass tbds =
     app (fn (tyvarseq,tycon,ty) => resolveOvlTy firstpass ty) tbds
-and resolveOvlExDescList firstpass eds = 
+and resolveOvlExDescList firstpass eds =
     app (fn (_,SOME ty) => resolveOvlTy firstpass ty
 	 | (_,NONE) => ())
          eds
-and resolveOvlDatBindList firstpass dbds = 
+and resolveOvlDatBindList firstpass dbds =
     app (fn (tyvarseq, tycon, cbds) => resolveOvlConBindList firstpass cbds) dbds
-and resolveOvlConBindList firstpass cbds = 
+and resolveOvlConBindList firstpass cbds =
     app (fn ConBind (ii, NONE) => ()
-         |  ConBind (ii, SOME ty) =>  resolveOvlTy firstpass ty) 
+         |  ConBind (ii, SOME ty) =>  resolveOvlTy firstpass ty)
         cbds
 and resolveOvlPrimValBindList firstpass (pbs) =
   (app (fn (ii,ty,arity,n) => resolveOvlTy firstpass ty) pbs)
@@ -537,12 +537,12 @@ and resolveOvlValDescList firstpass vds =
  * Pass 2 resolves overloaded operators (and their default types).
  *)
 
-val resolveOvlDec = 
+val resolveOvlDec =
     fn dec => (resolveOvlDec true dec; resolveOvlDec false dec);
 
 
 
- 
+
 
 
 

@@ -21,7 +21,7 @@ fun f fct arg =
            (errString "I/O failure: "; errString msg)
        | x =>
 	   (errString "Uncaught exception: ";
-	    errString (exnMessage x); 
+	    errString (exnMessage x);
 	    flush_out std_err)
     );
     errString "\n"; flush_out std_err;

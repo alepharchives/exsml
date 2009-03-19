@@ -72,7 +72,7 @@ val parseStructFile = fn umode => fn lexbuff =>
     case umode of
       STRmode =>
 	    parsePhraseAndClear Parser.StructFile Lexer.Token lexbuff
-    | TOPDECmode => 
+    | TOPDECmode =>
 	    parsePhraseAndClear Parser.TopDecFile Lexer.Token lexbuff
 ;
 
@@ -80,7 +80,7 @@ val parseSigFile = fn umode => fn lexbuff =>
     case umode of
       STRmode =>
 	  parsePhraseAndClear Parser.SigFile Lexer.Token lexbuff
-    | TOPDECmode => 
+    | TOPDECmode =>
 	  parsePhraseAndClear Parser.TopSpecFile Lexer.Token lexbuff
 ;
 
@@ -98,7 +98,7 @@ fun filterExcRenList excRenList uVarEnv =
 ;
 
 fun filterValRenList valRenList uModEnv uFunEnv uVarEnv =
-    filter (fn (id, stamp) => 
+    filter (fn (id, stamp) =>
 	    case unmangle id of
 		 ValId vid => isInTable vid uVarEnv
 	      |  ModId mid => isInTable mid uModEnv
@@ -150,7 +150,7 @@ fun reportEquOfType equ =
 ;
 
 fun reportLhsOfTypeResult (tyname : TyName) =
-  let val arity = case (#tnKind (!(#info tyname))) of 
+  let val arity = case (#tnKind (!(#info tyname))) of
                     ARITYkind arity => arity
                   | _ => fatalError "reportLhsOfTypeResult"
       val vs = newTypeVars arity
@@ -158,45 +158,45 @@ fun reportLhsOfTypeResult (tyname : TyName) =
   in printType lhs end
 ;
 
-fun reportTypeResult tyname = 
+fun reportTypeResult tyname =
     (msgString "toplevel reportTypeResult disabled";
     msgFlush())
 
 local
     fun prTopEnv prInfo env firstLine =
-	foldEnv (fn k => fn v => fn firstLine => 
+	foldEnv (fn k => fn v => fn firstLine =>
 		(msgIBlock 0;
-		 prInfo k v;	
+		 prInfo k v;
                  msgEOL();
-                 msgEBlock();       
+                 msgEBlock();
 		 false)) firstLine env;
    fun prVal {qualid,info=(sch,status)} = ()
 in
 fun report_comp_results iBas (Env as EXISTS(T,(ME,FE,GE,VE,TE))) =
   let
-     val _ = checkClosedExEnvironment Env; 
+     val _ = checkClosedExEnvironment Env;
      val _ = collectTopVars Env;
-     val firstLine = 
-	 case T of 
-	     [] => true 
+     val firstLine =
+	 case T of
+	     [] => true
 	   |   _ =>  (msgIBlock 0;
 		      msgPrompt "New type names: ";
 		      prTyNameSet T ",";
 		      msgEOL();
 		      msgEBlock();
 		      false)
-     val firstLine = 
+     val firstLine =
 	 prTopEnv (fn id => fn status => reportFixityResult (id,status)) iBas firstLine;
-     val firstLine = 
+     val firstLine =
 	 prTopEnv prModInfo ME firstLine;
-     val firstLine = 
+     val firstLine =
 	 prTopEnv prFunInfo FE firstLine;
-     val firstLine = 
+     val firstLine =
 	 prTopEnv prSigInfo GE firstLine;
-     val firstLine = 
+     val firstLine =
 	 prTopEnv prTyInfo TE firstLine;
      val firstLine =
-         prTopEnv (prVarInfo prVal) VE firstLine 
+         prTopEnv (prVarInfo prVal) VE firstLine
   in
       ()
   end
@@ -220,7 +220,7 @@ fun writeCompiledSignature filename_ui =
          raise x)
     end;
     let val is = open_in_bin filename_ui in
-      let val sigImage = input(is, !sigLen) 
+      let val sigImage = input(is, !sigLen)
 	  prim_val md5sum_ : string -> string = 1 "md5sum"
       in
         if size sigImage < !sigLen then raise Size else ();
@@ -251,7 +251,7 @@ fun checkUnitId msg (locid as (loc, id)) uname =
     if (Config.normalizedUnitName id) <> uname then
 	(msgIBlock 0;
 	 errLocation loc;
-	 errPrompt "Error: "; msgString msg; 
+	 errPrompt "Error: "; msgString msg;
 	 msgString " name and file name are incompatible";
 	 msgEOL();
 	 msgEBlock();
@@ -261,7 +261,7 @@ fun checkUnitId msg (locid as (loc, id)) uname =
 (* Check that there is a .ui file in the load_path: *)
 
 fun checkExists filename_ui filename_sig filename_sml =
-    (find_in_path filename_ui; ()) 
+    (find_in_path filename_ui; ())
     handle Fail _ =>
 	(msgIBlock 0;
 	 errPrompt "File "; msgString filename_sig;
@@ -286,19 +286,19 @@ fun checkNotExists filename_sig filename_sml =
    and just calling the update functions instead of extendXXX, which
    are then made redundant *)
 fun compileSigExp sigexp =
-  let 
+  let
       val sigexp = resolveToplevelSigExp sigexp
       val LAMBDA(T, RS) = elabToplevelSigExp sigexp
   in
-    updateCurrentStaticT T;  
+    updateCurrentStaticT T;
     (strOptOfSig (!currentSig)) := SOME RS;
     let val S' = normStr (SofRecStr RS)  (* cvr: we norm S so that calculated (sub)fields
 			       are correct *)
     in
-	extendCurrentStaticME (MEofStr S');  
-	extendCurrentStaticFE (FEofStr S');  
+	extendCurrentStaticME (MEofStr S');
+	extendCurrentStaticFE (FEofStr S');
 	extendCurrentStaticGE (GEofStr S');  (* should actually be empty ... *)
-	extendCurrentStaticVE (VEofStr S');  
+	extendCurrentStaticVE (VEofStr S');
 	extendCurrentStaticTE (TEofStr S')
     end;
     if !verbose then
@@ -309,20 +309,20 @@ fun compileSigExp sigexp =
 ;
 
 fun compileSpecPhrase elab spec =
-  let 
+  let
       val (iBas,spec) = resolveToplevelSpec spec
       val LAMBDA(T, S) = elab spec
   in
-    updateCurrentStaticT T;  
+    updateCurrentStaticT T;
     extendCurrentStaticIBas iBas;
     extendCurrentStaticS S;
     let val S' = normStr S  (* cvr: we norm S so that calculated (sub)fields
 			       are correct *)
     in
-	extendCurrentStaticME (MEofStr S');  
-	extendCurrentStaticFE (FEofStr S');  
-	extendCurrentStaticGE (GEofStr S');  
-	extendCurrentStaticVE (VEofStr S');  
+	extendCurrentStaticME (MEofStr S');
+	extendCurrentStaticFE (FEofStr S');
+	extendCurrentStaticGE (GEofStr S');
+	extendCurrentStaticVE (VEofStr S');
 	extendCurrentStaticTE (TEofStr S')
     end;
     if !verbose then
@@ -350,7 +350,7 @@ fun compileSignature context uname umode filename =
 	  case (strOptOfSig(!currentSig)) of
 	      ref NONE => ()
 	    | r as (ref (SOME RS)) => r := SOME (removeGEofRecStr RS)
-      fun compileSig (AnonSig specs) = 
+      fun compileSig (AnonSig specs) =
 	  (* cvr: TODO warn *)
 	  (app (compileSpecPhrase elabSigSpec) specs;
 	   (#uIdent(!currentSig)):= uname;
@@ -358,22 +358,22 @@ fun compileSignature context uname umode filename =
 	   Hasht.clear (sigEnvOfSig(!currentSig));
 	   removeGEofSig()
 	   )
-	| compileSig (NamedSig{locsigid as (_,sigid), sigexp}) = 
+	| compileSig (NamedSig{locsigid as (_,sigid), sigexp}) =
 	  (checkUnitId "signature" locsigid uname;
 	   compileSigExp sigexp;
 	   (#uIdent(!currentSig)):= sigid;
 	   Hasht.clear (iBasOfSig(!currentSig));
 	   Hasht.clear (sigEnvOfSig(!currentSig));
 	   removeGEofSig())
-        | compileSig (TopSpecs specs) = 
+        | compileSig (TopSpecs specs) =
 	   app (compileSpecPhrase elabToplevelSpec) specs
   in
        input_name   := source_name;
        input_stream := is;
        input_lexbuf := lexbuf;
-       extendCurrentStaticS (STRstr(NILenv,NILenv,NILenv,NILenv,NILenv)); 
+       extendCurrentStaticS (STRstr(NILenv,NILenv,NILenv,NILenv,NILenv));
          (* cvr: need the above  to distinguish
-	         an empty sig file 
+	         an empty sig file
                  from a non-existent one *)
        (compileSig (parseSigFile umode lexbuf);
         ignore (rectifySignature ());
@@ -412,7 +412,7 @@ fun compLamPhrase os state (RE, lams) =
        ((* msgIBlock 0; Pr_lam.printLam lam; msgEOL(); msgEBlock(); *)
        emit_phrase os
          let val zam = compileLambda is_pure lam in
-           (* printZamPhrase zam; msgFlush(); *) 
+           (* printZamPhrase zam; msgFlush(); *)
            zam
          end))
     lams;
@@ -451,15 +451,15 @@ fun compileAndEmit context uname uident umode filename specSig_opt elab decs =
   in
     ( start_emit_phrase os;
       app (compileImplPhrase os elab) decs;
-      (case umode of 
-	 STRmode =>      
+      (case umode of
+	 STRmode =>
 	     (Hasht.clear (iBasOfSig(!currentSig));
 	      Hasht.clear (sigEnvOfSig(!currentSig)))
        | TOPDECmode => ());
       let val (excRenList, valRenList) = rectifySignature() in
           (case specSig_opt of
                NONE =>
-                (checkClosedCSig (!currentSig);  
+                (checkClosedCSig (!currentSig);
                  let val sigStamp = writeCompiledSignature filename_ui in
                    end_emit_phrase
                      excRenList valRenList
@@ -467,7 +467,7 @@ fun compileAndEmit context uname uident umode filename specSig_opt elab decs =
                      os
                  end)
              | SOME specSig =>
-                 let val {uVarEnv,uModEnv,uFunEnv,uStamp, ...} = specSig 
+                 let val {uVarEnv,uModEnv,uFunEnv,uStamp, ...} = specSig
                      val valRenList = matchSignature os valRenList (!currentSig) specSig;
 		 in
                    end_emit_phrase
@@ -484,7 +484,7 @@ fun compileAndEmit context uname uident umode filename specSig_opt elab decs =
   end;
 
 (* cvr: TODO
-        match modes *before* compiling, to catch this error early on 
+        match modes *before* compiling, to catch this error early on
 	warn on deprecated syntax
 *)
 
@@ -494,12 +494,12 @@ fun compileUnitBody context uname umode filename =
       val filename_sml = filename ^ ".sml"
       val is = open_in_bin filename_sml
       val lexbuf = createLexerStream is
-      fun compileStruct (AnonStruct decs) = 
+      fun compileStruct (AnonStruct decs) =
 	  (* cvr: TODO warn *)
 	  if file_exists filename_sig then
 	      (checkExists filename_ui filename_sig filename_sml;
 	       compileAndEmit context uname uname umode filename (SOME (readSig uname)) elabStrDec decs)
-	  else 
+	  else
 	      (remove_file filename_ui;
 	       compileAndEmit context uname uname umode filename NONE elabStrDec decs)
 	| compileStruct (NamedStruct{locstrid as (_,strid), locsigid = NONE, decs}) =
@@ -515,11 +515,11 @@ fun compileUnitBody context uname umode filename =
 	   checkExists filename_ui filename_sig filename_sml;
 	   compileAndEmit context uname strid umode filename (SOME (readSig uname)) elabStrDec decs
 )
-	| compileStruct (TopDecs decs) = 
+	| compileStruct (TopDecs decs) =
 	  if file_exists filename_sig then
 	      (checkExists filename_ui filename_sig filename_sml;
 	       compileAndEmit context uname "" umode  filename (SOME (readSig uname)) elabToplevelDec decs)
-	  else 
+	  else
 	      (remove_file filename_ui;
 	       compileAndEmit context uname "" umode filename NONE elabToplevelDec decs)
   in
@@ -527,5 +527,5 @@ fun compileUnitBody context uname umode filename =
       input_stream := is;
       input_lexbuf := lexbuf;
       (compileStruct (parseStructFile umode lexbuf))
-       handle x => (close_in is; raise x)	  
+       handle x => (close_in is; raise x)
   end;

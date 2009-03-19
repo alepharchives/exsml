@@ -28,7 +28,7 @@ fun new_label() =
    n  < 0  -> seen by the nth pass of unref
    n >= 0  -> a real label, code has been emitted
  Whenever a Lshared node is processed by a rewriter,
- its label ref is set to !labelNotCtr. The counter is 
+ its label ref is set to !labelNotCtr. The counter is
  bumped by each rewrite in UNdeBruijn's lftexp.
 *)
 
@@ -336,13 +336,13 @@ fun UNdeBruijn exp =
           Lcase(unref i arg,
                 List.map (fn (tag,act) => (tag, unref i act)) clauses)
       | Lswitch(size, arg, clauses) =>
-          Lswitch(size, unref i arg, 
+          Lswitch(size, unref i arg,
                 List.map (fn (tag,act) => (tag, unref i act)) clauses)
       | Lunspec =>
           Lunspec
       | Lshared(exp_ref, lbl_ref) =>
           if !lbl_ref <> !labelNotCtr
-          then ( lbl_ref := !labelNotCtr; 
+          then ( lbl_ref := !labelNotCtr;
                  exp_ref := unref i (!exp_ref);
                  exp )
           else exp
@@ -362,7 +362,7 @@ fun UNdeBruijn exp =
          let val (qfv, exp') = UNdeBruijn exp (* recurse *)
          in if qfv > 0 then lftexp depth exp' else exp' end
       (* Optimize special case arising from #lab arg *)
-      | Llet([arg], Lprim(p, [Lvar 0])) => 
+      | Llet([arg], Lprim(p, [Lvar 0])) =>
          Lprim(p, [lftexp depth arg])
       | Llet(args, body) =>
           let fun opt_refs body' i [] acc =
@@ -408,7 +408,7 @@ fun UNdeBruijn exp =
       | Lunspec => Lunspec
       | Lshared(exp_ref, lbl_ref) =>
           if !lbl_ref = Nolabel
-          then ( lbl_ref := !labelNotCtr; 
+          then ( lbl_ref := !labelNotCtr;
                  exp_ref := lftexp depth (!exp_ref);
                  exp )
           else exp
@@ -500,7 +500,7 @@ fun compileExp env staticfail =
                 | complet sz dp (exp::rest) =
                     let val z = sz + 1
                     in
-                      compexp sz dp exp 
+                      compexp sz dp exp
 		              (Kpush :: complet z (bindEnv env dp z) rest)
                     end
           in complet sz dp args end
@@ -552,7 +552,7 @@ fun compileExp env staticfail =
       | Lprim(Psetfield i, explist) =>
             compExpListLR sz dp explist (Ksetfield i :: C)
       | Lprim(Pmakeblock tag, explist) =>
-            compExpListLR sz dp explist 
+            compExpListLR sz dp explist
 	                        (Kmakeblock(tag, List.length explist) :: C)
       | Lprim(Pnot, [exp]) =>
           (case C of
@@ -585,7 +585,7 @@ fun compileExp env staticfail =
           let val (branch1, C1) = makeBranch C
               val (handle2, C2) = labelCode (compexp sz dp handler C1)
           in
-            compileExp env (handle2, sz) sz dp body 
+            compileExp env (handle2, sz) sz dp body
 	               (branch1 :: discardDeadCode C2)
           end
       | Lstaticfail =>
@@ -599,7 +599,7 @@ fun compileExp env staticfail =
             Kpushtrap lbl2 ::
               compexp (sz + 4) dp body
                 (Kpoptrap :: branch1
-                   :: Klabel lbl2 :: Kpush 
+                   :: Klabel lbl2 :: Kpush
                        :: compexp z (bindEnv env dp z) handler (addPop 1 C1))
           end
       | Lif(cond, ifso, ifnot) =>
@@ -607,7 +607,7 @@ fun compileExp env staticfail =
       | Lseq(exp1, exp2) =>
             compexp sz dp exp1 (compexp sz dp exp2 C)
       | Lwhile(cond, body) =>
-          let val lbl2 = new_label() 
+          let val lbl2 = new_label()
               val (lbl1, C1) = labelCode (compexp sz dp cond
                                             (Kbranchif lbl2 :: Kquote constUnit :: C))
           in
@@ -702,7 +702,7 @@ fun compileExp env staticfail =
       | compExpList' sz dp (exp::rest) C =
           compExpList' (sz - 1) dp rest (Kpush :: compexp sz dp exp C)
 
-    and compExpList sz dp ls C = 
+    and compExpList sz dp ls C =
 	compExpList' (sz + List.length ls - 1) dp ls C
 
     (* Compile left-right evaluation of args of primitives *)
@@ -715,8 +715,8 @@ fun compileExp env staticfail =
 
     and compTest2 sz dp cond ifso ifnot C =
       let val (sflbl,sftsz) = staticfail
-          val Cc = 
-(* This optimization is rather ill-considered.  It works if the result () 
+          val Cc =
+(* This optimization is rather ill-considered.  It works if the result ()
    of the switch is disregarded, but otherwise it fails.  sestoft 2000-04-26
 
             if ifnot = Lconst constUnit
@@ -733,7 +733,7 @@ fun compileExp env staticfail =
               let val (branch1, C1) = makeBranch C
                   val (lbl2, C2) = labelCode (compexp sz dp ifnot C1)
               in
-                Kbranchifnot lbl2 :: compexp sz dp ifso 
+                Kbranchifnot lbl2 :: compexp sz dp ifso
 		                             (branch1 :: discardDeadCode C2)
               end
       in
@@ -750,7 +750,7 @@ fun compileExp env staticfail =
                 Ktest(test, sflbl) :: compexp sz dp exp C1
             | comp ((test,exp)::rest) =
                 let val lbl = new_label() in
-                  Ktest(test, lbl) :: 
+                  Ktest(test, lbl) ::
                     compexp sz dp exp (branch1 :: Klabel lbl :: comp rest)
                 end
       in comp clauses end
@@ -762,11 +762,11 @@ fun compileExp env staticfail =
             if n >= length v then
               C
             else
-              let val (lbl, C1) = 
-		  labelCode (compexp sz dp (v sub n) 
+              let val (lbl, C1) =
+		  labelCode (compexp sz dp (v sub n)
 			     (branch1 :: discardDeadCode (comp_cases (n+1))))
-              in 
-                update(switchtable, n, lbl); C1 
+              in
+                update(switchtable, n, lbl); C1
               end
       in add_SwitchTable switchtable (discardDeadCode(comp_cases 0)) end
 
@@ -810,7 +810,7 @@ fun compileExp env staticfail =
                 end
             | comp_case ((tag, exp) :: rest) =
                 let val (lbl, C2) =
-                  labelCode (compexp sz dp exp 
+                  labelCode (compexp sz dp exp
 			     (branch1 :: discardDeadCode (comp_case rest)))
                 in
                   update(switchtable, intOfAbsoluteTag tag, lbl);
@@ -828,7 +828,7 @@ fun compileRest C =
                         then inienv (bindEnv env a sz) (sz - 1)
                         else ()
       val () = inienv 0 nargs
-      val C' = compileExp env (Nolabel, 0) nargs nargs exp 
+      val C' = compileExp env (Nolabel, 0) nargs nargs exp
       	                  (Kreturn nargs :: discardDeadCode C)
   in
     compileRest (if nargs > 1
@@ -847,7 +847,7 @@ fun compileLambda is_pure exp =
       val init_code =
             compileExp nullEnv (Nolabel, 0) 0 0 exp' []
       val function_code =
-            compileRest [] 
+            compileRest []
   in
     { kph_is_pure = is_pure,
       kph_inits   = init_code,

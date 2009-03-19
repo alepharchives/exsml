@@ -22,7 +22,7 @@ datatype LastObj = ARG | OPER | VOID;
 
 fun resolveInfix (iStackStr : 'Obj InfixStackStr) statusOfId objs =
 
-  let 
+  let
     val { pair, asId, applyId, applyObj } = iStackStr
 
     fun apply entry (o2 :: o1 :: rest) =
@@ -43,7 +43,7 @@ fun resolveInfix (iStackStr : 'Obj InfixStackStr) statusOfId objs =
                 | extract (INFIXRentry(_, n)) = (n, false)
                 | extract _ = raise WrongInfix
               val (prec1, left1) = extract op1
-              val (prec2, left2) = extract op2 
+              val (prec2, left2) = extract op2
           in
             if prec1 > prec2 then true
             else if prec1 < prec2 then false
@@ -96,7 +96,7 @@ fun resolveInfix (iStackStr : 'Obj InfixStackStr) statusOfId objs =
                       ) )
 
     and operator entry input stack output =
-      let val (stack', output') = flushHigher entry stack output 
+      let val (stack', output') = flushHigher entry stack output
       in process input (entry :: stack') OPER output' end
 
   in process objs [] VOID [] end

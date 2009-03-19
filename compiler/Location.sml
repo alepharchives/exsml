@@ -185,7 +185,7 @@ fun errLocation loc =
 fun errInputName () =
 (
   errFileName();
-  msgString ", line 1:"; 
+  msgString ", line 1:";
   msgEOL()
 );
 

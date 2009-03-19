@@ -45,9 +45,9 @@ fun get_slot_for_variable (uid as (qualid, stamp)) =
   handle Subscript =>
     (let val {qual,id} = qualid
 	 val mid = longIdentAsIdent id "get_slot_for_variable"
-	 val (desc,s) = 
+	 val (desc,s) =
 	     case unmangle mid of
-		 ValId s => 
+		 ValId s =>
 		     ("Value ",s)
 	       | ModId s =>
 		     ("Structure ",s)
@@ -93,13 +93,13 @@ val tag_exn_table = ref(Array.fromList [] : (QualifiedIdent * int) Array.array )
 
 *)
 
-(* cvr: 
-fun fromShortTagExnTable a = Array.tabulate 
+(* cvr:
+fun fromShortTagExnTable a = Array.tabulate
      ((Array.length a),
       (fn i => case Array.sub (a, i) of
                ({qual=qual,id = id},i) => ({qual=qual,id = [id]},i)));
 
-fun toShortTagExnTable a = Array.tabulate 
+fun toShortTagExnTable a = Array.tabulate
      ((Array.length a),
       (fn i => case Array.sub (a, i) of
                ({qual=qual,id = [id]},i) => ({qual=qual,id = id},i)));
@@ -142,7 +142,7 @@ fun intOfTag (CONtag(n,_)) = n
 
 val c_prim_table = ref (new_numtable 0 : string numtable);
 
-(* cvr: 144 merge 
+(* cvr: 144 merge
 fun set_c_primitives prim_vect =
   (c_prim_table := new_numtable 31;
    for (fn i => ignore
@@ -210,7 +210,7 @@ fun reset_linker_tables () =
 (* ps: exn_tag_table := new_numtable 31;
   tag_exn_table := Array.array(50, unknown_exn_name);
   List.app
-    (fn ({qual,id}, stamp) => 
+    (fn ({qual,id}, stamp) =>
         ignore(get_num_of_exn (normalizeExnName {qual=qual,id = [id]}, 0)))
     Predef.predef_exn;
 *)
@@ -235,7 +235,7 @@ fun save_linker_tables outstream =
 fun load_linker_tables () =
   ( let
       val is = open_in_bin (Vector.sub(Miscsys.command_line, 0))
-      (* The code, data, symb, and debug indexes are located 20 bytes 
+      (* The code, data, symb, and debug indexes are located 20 bytes
          before the end of the bytecode file. *)
       val () = seek_in is (in_stream_length is - 20)
       val size_code = input_binary_int is

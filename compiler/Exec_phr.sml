@@ -12,16 +12,16 @@ val quietdec = ref false ;
 
 local
     fun prTopEnv prInfo env firstLine =
-	foldEnv (fn k => fn v => fn firstLine => 
+	foldEnv (fn k => fn v => fn firstLine =>
 		(msgIBlock 0;
 		 (if firstLine then msgPrompt ""
 		  else msgContPrompt "");
-		 prInfo k v;	
+		 prInfo k v;
                  msgEOL();
-                 msgEBlock();       
+                 msgEBlock();
 		 false)) firstLine env;
    fun prVal {qualid,info=(sch,status)} =
-       let val qualid = if #qual qualid = "" 
+       let val qualid = if #qual qualid = ""
 			    then {qual = currentUnitName(), id = #id qualid} (* cvr: rectify on the fly *)
 			else qualid
        in
@@ -30,7 +30,7 @@ local
 	       VARname REGULARo  =>
 		 let val slot = get_slot_for_variable (lookupRenEnv ValId qualid)
 		     val v = getGlobalVal slot
-		 in 
+		 in
 		     printVal sch v
 		 end
 	     | VARname _ => msgString "(overloaded)"
@@ -52,29 +52,29 @@ local
 in
 fun report_results iBas (Env as EXISTS(T,(ME,FE,GE,VE,TE))) =
   let
-     val _ = checkClosedExEnvironment Env; 
+     val _ = checkClosedExEnvironment Env;
      val _ = collectTopVars Env;
-     val firstLine = 
-	 case T of 
-	     [] => true 
+     val firstLine =
+	 case T of
+	     [] => true
 	   |   _ =>  (msgIBlock 0;
 		      msgPrompt "New type names: ";
 		      prTyNameSet T ",";
 		      msgEOL();
 		      msgEBlock();
 		      false)
-     val firstLine = 
+     val firstLine =
 	 prTopEnv (fn id => fn status => reportFixityResult (id,status)) iBas firstLine;
-     val firstLine = 
+     val firstLine =
 	 prTopEnv prModInfo ME firstLine;
-     val firstLine = 
+     val firstLine =
 	 prTopEnv prFunInfo FE firstLine;
-     val firstLine = 
+     val firstLine =
 	 prTopEnv prSigInfo GE firstLine;
-     val firstLine = 
+     val firstLine =
 	 prTopEnv prTyInfo TE firstLine;
      val firstLine =
-         prTopEnv (prVarInfo prVal) VE firstLine 
+         prTopEnv (prVarInfo prVal) VE firstLine
   in
       ()
   end;
@@ -98,7 +98,7 @@ fun updateCurrentState ((iBas, (Env as EXISTS(T,(ME,FE,GE,VE, TE)))), RE) =
   updateCurrentStaticVE VE;
   updateCurrentRenEnv RE;
   catch_interrupt true;
-  if not (!quietdec) then 
+  if not (!quietdec) then
       (report_results iBas Env;
        msgFlush())
   else ()
@@ -123,7 +123,7 @@ fun execLamPhrase state (RE, tlams) =
 fun execResolvedDecPhrase (iBas, dec) =
 
   let (* val _ = Asyntfn.printDec dec (* cvr: *) *)
-      val ExEnv = 
+      val ExEnv =
 	  let val ExEnv = elabToplevelDec dec
           in
               resolveOvlDec dec;
@@ -131,10 +131,10 @@ fun execResolvedDecPhrase (iBas, dec) =
               ExEnv
           end
 	  handle e => (rollback_free_typevar_names ();
-		       raise e) 
-  in 
+		       raise e)
+  in
     execLamPhrase (iBas, ExEnv) (translateToplevelDec dec)
-  end 
+  end
 ;
 
 fun execToplevelPhrase dec =

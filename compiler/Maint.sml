@@ -77,13 +77,13 @@ fun add_include d =
 
 fun perv_set set' =
     let val set = Fnlib.stringToLower set'
-    in 
-	if set = "none" then 
+    in
+	if set = "none" then
 	    (preloadedUnits := []; preopenedPreloadedUnits := [])
 	else
-	    (preloadedUnits          := 
+	    (preloadedUnits          :=
 	          lookup set preloadedUnitSets @ ["Help"];
-	     preopenedPreloadedUnits := 
+	     preopenedPreloadedUnits :=
 	          lookup set preopenedPreloadedUnitSets @ ["Help"])
 	    handle Subscript =>
 		raise Arg.Bad ("Unknown preloaded unit set " ^ set)

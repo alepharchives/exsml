@@ -43,7 +43,7 @@ fun slash_pos s =
 
 fun basename name =
   case slash_pos name of
-      SOME p => 
+      SOME p =>
         extract(name, p+1, NONE)
     | NONE   => name
 ;

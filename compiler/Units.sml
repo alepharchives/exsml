@@ -7,23 +7,23 @@ type CSig =
 {
   uMode:       Mode, (* whether to interpret the unit as a structure or topdec *)
   uName:       string,  (* the normalized basename of the filename *)
-  uIdent:      string ref,  (* the (non-normalized) 
-			   ML structure and signature identifier 
+  uIdent:      string ref,  (* the (non-normalized)
+			   ML structure and signature identifier
 			   for the unit if uMode = STRmode *)
   uIBas:       (string,InfixStatus) Hasht.t,
   uVarEnv:     (string, VarInfo) Hasht.t,
-  uTyEnv:      (string, TyInfo) Hasht.t, 
-  uModEnv:     (string, ModInfo) Hasht.t,   
-  uFunEnv:     (string, FunInfo) Hasht.t,   
-  uSigEnv:     (string, SigInfo) Hasht.t,    
-  (* uTyNameSet is the set of names introduced in the unit's implementation, 
+  uTyEnv:      (string, TyInfo) Hasht.t,
+  uModEnv:     (string, ModInfo) Hasht.t,
+  uFunEnv:     (string, FunInfo) Hasht.t,
+  uSigEnv:     (string, SigInfo) Hasht.t,
+  (* uTyNameSet is the set of names introduced in the unit's implementation,
      or the set of names bound in the unit's interface (if any).
   *)
-  uTyNameSet:    TyNameSet ref,  
+  uTyNameSet:    TyNameSet ref,
   (* The optional Str uStrOpt comes from the unit's optional interface.
      It is the body of the signature to be matched against.
    *)
-  uStrOpt:     RecStr option ref, 
+  uStrOpt:     RecStr option ref,
   uStamp:      SigStamp option ref,
                     (* present, if this signature comes from a .ui file *)
   uMentions:   (string, SigStamp) Hasht.t
@@ -128,7 +128,7 @@ fun readSig name =
   end;
 *)
 fun readSig filename =
-  let 
+  let
       val name = normalizedUnitName(Filename.basename filename)
       val filename = find_in_path (filename ^ ".ui")
       val is = open_in_bin filename
@@ -217,7 +217,7 @@ val pervasiveStaticFE   = ref (NILenv : FunEnv);
 val pervasiveStaticGE   = ref (NILenv : SigEnv);
 
 (* cvr: TODO at the moment there are no pervasive modules functors
-   or signatures but there probably should be *) 
+   or signatures but there probably should be *)
 fun initPervasiveEnvironments() =
 ( pervasiveInfixBasis := mk1TopEnv pervasiveInfixTable;
   pervasiveStaticT    := [];
@@ -292,23 +292,23 @@ fun initInitialEnvironments context =
     (fn filename =>
        let val cu = readAndMentionSig filename in
 	   case #uMode cu of
-	     STRmode => 
+	     STRmode =>
 	        let val id = !(#uIdent cu)
-		    val T = !(tyNameSetOfSig cu) 
+		    val T = !(tyNameSetOfSig cu)
 		in
 		   (case !(strOptOfSig cu) of
 			NONE => ()
 		      | SOME RS =>
-			    (initialStaticGE := 
-			     bindInEnv (!initialStaticGE) 
+			    (initialStaticGE :=
+			     bindInEnv (!initialStaticGE)
 			               id
 				       {qualid = {qual = "",id=[id]},
 					info = (LAMBDAsig (T,
 							   STRmod RS))}));
 		    initialStaticT := (!initialStaticT) @ T;
 		    initialStaticME :=
-               	        bindInEnv (!initialStaticME) 
-			          id 
+               	        bindInEnv (!initialStaticME)
+			          id
 				  {qualid = {qual = #uName cu,id=[]},
 				   info = NONrec (STRstr(mk1TopEnv (modEnvOfSig cu),
 							 mk1TopEnv(funEnvOfSig cu),
@@ -329,11 +329,11 @@ fun initInitialEnvironments context =
 );
 
 fun extendInitialSigEnv (SOME ({uMode = STRmode,
-				uIdent = ref id, 
+				uIdent = ref id,
 				uTyNameSet = ref T,
 				uStrOpt = ref (SOME RS),
 				...}:CSig)) =
-    (initialStaticGE := bindInEnv (!initialStaticGE) 
+    (initialStaticGE := bindInEnv (!initialStaticGE)
                                   id
 				  {qualid = {qual = "",id=[id]},
 				   info = (LAMBDAsig (T,STRmod RS))})
@@ -407,10 +407,10 @@ fun isUnitName {qual, id} = id = [];
 
 fun isGlobalName {qual, id} = not(qual = currentUnitName() orelse qual = "");
 
-fun mkLocalName id = 
+fun mkLocalName id =
   { qual = "", id = [id]}
 ;
-fun mkName onTop = 
+fun mkName onTop =
   if onTop then mkGlobalName else mkLocalName;
 ;
 fun mkGlobalInfo id info =
@@ -456,9 +456,9 @@ fun add_global_info sel_fct id info =
 (* cvr: modified to set local to global qualifiers *)
 fun add_qualified_info sel_fct i (info as {qualid = {qual,id},info = info'}) =
   let val tbl = sel_fct (!currentSig) in
-    if qual = "" orelse qual = currentUnitName() 
-    then Hasht.insert tbl i {qualid={qual = currentUnitName(), id = id}, info = info'} 
-    else Hasht.insert tbl i info 
+    if qual = "" orelse qual = currentUnitName()
+    then Hasht.insert tbl i {qualid={qual = currentUnitName(), id = id}, info = info'}
+    else Hasht.insert tbl i info
   end
 ;
 
@@ -577,28 +577,28 @@ fun updateCurrentInfixBasis iBas =
 
 (* cvr: added *)
 local
-fun updateTyName ({qualid,info}:TyName) = 
-  let val { tnStamp, 
-	    tnKind, 
-	    tnEqu, 
-	    tnSort, 
+fun updateTyName ({qualid,info}:TyName) =
+  let val { tnStamp,
+	    tnKind,
+	    tnEqu,
+	    tnSort,
 	    tnLevel,
             tnConEnv} = !info in
-      info := {tnStamp=tnStamp, 
-	       tnKind=tnKind, 
-	       tnEqu=tnEqu, 
-	       tnSort=tnSort, 
+      info := {tnStamp=tnStamp,
+	       tnKind=tnKind,
+	       tnEqu=tnEqu,
+	       tnSort=tnSort,
 	       tnLevel=0, (* update the level *)
 	       tnConEnv = tnConEnv}
-  end;    
+  end;
 in
-fun updateCurrentStaticT T = 
+fun updateCurrentStaticT T =
   (app updateTyName T;
    tyNameSetOfSig (!currentSig) := (!(tyNameSetOfSig (!currentSig))) @ T)
 end;
 
-fun extendCurrentStaticS S = 
-    let val strOpt = strOptOfSig (!currentSig) 
+fun extendCurrentStaticS S =
+    let val strOpt = strOptOfSig (!currentSig)
     in (* cvr: TODO check for duplicate specs? *)
     strOpt := (case !strOpt of
                  NONE => SOME (NONrec S)
@@ -692,12 +692,12 @@ fun execToplevelOpen loc uname =
     updateCurrentStaticGE (mk1TopEnv (#uSigEnv cu))
   end;
 
-fun print_qual "" = () 
+fun print_qual "" = ()
   | print_qual qual = (msgString qual; msgString ".");
 
 fun print_id [] = ()
   | print_id [i] = msgString i
-  | print_id (i::id) = 
+  | print_id (i::id) =
             (print_id id;  msgString "." ; msgString i);
 
 fun printHiddenId id =
@@ -709,12 +709,12 @@ fun printVQ q =
   let val {qual, id} = q
       fun printHidden() =
             if qual <> #uName(!currentSig) then
-              (print_qual qual; 
+              (print_qual qual;
                print_id id)
             else
               printHiddenId id
   in
-      (if #qual(#qualid (lookupEnv (mkGlobalVE()) (hd id))) = qual then 
+      (if #qual(#qualid (lookupEnv (mkGlobalVE()) (hd id))) = qual then
         print_id id
       else
         printHidden())
@@ -743,11 +743,11 @@ fun rectifyVarEnv VE =
   let
     val excRen = ref( [] : (QualifiedIdent * (QualifiedIdent * int)) list )
   in
-  (* Hasht.apply (fn id => fn {qualid, info = (sc,status)} => 
-          case status of 
+  (* Hasht.apply (fn id => fn {qualid, info = (sc,status)} =>
+          case status of
             EXNname ei =>
               (case #exconTag(!ei) of
-                   NONE => () 
+                   NONE => ()
                  | SOME (name, stamp) =>
                      if #qual(qualid) = #uName(!currentSig) then
                        excRen := (qualid, (name, stamp)) :: !excRen
@@ -760,7 +760,7 @@ fun rectifyVarEnv VE =
 
 
 fun rectifySignature() =
-  let 
+  let
       val excRenList = rectifyVarEnv (#uVarEnv(!currentSig))
       val valRenList =
         foldEnv (fn id => fn stamp => fn acc => (id,stamp)::acc)

@@ -29,9 +29,9 @@ val batch_error_prompt = "! ";
 
 (* Run-time values: MUST AGREE with runtime/mlvalues.h *)
 
-val realTag     = 254;	
-val stringTag   = 253;	
-val refTag      = 250;	
+val realTag     = 254;
+val stringTag   = 253;
+val refTag      = 250;
 val closureTag  = 249 ;
 val maxBlockTag = closureTag-1;
 
@@ -49,7 +49,7 @@ val fulllib = ["Option", "List", "ListPair", "Strbase", "Char", "String",
 	       "Word", "Word8", "Word8Vector", "Word8Array", "Byte",
 	       "BinIO", "CharVector", "CharArray",
 	       "Time", "Timer", "Date", "Path",
-	       "FileSys", "Process", "OS", 
+	       "FileSys", "Process", "OS",
 	       "Mosml", "PP", "CommandLine"]
 
 val preloadedUnitSets = [

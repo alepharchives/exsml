@@ -36,20 +36,20 @@ datatype OvlType =
   | OVL2EEBo                            (* =, <>: ''a * ''a -> bool      *)
 ;
 
-datatype TyNameEqu = 
-    FALSEequ 
-  | TRUEequ 
-  | REFequ 
+datatype TyNameEqu =
+    FALSEequ
+  | TRUEequ
+  | REFequ
   | ARROWequ of TyNameEqu * TyNameEqu;
 
-datatype TyApp = 
+datatype TyApp =
     NAMEtyapp of TyName
   | APPtyapp of TyApp * TyFun
 and TyFun =
     TYPEtyfun of TypeVar list * Type
   | LAMtyfun of TyName * TyFun
   | APPtyfun of TyApp
-and Kind = 
+and Kind =
     ARITYkind of int
   | ARROWkind of Kind * Kind
 and TnSort =
@@ -83,34 +83,34 @@ and ConStatusDesc =
   | EXNname of ExConInfo
   | REFname
 and ConEnv = ConEnv of  (ConInfo global list) (* cvr: ConEnv should be renamed for consistency...*)
-           | LAMconenv of TyName * ConEnv 
+           | LAMconenv of TyName * ConEnv
 and ExMod = EXISTSexmod of TyName list * Mod
-and Mod = 
+and Mod =
       STRmod of RecStr
     | FUNmod of TyName list * Mod * ExMod
-and Str = STRstr of ModEnv * 
+and Str = STRstr of ModEnv *
                     (string, (TyName list * Mod * ExMod) global) Env *
 		    (*cvr:ugly, but FunEnv needs to be inlined because of the reference to TyName (defined below) *)
 		    SigEnv *
-		    TyEnv * 
+		    TyEnv *
 		    VarEnv
     |     SEQstr of Str * Str                      (* hack for matching algorithm *)
 and RecStr = RECrec of RecStr * RecStr
-           | NONrec of Str 
+           | NONrec of Str
 and Sig = LAMBDAsig of TyName list * Mod
 withtype ModEnv = (string, RecStr global) Env
 and TyStr = TyFun * ConEnv
 and TyEnv = (string, (TyFun * ConEnv)) Env
-and VarEnv = (string,(TypeScheme * ConStatusDesc) global) Env    
+and VarEnv = (string,(TypeScheme * ConStatusDesc) global) Env
 and SigEnv = (string, Sig global) Env
-and TyName = 
+and TyName =
 {
   tnKind: Kind,
   tnEqu: TyNameEqu,
   tnStamp: (string *int),  (* unit name * stamp *)
   tnSort: TnSort,
   tnLevel: int,
-  tnConEnv: (ConEnv option) ref 
+  tnConEnv: (ConEnv option) ref
 } ref global
 and ConInfo =
 {
@@ -143,14 +143,14 @@ and RowVar =
 
 (* export the type abbreviations local to the datatype *)
 (*
-type TyName = 
+type TyName =
 {
   tnKind: Kind,
   tnEqu: TyNameEqu,
   tnStamp: (string*int),
   tnSort: TnSort,
   tnLevel: int,
-  tnConEnv: (ConEnv option) ref 
+  tnConEnv: (ConEnv option) ref
 } ref global
 and ConInfo =
 {
@@ -188,13 +188,13 @@ type TyNameSet = TyName list
 type GenFun = TyNameSet * Mod * ExMod
 
 type VarInfo = (TypeScheme * ConStatusDesc) global
-and TyInfo = (TyFun * ConEnv) 
+and TyInfo = (TyFun * ConEnv)
 and ModInfo = RecStr global
 and FunInfo = GenFun global
 and SigInfo = Sig global
 ;
 
-type VarEnv = (string,VarInfo) Env    
+type VarEnv = (string,VarInfo) Env
 and TyEnv = (string, TyInfo) Env
 and ModEnv = (string, ModInfo) Env
 and FunEnv = (string, FunInfo) Env
@@ -203,7 +203,7 @@ and SigEnv = (string, SigInfo) Env
 
 datatype 'a Signature =
        LAMBDA of  TyName list * 'a
-and 'a Existential = 
+and 'a Existential =
        EXISTS of TyName list * 'a;
 
 type Environment = ModEnv * FunEnv * SigEnv * VarEnv * TyEnv;
