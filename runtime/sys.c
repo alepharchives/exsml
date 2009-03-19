@@ -20,6 +20,26 @@
 #include "stacks.h"
 #include "io.h"
 
+void sys_error();
+void sys_exit(value);
+value sys_open(value, value, value);
+value sys_close(value);
+value sys_remove(value);
+value sys_rename(value, value);
+value sys_chdir(value);
+value sys_getenv(value);
+value sys_system_command(value);
+value mkexnname(char*);
+value mkexn0val(value);
+void intr_handler(int);
+value sys_catch_break(value);
+void float_handler(int);
+static void init_float_handler(void);
+void sys_init(char**);
+char *searchpath(char*);
+
+static void mysignal(int, void (*)(int));
+
 char* globalexn[] = {
        "Out_of_memory",
        "Invalid_argument",
@@ -37,6 +57,7 @@ char* globalexn[] = {
        "Bind",
        "Match",
        "Io" };
+
 
 void sys_error()
 {
@@ -59,7 +80,8 @@ void sys_error()
   raiseprimitive1(SYS__EXN_SYSERR, exnarg);
 }
 
-void sys_exit(value retcode)          /* ML */
+__attribute__((noreturn))
+void sys_exit(value retcode)
 {
   flush_stdouterr();
   exit(VAL_TO_INT(retcode));
@@ -69,7 +91,7 @@ static int sys_open_flags[] = {
   O_APPEND, 0, O_CREAT, O_EXCL, O_RDONLY, O_RDWR, 0, O_TRUNC, O_WRONLY
 };
 
-value sys_open(value path, value flags, value perm) /* ML */
+value sys_open(value path, value flags, value perm)
 {
 	int ret;
 	ret = open(String_val(path), convert_flag_list(flags, sys_open_flags),
@@ -78,13 +100,13 @@ value sys_open(value path, value flags, value perm) /* ML */
 	return LONG_TO_VAL(ret);
 }
 
-value sys_close(value fd)             /* ML */
+value sys_close(value fd)
 {
   if (close(VAL_TO_INT(fd)) != 0) sys_error();
   return Atom(0);
 }
 
-value sys_remove(value name)          /* ML */
+value sys_remove(value name)
 {
   int ret;
   ret = unlink(String_val(name));
@@ -92,20 +114,20 @@ value sys_remove(value name)          /* ML */
   return Atom(0);
 }
 
-value sys_rename(value oldname, value newname) /* ML */
+value sys_rename(value oldname, value newname)
 {
   if (rename(String_val(oldname), String_val(newname)) != 0)
     sys_error(String_val(oldname));
   return Atom(0);
 }
 
-value sys_chdir(value dirname)        /* ML */
+value sys_chdir(value dirname)
 {
   if (chdir(String_val(dirname)) != 0) sys_error(String_val(dirname));
   return Atom(0);
 }
 
-value sys_getenv(value var)           /* ML */
+value sys_getenv(value var)
 {
   char * res;
 
@@ -116,7 +138,7 @@ value sys_getenv(value var)           /* ML */
   return copy_string(res);
 }
 
-value sys_system_command(value command)   /* ML */
+value sys_system_command(value command)
 {
   int retcode = system(String_val(command));
   if (retcode == -1) sys_error(String_val(command));
@@ -173,7 +195,7 @@ void intr_handler(int UNUSED(sig))
 	/* sigint_pending = 1; TODO: Where did this come from? */
 }
 
-value sys_catch_break(value onoff)    /* ML */
+value sys_catch_break(value onoff)
 {
   if (Tag_val(onoff))
     mysignal(SIGINT, intr_handler);
