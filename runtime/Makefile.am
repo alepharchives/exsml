@@ -1,6 +1,10 @@
 # Makefile for the Moscow ML 2.00 version of the Caml Light runtime system
 
-AM_CFLAGS = -I$(top_srcdir) -Wall -Wextra -Wunused -Wstrict-aliasing
+AM_CFLAGS = -I$(top_srcdir) -Wall -Wextra  -Wunused -Wstrict-aliasing \
+	-Wswitch-default -Wswitch-enum -fstrict-aliasing -fstrict-overflow \
+	-Wstrict-overflow -ftree-vrp -Wfloat-equal -Wundef -Wshadow \
+	-Wbad-function-cast -Wcast-qual -Wcast-align -Wconversion -Wmissing-prototypes \
+	-Wmissing-noreturn -Winline
 
 bin_PROGRAMS = camlrunm
 camlrunm_SOURCES = $(GEN_SOURCES) $(GEN_HS) $(C_SOURCES)
