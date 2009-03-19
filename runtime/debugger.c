@@ -98,11 +98,7 @@ void print_pc(pc)
      bytecode_t pc;
 {
 /* TODO: Push this back into the runtime config.h */
-#ifdef SIXTYFOUR
-	printf("%6ld  ", pc - start_code);
-#else
-	printf("%6d   ", pc - start_code);
-#endif
+	printf(PC_FORMAT, pc - start_code);
 }
 
 /* Disassembling one instruction */

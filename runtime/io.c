@@ -280,7 +280,7 @@ value input_int(struct channel * channel)        /* ML */
 {
 	long i;
 	i = getword(channel);
-#ifdef SIXTYFOUR
+#if (SIZEOF_LONG == 8)
 	i = (i << 32) >> 32;          /* Force sign extension */
 #endif
 	return LONG_TO_VAL(i);

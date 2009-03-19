@@ -32,7 +32,7 @@ static void emit_compact(struct channel * chan, value v)
       output_number(chan, CODE_INT8, n, 8);
     } else if (n >= -(1 << 15) && n < (1 << 15)) {
       output_number(chan, CODE_INT16, n, 16);
-#ifdef SIXTYFOUR
+#if (SIZEOF_LONG >= 8)
     } else if (n < -(1L << 31) || n >= (1L << 31)) {
       output_number(chan, CODE_INT64, n, 64);
 #endif
@@ -142,7 +142,7 @@ value extern_compact_val(struct channel * chan, value v) /* ML */
   size_32 = 0;
   size_64 = 0;
   emit_compact(chan, v);
-#ifdef SIXTYFOUR
+#if (SIZEOF_LONG >= 8)
   if (size_32 >= (1L << 32) || size_64 >= (1L << 32)) {
     /* The object is so big its size cannot be written in the header.
        Besides, some of the block sizes or string lengths or shared offsets

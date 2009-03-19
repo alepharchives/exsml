@@ -139,6 +139,7 @@ AC_SUBST([GITHEAD])
 GENERATED_FILE=misc/generated-file.txt
 AC_SUBST_FILE(GENERATED_FILE)
 
+## WORD_MAXSIZE is the same as MAX_ARRAY_LEN, but given as an expression
 if test "$ac_cv_sizeof_long_p" -eq 8 ; then
    MAX_ARRAY_LEN=18014398509481983
    MAX_STRING_LEN=144115188075855863
@@ -147,6 +148,8 @@ if test "$ac_cv_sizeof_long_p" -eq 8 ; then
    INT_MAX=4611686018427387903
    WORD_WORDSIZE=63
    WORD_MAXPOS='0wx3FFFFFFFFFFFFFFF'
+   AC_DEFINE([WORD_MAXSIZE], [((1L << 54) - 1)],
+             [The maximal size of a word in this architecture]) 
 else
    MAX_ARRAY_LEN=4194303
    MAX_STRING_LEN=16777211
@@ -155,6 +158,8 @@ else
    INT_MAX=1073741823
    WORD_WORDSIZE=31
    WORD_MAXPOS='0wx3FFFFFFF'
+   AC_DEFINE([WORD_MAXSIZE], [((1L << 22) - 1)],
+             [The maximal size of a word in this architecture]) 
 fi
 AC_SUBST(MAX_ARRAY_LEN)
 AC_SUBST(INT_PRECISION)
@@ -163,6 +168,7 @@ AC_SUBST(INT_MAX)
 AC_SUBST(WORD_WORDSIZE)
 AC_SUBST(WORD_MAXPOS)
 AC_SUBST(MAX_STRING_LEN)
+
 
 AC_OUTPUT(
           Makefile

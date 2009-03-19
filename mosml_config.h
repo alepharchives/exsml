@@ -10,10 +10,14 @@
 
 #include "config.h"
 
-#if ((SIZEOF_INT == 4) && (SIZEOF_LONG == 8) && (SIZEOF_LONG_P == 8))
+#if (SIZEOF_LONG_P == 8)
 #define SIXTYFOUR
-#elif  ((SIZEOF_INT == 4) && (SIZEOF_LONG == 4) && (SIZEOF_LONG_P == 4))
+#define Reverse_word Reverse_int64
+#define PC_FORMAT "%6ld  "
+#elif (SIZEOF_LONG_P == 4)
 #define THIRTYTWO
+#define Reverse_word Reverse_int32_t
+#define PC_FORMAT "%6d   "
 #else
 #error "Unknown architecture size"
 #endif

@@ -2,7 +2,7 @@
 #define _mlvalues_
 
 
-#include "config.h"
+#include "mosml_config.h"
 #include "misc.h"
 
 /* Definitions
@@ -89,11 +89,7 @@ bits  63    10 9     8 7   0
 
 #define Num_tags (1 << 8)
 
-#ifdef SIXTYFOUR
-  #define Max_wosize ((1L << 54) - 1)
-#else
-  #define Max_wosize ((1 << 22) - 1)
-#endif
+#define Max_wosize WORD_MAXSIZE
 
 #define Wosize_val(val) (Wosize_hd (Hd_val (val)))
 #define Wosize_op(op) (Wosize_val (op))

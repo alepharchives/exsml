@@ -3,6 +3,7 @@
 #ifndef _reverse_
 #define _reverse_
 
+#include "mosml_config.h"
 
 #define Reverse_short(s) {                                                    \
   char * _p;                                                                  \
@@ -42,12 +43,6 @@
   _p[3] = _p[4];                                                              \
   _p[4] = _a;                                                                 \
 }
-
-#ifdef SIXTYFOUR
-#define Reverse_word Reverse_int64
-#else
-#define Reverse_word Reverse_int32_t
-#endif
 
 #define Reverse_double Reverse_int64
 
