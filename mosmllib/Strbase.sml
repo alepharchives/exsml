@@ -1,6 +1,6 @@
 (* Strbase -- internal utilities for String and Substring *)
 
-val maxlen = @MAX_STRING_LEN@
+val maxlen = Architecture.max_string_len
 
 local
     prim_val sub_      : string -> int -> char         = 2 "get_nth_char";

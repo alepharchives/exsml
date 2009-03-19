@@ -13,7 +13,7 @@ in
 
 prim_val length : vector -> int = 1 "string_length";
 
-val maxLen = @MAX_STRING_LEN@;
+val maxLen = Architecture.max_string_len;
 
 fun fromList (vs : elem list) =
   let val n = List.length vs

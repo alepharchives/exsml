@@ -45,14 +45,6 @@ src/camlrunm
 src/config/m.h
 src/config/s.h
 mosmllib/Architecture.sml
-mosmllib/Array.sml
-mosmllib/Int.sml
-mosmllib/Strbase.sml
-mosmllib/Vector.sml
-mosmllib/Weak.sml
-mosmllib/Word.sml
-mosmllib/Word8Array.sml
-mosmllib/Word8Vector.sml
 runtime/.deps
 runtime/camlrunm
 runtime/prims.c

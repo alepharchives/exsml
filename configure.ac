@@ -175,14 +175,6 @@ AC_OUTPUT(
 	  compiler/Makefile
 	  mosmllib/Makefile
 	  mosmllib/Architecture.sml
-	  mosmllib/Array.sml
-	  mosmllib/Int.sml
-	  mosmllib/Vector.sml
-	  mosmllib/Weak.sml
-	  mosmllib/Word.sml
-	  mosmllib/Strbase.sml
-	  mosmllib/Word8Array.sml
-	  mosmllib/Word8Vector.sml
 	  runtime/Makefile
 	  mosmlyac/Makefile
 	  libsml_crypt/Makefile

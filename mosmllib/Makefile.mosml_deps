@@ -7,14 +7,14 @@ Nonstdio.uo: Nonstdio.ui BasicIO.ui CharArray.ui
 Word8Array.ui: Word8.ui Word8Vector.ui 
 Path.uo: Path.ui String.ui List.ui Substring.ui 
 Mosmlcookie.ui: Date.ui 
-Strbase.uo: Strbase.ui List.ui 
+Strbase.uo: Strbase.ui List.ui Architecture.ui 
 Mysql.ui: Msp.ui Date.ui Vector.ui 
 Binarymap.uo: Binarymap.ui 
 Time.uo: Time.ui Real.ui StringCvt.ui Char.ui 
 Bool.ui: StringCvt.ui 
 Word8.ui: Word.ui StringCvt.ui 
 Location.ui: BasicIO.ui Lexing.ui 
-Weak.uo: Weak.ui 
+Weak.uo: Weak.ui Architecture.ui 
 Help.uo: Help.ui String.ui StringCvt.ui List.ui BasicIO.ui Vector.ui \
     TextIO.ui Char.ui 
 Mosml.uo: Mosml.ui Timer.ui FileSys.ui BinIO.ui String.ui List.ui Vector.ui \
@@ -42,11 +42,11 @@ Susp.uo: Susp.ui
 Lexing.ui: CharArray.ui Obj.uo 
 Option.uo: Option.ui 
 Word.ui: StringCvt.ui 
-Vector.uo: Vector.ui List.ui 
+Vector.uo: Vector.ui List.ui Architecture.ui 
 Polyhash.uo: Polyhash.ui Array.ui 
 Splaymap.uo: Splaymap.ui Splaytree.ui 
 Array.ui: Vector.ui 
-Int.uo: Int.ui String.ui StringCvt.ui Char.ui 
+Int.uo: Int.ui String.ui StringCvt.ui Architecture.ui Char.ui 
 Lexing.uo: Lexing.ui CharArray.ui Obj.uo 
 Socket.uo: Socket.ui Word.ui Dynlib.ui Word8Array.ui Vector.ui \
     Word8Vector.ui Time.ui 
@@ -57,11 +57,11 @@ Random.uo: Random.ui
 BinIO.uo: BinIO.ui Word8.ui TextIO.ui Word8Vector.ui 
 Word8Vector.ui: Word8.ui 
 Dynarray.uo: Dynarray.ui Array.ui 
-Array.uo: Array.ui List.ui Vector.ui 
+Array.uo: Array.ui List.ui Vector.ui Architecture.ui 
 Timer.uo: Timer.ui Time.ui 
 Substring.uo: Substring.ui String.ui Strbase.ui 
 Splaytree.uo: Splaytree.ui 
-Word.uo: Word.ui String.ui StringCvt.ui Char.ui 
+Word.uo: Word.ui String.ui StringCvt.ui Architecture.ui Char.ui 
 Mosmlcookie.uo: Mosmlcookie.ui String.ui List.ui Date.ui Option.ui \
     Process.ui Substring.ui Bool.ui 
 Date.ui: StringCvt.ui Time.ui 
@@ -84,7 +84,7 @@ Mosmlcgi.uo: Mosmlcgi.ui String.ui StringCvt.ui List.ui Option.ui \
 Unix.uo: Unix.ui Signal.ui Word.ui Dynlib.ui Option.ui Vector.ui Process.ui \
     TextIO.ui Obj.uo 
 TextIO.uo: TextIO.ui String.ui Char.ui 
-Word8Vector.uo: Word8Vector.ui List.ui Word8.ui 
+Word8Vector.uo: Word8Vector.ui List.ui Word8.ui Architecture.ui 
 Array2.uo: Array2.ui List.ui Vector.ui Array.ui 
 Binaryset.uo: Binaryset.ui List.ui 
 Real.uo: Real.ui StringCvt.ui Char.ui 
@@ -104,7 +104,8 @@ Date.uo: Date.ui String.ui Real.ui StringCvt.ui Option.ui Vector.ui Int.ui \
 CharVector.ui: Char.ui 
 Gdbm.uo: Gdbm.ui Dynlib.ui List.ui 
 Dynlib.uo: Dynlib.ui 
-Word8Array.uo: Word8Array.ui List.ui Word8.ui Word8Vector.ui 
+Word8Array.uo: Word8Array.ui List.ui Word8.ui Architecture.ui \
+    Word8Vector.ui 
 Intset.uo: Intset.ui List.ui 
 String.uo: String.ui List.ui Strbase.ui Char.ui 
 Word8.uo: Word8.ui Word.ui String.ui StringCvt.ui Char.ui 

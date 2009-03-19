@@ -2,9 +2,9 @@
 
 type int = int
 
-val precision = SOME @INT_PRECISION@;
-val minInt    = SOME @INT_MIN@;
-val maxInt    = SOME @INT_MAX@;
+val precision = SOME Architecture.integer_precision;
+val minInt    = SOME Architecture.int_min;
+val maxInt    = SOME Architecture.int_max;
 
 local
     open StringCvt

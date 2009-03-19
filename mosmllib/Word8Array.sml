@@ -23,7 +23,7 @@ in
 
 type array = array_ ref;
 
-val maxLen = @MAX_STRING_LEN@
+val maxLen = Architecture.max_string_len;
 
 val array0 = ref (array_ 0);
 

@@ -2,7 +2,7 @@
 
 type 'a vector = 'a vector;
 
-val maxLen = @MAX_ARRAY_LEN@; (* = 2^54-1, for 64-bit architectures *)
+val maxLen = Architecture.max_array_len; (* = 2^54-1, for 64-bit architectures *)
 
 local
     prim_val vector_ : int -> 'x -> 'a vector         = 2 "make_vect";

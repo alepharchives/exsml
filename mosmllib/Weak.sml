@@ -17,7 +17,7 @@ prim_val magic    : 'a -> 'b                       = 1 "identity"
 fun from_array (a : 'a  array)  = !(magic a)    : 'a array_
 fun make_array (a : '_a array_) = magic (ref a) : 'a array
 
-val maxLen = @MAX_ARRAY_LEN@;
+val maxLen = Architecture.max_array_len;
 
 prim_val weak2arr : 'a weak -> 'a array_ = 1 "identity"
 prim_val arr2weak : 'a array_ -> 'a weak = 1 "identity";

@@ -5,8 +5,8 @@
 
 type word = word;
 
-val wordSize = @WORD_WORDSIZE@;
-val max_pos = @WORD_MAXPOS@;
+val wordSize = Architecture.word_size
+val max_pos = Architecture.word_maxpos
 
 local
     prim_val orb_       : word -> word -> word = 2 "or";

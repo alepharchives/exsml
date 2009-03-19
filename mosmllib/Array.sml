@@ -32,7 +32,7 @@ local
     fun make_array (a : '_a array_) = magic (ref a) : 'a array
 in
 
-val maxLen = @MAX_ARRAY_LEN@;
+val maxLen = Architecture.max_array_len
 
 fun array(n, v : '_a) =
   if n < 0 orelse n > maxLen then raise Size
