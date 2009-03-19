@@ -15,7 +15,14 @@
 #include "str.h"
 #include "alloc.h"
 
-value sml_realpath(value v)          /* ML */
+value sml_realpath(value);
+value sml_uname(value);
+value sml_islink(value);
+value sml_readlink(value);
+value sml_devinode(value);
+value sml_setdisk(value);
+
+value sml_realpath(value v)
 {
   char buffer[MAXPATHLEN];
   char *result;
@@ -26,7 +33,7 @@ value sml_realpath(value v)          /* ML */
   return copy_string(result);
 }
 
-value sml_uname(value UNUSED(v))          /* ML */
+value sml_uname(value UNUSED(v))
 {
   struct utsname buf;
   value res;
@@ -44,7 +51,7 @@ value sml_uname(value UNUSED(v))          /* ML */
   return res;
 }
 
-value sml_islink(value path)          /* ML */
+value sml_islink(value path)
 {
   struct stat buf;
 
@@ -53,7 +60,7 @@ value sml_islink(value path)          /* ML */
   return Val_bool((S_IFLNK & buf.st_mode) == S_IFLNK);
 }
 
-value sml_readlink(value v)          /* ML */
+value sml_readlink(value v)
 {
   char buffer[MAXPATHLEN];
   long result;
@@ -65,7 +72,7 @@ value sml_readlink(value v)          /* ML */
   return copy_string(buffer);
 }
 
-value sml_devinode(value path)          /* ML */
+value sml_devinode(value path)
 {
   struct stat buf;
   double dev_inode;
@@ -77,7 +84,7 @@ value sml_devinode(value path)          /* ML */
   return copy_double(dev_inode);
 }
 
-value sml_setdisk(value UNUSED(volno))        /* ML */
+value sml_setdisk(value UNUSED(volno))
 {
   failwith("setdisk");
   return Val_unit;		/* Can't reach return */
