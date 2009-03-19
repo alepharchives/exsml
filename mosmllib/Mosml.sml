@@ -6,8 +6,6 @@ local
     prim_val setbyte_ : real -> int -> Word8.word -> unit  = 3 "set_nth_char";
 in
 
-#include "../mosml_config.h"
-
 prim_val doubleVec : real -> Word8Vector.vector = 1 "doubletow8vec"
 prim_val vecDouble_ : Word8Vector.vector -> real = 1 "w8vectodouble"
 
