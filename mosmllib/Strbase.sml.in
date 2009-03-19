@@ -1,12 +1,6 @@
 (* Strbase -- internal utilities for String and Substring *)
 
-#include "../mosml_config.h"
-
-#ifdef SIXTYFOUR
-val maxlen = 144115188075855863;  	(* = (2^54-1)*8-1, with 64 bit *)
-#else
-val maxlen = 16777211;  		(* = (2^22-1)*4-1, with 32 bit *)
-#endif
+val maxlen = @MAX_STRING_LEN@
 
 local 
     prim_val sub_      : string -> int -> char         = 2 "get_nth_char";
