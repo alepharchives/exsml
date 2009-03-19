@@ -3,8 +3,6 @@
  * configuration file to set preprocessor macros correctly
  * for the rest of the source code
  *
- * NOTE: The contents of this file is currently used by both SML and C.
- *   do not add header files other than config.h
  */
 
 #ifndef MOSML_CONFIG_H
