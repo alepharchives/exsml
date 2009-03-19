@@ -1,12 +1,12 @@
-(* Splaytree -- modified for Moscow ML from 
- * SML/NJ library which is 
- * COPYRIGHT (c) 1993 by AT&T Bell Laboratories.  
+(* Splaytree -- modified for Moscow ML from
+ * SML/NJ library which is
+ * COPYRIGHT (c) 1993 by AT&T Bell Laboratories.
  * See file mosml/copyrght/copyrght.att for details.
  *
  * Splay tree structure.
  *)
 
-datatype 'a splay = 
+datatype 'a splay =
     SplayObj of {value : 'a,
 		 right : 'a splay,
 		 left : 'a splay}
@@ -27,9 +27,9 @@ fun splay (compf, root) = let
                     EQUAL => (Eq value',left',
                                 SplayObj{value=value,left=right',right=right})
                   | GREATER =>
-                      (case left' of 
+                      (case left' of
                         SplayNil => (Gt value',left',SplayObj{value=value,left=right',right=right})
-                      | _ => 
+                      | _ =>
                         let val (V,L,R) = adj left'
                             val rchild = SplayObj{value=value,left=right',right=right}
                         in
@@ -37,7 +37,7 @@ fun splay (compf, root) = let
                         end
                       ) (* end case *)
                   | _ =>
-                      (case right' of 
+                      (case right' of
                         SplayNil => (Lt value',left',SplayObj{value=value,left=right',right=right})
                       | _ =>
                         let val (V,L,R) = adj right'
@@ -90,7 +90,7 @@ fun splay (compf, root) = let
 
 fun lrotate SplayNil = SplayNil
   | lrotate (arg as SplayObj{value,left,right=SplayNil}) = arg
-  | lrotate (SplayObj{value,left,right=SplayObj{value=v,left=l,right=r}}) = 
+  | lrotate (SplayObj{value,left,right=SplayObj{value=v,left=l,right=r}}) =
     lrotate (SplayObj{value=v,
 		      left=SplayObj{value=value,left=left,right=l},
 		      right=r})

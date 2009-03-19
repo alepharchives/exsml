@@ -3,7 +3,7 @@
 type signal = int
 
 val hup  =  1
-val int  =  2 
+val int  =  2
 val quit =  3
 val ill  =  4
 val abrt =  6

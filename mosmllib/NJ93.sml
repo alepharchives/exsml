@@ -45,18 +45,18 @@ fun dec r = r := !r-1;
 prim_val chr : int    -> string = 1 "sml_chr";
 prim_val ord : string -> int    = 1 "sml_ord";
 
-local 
+local
     prim_val create_string_ : int -> string                = 1 "create_string";
     prim_val nth_char_      : string -> int -> int         = 2 "get_nth_char";
     prim_val set_nth_char_  : string -> int -> int -> unit = 3 "set_nth_char";
-    prim_val blit_string_   : string -> int -> string -> int -> int -> unit 
+    prim_val blit_string_   : string -> int -> string -> int -> int -> unit
                                                            = 5 "blit_string";
-in 
+in
     exception Substring;
-    fun ordof(s, i) = 
+    fun ordof(s, i) =
 	if i < 0 orelse i >= size s then raise Ord
 	else nth_char_ s i;
-    fun substring (s, i, n) = (String.substring (s, i, n)) 
+    fun substring (s, i, n) = (String.substring (s, i, n))
 	                      handle Subscript => raise Substring;
     fun explode s =
 	let fun loop 0 acc = acc

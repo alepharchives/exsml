@@ -10,7 +10,7 @@ fun unpackString arg = bytesToString (Word8Array.extract arg)
 
 fun packString (ss, a, i) =
     let val (s, si, n) = Substring.base ss
-    in  
-        Word8Array.copyVec {src = stringToBytes s, si = si, 
-			    len = SOME n, dst = a, di = i} 
+    in
+        Word8Array.copyVec {src = stringToBytes s, si = si,
+			    len = SOME n, dst = a, di = i}
     end

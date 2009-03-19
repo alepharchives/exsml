@@ -12,14 +12,14 @@ val isRegistered : string -> bool
 type cptr
 
 val getcptr : string -> cptr
-val var     : cptr -> 'b                            
-val app1    : cptr -> 'a1 -> 'b                     
-val app2    : cptr -> 'a1 -> 'a2 -> 'b              
-val app3    : cptr -> 'a1 -> 'a2 -> 'a3 -> 'b       
+val var     : cptr -> 'b
+val app1    : cptr -> 'a1 -> 'b
+val app2    : cptr -> 'a1 -> 'a2 -> 'b
+val app3    : cptr -> 'a1 -> 'a2 -> 'a3 -> 'b
 val app4    : cptr -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'b
 val app5    : cptr -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'b
 
-(* 
+(*
    REGISTERING ML VALUES FOR ACCESS FROM C CODE
    --------------------------------------------
 
@@ -27,11 +27,11 @@ val app5    : cptr -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'b
    that it may be called from C code.
 
    (0) The ML side registers the function:
-          Callback.register "myfun" (fn n => 2*n)               
+          Callback.register "myfun" (fn n => 2*n)
 
    (1) The C side first obtains an ML value pointer:
           valueptr mvp = get_valueptr("myfun");
-   
+
    (2) The C side then uses the ML value pointer to obtain an ML
        value, and uses it:
           callback(get_value(mvp), Val_long(42));
@@ -43,7 +43,7 @@ val app5    : cptr -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'b
    be registered as a GC root in the C code.
 
    Operation (2) is very fast.  If the garbage collector is invoked
-   between the call of get_value() and the use of the ML value, then 
+   between the call of get_value() and the use of the ML value, then
    the value must be registered as a GC root.  However, the idiom
         callback(get_value(mvp), arg1);
    is safe provided the evaluation of arg1 does not provoke a garbage
@@ -94,9 +94,9 @@ val app5    : cptr -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'b
    ACCESSING REGISTERED C VARIABLES AND FUNCTIONS FROM ML
    ------------------------------------------------------
 
-   This example shows how to register the C function 
+   This example shows how to register the C function
 
-      value silly_cfun(value v) 
+      value silly_cfun(value v)
       { return copy_double(42.42 * Double_val(v)); }
 
    so that it may be called from ML.
@@ -105,7 +105,7 @@ val app5    : cptr -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'b
           registercptr("mycfun", sillycfun);
 
    (1) The ML side obtains a C pointer and defines an ML function
-       via that pointer: 
+       via that pointer:
           val sillycfun = app1 (getcptr "mycfun") : real -> real
        The type ascription is needed to ensure any type safety whatsoever.
        Mistakes in the types will lead to crashes, as usual with C.
@@ -141,5 +141,5 @@ val app5    : cptr -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'b
    with cptr to (arg1, arg2, arg3, arg4).
 
    [app5 cptr arg1 arg2 arg3 arg4 arg5] applies the C function
-   associated with cptr to (arg1, arg2, arg3, arg4, arg5). 
+   associated with cptr to (arg1, arg2, arg3, arg4, arg5).
 *)

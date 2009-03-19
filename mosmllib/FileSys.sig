@@ -35,7 +35,7 @@ val fileId    : string -> file_id
 val hash      : file_id -> word
 val compare   : file_id * file_id -> order
 
-(* 
+(*
    These functions operate on the file system.  They raise OS.SysErr
    in case of errors.
 
@@ -48,7 +48,7 @@ val compare   : file_id * file_id -> order
    directory stream if it is non-empty; returns NONE if it is empty
    (when all directory entries have been read).  Only entries distinct
    from the parent arc and the current arc (that is, .. and . in Unix,
-   DOS, and Windows; see the Path structure) will be returned.  
+   DOS, and Windows; see the Path structure) will be returned.
 
    [rewindDir dstr] resets the directory stream as if it had just been
    opened.
@@ -60,7 +60,7 @@ val compare   : file_id * file_id -> order
    calls to the functions use, load, compile in the interactive
    system, as well as all functions defined in this library.  If p
    specifies a volume name, then this command also changes the current
-   volume (relevant under DOS, Windows, OS/2, etc.).  
+   volume (relevant under DOS, Windows, OS/2, etc.).
 
    [getDir ()] returns the name of the current working directory.
 
@@ -121,14 +121,14 @@ val compare   : file_id * file_id -> order
    required access permission is empty, it tests whether p exists.  If
    accs contains A_READ, A_WRITE, or A_EXEC, respectively, it tests
    whether the user process has read, write, or execute permission for
-   the file.  
+   the file.
        Under Unix, the access test is done with the `real' user
    id and group id (as opposed to the `effective' user id and group
    id) of the user process.  Hence access("file", [A_READ]) may return
    false, yet the file may be readable by the process, in case the
    effective user id or group id has been changed by setuid.
 
-   [fileSize p] return the size, in bytes, of the file p.  Raises SysErr 
+   [fileSize p] return the size, in bytes, of the file p.  Raises SysErr
    if p does not exist or its directory is not accessible.
 
    [tmpName ()] returns a file name suitable for creating a fresh
@@ -146,13 +146,13 @@ val compare   : file_id * file_id -> order
    [fileId p] returns the file_id of the file system object named by
    path p.  It holds that fileId p1 = fileId p2 if and only if p1 and
    p2 name the same file system object.
-   
+
    [hash fid] returns a hashvalue for fid, suitable for use in a
-   hashtable of file ids (and hence files).  
+   hashtable of file ids (and hence files).
    If fid1 = fid2 then hash fid1 = hash fid2.
 
    [compare (fid1, fid2)] returns LESS, EQUAL, or GREATER, according
    as fid1 precedes, equals, or follows fid2 in the total linear order
    on file ids.  This is suitable for e.g. an ordered binary tree of
-   file ids (and hence files).  
+   file ids (and hence files).
 *)

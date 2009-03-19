@@ -10,15 +10,15 @@ fun a before (b : unit) = a;
 prim_val chr : int    -> string = 1 "sml_chr";
 prim_val ord : string -> int    = 1 "sml_ord";
 
-local 
+local
     prim_val create_string_ : int -> string                = 1 "create_string";
     prim_val nth_char_      : string -> int -> int         = 2 "get_nth_char";
     prim_val set_nth_char_  : string -> int -> int -> unit = 3 "set_nth_char";
-    prim_val blit_string_   : string -> int -> string -> int -> int -> unit 
+    prim_val blit_string_   : string -> int -> string -> int -> int -> unit
                                                            = 5 "blit_string";
 
     open String
-in 
+in
     fun explode s =
 	let fun loop 0 acc = acc
 	      | loop n acc =

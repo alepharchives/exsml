@@ -20,7 +20,7 @@ val foldl     : (int * 'a * 'b -> 'b) -> 'b -> 'a intmap -> 'b
 val map       : (int * 'a -> 'b) -> 'a intmap -> 'b intmap
 val transform : ('a -> 'b) -> 'a intmap -> 'b intmap
 
-(* 
+(*
    ['a intmap] is the type of applicative maps from int to 'a.
 
    [empty] creates a new empty map.

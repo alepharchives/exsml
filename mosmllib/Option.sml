@@ -7,7 +7,7 @@ datatype option = datatype option
 fun getOpt (SOME v, _) = v
   | getOpt (NONE,   a) = a;
 
-fun isSome (SOME _) = true 
+fun isSome (SOME _) = true
   | isSome NONE     = false;
 
 fun valOf (SOME v) = v
@@ -27,12 +27,12 @@ fun join NONE     = NONE
 fun mapPartial f NONE     = NONE
   | mapPartial f (SOME x) = f x
 
-fun compose (f, g) x = 
+fun compose (f, g) x =
     case g x of
 	NONE   => NONE
       | SOME y => SOME (f y)
 
-fun composePartial (f, g) x = 
+fun composePartial (f, g) x =
     case g x of
 	NONE   => NONE
       | SOME y => f y

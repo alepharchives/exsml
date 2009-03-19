@@ -13,7 +13,7 @@ type signal = Signal.signal
 
 type proc = { syspid : int, ins : TextIO.instream, outs : TextIO.outstream }
 
-local 
+local
     open Dynlib
     val hdl  = dlopen {lib = "libmunix.so",
 		       flag = RTLD_LAZY, global = false}
@@ -30,31 +30,31 @@ prim_type in_channel and out_channel;
 prim_val open_descriptor_in  : int -> in_channel  = 1 "open_descriptor";
 prim_val open_descriptor_out : int -> out_channel = 1 "open_descriptor";
 
-fun raiseIo fcn nam exn = 
+fun raiseIo fcn nam exn =
     raise Io {function = "Unix." ^ fcn, name = nam, cause = exn};
 
 (* From Caml Light "channels" to SML instreams and outstreams: *)
 
 fun openInPipe fcn infd : TextIO.instream =
-    Obj.magic (ref {closed=false, 
-		    ic=open_descriptor_in infd, 
+    Obj.magic (ref {closed=false,
+		    ic=open_descriptor_in infd,
 		    name = "<inpipe>"})
     handle exn as SysErr _ => raiseIo fcn "<inpipe>" exn;
 
 fun openOutPipe fcn outfd : TextIO.outstream =
-    Obj.magic (ref {closed=false, 
-		    oc=open_descriptor_out outfd, 
+    Obj.magic (ref {closed=false,
+		    oc=open_descriptor_out outfd,
 		    name="<outpipe>"})
     handle exn as SysErr _ => raiseIo fcn "<outpipe>" exn;
 
-in 
+in
 
 val kill_ : int -> int -> unit = app2 "kill"
 
-fun killpid (s : signal) (syspid : int) : unit = 
+fun killpid (s : signal) (syspid : int) : unit =
     kill_ syspid (Word.toInt (Signal.toWord s))
 
-fun kill ({ syspid, ... } : proc, s : signal) : unit = 
+fun kill ({ syspid, ... } : proc, s : signal) : unit =
     killpid s syspid
     handle Fail s => raise Fail ("Unix.kill: " ^ s)
 
@@ -68,27 +68,27 @@ fun executewrap fcn cmd args envOpt : proc =
 	val ins  = openInPipe fcn infd
 	val outs = openOutPipe fcn outfd
     in
-	{ syspid = syspid, ins = ins, outs = outs } 
+	{ syspid = syspid, ins = ins, outs = outs }
     end
     handle Fail s => raise Fail ("Unix." ^ fcn ^ ": " ^ s)
 
-fun executeInEnv (cmd, args, env) : proc = 
+fun executeInEnv (cmd, args, env) : proc =
     executewrap "executeInEnv" cmd args (SOME env)
 
 fun execute (cmd, args) : proc =
     executewrap "execute" cmd args NONE
 
-fun streamsOf ({ syspid, ins, outs } : proc) 
+fun streamsOf ({ syspid, ins, outs } : proc)
     : TextIO.instream * TextIO.outstream = (ins, outs)
 
 val waitpid_ : int -> int = app1 "waitpid"
 
-fun reap ({ syspid, ins, outs } : proc) : Process.status = 
+fun reap ({ syspid, ins, outs } : proc) : Process.status =
     let val status_ = waitpid_ syspid : int
-    in 
-	TextIO.closeIn ins; 
-	TextIO.closeOut outs; 
-	Obj.magic status_ 
+    in
+	TextIO.closeIn ins;
+	TextIO.closeOut outs;
+	Obj.magic status_
     end
     handle Fail s => raise Fail ("Unix.reap: " ^ s)
 end

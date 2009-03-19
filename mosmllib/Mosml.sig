@@ -9,13 +9,13 @@ val floatVec  : real -> Word8Vector.vector
 val vecFloat  : Word8Vector.vector -> real
 val md5sum    : string -> string
 
-datatype runresult = 
+datatype runresult =
     Success of string
   | Failure of string
 
 val run : string -> string list -> string -> runresult
 
-(* 
+(*
    [argv ()] returns the command line strings of the current process.
    Hence List.nth(argv (), 0) is the command used to invoke the SML
    process, List.nth(argv (), 1) is its first argument, and so on.
@@ -30,7 +30,7 @@ val run : string -> string list -> string -> runresult
 
    [doubleVec r] returns an eight-element vector of Word8.word, which
    contains the real number in the IEEE 754 floating-point `double
-   format' bit layout stored in big-endian (high byte first) order. 
+   format' bit layout stored in big-endian (high byte first) order.
 
    [vecDouble v] accepts an eight-element vector v of Word8.word, and
    returns the real number obtained by taking v to be an IEEE 754
@@ -49,7 +49,7 @@ val run : string -> string list -> string -> runresult
    byte first) order.  Raises Fail if v is not a four-element vector.
 
    [md5sum s] computes the 128-bit MD5 checksum of string s and
-   returns it as a 22 character base64 string.  
+   returns it as a 22 character base64 string.
 
    [run cmd args inp] executes the program cmd with command-line
    arguments args and standard input inp.  Returns Success s where s

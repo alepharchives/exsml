@@ -8,7 +8,7 @@ val toString   : bool -> string
 val fromString : string -> bool option
 val scan       : (char, 'a) StringCvt.reader -> (bool, 'a) StringCvt.reader
 
-(* 
+(*
    [bool] is the type of Boolean (logical) values: true and false.
 
    [not b] is the logical negation of b.

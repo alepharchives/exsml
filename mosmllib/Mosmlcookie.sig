@@ -3,15 +3,15 @@
 exception CookieError of string
 
 val allCookies     : string list
-val getCookieValue : string -> string option 
-val getCookie      : string -> string option 
+val getCookieValue : string -> string option
+val getCookie      : string -> string option
 
-type cookiedata = 
-    { name   : string, 
-      value  : string, 
-      expiry : Date.date option, 
-      domain : string option, 
-      path   : string option, 
+type cookiedata =
+    { name   : string,
+      value  : string,
+      expiry : Date.date option,
+      domain : string option,
+      path   : string option,
       secure : bool }
 
 val setCookie    : cookiedata -> string
@@ -19,7 +19,7 @@ val setCookies   : cookiedata list -> string
 
 val deleteCookie : { name : string, path : string option } -> string
 
-(* 
+(*
    These functions may be used in CGI scripts to get and set cookies.
    (c) Hans Molin, Computing Science Dept., Uppsala University, 1999.
 

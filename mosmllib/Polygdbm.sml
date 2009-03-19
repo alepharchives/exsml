@@ -13,16 +13,16 @@ exception NotWriter = Gdbm.NotWriter
 exception Closed = Gdbm.Closed
 exception GdbmError = Gdbm.GdbmError
 
-fun withtable namemode transact = 
+fun withtable namemode transact =
     Gdbm.withtable namemode transact
 
-fun add db (k, v) = Gdbm.add db (string_val_ k, string_val_ v) 
+fun add db (k, v) = Gdbm.add db (string_val_ k, string_val_ v)
 
 fun insert db (k, v) = Gdbm.insert db (string_val_ k, string_val_ v)
 
 fun find db k = val_string_ (Gdbm.find db (string_val_ k))
 
-fun peek db k = 
+fun peek db k =
     case Gdbm.peek db (string_val_ k) of
 	NONE   => NONE
       | SOME v => SOME (val_string_ v)
@@ -35,16 +35,16 @@ fun listKeys db = List.map val_string_ (Gdbm.listKeys db)
 
 fun numItems db = Gdbm.numItems db
 
-fun listItems db = 
+fun listItems db =
     Gdbm.map (fn (k, v) => (val_string_ k, val_string_ v)) db
 
-fun app f db = 
+fun app f db =
     Gdbm.app (fn (k, v) => f (val_string_ k, val_string_ v)) db
 
-fun map f db = 
+fun map f db =
     Gdbm.map (fn (k, v) => f (val_string_ k, val_string_ v)) db
 
-fun fold f a db = 
+fun fold f a db =
     Gdbm.fold (fn (k, v, res) => f (val_string_ k, val_string_ v, res)) a db
 
 fun reorganize db = Gdbm.reorganize db

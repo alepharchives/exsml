@@ -23,7 +23,7 @@ val revfold   : ('a * 'b -> 'b) -> 'a list -> 'b -> 'b
 (* NJ93 Real *)
 
 val ceiling   : real -> int
-val truncate  : real -> int 
+val truncate  : real -> int
 
 (* NJ93 Ref *)
 

@@ -72,7 +72,7 @@ datatype parserInput =
   | Token_read
 
 and parserOutput =
-    Compute_semantic_action    
+    Compute_semantic_action
   | Grow_stacks_1
   | Grow_stacks_2
   | Raise_parse_error

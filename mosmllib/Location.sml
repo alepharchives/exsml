@@ -1,5 +1,5 @@
 (* Printing a location in the source program.
- * For use with mosmllex and mosmlyac.  
+ * For use with mosmllex and mosmlyac.
  * Based on src/compiler/location from the Caml Light 0.6 distribution.
  *)
 
@@ -44,7 +44,7 @@ fun errLines char1 char2 charline1 line1 line2 =
 
 fun errPrompt s = (msgString "! "; msgString s);
 
-fun for f i j = if i > j then () else (f i : unit; for f (i+1) j);                                    
+fun for f i j = if i > j then () else (f i : unit; for f (i+1) j);
 
 fun errLoc input seek line_flag (Loc(pos1, pos2)) =
   let

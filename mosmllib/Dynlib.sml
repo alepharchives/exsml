@@ -2,7 +2,7 @@ structure Dynlib :> Dynlib =
 struct
 
 (* Ken Larsen (kla@it.dtu.dk) and sestoft@dina.kvl.dk 1998-01-12 1999-01-07 *)
-	
+
 prim_type dlHandle_			(* A pointer outside the ML heap *)
 prim_type symHandle_			(* A pointer outside the ML heap *)
 
@@ -24,7 +24,7 @@ prim_val app3_ : symHandle_ -> 'a1 -> 'a2 -> 'a3 -> 'b        = 4 "cfun_app3"
 prim_val app4_ : symHandle_ -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'b = 5 "cfun_app4"
 prim_val app5_ : symHandle_ -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'b = 6 "cfun_app5"
 
-fun dlopen { lib : string, flag : flag, global : bool } = 
+fun dlopen { lib : string, flag : flag, global : bool } =
     let val opencode = (case flag of RTLD_LAZY => 0 | RTLD_NOW => 1)
 	               + 2 * (if global then 1 else 0)
     in { hdl = dlopen_ lib opencode, closed = ref false, lib = lib } end
@@ -33,7 +33,7 @@ fun dlopen { lib : string, flag : flag, global : bool } =
 fun dlsym { hdl : dlHandle_, closed : bool ref, lib : string } sym =
     if !closed then raise Closed
     else { symhdl = dlsym_ hdl sym, closed = closed }
-	 handle Fail msg => 
+	 handle Fail msg =>
 	     raise Fail (msg ^ " when binding " ^ sym ^ " in " ^ lib)
 
 fun dlclose { hdl : dlHandle_, closed : bool ref, lib } =

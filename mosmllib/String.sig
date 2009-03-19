@@ -1,6 +1,6 @@
 (* String -- SML Basis Library *)
 
-local 
+local
     type char = Char.char
 in
     type string = string
@@ -12,10 +12,10 @@ in
     val concat    : string list -> string
     val ^         : string * string -> string
     val str       : char -> string
-    val implode   : char list -> string 
+    val implode   : char list -> string
     val explode   : string -> char list
 
-    val map       : (char -> char) -> string -> string 
+    val map       : (char -> char) -> string -> string
     val translate : (char -> string) -> string -> string
     val tokens    : (char -> bool) -> string -> string list
     val fields    : (char -> bool) -> string -> string list
@@ -35,7 +35,7 @@ in
     val >= : string * string -> bool
 end
 
-(* 
+(*
    [string] is the type of immutable strings of characters, with
    constant-time indexing.
 
@@ -43,17 +43,17 @@ end
 
    [size s] is the number of characters in string s.
 
-   [sub(s, i)] is the i'th character of s, counting from zero.  
+   [sub(s, i)] is the i'th character of s, counting from zero.
    Raises Subscript if i<0 or i>=size s.
 
    [substring(s, i, n)] is the string s[i..i+n-1].  Raises Subscript
    if i<0 or n<0 or i+n>size s.  Equivalent to extract(s, i, SOME n).
 
    [extract (s, i, NONE)] is the string s[i..size s-1].
-   Raises Subscript if i<0 or i>size s. 
+   Raises Subscript if i<0 or i>size s.
 
    [extract (s, i, SOME n)] is the string s[i..i+n-1].
-   Raises Subscript if i<0 or n<0 or i+n>size s. 
+   Raises Subscript if i<0 or n<0 or i+n>size s.
 
    [concat ss] is the concatenation of all the strings in ss.
    Raises Size if the sum of their sizes is greater than maxSize.
@@ -69,7 +69,7 @@ end
 
    [map f s] applies f to every character of s, from left to right,
    and returns the string consisting of the resulting characters.
-   Equivalent to  CharVector.map f s   
+   Equivalent to  CharVector.map f s
           and to  implode (List.map f (explode s)).
 
    [translate f s] applies f to every character of s, from left to
@@ -77,21 +77,21 @@ end
    Raises Size if the sum of their sizes is greater than maxSize.
    Equivalent to concat (List.map f (explode s)).
 
-   [tokens p s] returns the list of tokens in s, from left to right, 
-   where a token is a non-empty maximal substring of s not containing 
+   [tokens p s] returns the list of tokens in s, from left to right,
+   where a token is a non-empty maximal substring of s not containing
    any delimiter, and a delimiter is a character satisfying p.
 
-   [fields p s] returns the list of fields in s, from left to right, 
-   where a field is a (possibly empty) maximal substring of s not 
+   [fields p s] returns the list of fields in s, from left to right,
+   where a field is a (possibly empty) maximal substring of s not
    containing any delimiter, and a delimiter is a character satisfying p.
 
    Two tokens may be separated by more than one delimiter, whereas two
-   fields are separated by exactly one delimiter.  If the only delimiter 
+   fields are separated by exactly one delimiter.  If the only delimiter
    is the character #"|", then
         "abc||def" contains two tokens:   "abc" and "def"
         "abc||def" contains three fields: "abc" and "" and "def"
 
-   [isPrefix s1 s2] is true if s1 is a prefix of s2.  
+   [isPrefix s1 s2] is true if s1 is a prefix of s2.
    That is, if there exists a string t such that s1 ^ t = s2.
 
    [fromString s] scans the string s as an ML source program string,
@@ -115,12 +115,12 @@ end
    EQUAL, or GREATER, according as s1 is less than, equal to, or
    greater than s2.
 
-   [collate cmp (s1, s2)] performs lexicographic comparison, using the 
-   given ordering cmp on characters.  
+   [collate cmp (s1, s2)] performs lexicographic comparison, using the
+   given ordering cmp on characters.
 
    [<]
    [<=]
    [>]
-   [>=] compare strings lexicographically, using the representation 
+   [>=] compare strings lexicographically, using the representation
    ordering on characters.
 *)

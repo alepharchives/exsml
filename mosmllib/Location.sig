@@ -9,7 +9,7 @@ val errLocation : string * BasicIO.instream * Lexing.lexbuf -> Location
                   -> unit
 val errMsg      : string * BasicIO.instream * Lexing.lexbuf -> Location
                   -> string -> 'a
-val errPrompt   : string -> unit; 
+val errPrompt   : string -> unit;
 val nilLocation : Location
 val getCurrentLocation : unit -> Location
 val mkLoc : 'a -> Location * 'a
@@ -19,14 +19,14 @@ val xR    : Location * 'a -> int
 val xxLR  : Location * 'a -> Location * 'b -> Location
 val xxRL  : Location * 'a -> Location * 'b -> Location
 
-(* 
+(*
    These functions support error reporting in lexers and parsers
    generated with mosmllex and mosmlyac.  The directory
    mosml/examples/lexyacc/ contains an example of their use.
- 
-   [errLocation (file, stream, lexbuf) loc] prints the part of the lexer 
-   input which is indicated by location loc.  
-   
+
+   [errLocation (file, stream, lexbuf) loc] prints the part of the lexer
+   input which is indicated by location loc.
+
    If file <> "" then it is assumed to be the name of the file from
    which the lexer reads, the stream is assumed to be an open input
    stream associated with this file, and lexbuf is the lexer buffer
@@ -46,7 +46,7 @@ val xxRL  : Location * 'a -> Location * 'b -> Location
    message msg and raises exception Fail.
 
    [errPrompt msg] prints "! ", the string msg, and a newline on
-   standard output.  
+   standard output.
 
    [nilLocation] is the undefined location.
 

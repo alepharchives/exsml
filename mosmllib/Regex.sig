@@ -4,12 +4,12 @@ exception Regex of string
 
 type regex                      (* A compiled regular expression         *)
 
-datatype cflag = 
+datatype cflag =
     Extended                    (* Compile POSIX extended REs            *)
   | Icase                       (* Compile case-insensitive match        *)
   | Newline                     (* Treat \n in target string as new line *)
 
-datatype eflag = 
+datatype eflag =
     Notbol                      (* Do not match ^ at beginning of string *)
   | Noteol                      (* Do not match $ at end of string       *)
 
@@ -18,13 +18,13 @@ val regcomp      : string -> cflag list -> regex
 val regexec      : regex -> eflag list -> string -> substring vector option
 val regexecBool  : regex -> eflag list -> string -> bool
 
-val regnexec     : regex -> eflag list -> substring 
+val regnexec     : regex -> eflag list -> substring
                    -> substring vector option
 val regnexecBool : regex -> eflag list -> substring -> bool
 
-val regmatch     : { pat : string, tgt : string } -> cflag list 
+val regmatch     : { pat : string, tgt : string } -> cflag list
                      -> eflag list -> substring vector option
-val regmatchBool : { pat : string, tgt : string } -> cflag list 
+val regmatchBool : { pat : string, tgt : string } -> cflag list
                      -> eflag list -> bool
 
 datatype replacer =
@@ -44,13 +44,13 @@ val fields       : regex -> string -> substring list
 
 val map          : regex -> (substring vector -> 'a) -> string -> 'a list
 val app          : regex -> (substring vector -> unit) -> string -> unit
-val fold         : regex 
-                   -> (substring * 'a -> 'a) * (substring vector * 'a -> 'a) 
+val fold         : regex
+                   -> (substring * 'a -> 'a) * (substring vector * 'a -> 'a)
                    -> 'a -> string -> 'a
 
-(* 
+(*
    This structure provides pattern matching with POSIX 1003.2 regular
-   expressions.  
+   expressions.
 
    The form and meaning of Extended and Basic regular expressions are
    described below.  Here R and S denote regular expressions; m and n
@@ -86,7 +86,7 @@ val fold         : regex
         [-a-z]          Match lowercase letter or hyphen (-)
         [0-9a-fA-F]     Match hexadecimal digit
         [[:alnum:]]     Match letter or digit
-        [[:alpha:]]     Match letter 
+        [[:alpha:]]     Match letter
         [[:cntrl:]]     Match ASCII control character
         [[:digit:]]     Match decimal digit; same as [0-9]
         [[:graph:]]     Same as [:print:] but not [:space:]
@@ -101,17 +101,17 @@ val fold         : regex
    Remember that backslash (\) must be escaped as "\\" in SML strings.
 
    [regcomp pat cflags] returns a compiled representation of the
-   regular expression pat.  Raises Regex in case of failure.  
+   regular expression pat.  Raises Regex in case of failure.
 
    [cflag] is the type of compilation flags with the following meanings:
 
    [Extended] : compile as POSIX extended regular expression.
    [Icase]    : compile case-insensitive match.
-   [Newline]  : make the newline character \n significant, so ^ matches 
+   [Newline]  : make the newline character \n significant, so ^ matches
                 just after newline (\n), and $ matches just before \n.
 
    Example: Match SML integer constant:
-   regcomp "^~?[0-9]+$" [Extended] 
+   regcomp "^~?[0-9]+$" [Extended]
 
    Example: Match SML alphanumeric identifier:
    regcomp "^[a-zA-Z0-9][a-zA-Z0-9'_]*$" [Extended]
@@ -134,7 +134,7 @@ val fold         : regex
    beginning of the underlying string.  For a group that takes part in
    the match repeatedly, such as the group (b+) in "(a(b+))*" when
    matched against "babbabbb", the corresponding substring is the last
-   (rightmost) one matched.  
+   (rightmost) one matched.
 
    [eflag] is the type of end flags with the following meaning:
 
@@ -142,7 +142,7 @@ val fold         : regex
    [Noteol] : do not match $ at end of string.
 
    [regexecBool regex eflags s] returns true if some substring of s
-   matches regex, false otherwise.  Equivalent to, but faster than, 
+   matches regex, false otherwise.  Equivalent to, but faster than,
    Option.isSome(regexec regexec eflags s).
 
    [regnexec regex eflags sus] returns SOME(vec) if some substring of
@@ -152,15 +152,15 @@ val fold         : regex
    some regular expression.
 
    [regnexecBool regex eflags sus] returns true if some substring of
-   sus matches regex, false otherwise.  Equivalent to, but faster than, 
+   sus matches regex, false otherwise.  Equivalent to, but faster than,
    Option.isSome(regnexec regexec eflags sus).
 
-   [regmatch { pat, tgt } cflags eflags] is equivalent to 
+   [regmatch { pat, tgt } cflags eflags] is equivalent to
          regexec (regcomp pat cflags) eflags tgt
    but more efficient when the compiled regex is used only once.
 
-   [regmatchBool { pat, tgt } cflags eflags] is equivalent to 
-         regexecBool (regcomp pat cflags) eflags tgt 
+   [regmatchBool { pat, tgt } cflags eflags] is equivalent to
+         regexecBool (regcomp pat cflags) eflags tgt
    but more efficient when the compiled regex is used only once.
 
    [replace regex repl s] finds the (disjoint) substrings of s
@@ -169,7 +169,7 @@ val fold         : regex
    (see below).  Raises Regex if it fails to make progress in
    decomposing s, that is, if regex matches an empty string at the
    head of s or immediately after a previous regex match.
-   Example use: delete all HTML tags from s: 
+   Example use: delete all HTML tags from s:
         replace (regcomp "<[^>]+>" [Extended]) [] s
 
    [replace1 regex repl s] finds the leftmost substring b1 of s
@@ -198,7 +198,7 @@ val fold         : regex
 
    [substitute1 regex f s] finds the leftmost substring b of s
    matching regex, and returns the string obtained from s by replacing
-   that substring by f(b).  Equivalent to 
+   that substring by f(b).  Equivalent to
         replace1 regex [Tr (f, 0)] s
 
    [map regex f s] finds the (disjoint) substrings of s matching regex
@@ -216,41 +216,41 @@ val fold         : regex
    containing any delimiter.  A delimiter is a maximal substring that
    matches regex.  The eflags Notbol and Noteol are set.  Raises Regex
    if it fails to make progress in decomposing s.
-   Example use: 
+   Example use:
         fields (regcomp " *; *" []) "56; 23 ; 22;; 89; 99"
 
    [tokens regex s] returns the list of tokens in s, from left to
    right.  A token is a non-empty maximal substring of s not
    containing any delimiter.  A delimiter is a maximal substring that
    matches regex.  The eflags Notbol and Noteol are set.  Raises Regex
-   if it fails to make progress in decomposing s.  Equivalent to 
+   if it fails to make progress in decomposing s.  Equivalent to
         List.filter (not o Substring.isEmpty) (fields regex s)
 
    Two tokens may be separated by more than one delimiter, whereas two
-   fields are separated by exactly one delimiter.  If the only delimiter 
+   fields are separated by exactly one delimiter.  If the only delimiter
    is the character #"|", then
         "abc||def" contains three fields: "abc" and "" and "def"
         "abc||def" contains two tokens:   "abc" and "def"
 
    [fold regex (fa, fb) e s] finds the (disjoint) substrings b1, ...,
    bn of s matching regex from left to right, and splits s into the
-   substrings 
-        a0, b1, a1, b2, a2, ..., bn, an         
+   substrings
+        a0, b1, a1, b2, a2, ..., bn, an
    where n >= 0 and where a0 is the (possibly empty) substring of s
    preceding the first match, and ai is the (possibly empty) substring
    between the matches bi and b(i+1).  Then it computes and returns
-        fa(an, fb(vecn, ..., fa(a1, fb(vec1, fa(a0, e))) ...))  
+        fa(an, fb(vecn, ..., fa(a1, fb(vec1, fa(a0, e))) ...))
    where veci is the match vector corresponding to bi.  Raises Regex
    if it fails to make progress in decomposing s.
 
    If we define the auxiliary functions
         fun fapp f (x, r) = f x :: r
         fun get i vec = Substring.string(Vector.sub(vec, i))
-   then 
+   then
         map regex f s  = List.rev (fold regex (#2, fapp f) [] s)
         app regex f s  = fold regex (ignore, f o #1) () s
         fields regex s = List.rev (fold regex (op ::, #2) [] s)
-        substitute regex f s = 
-           Substring.concat(List.rev 
+        substitute regex f s =
+           Substring.concat(List.rev
               (fold regex (op ::, fapp (Substring.all o f o get 0)) [] s))
 *)

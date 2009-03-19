@@ -8,7 +8,7 @@ val currentArc   : string
 val fromString   : string -> {isAbs : bool, vol : string, arcs : string list}
 val toString     : {isAbs : bool, vol : string, arcs : string list} -> string
 
-val getVolume    : string -> string 
+val getVolume    : string -> string
 val validVolume  : {isAbs : bool, vol : string} -> bool
 val getParent    : string -> string
 
@@ -29,21 +29,21 @@ val file         : string -> string
 
 val splitBaseExt : string -> {base : string, ext : string option}
 val joinBaseExt  : {base : string, ext: string option} -> string
-val base         : string -> string    
+val base         : string -> string
 val ext          : string -> string option
 
-(* 
+(*
    This module provides OS-independent functions for manipulating
    strings that represent file names and paths in a directory
    structure.  None of these functions accesses the actual filesystem.
-   
-   Definitions: 
+
+   Definitions:
 
    * An arc denotes a directory or file.  Under Unix or DOS, an arc may
    have form "..", ".", "", or "abc", or similar.
 
    * An absolute path has a root: Unix examples include "/", "/a/b";
-   DOS examples include "\", "\a\b", "A:\a\b".  
+   DOS examples include "\", "\a\b", "A:\a\b".
 
    * A relative path is one without a root: Unix examples include
    "..", "a/b"; DOS examples include "..", "a\b", "A:a\b".
@@ -54,31 +54,31 @@ val ext          : string -> string option
 
    * A canonical path contains no occurrences of the empty arc "" or
    the current arc ".", and contains or the parent arc ".." only at
-   the beginning and only if the path is relative.  
+   the beginning and only if the path is relative.
 
    * All functions (except concat) preserve canonical paths.  That is,
    if all arguments are canonical, then so will the result be.
 
-   * All functions are defined so that they work sensibly on canonical 
+   * All functions are defined so that they work sensibly on canonical
    paths.
 
    * There are three groups of functions, corresponding to three ways
    to look at paths, exemplified by the following paths:
 
-        Unix:    d/e/f/a.b.c       and     /d/e/f/a.b.c 
-        DOS:     A:d\e\f\a.b.c     and     A:d\e\f\a.b.c     
+        Unix:    d/e/f/a.b.c       and     /d/e/f/a.b.c
+        DOS:     A:d\e\f\a.b.c     and     A:d\e\f\a.b.c
 
    (1) A path consists of a sequence of arcs, possibly preceded by a
        volume and a root:
 
                           vol  [--- arcs ---]        vol  root  [--- arcs ---]
-        ---------------------------------------------------------------------- 
+        ----------------------------------------------------------------------
         Unix examples:         d  e  f  a.b.c               /   d  e  f  a.b.c
         DOS examples:     A:   d  e  f  a.b          A:     \   d  e  f  a.b
 
    (2) A path consists of a directory part and a (last) file name part:
 
-                          directory   file            directory  file 
+                          directory   file            directory  file
         ------------------------------------------------------------------
         Unix examples:    d/e/f       a.b.c           /d/e/f     a.b.c
         DOS examples:     A:d\e\f     a.b             A:\d\e\f   a.b
@@ -93,15 +93,15 @@ val ext          : string -> string option
 
    GROUP 0: General functions on paths:
 
-   [parentArc] is the arc denoting a parent directory: ".." under 
+   [parentArc] is the arc denoting a parent directory: ".." under
    DOS and Unix.
 
-   [currentArc] is the arc denoting the current directory: "." under 
+   [currentArc] is the arc denoting the current directory: "." under
    DOS and Unix.
 
    [isRelative p] returns true if p is a relative path.
 
-   [isAbsolute p] returns true if p is an absolute path.  
+   [isAbsolute p] returns true if p is an absolute path.
    Equals not (isRelative p).
 
    [validVolume {isAbs, vol}] returns true if vol is a valid volume
@@ -111,7 +111,7 @@ val ext          : string -> string option
    "b:", ..., and "A:", "B:", ...
 
    [getParent p] returns a string denoting the parent directory of p.
-   It holds that getParent p = p if and only if p is a root. 
+   It holds that getParent p = p if and only if p is a root.
 
    [concat (p1, p2)] returns the path consisting of p1 followed by p2.
    Does not preserve canonical paths: concat("a/b", "../c") equals
@@ -134,7 +134,7 @@ val ext          : string -> string option
    Redundant occurrences of the parent arc, the current arc, and the
    empty arc are removed.  The canonical path will never be the empty
    string; the empty path is converted to the current directory path
-   ("." under Unix and DOS).  
+   ("." under Unix and DOS).
 
    [isCanonical p] is equal to (p = mkCanonical p).
 

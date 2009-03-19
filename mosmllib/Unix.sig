@@ -3,15 +3,15 @@
 type proc
 type signal = Signal.signal
 
-val executeInEnv : string * string list * string list -> proc 
-val execute      : string * string list -> proc 
+val executeInEnv : string * string list * string list -> proc
+val execute      : string * string list -> proc
 val streamsOf    : proc -> TextIO.instream * TextIO.outstream
 val kill         : proc * signal -> unit
-val reap         : proc -> Process.status 
+val reap         : proc -> Process.status
 
-(* 
+(*
    This structure allows Moscow ML programs to start other processes
-   and to communicate with them.  
+   and to communicate with them.
 
    Child processes are not automatically terminated when the parent
    (ML) process terminates.  To forcibly terminate a child process pr,
@@ -47,7 +47,7 @@ val reap         : proc -> Process.status
    execute the command cmd with the argument list args in the
    environment env, as a separate process.  Returns a proc value
    representing the new process.  Typically, a string in the env list
-   has the form "NAME=VALUE".  See also Process.getEnv.  
+   has the form "NAME=VALUE".  See also Process.getEnv.
 
    [streamsOf pr] returns a pair (ins, outs) of input and output
    streams associated with process pr.  The standard output of pr is

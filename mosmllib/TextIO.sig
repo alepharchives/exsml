@@ -5,7 +5,7 @@ type vector = string
 
 (* Text input *)
 
-type instream 
+type instream
 
 val openIn       : string -> instream
 val closeIn      : instream -> unit
@@ -20,7 +20,7 @@ val lookahead    : instream -> elem option
 
 type cs (* character source state *)
 
-val scanStream   : ((char, cs) StringCvt.reader -> ('a, cs) StringCvt.reader) 
+val scanStream   : ((char, cs) StringCvt.reader -> ('a, cs) StringCvt.reader)
                    -> instream -> 'a option
 
 val stdIn        : instream
@@ -42,7 +42,7 @@ val stdErr       : outstream
 
 val print        : string -> unit
 
-(* 
+(*
    This structure provides input/output functions on text streams.
    The functions are state-based: reading from or writing to a stream
    changes the state of the stream.  The streams are buffered: output
@@ -160,7 +160,7 @@ val print        : string -> unit
    Raises Io.Io if not supported on istr.
 
    [endPosIn istr] returns the (untranslated) last position of istr.
-   Because of translation, one cannot expect to read 
+   Because of translation, one cannot expect to read
         endPosIn istr - getPosIn istr
    from the current position.
 

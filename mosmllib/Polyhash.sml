@@ -10,21 +10,21 @@ datatype ('key, 'data) bucket_t
   = NIL
   | B of int * 'key * 'data * ('key, 'data) bucket_t
 
-datatype ('key, 'data) hash_table = 
+datatype ('key, 'data) hash_table =
     HT of {hashVal   : 'key -> int,
 	   sameKey   : 'key * 'key -> bool,
 	   not_found : exn,
 	   table     : ('key, 'data) bucket_t Array.array ref,
 	   n_items   : int ref}
 
-local 
+local
     prim_val andb_      : int -> int -> int = 2 "and";
     prim_val lshift_    : int -> int -> int = 2 "shift_left";
-in 
+in
     fun index (i, sz) = andb_ i (sz-1)
 
   (* find smallest power of 2 (>= 32) that is >= n *)
-    fun roundUp n = 
+    fun roundUp n =
 	let fun f i = if (i >= n) then i else f (lshift_ i 1)
 	in f 32 end
 end;
@@ -91,7 +91,7 @@ end;
 	      | b => Array.update(arr, indx, b)
 	  end;
 
-  (* Insert an item if not there already; if it is there already, 
+  (* Insert an item if not there already; if it is there already,
      then return the old data value and leave the table unmodified..
    *)
     fun peekInsert (tbl as HT{hashVal, sameKey, table, n_items, ...}) (key, item) =
@@ -99,13 +99,13 @@ end;
 	    val sz = Array.length arr
 	    val hash = hashVal key
 	    val indx = index (hash, sz)
-	    fun look NIL = 
-		(Array.update(arr, indx, B(hash, key, item, 
+	    fun look NIL =
+		(Array.update(arr, indx, B(hash, key, item,
 					   Array.sub(arr, indx)));
 		 n_items := !n_items + 1;
 		 growTable tbl;
 		 NONE)
-	      | look (B(h, k, v, r)) = 
+	      | look (B(h, k, v, r)) =
 		if hash = h andalso sameKey(key, k) then SOME v
 		else look r
 	in
@@ -208,8 +208,8 @@ end;
 	    mapTbl 0;
 	    HT{hashVal=hashVal,
 	       sameKey=sameKey,
-	       table = ref newArr, 
-	       n_items = ref(!n_items), 
+	       table = ref newArr,
+	       n_items = ref(!n_items),
 	       not_found = not_found}
 	  end (* transform *);
 
@@ -248,10 +248,10 @@ end;
 		else ()
 	  in
 	    mapTbl 0;
-	    HT{hashVal=hashVal, 
-	       sameKey=sameKey, 
-	       table = ref newArr, 
-	       n_items = ref(!n_items), 
+	    HT{hashVal=hashVal,
+	       sameKey=sameKey,
+	       table = ref newArr,
+	       n_items = ref(!n_items),
 	       not_found = not_found}
 	  end (* transform *);
 
@@ -265,10 +265,10 @@ end;
 		mapTbl (i+1))
 	  in
 	    (mapTbl 0) handle _ => ();
-	    HT{hashVal=hashVal, 
+	    HT{hashVal=hashVal,
 	       sameKey=sameKey,
-	       table = ref newArr, 
-	       n_items = ref(!n_items), 
+	       table = ref newArr,
+	       n_items = ref(!n_items),
 	       not_found = not_found}
 	  end (* copy *);
 
@@ -288,5 +288,5 @@ prim_val hash_param : int -> int -> 'a -> int = 3 "hash_univ_param";
 
 fun hash x = hash_param 50 500 x;
 
-fun mkPolyTable (sizeHint, notFound) = 
+fun mkPolyTable (sizeHint, notFound) =
      mkTable (hash, op=) (sizeHint, notFound);

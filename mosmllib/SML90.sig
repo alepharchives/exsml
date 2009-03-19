@@ -17,14 +17,14 @@ val ord     : string -> int
 val explode : string -> string list
 val implode : string list -> string
 
-exception Abs  
-      and Diff 
-      and Exp  
+exception Abs
+      and Diff
+      and Exp
       and Floor
-      and Neg  
-      and Prod 
-      and Sum  
-      and Mod  
+      and Neg
+      and Prod
+      and Sum
+      and Mod
       and Quot
 
 (* Input/output *)

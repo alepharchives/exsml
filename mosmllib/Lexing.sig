@@ -33,7 +33,7 @@ prim_val setLexLastPos    : lexbuf -> int -> unit             = 2 "setfield5"
 prim_val setLexLastAction : lexbuf -> (lexbuf -> obj) -> unit = 2 "setfield6"
 end
 
-(* 
+(*
    These functions are for use in mosmllex-generated lexers.  For
    further information, see the Moscow ML Owner's Manual.  For
    examples, see mosml/examples/lexyacc and mosml/examples/calc.
@@ -55,7 +55,7 @@ end
    carr is a character array, and n is an integer.  The function
    should put at most characters or in carr, starting at character
    number 0, and return the number of characters actually stored.  A
-   return value of 0 means end of input. 
+   return value of 0 means end of input.
 
    A lexer definition (input to mosmllex) consists of fragments of
    this form
@@ -74,7 +74,7 @@ end
    regular expression.
 
    [getLexemeChar lexbuf i] returns character number i in the matched
-   string. 
+   string.
 
    [getLexemeStart lexbuf] returns the start position of the matched
    string (in the input stream).  The first character in the stream
@@ -82,5 +82,5 @@ end
 
    [getLexemeEnd lexbuf] returns the end position, plus one, of the
    matched string (in the input stream).  The first character in the
-   stream has position 0.  
+   stream has position 0.
 *)

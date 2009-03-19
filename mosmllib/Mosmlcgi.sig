@@ -59,7 +59,7 @@ val cgi_request_uri           : string option
 val cgi_request_filename      : string option
 val cgi_is_subreq             : string option
 
-(* 
+(*
    The Mosmlcgi library is for writing CGI programs in Moscow ML.  A
    CGI program may be installed on a WWW server and is invoked in
    response to HTTP requests sent to the server from a web browser,
@@ -77,9 +77,9 @@ val cgi_is_subreq             : string option
    bound to field fnm.
 
    [cgi_field_string fnm] returns SOME(s) where s is a string bound to
-   field name fnm, if any; otherwise NONE.  Equivalent to 
-        case cgi_field_strings fnm of 
-             []     => NONE 
+   field name fnm, if any; otherwise NONE.  Equivalent to
+        case cgi_field_strings fnm of
+             []     => NONE
            | s :: _ => SOME s
 
    [cgi_field_integer (fnm, deflt)] attempts to parse an integer from
@@ -87,7 +87,7 @@ val cgi_is_subreq             : string option
    integer i can be parsed from a prefix of s; otherwise returns deflt.
 
 
-   2. Obtaining field values sent with ENCTYPE="multipart/form-data"  
+   2. Obtaining field values sent with ENCTYPE="multipart/form-data"
    -----------------------------------------------------------------
 
    [cgi_partnames] is a list of the names of the parts of the
@@ -101,8 +101,8 @@ val cgi_is_subreq             : string option
 
    [cgi_part pnm] is SOME(prt) where prt is a part called pnm, if any;
    otherwise NONE.  Equivalent to
-        case cgi_parts pnm of 
-             []       => NONE 
+        case cgi_parts pnm of
+             []       => NONE
            | prt :: _ => SOME prt
 
    [part_fieldnames prt] is the list of field names in part pnm.
@@ -118,9 +118,9 @@ val cgi_is_subreq             : string option
 
    [part_field_string prt fnm] returns SOME(s) where s is a string
    bound to field name fnm in part prt, if any; otherwise NONE.
-   Equivalent to 
-        case part_field_strings prt fnm of 
-             []     => NONE 
+   Equivalent to
+        case part_field_strings prt fnm of
+             []     => NONE
            | s :: _ => SOME s
 
    [part_field_integer prt (fnm, deflt)] attempts to parse an integer

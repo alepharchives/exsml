@@ -44,12 +44,12 @@ val foldl     : (char * 'a -> 'a) -> 'a -> substring -> 'a
 val foldr     : (char * 'a -> 'a) -> 'a -> substring -> 'a
 val app       : (char -> unit) -> substring -> unit
 
-(* 
-   [substring] is the type of substrings of a basestring, an efficient 
+(*
+   [substring] is the type of substrings of a basestring, an efficient
    representation of a piece of a string.
-   A substring (s,i,n) is valid if 0 <= i <= i+n <= size s, 
-                  or equivalently, 0 <= i and 0 <= n and i+n <= size s.  
-   A valid substring (s, i, n) represents the string s[i...i+n-1].  
+   A substring (s,i,n) is valid if 0 <= i <= i+n <= size s,
+                  or equivalently, 0 <= i and 0 <= n and i+n <= size s.
+   A valid substring (s, i, n) represents the string s[i...i+n-1].
    Invariant in the implementation: Any value of type substring is valid.
 
    [substring(s, i, n)] creates the substring (s, i, n), consisting of
@@ -57,7 +57,7 @@ val app       : (char -> unit) -> substring -> unit
    if i<0 or n<0 or i+n > size s.  Equivalent to extract(s, i, SOME n).
 
    [extract(s, i, NONE)] creates the substring (s, i, size s-i)
-   consisting of the tail of s starting at i.  
+   consisting of the tail of s starting at i.
    Raises Subscript if i<0 or i > size s.
 
    [extract(s, i, SOME n)] creates the substring (s, i, n),
@@ -74,9 +74,9 @@ val app       : (char -> unit) -> substring -> unit
 
    [getc sus] returns SOME(c, rst) where c is the first character and
    rst the remainder of sus, if sus is non-empty; otherwise returns
-   NONE.  Note that 
+   NONE.  Note that
         #1 o valOf o scanFn Substring.getc
-   is equivalent to, but more efficient than, 
+   is equivalent to, but more efficient than,
         valOf o StringCvt.scanString scanFn o Substring.string
 
    [first sus] returns SOME c where c is the first character in sus,
@@ -84,10 +84,10 @@ val app       : (char -> unit) -> substring -> unit
 
    [triml k sus] returns sus less its leftmost k characters; or the
    empty string at the end of sus if it has less than k characters.
-   Raises Subscript if k < 0, even in the partial application triml(k). 
+   Raises Subscript if k < 0, even in the partial application triml(k).
 
    [trimr k sus] returns sus less its rightmost k characters; or the
-   empty string at the beginning of sus if it has less than k characters.  
+   empty string at the beginning of sus if it has less than k characters.
    Raises Subscript if k < 0, even in the partial application triml(k).
 
    [sub (sus, k)] returns the k'th character of the substring; that is,
@@ -108,7 +108,7 @@ val app       : (char -> unit) -> substring -> unit
         [s(i), s(i+1), ..., s(i+n-1)]
    where sus = (s, i, n).  Equivalent to String.explode(string ss).
 
-   [isPrefix s1 s2] is true if s1 is a prefix of s2. That is, if there 
+   [isPrefix s1 s2] is true if s1 is a prefix of s2. That is, if there
    exists a string t such that string s1 ^ t = string s2.
 
    [compare (sus1, sus2)] performs lexicographic comparison, using the
@@ -117,8 +117,8 @@ val app       : (char -> unit) -> substring -> unit
    greater than sus2.  Equivalent to, but more efficient than,
        String.compare(string sus1, string sus2).
 
-   [collate cmp (sus1, sus2)] performs lexicographic comparison, using the 
-   given ordering cmp on characters.  Equivalent to, but more efficient 
+   [collate cmp (sus1, sus2)] performs lexicographic comparison, using the
+   given ordering cmp on characters.  Equivalent to, but more efficient
    than, String.collate cmp (string sus1, string sus2).
 
    [dropl p sus] drops the longest prefix (left substring) of sus all
@@ -145,20 +145,20 @@ val app       : (char -> unit) -> substring -> unit
 
                 sus = xxxxfyyyyfzzzz         sus = xxxxzzzz
         ------------------------------------------------------
-        dropl p sus =     fyyyyfzzzz               
-        dropr p sus = xxxxfyyyyf       
+        dropl p sus =     fyyyyfzzzz
+        dropr p sus = xxxxfyyyyf
         takel p sus = xxxx                         xxxxzzzz
         taker p sus =           zzzz               xxxxzzzz
 
-   It also holds that 
+   It also holds that
         concat[takel p sus, dropl p sus] = string sus
-        concat[dropr p sus, taker p sus] = string sus 
+        concat[dropr p sus, taker p sus] = string sus
 
    [splitl p sus] splits sus into a pair (sus1, sus2) of substrings
    where sus1 is the longest prefix (left substring) all of whose
    characters satisfy p, and sus2 is the rest.  That is, sus2 begins
    with the leftmost character not satisfying p.  Disregarding
-   sideeffects, we have: 
+   sideeffects, we have:
         splitl p sus = (takel p sus, dropl p sus).
 
    [splitr p sus] splits sus into a pair (sus1, sus2) of substrings
@@ -175,8 +175,8 @@ val app       : (char -> unit) -> substring -> unit
    [position s (s',i,n)] splits the substring into a pair (pref, suff)
    of substrings, where suff is the longest suffix of (s', i, n) which
    has s as a prefix.  More precisely, let m = size s.  If there is a
-   least index k in i..i+n-m for which s = s'[k..k+m-1], 
-   then the result is       pref = (s', i, k-i) and suff = (s', k, n-(k-i)); 
+   least index k in i..i+n-m for which s = s'[k..k+m-1],
+   then the result is       pref = (s', i, k-i) and suff = (s', k, n-(k-i));
    otherwise the result is  pref = (s', i, n)   and suff = (s', i+n, 0).
 
    [span (sus1, sus2)] returns a substring spanning from the start of
@@ -184,7 +184,7 @@ val app       : (char -> unit) -> substring -> unit
    sus2 must have the same underlying string, and the start of sus1
    must not be to the right of the end of sus2; otherwise raises Span.
 
-   More precisely, if base(sus1) = (s,i,n) and base(sus2) = (s',i',n') 
+   More precisely, if base(sus1) = (s,i,n) and base(sus2) = (s',i',n')
    and s = s' and i <= i'+n', then base(join(sus1, sus2)) = (s, i, i'+n'-i).
    This may be used to compute `span', `union', and `intersection'.
 
@@ -193,26 +193,26 @@ val app       : (char -> unit) -> substring -> unit
    if the sum of their sizes is greater than String.maxSize.
    Equivalent to String.concat(List.map f (explode sus)).
 
-   [tokens p sus] returns the list of tokens in sus, from left to right, 
-   where a token is a non-empty maximal substring of sus not containing 
+   [tokens p sus] returns the list of tokens in sus, from left to right,
+   where a token is a non-empty maximal substring of sus not containing
    any delimiter, and a delimiter is a character satisfying p.
 
-   [fields p sus] returns the list of fields in sus, from left to right, 
-   where a field is a (possibly empty) maximal substring of sus not 
+   [fields p sus] returns the list of fields in sus, from left to right,
+   where a field is a (possibly empty) maximal substring of sus not
    containing any delimiter, and a delimiter is a character satisfying p.
 
    Two tokens may be separated by more than one delimiter, whereas two
-   fields are separated by exactly one delimiter.  If the only delimiter 
+   fields are separated by exactly one delimiter.  If the only delimiter
    is the character #"|", then
         "abc||def" contains two tokens:   "abc" and "def"
         "abc||def" contains three fields: "abc" and "" and "def"
 
-   [foldl f e sus] folds f over sus from left to right.  That is, 
-   evaluates f(s[i+n-1], f( ... f(s[i+1], f(s[i] % e)) ...)) 
-   tail-recursively, where sus = (s, i, n).  
+   [foldl f e sus] folds f over sus from left to right.  That is,
+   evaluates f(s[i+n-1], f( ... f(s[i+1], f(s[i] % e)) ...))
+   tail-recursively, where sus = (s, i, n).
    Equivalent to List.foldl f e (explode sus).
 
-   [foldr f e sus] folds f over sus from right to left.  That is, 
+   [foldr f e sus] folds f over sus from right to left.  That is,
    evaluates f(s[i], f(s[i+1], f(... f(s[i+n-1] % e) ...)))
    tail-recursively, where sus = (s, i, n).
    Equivalent to List.foldr f e (explode sus).

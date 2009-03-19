@@ -1,6 +1,6 @@
 (* Polygdbm -- GNU gdbm persistent polymorphic hashtables -- requires Dynlib *)
 
-type ('key, 'data) table 
+type ('key, 'data) table
 
 exception NotFound
 exception AlreadyThere
@@ -9,7 +9,7 @@ exception Closed
 exception GdbmError of string
 
 val withtable  : string * Gdbm.openmode -> (('key, 'data) table -> 'a) -> 'a
-val add        : ('key, 'data) table -> 'key * 'data -> unit 
+val add        : ('key, 'data) table -> 'key * 'data -> unit
 val insert     : ('key, 'data) table -> 'key * 'data -> unit
 val find       : ('key, 'data) table -> 'key -> 'data
 val peek       : ('key, 'data) table -> 'key -> 'data option
@@ -21,10 +21,10 @@ val listItems  : ('key, 'data) table -> ('key * 'data) list
 val app        : ('key * 'data -> unit) -> ('key, 'data) table -> unit
 val map        : ('key * 'data -> 'a) -> ('key, 'data) table -> 'a list
 val fold       : ('key * 'data * 'a -> 'a) -> 'a -> ('key, 'data) table -> 'a
-val fastwrite  : bool ref    
+val fastwrite  : bool ref
 val reorganize : ('key, 'data) table -> unit
 
-(* 
+(*
    [('key, 'data) table] is the type of an opened table with keys of
    type 'key and associated values of type 'data.  The actual values
    of type 'key and 'data cannot contain function closures or abstract
@@ -69,13 +69,13 @@ val reorganize : ('key, 'data) table -> unit
    write mode.
 
    [listKeys db] returns a list of all keys in db in an unspecified
-   order.  
+   order.
 
    [numItems db] is the number of (key, value) pairs in db.
    Equivalent to length(listKeys db).
 
-   [listItems db] returns a list of all (key, value) pairs in db in some 
-   order.  Equivalent to 
+   [listItems db] returns a list of all (key, value) pairs in db in some
+   order.  Equivalent to
         List.map (fn key => (key, find(db,key))) (listKeys db)
 
    [app f db] is equivalent to List.app f (listItems db), provided the
@@ -85,10 +85,10 @@ val reorganize : ('key, 'data) table -> unit
    [map f db] is equivalent to List.map f (listItems db), provided the
    function f does not change the set of keys in the table.
    Otherwise the result and effect are unpredictable.
-   
-   [fold f a db] is equivalent to 
+
+   [fold f a db] is equivalent to
         List.foldr (fn ((k, v), r) => f(k, v, r)) a (listItems db)
-   provided the function f does not change the set of keys in the 
+   provided the function f does not change the set of keys in the
    table. Otherwise the result and effect are unpredictable.
 
    [fastwrite] can be set to speed up writes to a table.  By default,

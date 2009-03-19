@@ -19,7 +19,7 @@ val vector    : 'a list -> 'a vector
 
 val getOpt    : 'a option * 'a -> 'a
 val isSome    : 'a option -> bool
-val valOf     : 'a option -> 'a      
+val valOf     : 'a option -> 'a
 
 exception Empty
 
@@ -28,10 +28,10 @@ val app       : ('a -> unit) -> 'a list -> unit
 val foldl     : ('a * 'b -> 'b) -> 'b -> 'a list -> 'b
 val foldr     : ('a * 'b -> 'b) -> 'b -> 'a list -> 'b
 val hd        : 'a list -> 'a                     (* Empty     *)
-val length    : 'a list -> int 
+val length    : 'a list -> int
 val map       : ('a -> 'b) -> 'a list -> 'b list
 val null      : 'a list -> bool
-val rev       : 'a list -> 'a list 
+val rev       : 'a list -> 'a list
 val tl        : 'a list -> 'a list                (* Empty     *)
 
 val print     : string -> unit

@@ -31,14 +31,14 @@ val fromInt   : int -> int
 val toLarge   : int -> int
 val fromLarge : int -> int
 
-val scan      : StringCvt.radix 
+val scan      : StringCvt.radix
                 -> (char, 'a) StringCvt.reader -> (int, 'a) StringCvt.reader
 val fmt       : StringCvt.radix -> int -> string
 
 val toString  : int -> string
 val fromString : string -> int option   (* Overflow      *)
 
-(* 
+(*
    [precision] is SOME n, where n is the number of significant bits in an
    integer.  In Moscow ML n is 31 in 32-bit architectures and 63 in 64-bit
    architectures.
@@ -61,7 +61,7 @@ val fromString : string -> int option   (* Overflow      *)
    Overflow if i is the most negative integer.
 
    [mod] is the remainder for div.  If q = i div d and r = i mod d then
-   it holds that qd + r = i, where either 0 <= r < d or d < r <= 0.  
+   it holds that qd + r = i, where either 0 <= r < d or d < r <= 0.
    Evaluating i mod 0 raises Div, whereas i mod ~1 = 0, for all i.
 
    [quot] is integer division, rounding towards zero.  Evaluating
@@ -85,7 +85,7 @@ val fromString : string -> int option   (* Overflow      *)
    [>]
    [>=] are the usual comparisons on integers.
 
-   [compare(x, y)] returns LESS, EQUAL, or GREATER, according 
+   [compare(x, y)] returns LESS, EQUAL, or GREATER, according
    as x is less than, equal to, or greater than y.
 
    [sameSign(x, y)] is true iff sign x = sign y.
@@ -101,7 +101,7 @@ val fromString : string -> int option   (* Overflow      *)
    [fmt radix i] returns a string representing i, in the radix (base)
    specified by radix.
 
-     radix    description                     output format  
+     radix    description                     output format
      ------------------------------------------------------
       BIN     signed binary      (base  2)    ~?[01]+
       OCT     signed octal       (base  8)    ~?[0-7]+
@@ -110,11 +110,11 @@ val fromString : string -> int option   (* Overflow      *)
 
    [toString i] returns a string representing i in signed decimal format.
    Equivalent to (fmt DEC i).
-   
+
    [fromString s] returns SOME(i) if a decimal integer numeral can be
    scanned from a prefix of string s, ignoring any initial whitespace;
    returns NONE otherwise.  A decimal integer numeral must have form,
-   after possible initial whitespace: 
+   after possible initial whitespace:
         [+~-]?[0-9]+
 
    [scan radix getc charsrc] attempts to scan an integer numeral
@@ -125,7 +125,7 @@ val fromString : string -> int option   (* Overflow      *)
    is the unused part of the character source.  A numeral must have
    form, after possible initial whitespace:
 
-     radix    input format 
+     radix    input format
      ---------------------------
       BIN     [+~-]?[0-1]+
       OCT     [+~-]?[0-7]+

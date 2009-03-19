@@ -30,7 +30,7 @@ val max        : word * word -> word
 
 val toString   : word -> string
 val fromString : string -> word option
-val scan       : StringCvt.radix 
+val scan       : StringCvt.radix
                -> (char, 'a) StringCvt.reader -> (word, 'a) StringCvt.reader
 val fmt        : StringCvt.radix -> word -> string
 
@@ -46,7 +46,7 @@ val toLargeWord   : word -> Word.word
 val toLargeWordX  : word -> Word.word   (* with sign extension *)
 val fromLargeWord : Word.word -> word
 
-(* 
+(*
    [word] is the type of 8-bit words, or 8-bit unsigned integers in
    the range 0..255.
 
@@ -71,7 +71,7 @@ val fromLargeWord : Word.word -> word
    [~>>(w, k)] returns the word resulting from shifting w right by k
    bits.  The bits shifted in are replications of the left-most bit:
    the `sign bit', so this is an arithmetical shift.  Consequently,
-   for k >= wordSize and wordToInt w >= 0 the result is all 0-bits, and 
+   for k >= wordSize and wordToInt w >= 0 the result is all 0-bits, and
    for k >= wordSize and wordToInt w <  0 the result is all 1-bits.
 
    To make <<, >>, and ~>> infix, use the declaration:
@@ -91,7 +91,7 @@ val fromLargeWord : Word.word -> word
    [>]
    [>=] compare words as unsigned integers.
 
-   [compare(w1, w2)] returns LESS, EQUAL, or GREATER, according 
+   [compare(w1, w2)] returns LESS, EQUAL, or GREATER, according
    as w1 is less than, equal to, or greater than w2 (as unsigned integers).
 
    [min(w1, w2)] returns the smaller of w1 and w2 (as unsigned integers).
@@ -101,16 +101,16 @@ val fromLargeWord : Word.word -> word
    [fmt radix w] returns a string representing w, in the radix (base)
    specified by radix.
 
-     radix    description                     output format  
-     ------------------------------------------------------  
-      BIN     unsigned binary      (base  2)  [01]+         
-      OCT     unsigned octal       (base  8)  [0-7]+          
-      DEC     unsigned decimal     (base 10)  [0-9]+          
-      HEX     unsigned hexadecimal (base 16)  [0-9A-F]+       
+     radix    description                     output format
+     ------------------------------------------------------
+      BIN     unsigned binary      (base  2)  [01]+
+      OCT     unsigned octal       (base  8)  [0-7]+
+      DEC     unsigned decimal     (base 10)  [0-9]+
+      HEX     unsigned hexadecimal (base 16)  [0-9A-F]+
 
    [toString w] returns a string representing w in unsigned
    hexadecimal format.  Equivalent to (fmt HEX w).
-   
+
    [fromString s] returns SOME(w) if a hexadecimal unsigned numeral
    can be scanned from a prefix of string s, ignoring any initial
    whitespace; returns NONE otherwise.  Raises Overflow if the scanned
@@ -127,7 +127,7 @@ val fromLargeWord : Word.word -> word
    Overflow if the scanned number cannot be represented as a word.  A
    numeral must have form, after possible initial whitespace:
 
-     radix    input format 
+     radix    input format
      -------------------------------------
       BIN     (0w)?[0-1]+
       OCT     (0w)?[0-7]+
@@ -136,16 +136,16 @@ val fromLargeWord : Word.word -> word
 
    [toInt w] returns the integer in the range 0..255 represented by w.
 
-   [toIntX w] returns the signed integer (in the range ~128..127) 
+   [toIntX w] returns the signed integer (in the range ~128..127)
    represented by bit-pattern w.
-   
+
    [fromInt i] returns the word holding the 8 least significant bits of i.
 
    [toLargeInt w] returns the integer in the range 0..255 represented by w.
 
-   [toLargeIntX w] returns the signed integer (in the range ~128..127) 
+   [toLargeIntX w] returns the signed integer (in the range ~128..127)
    represented by bit-pattern w.
-   
+
    [fromLargeInt i] returns the word holding the 8 least significant bits of i.
 
    [toLargeWord w] returns the Word.word value corresponding to w.

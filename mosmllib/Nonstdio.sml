@@ -89,7 +89,7 @@ type file_perm = int;
 
 datatype open_flag =
     O_APPEND                       (* `open' for appending *)
-  | O_BINARY                       (* `open' in binary mode *)    
+  | O_BINARY                       (* `open' in binary mode *)
   | O_CREAT                        (* create the file if nonexistent *)
   | O_EXCL                         (* fails if the file exists *)
   | O_RDONLY                       (* `open' read-only *)
@@ -152,10 +152,10 @@ val open_out_exe_ =
   open_out_gen [O_WRONLY, O_TRUNC, O_CREAT, O_BINARY]
                (s_irall + s_iwall + s_ixall);
 
-fun raiseIo fcn nam exn = 
+fun raiseIo fcn nam exn =
     raise SysErr ("Nonstdio." ^ fcn ^ " on " ^ nam, NONE);
 
-fun raiseClosed fcn nam = 
+fun raiseClosed fcn nam =
     raiseIo fcn nam (Fail "Stream is closed");
 
 fun open_in_bin s =

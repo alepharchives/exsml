@@ -9,20 +9,20 @@ val exists : ('a * 'b -> bool) -> 'a list * 'b list -> bool
 val foldr  : ('a * 'b * 'c -> 'c) -> 'c -> 'a list * 'b list -> 'c
 val foldl  : ('a * 'b * 'c -> 'c) -> 'c -> 'a list * 'b list -> 'c
 
-(* 
+(*
    These functions process pairs of lists.  No exception is raised
    when the lists are found to be of unequal length.  Instead the
    excess elements from the longer list are disregarded.
 
    [zip (xs, ys)] returns the list of pairs of corresponding elements
-   from xs and ys.  
+   from xs and ys.
 
    [unzip xys] returns a pair (xs, ys), where xs is the list of first
    components of xys, and ys is the list of second components from
    xys.  Hence zip (unzip xys) has the same result and effect as xys.
 
    [map f (xs, ys)] applies function f to the pairs of corresponding
-   elements of xs and ys and returns the list of results.  Hence 
+   elements of xs and ys and returns the list of results.  Hence
    map f (xs, ys) has the same result and effect as List.map f (zip (xs, ys)).
 
    [app f (xs, ys)] applies function f to the pairs of corresponding
@@ -43,13 +43,13 @@ val foldl  : ('a * 'b * 'c -> 'c) -> 'c -> 'a list * 'b list -> 'c
 
    [foldr f e (xs, ys)] evaluates f(x1, y1, f(x2, y2, f(..., f(xn, yn, e))))
    where xs = [x1, x2, ..., x(n-1), xn, ...],
-         ys = [y1, y2, ..., y(n-1), yn, ...], 
+         ys = [y1, y2, ..., y(n-1), yn, ...],
    and    n = min(length xs, length ys).
    Equivalent to List.foldr (fn ((x, y), r) => f(x, y, r)) e (zip(xs, ys)).
 
    [foldl f e (xs, ys)] evaluates f(xn, yn, f( ..., f(x2, y2, f(x1, y1, e))))
-   where xs = [x1, x2, ..., x(n-1), xn, ...], 
-         ys = [y1, y2, ..., y(n-1), yn, ...], 
+   where xs = [x1, x2, ..., x(n-1), xn, ...],
+         ys = [y1, y2, ..., y(n-1), yn, ...],
    and    n = min(length xs, length ys).
    Equivalent to List.foldl (fn ((x, y), r) => f(x, y, r)) e (zip(xs, ys)).
 *)

@@ -1,4 +1,4 @@
-(* mosml/src/dynlibs/mpq/Postgres.sml.  
+(* mosml/src/dynlibs/mpq/Postgres.sml.
    sestoft@dina.kvl.dk -- 1998 -- version 0.05 of 2000-04-28 *)
 
 open Dynlib;
@@ -8,7 +8,7 @@ exception Closed and Null;
 (* Obtain a handle pointing to the library defining the C functions: *)
 
 val dlh = dlopen { lib = "libmpq.so",
-		   flag = RTLD_LAZY, 
+		   flag = RTLD_LAZY,
 		   global = false }
 
 prim_type pgconn_	(* an abstract object containing a PGconn pointer *)
@@ -17,7 +17,7 @@ type dbconn = { conn : pgconn_, closed : bool ref }
 
 prim_type dbresult	(* a finalized object containing a PGResult pointer *)
 
-(* The alphabetical order of constructors below must agree 
+(* The alphabetical order of constructors below must agree
    with function pq_resultstatus in file mpq.c *)
 
 datatype dbresultstatus =
@@ -37,28 +37,28 @@ val pq_setdb : { dbhost    : string option, (* 0  database server host *)
 	         dbpwd     : string option, (* 4  user passwd          *)
 	         dbtty     : string option, (* 5  tty for error log    *)
 	         dbuser    : string option  (* 6  database user        *)
-	       } -> pgconn_ = 
+	       } -> pgconn_ =
     app1 (dlsym dlh "pq_setdb")
 
-val pq_db : pgconn_ -> string = 
+val pq_db : pgconn_ -> string =
     app1 (dlsym dlh "pq_db")
 
-val pq_host : pgconn_ -> string option = 
+val pq_host : pgconn_ -> string option =
     app1 (dlsym dlh "pq_host")
 
-val pq_options : pgconn_ -> string = 
+val pq_options : pgconn_ -> string =
     app1 (dlsym dlh "pq_options")
 
-val pq_port : pgconn_ -> string = 
+val pq_port : pgconn_ -> string =
     app1 (dlsym dlh "pq_port")
 
-val pq_tty : pgconn_ -> string = 
+val pq_tty : pgconn_ -> string =
     app1 (dlsym dlh "pq_tty")
 
-val pq_status : pgconn_ -> bool = 
+val pq_status : pgconn_ -> bool =
     app1 (dlsym dlh "pq_status")
 
-val pq_errormessage : pgconn_ -> string option = 
+val pq_errormessage : pgconn_ -> string option =
     app1 (dlsym dlh "pq_errormessage")
 
 val pq_finish : pgconn_ -> unit =
@@ -121,34 +121,34 @@ fun checknot (ref false) = ()
 
 (* Monitoring the database connection *)
 
-fun db {conn, closed} = 
+fun db {conn, closed} =
     (checknot closed; pq_db conn)
 
-fun host {conn, closed} = 
+fun host {conn, closed} =
     (checknot closed; pq_host conn)
 
-fun options {conn, closed} = 
+fun options {conn, closed} =
     (checknot closed; pq_options conn)
 
-fun port {conn, closed} = 
+fun port {conn, closed} =
     (checknot closed; pq_port conn)
 
-fun tty {conn, closed} = 
+fun tty {conn, closed} =
     (checknot closed; pq_tty conn)
 
-fun status {conn, closed} = 
+fun status {conn, closed} =
     (checknot closed; pq_status conn)
 
-fun errormessage {conn, closed} : string option = 
+fun errormessage {conn, closed} : string option =
     (checknot closed; pq_errormessage conn)
 
-fun reset {conn, closed} = 
+fun reset {conn, closed} =
     (checknot closed; pq_reset conn)
 
 (* Query execution and result set access *)
 
 fun execute {conn, closed} query =
-    (checknot closed; 
+    (checknot closed;
      (pq_exec conn query) handle Fail _ => errormsg "execute" conn)
 
 fun resultstatus dbres =
@@ -170,7 +170,7 @@ fun fnames dbres =
     Vector.tabulate(nfields dbres, pq_fname dbres)
 
 fun fnumber dbres fname =
-    let val i = pq_fnumber dbres fname 
+    let val i = pq_fnumber dbres fname
     in if i < 0 then NONE else SOME i end
 
 fun fsize dbres fno =
@@ -192,7 +192,7 @@ fun getstring dbres fno tupno =
     if pq_isnull dbres tupno fno then
 	raise Null
     else
-	pq_getstring dbres tupno fno 
+	pq_getstring dbres tupno fno
 
 fun pq_getdatetime dbres fno tupno : Date.date =
     case Date.fromString (pq_getstring dbres fno tupno) of
@@ -206,7 +206,7 @@ fun getdatetime dbres fno tupno =
 	pq_getdatetime dbres tupno fno
 
 fun pq_gettime dbres fno tupno : int * int * int =
-    let val s = pq_getstring dbres fno tupno 
+    let val s = pq_getstring dbres fno tupno
 	open Substring (* for getc, all *)
 	fun getint src = Option.valOf (Int.scan StringCvt.DEC getc src)
 	fun drop p     = StringCvt.dropl p getc
@@ -214,7 +214,7 @@ fun pq_gettime dbres fno tupno : int * int * int =
 	val (hour, src1) = getint (all s)
 	val (min,  src2) = getint (drop isSep src1)
 	val (sec,  src3) = getint (drop isSep src2)
-    in 
+    in
 	(hour, min, sec)
     end
     handle Option.Option => raise Fail "Postgres.pq_gettime"
@@ -226,7 +226,7 @@ fun gettime dbres fno tupno =
 	pq_gettime dbres tupno fno
 
 fun pq_getdate dbres fno tupno : int * int * int =
-    let val s = pq_getstring dbres fno tupno 
+    let val s = pq_getstring dbres fno tupno
 	open Substring (* for getc, all *)
 	fun getint src = Option.valOf (Int.scan StringCvt.DEC getc src)
 	fun drop p     = StringCvt.dropl p getc
@@ -234,7 +234,7 @@ fun pq_getdate dbres fno tupno : int * int * int =
 	val (month, src1) = getint (all s)
 	val (day,   src2) = getint (drop isSep src1)
 	val (year,  src3) = getint (drop isSep src2)
-    in 
+    in
 	(year, month, day)
     end
     handle Option.Option => raise Fail "Postgres.pq_getdate"
@@ -249,7 +249,7 @@ fun getbool dbres fno tupno =
     if pq_isnull dbres tupno fno then
 	raise Null
     else
-	pq_getbool dbres tupno fno 
+	pq_getbool dbres tupno fno
 
 fun isnull dbres fno tupno =
     pq_isnull dbres tupno fno
@@ -268,8 +268,8 @@ datatype dynval =
   | Bytea of Word8Array.array		(* psql bytea           *)
   | NullVal				(* psql NULL            *)
 
-datatype dyntype = 
-    BoolTy | IntTy | RealTy | StringTy | DateTy | TimeTy | DateTimeTy 
+datatype dyntype =
+    BoolTy | IntTy | RealTy | StringTy | DateTy | TimeTy | DateTimeTy
   | OidTy | ByteArrTy | UnknownTy of oid
 
 (* A translation from Postgres types to Moscow ML types: *)
@@ -287,7 +287,7 @@ fun totag "bool"     = SOME BoolTy
   | totag "oid"      = SOME OidTy
   | totag "bytea"    = SOME ByteArrTy
   | totag _          = NONE
-    
+
 (* Translation from Moscow ML types to Postgres types: *)
 
 fun fromtag BoolTy     = "bool"
@@ -301,31 +301,31 @@ fun fromtag BoolTy     = "bool"
   | fromtag ByteArrTy  = "bytea"
   | fromtag (UnknownTy _) = raise Fail "Postgres.fromtag"
 
-local 
+local
     val typetable = ref [] : (oid * dyntype) list ref
 in
-    fun settypetable pconn : unit = 
+    fun settypetable pconn : unit =
 	let (* Get the oid-to-typname translation from PostgreSQL: *)
 	    val res = execute pconn "select typname as type, oid from pg_type"
-	    val tups = 
-		List.tabulate(ntuples res, 
-			      fn tupno => (pq_getstring res tupno 0, 
+	    val tups =
+		List.tabulate(ntuples res,
+			      fn tupno => (pq_getstring res tupno 0,
 					   pq_getint res tupno 1))
-	    fun addty ((tyname, oid), res) = 
+	    fun addty ((tyname, oid), res) =
 		case totag tyname of
 		    NONE     => res
 		  | SOME tag => (oid, tag) :: res
-	in 
+	in
 	    typetable := List.foldr addty [] tups
 	end
-    
-    fun typeof oid = 
+
+    fun typeof oid =
 	let fun h [] = UnknownTy oid
 	      | h ((k, tyno) :: rest) = if k = oid then tyno else h rest
 	in h (!typetable) end
 end
 
-fun ftype dbres fno = 
+fun ftype dbres fno =
     typeof (pq_ftype dbres fno)
 
 fun ftypes dbres =
@@ -347,7 +347,7 @@ fun copytableto (pconn as { conn, closed } : dbconn,
     let val res = execute pconn ("copy " ^ tablename ^ " to stdout");
 	fun loop NONE     = ()
 	  | loop (SOME s) = (put s; loop (pq_getline conn))
-    in 
+    in
 	case resultstatus res of
 	    Copy_out => (loop (pq_getline conn); pq_endcopy conn)
 	  | _        => raise Fail "Postgres.copytableto"
@@ -362,11 +362,11 @@ fun copytablefrom (pconn as { conn, closed } : dbconn,
 		tablename : string,
 		useput : (string -> unit) -> unit) : unit =
     let val res = execute pconn ("copy " ^ tablename ^ " from stdin");
-	val putline = pq_putline conn 
-    in 
+	val putline = pq_putline conn
+    in
 	case resultstatus res of
 	    Copy_in => (useput putline;
-			pq_putline conn "\\.\n"; 
+			pq_putline conn "\\.\n";
 			pq_endcopy conn)
 	  | _       => raise Fail "Postgres.copytablefrom"
     end
@@ -381,12 +381,12 @@ fun openbase (args as
 	        dbuser    : string option  (* 6  database user        *)
 		}) : dbconn =
     let val conn = pq_setdb args
-    in 
-	if pq_status conn then 
-	    let val pconn = { conn = conn, closed = ref false } 
+    in
+	if pq_status conn then
+	    let val pconn = { conn = conn, closed = ref false }
 	    in (* The typetable is created anew for each database opened: *)
-		settypetable pconn; 
-		pconn 
+		settypetable pconn;
+		pconn
 	    end
 	else
 	    errormsg "openbase" conn
@@ -397,46 +397,46 @@ fun closebase { conn : pgconn_, closed : bool ref } =
 
 fun getdynfield dbres fno : int -> dynval =
     case ftype dbres fno of
-	BoolTy     => (fn tupno => 
+	BoolTy     => (fn tupno =>
 		       if pq_isnull dbres tupno fno then NullVal
 		       else Bool (pq_getbool dbres tupno fno))
-      | IntTy      => (fn tupno => 
+      | IntTy      => (fn tupno =>
 		       if pq_isnull dbres tupno fno then NullVal
 		       else Int (pq_getint dbres tupno fno))
-      | RealTy     => (fn tupno => 
+      | RealTy     => (fn tupno =>
 		       if pq_isnull dbres tupno fno then NullVal
 		       else Real (pq_getreal dbres tupno fno))
-      | StringTy   => (fn tupno => 
+      | StringTy   => (fn tupno =>
 		       if pq_isnull dbres tupno fno then NullVal
 		       else String (pq_getstring dbres tupno fno))
-      | TimeTy     => (fn tupno => 
+      | TimeTy     => (fn tupno =>
 		       if pq_isnull dbres tupno fno then NullVal
 		       else Time (pq_gettime dbres tupno fno))
-      | DateTy     => (fn tupno => 
+      | DateTy     => (fn tupno =>
 		       if pq_isnull dbres tupno fno then NullVal
 		       else Date (pq_getdate dbres tupno fno))
-      | DateTimeTy => (fn tupno => 
+      | DateTimeTy => (fn tupno =>
 		       if pq_isnull dbres tupno fno then NullVal
 		       else DateTime (pq_getdatetime dbres tupno fno))
       | OidTy     => raise Fail "Postgres.getdynfield: unimplemented: OidTy"
       | ByteArrTy => raise Fail "Postgres.getdynfield: unimplemented: ByteArrTy"
-      | UnknownTy oid => 
-	raise Fail ("Postgres.getdynfield: unknown type, oid = " 
+      | UnknownTy oid =>
+	raise Fail ("Postgres.getdynfield: unknown type, oid = "
 		    ^ Int.toString oid)
 
 fun applyto x f = f x
 
-fun getdyntup dbres : int -> dynval vector = 
+fun getdyntup dbres : int -> dynval vector =
     let val getters = Vector.tabulate(nfields dbres, getdynfield dbres)
     in fn fieldno => Vector.map (applyto fieldno) getters end
 
 fun getdyntups dbres : dynval vector vector =
     Vector.tabulate(ntuples dbres, getdyntup dbres)
 
-local 
+local
     fun i2s i = StringCvt.padLeft #"0" 2 (Int.toString i)
     fun fmttrip sep (a,b,c) = String.concat[i2s a, sep, i2s b, sep, i2s c]
-in 
+in
     fun dynval2s (Bool b)       = Bool.toString b
       | dynval2s (Int i)        = Int.toString  i
       | dynval2s (Real r)       = Real.toString r
@@ -456,10 +456,10 @@ local
     infix &&
 in
 
-fun formattable (dbres : dbresult) = 
+fun formattable (dbres : dbresult) =
     let fun (f o g) x = f (g x)
 	val fieldnms = prmap (th o $) (vec2list (fnames dbres))
-	fun fmtval dynval = 
+	fun fmtval dynval =
 	    case dynval of
 		Int  _ => tda "ALIGN=RIGHT" ($ (dynval2s dynval))
 	      | Real _ => tda "ALIGN=RIGHT" ($ (dynval2s dynval))
@@ -470,9 +470,9 @@ fun formattable (dbres : dbresult) =
 	tablea "BORDER" (tr fieldnms && prsep Nl fmtrow tuples)
     end
 
-fun showquery (dbconn : dbconn) (sql : string) : wseq = 
+fun showquery (dbconn : dbconn) (sql : string) : wseq =
     let val dbres = execute dbconn sql
-    in 
+    in
 	case resultstatus dbres of
 	    Tuples_ok => formattable dbres
 	  | _         => $ "Error: Database query failed or was not a SELECT"

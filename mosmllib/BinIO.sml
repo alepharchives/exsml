@@ -20,10 +20,10 @@ prim_type in_channel and out_channel;
 
 (* Opening and closing files in binary mode: *)
 
-local 
+local
     datatype open_flag =
 	O_APPEND                       (* `open' for appending *)
-      | O_BINARY                       (* `open' in binary mode *)    
+      | O_BINARY                       (* `open' in binary mode *)
       | O_CREAT                        (* create the file if nonexistent *)
       | O_EXCL                         (* fails if the file exists *)
       | O_RDONLY                       (* `open' read-only *)
@@ -32,8 +32,8 @@ local
       | O_TRUNC                        (* truncate the file to 0 if exists *)
       | O_WRONLY                       (* `open' write-only *)
 
-    type file_perm = int;	
-    prim_val sys_open : string -> open_flag list -> file_perm -> int 
+    type file_perm = int;
+    prim_val sys_open : string -> open_flag list -> file_perm -> int
 						= 3 "sys_open"
 
     prim_val open_descriptor_in  : int -> in_channel  = 1 "open_descriptor";
@@ -47,11 +47,11 @@ local
     prim_val s_irall : file_perm = 0 "s_irall";
     prim_val s_iwall : file_perm = 0 "s_iwall";
 in
-    val caml_open_in_bin = 
+    val caml_open_in_bin =
 	caml_open_in_gen [O_RDONLY, O_BINARY] 0;
-	
+
     val caml_open_out_bin =
-	caml_open_out_gen [O_WRONLY, O_TRUNC,  O_CREAT, O_BINARY] 
+	caml_open_out_gen [O_WRONLY, O_TRUNC,  O_CREAT, O_BINARY]
 	                  (s_irall + s_iwall);
 
     val caml_open_out_bin_append =
@@ -65,17 +65,17 @@ type instream = { closed: bool, ic: in_channel, name : string } ref;
 
 prim_val inToText : instream -> TextIO.instream = 1 "identity"
 
-fun raiseIo fcn nam exn = 
+fun raiseIo fcn nam exn =
     raise Io {function = fcn, name = nam, cause = exn};
 
 fun openIn (s : string) : instream =
     ref {closed=false, ic=caml_open_in_bin s, name=s}
     handle exn as SysErr _ => raiseIo "openIn" s exn;
 
-fun closeIn (is : instream) : unit = 
+fun closeIn (is : instream) : unit =
     TextIO.closeIn (inToText is)
 
-fun input (is : instream) : vector = 
+fun input (is : instream) : vector =
     fromString (TextIO.input (inToText is))
 
 fun inputAll (is : instream) : vector =
@@ -99,7 +99,7 @@ fun lookahead (is : instream) : elem option =
     case TextIO.lookahead (inToText is) of
 	NONE   => NONE
       | SOME c => SOME (fromChar c);
-    
+
 
 (* Binary output: *)
 

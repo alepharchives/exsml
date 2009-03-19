@@ -15,9 +15,9 @@ val sub      : array * int -> elem
 val update   : array * int * elem -> unit
 val extract  : array * int * int option -> vector
 
-val copy     : {src: array,  si: int, len: int option, 
+val copy     : {src: array,  si: int, len: int option,
                 dst: array, di: int} -> unit
-val copyVec  : {src: vector, si: int, len: int option, 
+val copyVec  : {src: vector, si: int, len: int option,
                 dst: array, di: int} -> unit
 
 val app      : (elem -> unit) -> array -> unit
@@ -30,7 +30,7 @@ val foldli   : (int * elem * 'b -> 'b) -> 'b -> array * int * int option -> 'b
 val foldri   : (int * elem * 'b -> 'b) -> 'b -> array * int * int option -> 'b
 val modifyi  : (int * elem -> elem) -> array * int * int option -> unit
 
-(* 
+(*
    [array] is the type of one-dimensional, mutable, zero-based
    constant-time-access arrays with elements of type Word8.word, that
    is, 8-bit words.  Arrays a1 and a2 are equal if both were created

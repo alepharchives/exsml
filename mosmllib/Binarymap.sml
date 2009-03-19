@@ -1,6 +1,6 @@
-(* Binarymap -- modified for Moscow ML 
+(* Binarymap -- modified for Moscow ML
  * from SML/NJ library v. 0.2 file binary-dict.sml.
- * COPYRIGHT (c) 1993 by AT&T Bell Laboratories.  
+ * COPYRIGHT (c) 1993 by AT&T Bell Laboratories.
  * See file mosml/copyrght/copyrght.att for details.
  *
  * This code was adapted from Stephen Adams' binary tree implementation
@@ -45,14 +45,14 @@ exception NotFound
 
 fun wt (i : int) = 3 * i
 
-datatype ('key, 'a) dict = 
+datatype ('key, 'a) dict =
     DICT of ('key * 'key -> order) * ('key, 'a) tree
 and ('key, 'a) tree =
-    E 
-  | T of {key   : 'key, 
-	  value : 'a, 
-	  cnt   : int, 
-	  left  : ('key, 'a) tree, 
+    E
+  | T of {key   : 'key,
+	  value : 'a,
+	  cnt   : int,
+	  left  : ('key, 'a) tree,
 	  right : ('key, 'a) tree}
 
 fun treeSize E            = 0
@@ -64,22 +64,22 @@ local
     fun N(k,v,E,E) = T{key=k,value=v,cnt=1,left=E,right=E}
       | N(k,v,E,r as T n) = T{key=k,value=v,cnt=1+(#cnt n),left=E,right=r}
       | N(k,v,l as T n,E) = T{key=k,value=v,cnt=1+(#cnt n),left=l,right=E}
-      | N(k,v,l as T n,r as T n') = 
+      | N(k,v,l as T n,r as T n') =
           T{key=k,value=v,cnt=1+(#cnt n)+(#cnt n'),left=l,right=r}
 
-    fun single_L (a,av,x,T{key=b,value=bv,left=y,right=z,...}) = 
+    fun single_L (a,av,x,T{key=b,value=bv,left=y,right=z,...}) =
           N(b,bv,N(a,av,x,y),z)
       | single_L _ = raise Match
-    fun single_R (b,bv,T{key=a,value=av,left=x,right=y,...},z) = 
+    fun single_R (b,bv,T{key=a,value=av,left=x,right=y,...},z) =
           N(a,av,x,N(b,bv,y,z))
       | single_R _ = raise Match
-    fun double_L (a,av,w,T{key=c,value=cv, 
+    fun double_L (a,av,w,T{key=c,value=cv,
 			   left=T{key=b,value=bv,left=x,right=y,...},
 			   right=z,...}) =
           N(b,bv,N(a,av,w,x),N(c,cv,y,z))
       | double_L _ = raise Match
     fun double_R (c,cv,T{key=a,value=av,left=w,
-			 right=T{key=b,value=bv,left=x,right=y,...},...},z) = 
+			 right=T{key=b,value=bv,left=x,right=y,...},...},z) =
           N(b,bv,N(a,av,w,x),N(c,cv,y,z))
       | double_R _ = raise Match
 
@@ -109,41 +109,41 @@ local
             in
               if rln < rrn then  single_L p  else  double_L p
             end
-        
+
           else if ln >= wt rn then  (*left is too big*)
             let val lln = treeSize ll
                 val lrn = treeSize lr
             in
               if lrn < lln then  single_R p  else  double_R p
             end
-    
+
           else T{key=k,value=v,cnt=ln+rn+1,left=l,right=r}
 
     local
       fun min (T{left=E,key,value,...}) = (key,value)
         | min (T{left,...}) = min left
         | min _ = raise Match
-  
+
       fun delmin (T{left=E,right,...}) = right
-        | delmin (T{key,value,left,right,...}) = 
+        | delmin (T{key,value,left,right,...}) =
 	  T'(key,value,delmin left,right)
         | delmin _ = raise Match
     in
       fun delete' (E,r) = r
         | delete' (l,E) = l
-        | delete' (l,r) = let val (mink,minv) = min r 
+        | delete' (l,r) = let val (mink,minv) = min r
 			  in T'(mink,minv,l,delmin r) end
     end
 in
     fun mkDict cmpKey = DICT(cmpKey, E)
-    
-    fun insert (DICT (cmpKey, t),x,v) = 
+
+    fun insert (DICT (cmpKey, t),x,v) =
 	let fun ins E = T{key=x,value=v,cnt=1,left=E,right=E}
 	      | ins (T(set as {key,left,right,value,...})) =
 		case cmpKey (key,x) of
 		    GREATER => T'(key,value,ins left,right)
 		  | LESS    => T'(key,value,left,ins right)
-		  | _       => 
+		  | _       =>
 			T{key=x,value=v,left=left,right=right,cnt= #cnt set}
 	in DICT(cmpKey, ins t) end
 
@@ -158,9 +158,9 @@ in
 
     fun peek arg = (SOME(find arg)) handle NotFound => NONE
 
-    fun remove (DICT(cmpKey, t), x) = 
+    fun remove (DICT(cmpKey, t), x) =
 	let fun rm E = raise NotFound
-	      | rm (set as T{key,left,right,value,...}) = 
+	      | rm (set as T{key,left,right,value,...}) =
 		(case cmpKey (key,x) of
 		     GREATER => let val (left', v) = rm left
 				in (T'(key, value, left', right), v) end
@@ -170,7 +170,7 @@ in
 	    val (newtree, valrm) = rm t
 	in (DICT(cmpKey, newtree), valrm) end
 
-    fun listItems (DICT(_, d)) = 
+    fun listItems (DICT(_, d)) =
 	let fun d2l E res = res
 	      | d2l (T{key,value,left,right,...}) res =
 		d2l left ((key,value) :: d2l right res)
@@ -206,12 +206,12 @@ in
             end
       in DICT(cmpKey, a d) end
 
-    fun transform f (DICT(cmpKey, d)) = 
+    fun transform f (DICT(cmpKey, d)) =
 	let fun a E = E
-	      | a (T{key,value,left,right,cnt}) = 
+	      | a (T{key,value,left,right,cnt}) =
 		let val left' = a left
 		in
-		    T{cnt=cnt, key=key, value=f value, left = left', 
+		    T{cnt=cnt, key=key, value=f value, left = left',
 		      right = a right}
 		end
       in DICT(cmpKey, a d) end

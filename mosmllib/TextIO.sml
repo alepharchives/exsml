@@ -7,7 +7,7 @@ type pos = int
 prim_val create_string_ : int -> string                 = 1 "create_string";
 prim_val nth_char_      : string -> int -> char         = 2 "get_nth_char";
 prim_val set_nth_char_  : string -> int -> char -> unit = 3 "set_nth_char";
-prim_val blit_string_   : string -> int -> string -> int -> int -> unit 
+prim_val blit_string_   : string -> int -> string -> int -> int -> unit
                                                         = 5 "blit_string";
 
 fun sub_string_ s start len =
@@ -52,7 +52,7 @@ type file_perm = int;
 
 datatype open_flag =
     O_APPEND                       (* `open' for appending *)
-  | O_BINARY                       (* `open' in binary mode *)    
+  | O_BINARY                       (* `open' in binary mode *)
   | O_CREAT                        (* create the file if nonexistent *)
   | O_EXCL                         (* fails if the file exists *)
   | O_RDONLY                       (* `open' read-only *)
@@ -128,17 +128,17 @@ fun try_input_char_ ic =
 type instream  = { closed: bool, ic: in_channel,  name : string} ref;
 type outstream = { closed: bool, oc: out_channel, name : string} ref;
 
-val stdIn  : instream  = 
+val stdIn  : instream  =
     ref { closed=false, ic=caml_std_in,  name = "<stdIn>"  }
-and stdOut : outstream = 
+and stdOut : outstream =
     ref { closed=false, oc=caml_std_out, name = "<stdOut>" }
-and stdErr : outstream = 
+and stdErr : outstream =
     ref { closed=false, oc=caml_std_err, name = "<stdErr>" };
 
-fun raiseIo fcn nam exn = 
+fun raiseIo fcn nam exn =
     raise Io {function = fcn, name = nam, cause = exn};
 
-fun raiseClosed fcn nam = 
+fun raiseClosed fcn nam =
     raiseIo fcn nam (Fail "Stream is closed");
 
 fun openIn s =
@@ -146,36 +146,36 @@ fun openIn s =
   handle exn as SysErr _ => raiseIo "openIn" s exn;
 
 fun closeIn (is as ref {closed, ic, name}) =
-  if closed then () 
+  if closed then ()
   else (caml_close_in ic;
 	is := { closed=true, ic=ic, name=name });
 
 fun input1 (is as ref {closed, ic, name}) =
-    if closed then NONE 
-    else 
+    if closed then NONE
+    else
 	SOME (input_char_ ic)
 	handle Size => NONE;
 
 fun input (is as ref {closed, ic, name}) =
-    if closed then "" 
-    else let val buff = create_string_ 60 
+    if closed then ""
+    else let val buff = create_string_ 60
 	 in case fast_input ic buff 0 60 of
 	     0 => ""
 	   | m => sub_string_ buff 0 m
 	 end;
 
 fun inputNoBlock (is as ref {closed, ic, name}) =
-    if closed then SOME "" 
-    else let val buff = create_string_ 60 
+    if closed then SOME ""
+    else let val buff = create_string_ 60
 	 in case fast_input_nonblocking ic buff 0 60 of
-	     NONE   => NONE 
+	     NONE   => NONE
 	   | SOME 0 => SOME ""
 	   | SOME m => SOME (sub_string_ buff 0 m)
 	 end;
 
 fun inputN (is as ref {closed, ic, name}, n) =
     if n < 0 orelse n > String.maxSize then raise Size
-    else if closed then "" 
+    else if closed then ""
     else let val buff = create_string_ n
 	     fun loop k =
 		 if k = n then buff
@@ -194,7 +194,7 @@ fun inputAll (is as ref {closed, ic, name}) =
 			   else if 2 * !max >= String.maxSize then String.maxSize
 			   else 2 * !max
 	      val newtmp = create_string_ newmax
-	  in 
+	  in
 	      blit_string_ (!tmp) 0 newtmp 0 (!max);
 	      max := newmax;
 	      tmp := newtmp
@@ -290,7 +290,7 @@ fun inputLine (is as ref {closed, ic, name}) =
 			   else if 2 * !max >= String.maxSize then String.maxSize
 			   else 2 * !max
 	      val newtmp = create_string_ newmax
-	  in 
+	  in
 	      blit_string_ (!tmp) 0 newtmp 0 (!max);
 	      max := newmax;
 	      tmp := newtmp
@@ -298,10 +298,10 @@ fun inputLine (is as ref {closed, ic, name}) =
       fun h len =
 	  (if len >= !max then realloc () else ();
 	   case try_input_char_ ic of
-	       NONE   => (set_nth_char_ (!tmp) len #"\n"; 
+	       NONE   => (set_nth_char_ (!tmp) len #"\n";
 			  sub_string_ (!tmp) 0 (len+1))
 	     | SOME c => (set_nth_char_ (!tmp) len c;
-			  if c = #"\n" then sub_string_ (!tmp) 0 (len+1) 
+			  if c = #"\n" then sub_string_ (!tmp) 0 (len+1)
 			               else h (len+1)))
   in if endOfStream is then "" else h 0 end;
 
@@ -310,9 +310,9 @@ fun openOut (s : string) : outstream =
     handle exn as SysErr _ => raiseIo "openOut" s exn;
 
 fun closeOut (os as ref {closed, oc, name}) =
-    if closed then () 
-    else (caml_close_out oc; 
-	  os := {closed = true, oc=oc, name=name}; 
+    if closed then ()
+    else (caml_close_out oc;
+	  os := {closed = true, oc=oc, name=name};
 	  ());
 
 fun flushOut (os as ref {closed, oc, name}) =

@@ -1,4 +1,4 @@
-structure IO = 
-struct 
-    exception Io = Io 
+structure IO =
+struct
+    exception Io = Io
 end

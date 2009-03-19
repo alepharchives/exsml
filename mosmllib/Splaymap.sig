@@ -19,7 +19,7 @@ val foldl     : ('key * 'a * 'b -> 'b) -> 'b -> ('key,'a) dict -> 'b
 val map       : ('_key * 'a -> '_b) -> ('_key,'a) dict -> ('_key, '_b) dict
 val transform : ('a -> '_b) -> ('_key,'a) dict -> ('_key, '_b) dict
 
-(* 
+(*
    [('key, 'a) dict] is the type of applicative maps from domain type
    'key to range type 'a, or equivalently, applicative dictionaries
    with keys of type 'key and values of type 'a.  They are implemented
@@ -31,7 +31,7 @@ val transform : ('a -> '_b) -> ('_key,'a) dict -> ('_key, '_b) dict
    [insert(m, i, v)] extends (or modifies) map m to map i to v.
 
    [find (m, k)] returns v if m maps k to v; otherwise raises NotFound.
-   
+
    [peek(m, k)] returns SOME v if m maps k to v; otherwise returns NONE.
 
    [remove(m, k)] removes k from the domain of m and returns the

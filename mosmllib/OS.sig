@@ -18,5 +18,5 @@ end
 
    [errorMsg err] returns a string explaining the error message system
    error code err, as found in a SysErr exception.  The precise form
-   of the string depends on the operating system.  
+   of the string depends on the operating system.
 *)

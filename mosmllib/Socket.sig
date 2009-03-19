@@ -23,7 +23,7 @@ val fileDgram  : unit -> (pf_file, dgram) sock
 val inetStream : unit -> (pf_inet, 'a stream) sock
 val inetDgram  : unit -> (pf_inet, dgram) sock
 
-val accept     : ('a, passive stream) sock 
+val accept     : ('a, passive stream) sock
                  -> ('a, active stream) sock * 'a sock_addr
 val bind       : ('a, 'b) sock * 'a sock_addr -> unit
 val connect    : ('a, 'b) sock * 'a sock_addr -> unit
@@ -31,7 +31,7 @@ val listen     : ('a, passive stream) sock * int -> unit
 val close      : ('a, 'b) sock -> unit
 
 (* Socket management *)
-datatype shutdown_mode = 
+datatype shutdown_mode =
     NO_RECVS                            (* No further receives   *)
   | NO_SENDS                            (* No further sends      *)
   | NO_RECVS_OR_SENDS                   (* No receives nor sends *)
@@ -43,9 +43,9 @@ type sock_desc
 val sockDesc   : ('a, 'b) sock -> sock_desc
 val sameDesc   : sock_desc * sock_desc -> bool
 val compare    : sock_desc * sock_desc -> order
-val select     : 
-    { rds : sock_desc list, wrs : sock_desc list, exs : sock_desc list, 
-      timeout : Time.time option } 
+val select     :
+    { rds : sock_desc list, wrs : sock_desc list, exs : sock_desc list,
+      timeout : Time.time option }
     -> { rds : sock_desc list, wrs : sock_desc list, exs : sock_desc list }
 
 val getinetaddr : pf_inet sock_addr -> string
@@ -60,13 +60,13 @@ type 'a buf = { buf : 'a, ofs : int, size : int option }
 (* Socket output operations *)
 val sendVec    : ('a, active stream) sock * Word8Vector.vector buf -> int
 val sendArr    : ('a, active stream) sock * Word8Array.array buf -> int
-val sendVec'   : ('a, active stream) sock * Word8Vector.vector buf 
+val sendVec'   : ('a, active stream) sock * Word8Vector.vector buf
                  * out_flags -> int
-val sendArr'   : ('a, active stream) sock * Word8Array.array buf 
+val sendArr'   : ('a, active stream) sock * Word8Array.array buf
                  * out_flags -> int
 val sendVecTo  : ('a, dgram) sock * 'a sock_addr * Word8Vector.vector buf
                  -> int
-val sendArrTo  : ('a, dgram) sock * 'a sock_addr * Word8Array.array buf 
+val sendArrTo  : ('a, dgram) sock * 'a sock_addr * Word8Array.array buf
                  -> int
 val sendVecTo' : ('a, dgram) sock * 'a sock_addr * Word8Vector.vector buf
                  * out_flags -> int
@@ -80,16 +80,16 @@ val recvVec'     : ('a, active stream) sock * int * in_flags
                    -> Word8Vector.vector
 val recvArr'     : ('a, active stream) sock * Word8Array.array buf * in_flags
                    -> int
-val recvVecFrom  : ('a, dgram) sock * int 
+val recvVecFrom  : ('a, dgram) sock * int
                    -> Word8Vector.vector * 'a sock_addr
-val recvArrFrom  : ('a, dgram) sock * Word8Array.array buf 
+val recvArrFrom  : ('a, dgram) sock * Word8Array.array buf
                    -> int * 'a sock_addr
 val recvVecFrom' : ('a, dgram) sock * int * in_flags
                    -> Word8Vector.vector * 'a sock_addr
 val recvArrFrom' : ('a, dgram) sock * Word8Array.array buf * in_flags
                    -> int * 'a sock_addr
 
-(* 
+(*
    Structure Socket defines functions for creating and using sockets,
    a means for communication between SML processes on the same machine
    or via a network.
@@ -99,12 +99,12 @@ val recvArrFrom' : ('a, dgram) sock * Word8Array.array buf * in_flags
 
    ['addressfam sock_addr] is the type of sockets addresses.
 
-   The possible address (protocol) families are 
+   The possible address (protocol) families are
 
         type pf_file    The Unix address family (file)
         type pf_inet    The Internet address family
 
-   The possible socket types are 
+   The possible socket types are
         type dgram      datagram sockets
         type 'a stream  stream sockets
         type passive    passive stream sockets
@@ -172,8 +172,8 @@ val recvArrFrom' : ('a, dgram) sock * Word8Array.array buf * in_flags
    subvectors or subarrays:
    if size = SOME s it represents buf[ofs..ofs+s-1];
    if size = NONE   it represents buf[ofs..len-1] where len is buf's length.
-   When the subbuffer is used in a call, exception Subscript will be raised 
-   if ofs < 0 or size < 0 or ofs+size > len.   
+   When the subbuffer is used in a call, exception Subscript will be raised
+   if ofs < 0 or size < 0 or ofs+size > len.
 
    [sendVec (sock, vecbuf)] transmits the bytes from buffer vecbuf on
    the active stream socket sock.  Returns the number of bytes sent.
@@ -269,9 +269,9 @@ val recvArrFrom' : ('a, dgram) sock * Word8Array.array buf * in_flags
    [compare (sd1, sd2)] compares sd1 and sd2 according to an
    unspecified total ordering, and returns LESS if sd1 precedes sd2,
    returns GREATER is sd1 precedes sd2, and returns EQUAL otherwise.
-   
+
    [sameDesc (sd1, sd2)] returns true if sd1 and sd2 describe the same
-   socket.  Equivalent to compare(sd1, sd2) = EQUAL.  
+   socket.  Equivalent to compare(sd1, sd2) = EQUAL.
 
    [select { rds, wrs, exs, timeout }] blocks the calling process
    until some input/output operations become possible on some sockets.

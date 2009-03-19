@@ -14,7 +14,7 @@ prim_val acos : real -> real = 1 "sml_acos";
 
 fun tan r = (sin r / cos r) handle Div => raise Domain;
 
-local 
+local
     prim_val atan2_ : real -> real -> real = 2 "sml_atan2";
     prim_val pow_   : real -> real -> real = 2 "sml_pow";
 in
@@ -25,9 +25,9 @@ end
 prim_val exp : real -> real = 1 "sml_exp";
 prim_val ln  : real -> real = 1 "sml_ln";
 
-local 
-    val ln10 = ln 10.0 
-in 
+local
+    val ln10 = ln 10.0
+in
     fun log10 r = ln r / ln10
 end;
 

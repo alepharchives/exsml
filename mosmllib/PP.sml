@@ -8,7 +8,7 @@
 
 (* the functions and data for actually doing printing. *)
 
-open Array 
+open Array
 infix 9 sub
 
 (* the queue library, formerly in unit Ppqueue *)
@@ -19,7 +19,7 @@ exception QUEUE_FULL
 exception QUEUE_EMPTY
 exception REQUESTED_QUEUE_SIZE_TOO_SMALL
 
-local 
+local
     fun ++ i n = (i + 1) mod n
     fun -- i n = (i - 1) mod n
 in

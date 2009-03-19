@@ -2,7 +2,7 @@
 
 type dlHandle
 type symHandle
-    
+
 exception Closed
 
 datatype flag = RTLD_LAZY | RTLD_NOW
@@ -10,17 +10,17 @@ val dlopen  : { lib : string, flag : flag, global : bool } -> dlHandle
 val dlsym   : dlHandle -> string -> symHandle
 val dlclose : dlHandle -> unit
 
-val var  : symHandle -> 'b                            
-val app1 : symHandle -> 'a1 -> 'b                     
-val app2 : symHandle -> 'a1 -> 'a2 -> 'b              
-val app3 : symHandle -> 'a1 -> 'a2 -> 'a3 -> 'b       
+val var  : symHandle -> 'b
+val app1 : symHandle -> 'a1 -> 'b
+val app2 : symHandle -> 'a1 -> 'a2 -> 'b
+val app3 : symHandle -> 'a1 -> 'a2 -> 'a3 -> 'b
 val app4 : symHandle -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'b
 val app5 : symHandle -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'b
 
-(* 
+(*
    Structure Dynlib provides dynamic loading and calling of C
    functions, using the dlfcn interface.  A dynamic library is a
-   collection of symbols (C variables and functions).  
+   collection of symbols (C variables and functions).
 
    An ML value passed to or returned from a symbol has type `value' as
    defined in src/runtime/mlvalues.h.  The C functions should use the
@@ -53,19 +53,19 @@ val app5 : symHandle -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'b
 
    How to create a dynamically loadable library
    --------------------------------------------
-   Assume file "xyz.c" contains your C functions.  
+   Assume file "xyz.c" contains your C functions.
 
-   To compile xyz.c into xyz.o and then create a dynamic library 
+   To compile xyz.c into xyz.o and then create a dynamic library
    libxyz.so from xyz.o:
 
      Under Linux and OSF/1 (Digital Unix):
-        gcc -c -o xyz.o xyz.c 
+        gcc -c -o xyz.o xyz.c
         ld -shared -o libxyz.so xyz.o
      Under Solaris (ignore the warnings from ld):
-        gcc -c -o xyz.o xyz.c 
+        gcc -c -o xyz.o xyz.c
         ld -G -B symbolic -z nodefs -o libxyz.so xyz.o
      Under HP-UX:
-        gcc -fPIC -c -o xyz.o xyz.c 
+        gcc -fPIC -c -o xyz.o xyz.c
         ld -b -B symbolic -E -o libxyz.so xyz.o
 
    If "xyz.o" depends on another library "libabc.a" you may link the
@@ -88,7 +88,7 @@ val app5 : symHandle -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'b
         If `global' is true, then the library's global symbols are
    made available for other libraries subsequently loaded.
 
-   [flag] is the type of library loading modes: RTLD_LAZY and RTLD_NOW.  
+   [flag] is the type of library loading modes: RTLD_LAZY and RTLD_NOW.
 
    [RTLD_LAZY] specifies that only symbol relocations will be
    performed when calling dlopen, whereas function relocations will be
@@ -124,5 +124,5 @@ val app5 : symHandle -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'b
    with sym to (arg1, arg2, arg3, arg4).
 
    [app5 sym arg1 arg2 arg3 arg4 arg5] applies the C function
-   associated with sym to (arg1, arg2, arg3, arg4, arg5). 
+   associated with sym to (arg1, arg2, arg3, arg4, arg5).
 *)

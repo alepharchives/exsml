@@ -4,7 +4,7 @@
 
 (* Efficiently concatenable word sequences *)
 
-datatype wseq = 
+datatype wseq =
     Empty                               (* The empty sequence         *)
   | Nl                                  (* Newline                    *)
   | $ of string                         (* A string                   *)
@@ -13,16 +13,16 @@ datatype wseq =
 
 infix &&
 
-fun prmap f []       = Empty 
-  | prmap f (x1::xr) = 
+fun prmap f []       = Empty
+  | prmap f (x1::xr) =
     let fun loop y1 []       = f y1
-	  | loop y1 (y2::yr) = f y1 && loop y2 yr 
+	  | loop y1 (y2::yr) = f y1 && loop y2 yr
     in loop x1 xr end
 
-fun prsep sep f []       = Empty 
-  | prsep sep f (x1::xr) = 
+fun prsep sep f []       = Empty
+  | prsep sep f (x1::xr) =
     let fun loop y1 []       = f y1
-	  | loop y1 (y2::yr) = f y1 && sep && loop y2 yr 
+	  | loop y1 (y2::yr) = f y1 && sep && loop y2 yr
     in loop x1 xr end
 
 fun flatten Empty acc      = acc
@@ -31,13 +31,13 @@ fun flatten Empty acc      = acc
   | flatten ($$ ss) acc    = List.@(ss, acc)
   | flatten (s1 && s2) acc = flatten s1 (flatten s2 acc)
 val flatten = fn seq => String.concat(flatten seq []);
-    
+
 fun printseq Empty      = ()
   | printseq Nl         = TextIO.print "\n"
   | printseq ($ s)      = TextIO.print s
   | printseq ($$ ss)    = List.app TextIO.print ss
   | printseq (s1 && s2) = (printseq s1; printseq s2);
-    
+
 fun vec2list vec = Vector.foldr op:: [] vec
 
 (* CGI parameter access shorthands *)
@@ -45,23 +45,23 @@ fun vec2list vec = Vector.foldr op:: [] vec
 exception ParamMissing of string
 exception NotInt of string * string
 
-fun % fnm = 
-    case Mosmlcgi.cgi_field_string fnm of 
+fun % fnm =
+    case Mosmlcgi.cgi_field_string fnm of
 	NONE   => raise ParamMissing "fnm"
       | SOME v => v
 
 fun %? fnm = Option.isSome(Mosmlcgi.cgi_field_string fnm)
 
 fun %# fnm =
-    case Mosmlcgi.cgi_field_string fnm of 
+    case Mosmlcgi.cgi_field_string fnm of
 	NONE   => raise ParamMissing fnm
       | SOME v => (case Int.fromString v of
 		       NONE   => raise NotInt(fnm, v)
 		     | SOME i => i)
-		
+
 fun %%(fnm, dflt)  = Option.getOpt(Mosmlcgi.cgi_field_string fnm, dflt)
 
-fun %%#(fnm, dflt) = 
+fun %%#(fnm, dflt) =
     Option.getOpt(Option.mapPartial Int.fromString
 		  (Mosmlcgi.cgi_field_string fnm), dflt)
 
@@ -70,7 +70,7 @@ fun %%#(fnm, dflt) =
 fun mark0 tag = $$["<", tag, ">"]
 fun mark0a attr tag = $$["<", tag, " ", attr, ">"]
 fun mark1 tag seq = $$["<", tag, ">"] && seq && $$["</", tag, ">"]
-fun mark1a tag attr seq = 
+fun mark1a tag attr seq =
     $$["<", tag, " ", attr, ">"] && seq && $$["</", tag, ">"]
 fun comment seq = $"<!--" && seq && $"-->"
 
@@ -97,7 +97,7 @@ fun pa attr seq = $$["<P ", attr, ">"] && seq && $"</P>"
 fun divi seq = $"<DIV>" && seq && $"</DIV>"
 fun divia attr seq = $$["<DIV ", attr, ">"] && seq && $"</DIV>"
 fun blockquote seq = $"<BLOCKQUOTE>" && seq && $"</BLOCKQUOTE>"
-fun blockquotea attr seq = 
+fun blockquotea attr seq =
     $$["<BLOCKQUOTE ", attr, ">"] && seq && $"</BLOCKQUOTE>"
 fun center seq = $"<CENTER>" && seq && $"</CENTER>"
 fun address seq = $"<ADDRESS>" && seq && $"</ADDRESS>"
@@ -111,7 +111,7 @@ fun hra attr = $$["<HR ", attr, ">"]
 (* HTML anchors and hyperlinks *)
 
 fun ahref link seq = $$["<A HREF=\"", link, "\">"] && seq && $"</A>"
-fun ahrefa link attr seq = 
+fun ahrefa link attr seq =
     $$["<A HREF=\"", link, "\" ", attr, ">"] && seq && $"</A>"
 fun aname name seq = $$["<A NAME=\"", name, "\">"] && seq && $"</A>"
 
@@ -155,9 +155,9 @@ fun captiona attr seq = $$["<CAPTION ", attr, ">"] && seq && $"</CAPTION>"
 fun img src  = $$["<IMG SRC=\"", src, "\">"]
 fun imga src attr = $$["<IMG SRC=\"", src, "\" ", attr, ">"]
 fun map nam seq = $$["<MAP NAME=\"", nam, "\">"] && seq && $"</MAP>"
-fun mapa nam attr seq = 
+fun mapa nam attr seq =
     $$["<MAP NAME=\"", nam, "\" ", attr, ">"] && seq && $"</MAP>"
-fun area { shape, href, coords, alt } = 
+fun area { shape, href, coords, alt } =
     $$["<AREA SHAPE=\"", shape, "\" COORDS=\"", coords, "\" "]
     && (case href of NONE => $"NOHREF" | SOME r => $$["HREF=\"", r, "\" "])
     && (case alt  of NONE => Empty | SOME a => $$["ALT=\"", a, "\""])
@@ -165,40 +165,40 @@ fun area { shape, href, coords, alt } =
 (* HTML forms etc *)
 
 fun form action seq = $$["<FORM ACTION=\"", action, "\">"] && seq && $"</FORM>"
-fun forma action attr seq = 
+fun forma action attr seq =
     $$["<FORM ACTION=\"", action, "\" ", attr, ">"] && seq && $"</FORM>"
 fun input typ = $$["<INPUT TYPE=", typ, ">"]
 fun inputa typ attr = $$["<INPUT TYPE=", typ, " ", attr, ">"]
 fun intext name attr = $$["<INPUT TYPE=TEXT NAME=\"", name, "\" ", attr, ">"]
-fun inpassword name attr = 
+fun inpassword name attr =
        $$["<INPUT TYPE=PASSWORD NAME=\"", name, "\" ", attr, ">"]
-fun incheckbox {name, value} attr = 
-       $$["<INPUT TYPE=CHECKBOX VALUE=\"", value, "\" NAME=\"", name, 
+fun incheckbox {name, value} attr =
+       $$["<INPUT TYPE=CHECKBOX VALUE=\"", value, "\" NAME=\"", name,
 	  "\" ", attr, ">"]
-fun inradio {name, value} attr = 
-       $$["<INPUT TYPE=RADIO VALUE=\"", value, "\" NAME=\"", name, 
+fun inradio {name, value} attr =
+       $$["<INPUT TYPE=RADIO VALUE=\"", value, "\" NAME=\"", name,
 	  "\" ", attr, ">"]
-fun inreset value attr = 
+fun inreset value attr =
        $$["<INPUT TYPE=RESET VALUE=\"", value, "\" ", attr, ">"]
-fun insubmit value attr = 
+fun insubmit value attr =
        $$["<INPUT TYPE=SUBMIT VALUE=\"", value, "\" ", attr, ">"]
-fun inhidden {name, value} = 
+fun inhidden {name, value} =
        $$["<INPUT TYPE=HIDDEN NAME=\"", name, "\" VALUE=\"", value, "\">"]
-fun textarea name seq = 
+fun textarea name seq =
 	  $$["<TEXTAREA NAME=\"", name, "\">"] && seq && $"</TEXTAREA>"
-fun textareaa name attr seq = 
-	  $$["<TEXTAREA NAME=\"", name, "\" ", attr, ">"] 
+fun textareaa name attr seq =
+	  $$["<TEXTAREA NAME=\"", name, "\" ", attr, ">"]
 	  && seq && $"</TEXTAREA>"
-fun select name attr seq = 
+fun select name attr seq =
 	  $$["<SELECT NAME=\"", name, "\" ", attr, ">"] && seq && $"</SELECT>"
 fun option value = $$["<OPTION VALUE=\"", value, "\">"]
 
 (* HTML frames and framesets *)
 
 fun frameset attr seq = $$["<FRAMESET ", attr, ">"] && seq && $"</FRAMESET>"
-fun frame { src, name } = $$["<FRAME SRC=\"", src, "\" NAME=\"", name, "\">"] 
-fun framea { src, name } attr = 
-	  $$["<FRAME SRC=\"", src, "\" NAME=\"", name, "\" ", attr, ">"] 
+fun frame { src, name } = $$["<FRAME SRC=\"", src, "\" NAME=\"", name, "\">"]
+fun framea { src, name } attr =
+	  $$["<FRAME SRC=\"", src, "\" NAME=\"", name, "\" ", attr, ">"]
 
 (* HTML encoding *)
 
@@ -207,13 +207,13 @@ fun urlencode s : string =
 	  | encode #"-" = "-"
 	  | encode #"_" = "_"
 	  | encode #"." = "."
-	  | encode c    = 
-	    if Char.isAlphaNum c then String.str c 
-	    else "%" ^ StringCvt.padLeft #"0" 2 
+	  | encode c    =
+	    if Char.isAlphaNum c then String.str c
+	    else "%" ^ StringCvt.padLeft #"0" 2
                        (Int.fmt StringCvt.HEX (Char.ord c))
     in String.translate encode s end
 
-(* Maybe this should create a wseq instead, to avoid creating a long 
+(* Maybe this should create a wseq instead, to avoid creating a long
    string by concatenation *)
 
 fun htmlencode s : string =

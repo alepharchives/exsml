@@ -4,11 +4,11 @@ type image
 
 type color
 
-datatype style = 
+datatype style =
     ColorS of color
   | TransparentS
 
-datatype mode = 
+datatype mode =
     Color of color
   | Transparent
   | Brushed of image
@@ -16,11 +16,11 @@ datatype mode =
   | StyledBrushed of bool vector * image
   | Tiled of image
 
-datatype font = 
-    Tiny 
+datatype font =
+    Tiny
   | Small
   | MediumBold
-  | Large 
+  | Large
   | Giant
 
 type rgb = int * int * int           (* RGB color components, 0..255   *)
@@ -29,20 +29,20 @@ type xy  = int * int                 (* points (x, y) and sizes (w, h) *)
 val image     : xy -> rgb -> image
 val fromPng   : string -> image
 val toPng     : image -> string -> unit
-val stdoutPng : image -> unit 
+val stdoutPng : image -> unit
 val size      : image -> xy
 
 val color          : image -> rgb -> color
 val rgb            : image -> color -> rgb
 val htmlcolors     : image -> { aqua : color, black : color, blue : color,
-                                fuchsia : color, gray : color, 
+                                fuchsia : color, gray : color,
                                 green : color, lime : color, maroon : color,
                                 navy : color, olive : color, purple : color,
                                 red : color, silver : color, teal : color,
                                 white : color, yellow : color }
-val getTransparent : image -> color option 
+val getTransparent : image -> color option
 val setTransparent : image -> color -> unit
-val noTransparent  : image -> unit 
+val noTransparent  : image -> unit
 
 val drawPixel   : image -> mode -> xy -> unit
 val drawLine    : image -> mode -> xy * xy -> unit
@@ -54,7 +54,7 @@ val drawArc     : image -> mode -> { c : xy, wh : xy, from : int, to : int }
                   -> unit
 val fill        : image -> mode -> xy -> unit
 val fillBorder  : image -> mode -> xy -> color -> unit
- 
+
 val copy        : { src : image, srcxy : xy, srcwh : xy,
                     dst : image, dstxy : xy } -> unit
 val copyResize  : { src : image, srcxy : xy, srcwh : xy,
@@ -66,7 +66,7 @@ val string      : image -> color -> font -> xy -> string -> unit
 val stringUp    : image -> color -> font -> xy -> string -> unit
 val charsize    : font -> xy
 
-(* 
+(*
    This is an interface to version 1.7.3 of Thomas Boutell's gd image
    package for creating PNG images.
 
@@ -74,23 +74,23 @@ val charsize    : font -> xy
    from scratch, imported from PNG files, and exported to PNG files.
 
    All functions correctly clip to the actual size of the image.
-   
+
    [color] is the type of colors.  Currently there can be at most 256
    different colors in an image.
 
    [style] is the type of drawing styles.  A style is either a color,
    or transparent.
 
-   [mode] is the type of drawing modes for line drawing and filling.  
+   [mode] is the type of drawing modes for line drawing and filling.
    It may be one of
         Color c         where c is a color
         Transparent
         Brushed img     for line drawing using the given image as brush
-        Styled stys     for line drawing, cyclically using the styles 
+        Styled stys     for line drawing, cyclically using the styles
                         in the given vector to create a dashed line
-        StyledBrushed (vis, img) 
+        StyledBrushed (vis, img)
                         for line drawing, using the given image as a brush,
-                        cyclically switching it on and off according to the 
+                        cyclically switching it on and off according to the
                         given bool vector
         Tiled img       for filling, using the given image as a tile
 
@@ -173,13 +173,13 @@ val charsize    : font -> xy
 
    [fillBorder img mode xy col] fills the region in img around xy
    which is delimited by the color col, using the given mode.
- 
+
    [copy { src, srcxy, srcwh, dst, dstxy }] copies part of the image
    src into the image dst, without rescaling.  More precisely, copies
    the subimage of src whose upper left-hand corner is srcxy and whose
    size is srcwh, into the subimage of dst whose upper left-hand
    corner is dstxy.  The images src and dst may be the same, but if
-   the subimages overlap, then the result is unpredictable.  
+   the subimages overlap, then the result is unpredictable.
 
    [copyResize { src, srcxy, srcwh, dst, dstxy, dstwh }] copies part
    of the image src into the image dst, rescaling to the given size

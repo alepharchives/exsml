@@ -42,7 +42,7 @@ fun length xs =
 local
   fun revAcc [] ys = ys
     | revAcc (x::xs) ys = revAcc xs (x::ys)
-in 
+in
   fun rev xs = revAcc xs []
 
   fun revAppend (xs, ys) = revAcc xs ys

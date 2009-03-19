@@ -13,9 +13,9 @@ val nth        : 'a list * int -> 'a                    (* Subscript *)
 val take       : 'a list * int -> 'a list               (* Subscript *)
 val drop       : 'a list * int -> 'a list               (* Subscript *)
 
-val length     : 'a list -> int 
+val length     : 'a list -> int
 
-val rev        : 'a list -> 'a list 
+val rev        : 'a list -> 'a list
 
 val @          : 'a list * 'a list -> 'a list
 val concat     : 'a list list -> 'a list
@@ -39,14 +39,14 @@ val tabulate   : int * (int -> 'a) -> 'a list           (* Size      *)
 
 val getItem    : 'a list -> ('a * 'a list) option
 
-(* 
+(*
    ['a list] is the type of lists of elements of type 'a.
 
    [null xs] is true iff xs is nil.
 
    [hd xs] returns the first element of xs.  Raises Empty if xs is nil.
 
-   [tl xs] returns all but the first element of xs.  
+   [tl xs] returns all but the first element of xs.
    Raises Empty if xs is nil.
 
    [last xs] returns the last element of xs.  Raises Empty if xs is nil.
@@ -58,7 +58,7 @@ val getItem    : 'a list -> ('a * 'a list) option
    if i<0 or i>length xs.
 
    [drop(xs, i)] returns what is left after dropping the first i
-   elements of xs.  Raises Subscript if i<0 or i>length xs.  
+   elements of xs.  Raises Subscript if i<0 or i>length xs.
    It holds that take(xs, i) @ drop(xs, i) = xs when 0 <= i <= length xs.
 
    [length xs] returns the number of elements in xs.
@@ -70,13 +70,13 @@ val getItem    : 'a list -> ('a * 'a list) option
    [concat xss] returns the list which is the concatenation of all the
    lists in xss.
 
-   [revAppend(xs, ys)] is equivalent to rev xs @ ys, but more efficient. 
+   [revAppend(xs, ys)] is equivalent to rev xs @ ys, but more efficient.
 
    [app f xs] applies f to the elements of xs, from left to right.
 
    [map f xs] applies f to each element x of xs, from left to
    right, and returns the list of f's results.
- 
+
    [mapPartial f xs] applies f to each element x of xs, from left
    to right, and returns the list of those y's for which f(x)
    evaluated to SOME y.
@@ -116,6 +116,6 @@ val getItem    : 'a list -> ('a * 'a list) option
    returns NONE if xs is empty, and returns SOME (x, xr) if xs=x::xr.
    This can be used for scanning booleans, integers, reals, and so on
    from a list of characters.  For instance, to scan a decimal integer
-   from a list cs of characters, compute 
+   from a list cs of characters, compute
         Int.scan StringCvt.DEC List.getItem cs
 *)

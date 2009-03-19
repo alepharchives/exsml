@@ -75,7 +75,7 @@ datatype dynval =
 
 val getdynfield : dbresult -> int -> int -> dynval
 val getdyntup   : dbresult -> int -> dynval vector
-val getdyntups  : dbresult -> dynval vector vector 
+val getdyntups  : dbresult -> dynval vector vector
 val dynval2s    : dynval -> string
 
 (* Bulk copying to or from a table *)
@@ -85,11 +85,11 @@ val copytablefrom : dbconn * string * ((string -> unit) -> unit) -> unit
 
 (* Some standard ML and Postgres types: *)
 
-datatype dyntype = 
+datatype dyntype =
     BoolTy              (* ML bool              psql bool              *)
   | IntTy               (* ML int               psql int4              *)
   | RealTy              (* ML real              psql float8, float4    *)
-  | StringTy            (* ML string            psql text, varchar     *) 
+  | StringTy            (* ML string            psql text, varchar     *)
   | DateTy              (* ML (yyyy, mth, day)  psql date              *)
   | TimeTy              (* ML (hh, mm, ss)      psql time              *)
   | DateTimeTy          (* ML Date.date         psql datetime, abstime *)
@@ -115,7 +115,7 @@ val showquery   : dbconn -> string -> Msp.wseq
 
    [oid] is the type of PostgreSQL internal object identifiers.
 
-   [openbase { dbhost, dbport, dboptions, dbtty, dbname, dbuser, dbpwd  }] 
+   [openbase { dbhost, dbport, dboptions, dbtty, dbname, dbuser, dbpwd  }]
    opens a connection to a PostgreSQL database server on the given
    host (default the local one) on the given port (default 5432), with
    the given options (default the empty string), with error logging on
@@ -150,10 +150,10 @@ val showquery   : dbconn -> string -> Msp.wseq
 
    [execute dbconn query] sends an SQL query to the database server
    for execution, and returns a resultset dbres.
-   
+
    [resultstatus dbres] returns the status of the result set dbres.
    After a select query that succeeded, it will be Tuples_ok.
-   
+
    [ntuples dbres] returns the number of tuples in the result set
    after a query.
 
@@ -220,8 +220,8 @@ val showquery   : dbconn -> string -> Msp.wseq
    [getdynfield dbres fno tupno] returns the value of field number fno
    in tuple tupno of result set dbres as a dynval (a wrapped value).
    A NULL value is returned as NullVal.  Note that the partial
-   application  (getdynfield dbres fno)  precomputes the type of the 
-   field fno.  Hence it is far more efficient to compute 
+   application  (getdynfield dbres fno)  precomputes the type of the
+   field fno.  Hence it is far more efficient to compute
         let val getfno = getdynfield dbres fno
         in tabulate(ntuples dbres, getfno) end
    than to compute
@@ -240,7 +240,7 @@ val showquery   : dbconn -> string -> Msp.wseq
    [applyto x f] computes f(x).  This is convenient for applying
    several functions (given in a list or vector) to the same value:
       map (applyto 5) (tabulate(3, getdynfield dbres))
-   equals 
+   equals
       [getdynfield dbres 0 5, getdynfield dbres 1 5, getdynfield dbres 2 5]
 
    [copytableto(dbconn, tablename, put)] executes a "COPY TABLE TO"
@@ -248,7 +248,7 @@ val showquery   : dbconn -> string -> Msp.wseq
    represented as a line of text (not terminated by newline \n), and
    cleans up at the end.  For instance, to copy the contents of a
    table t to a text stream s (one tuple on each line), define
-      fun put line = 
+      fun put line =
           (TextIO.output(s, line); TextIO.output(s, "\n"))
    and execute
       copytableto(dbconn, "t", put).
@@ -260,12 +260,12 @@ val showquery   : dbconn -> string -> Msp.wseq
    (tuple); the end of each line is indicated with the newline
    character "\n" as usual.  For instance, to copy the contents of a
    text stream s to a table t, define
-      fun useput put = 
+      fun useput put =
           while not (TextIO.endOfStream s) do put(TextIO.inputLine s);
    and execute
       copytablefrom(dbconn, "t", useput).
-   Note that TextIO.inputLine preserves the newline at the end of each 
-   line.  
+   Note that TextIO.inputLine preserves the newline at the end of each
+   line.
 
    [formattable dbresult] returns a wseq representing an HTML table.
    The HTML table has a column for every field in the dbresult.  The

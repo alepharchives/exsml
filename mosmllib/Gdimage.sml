@@ -5,18 +5,18 @@ open Dynlib;
 (* Obtain a handle pointing to the library defining the C functions: *)
 
 val dlh = dlopen { lib = "libmgd.so",
-		   flag = RTLD_LAZY, 
+		   flag = RTLD_LAZY,
 		   global = false }
 
 prim_type image (* really, a gdImagePointer, pointing outside the ML heap *)
 
 type color = int
 
-datatype style = 
+datatype style =
     ColorS of color
   | TransparentS
 
-datatype mode = 
+datatype mode =
     Color of color
   | Transparent
   | Brushed of image
@@ -27,25 +27,25 @@ datatype mode =
 type rgb = int * int * int
 type xy = int * int
 
-val image : xy -> rgb -> image = 
+val image : xy -> rgb -> image =
     app2 (dlsym dlh "mgd_image")
 
-val fromPng : string -> image = 
+val fromPng : string -> image =
     app1 (dlsym dlh "mgd_frompng")
 
-val toPng : image -> string -> unit = 
+val toPng : image -> string -> unit =
     app2 (dlsym dlh "mgd_topng")
 
-val stdoutPng : image -> unit = 
+val stdoutPng : image -> unit =
     app1 (dlsym dlh "mgd_tostdoutpng")
 
 val color : image -> rgb -> color =
     app2 (dlsym dlh "mgd_color")
 
-fun htmlcolors im = 
+fun htmlcolors im =
     let fun c rgb = color im rgb
     in
-	{ black   = c (0, 0, 0), 
+	{ black   = c (0, 0, 0),
 	  white   = c (255, 255, 255),
 	  silver  = c (192, 192, 192),
 	  gray    = c (128, 128, 128),
@@ -82,13 +82,13 @@ val setstyles : image -> int vector -> unit =
     app2 (dlsym dlh "mgd_setstyle");
 
 fun convertstyle (ColorS c)   = c
-  | convertstyle TransparentS = gdTransparent 
+  | convertstyle TransparentS = gdTransparent
 
 fun convertvisible false = 0
   | convertvisible true  = 1
 
-fun setmode (im : image) (mo : mode) : color = 
-    case mo of 
+fun setmode (im : image) (mo : mode) : color =
+    case mo of
 	Color c       => c
       | Transparent   => gdTransparent
       | Brushed brush => (app2 (dlsym dlh "mgd_setbrush") im brush;
@@ -123,12 +123,12 @@ fun fillPolygon (im : image) (mo : mode) (xys : xy vector) : unit =
 fun drawArc (im:image) (mo : mode) { c : xy, wh : xy, from : int, to : int } =
     app3 (dlsym dlh "mgd_drawarc") im (c, wh, from, to) (setmode im mo)
 
-fun fill (im : image) (mo : mode) (xy : xy) : unit =        
+fun fill (im : image) (mo : mode) (xy : xy) : unit =
     app3 (dlsym dlh "mgd_fill") im xy (setmode im mo)
 
-fun fillBorder (im : image) (mo : mode) (xy : xy) (co : color) =        
+fun fillBorder (im : image) (mo : mode) (xy : xy) (co : color) =
     app4 (dlsym dlh "mgd_fillborder") im xy co (setmode im mo)
- 
+
 fun copy { src : image, srcxy : xy, srcwh : xy,
 	   dst : image, dstxy : xy } : unit =
     app1 (dlsym dlh "mgd_copy") (src, srcxy, srcwh, dst, dstxy)
@@ -138,11 +138,11 @@ fun copyResize { src : image, srcxy : xy, srcwh : xy,
 		 dst : image, dstxy : xy, dstwh : xy } : unit =
     app1 (dlsym dlh "mgd_copyresize") (src, srcxy, srcwh, dst, dstxy, dstwh)
 
-datatype font = 
-    Tiny 
+datatype font =
+    Tiny
   | Small
   | MediumBold
-  | Large 
+  | Large
   | Giant
 
 fun fontcode Tiny       = 0
@@ -152,7 +152,7 @@ fun fontcode Tiny       = 0
   | fontcode Giant      = 4
 
 fun char (im : image) (co : color) (font : font) (xy : xy) (c : char) : unit =
-    app5 (dlsym dlh "mgd_char") im (fontcode font) xy c co 
+    app5 (dlsym dlh "mgd_char") im (fontcode font) xy c co
 
 fun charUp (im:image) (co : color) (font : font) (xy : xy) (c : char) : unit =
     app5 (dlsym dlh "mgd_charup") im (fontcode font) xy c co
@@ -169,5 +169,5 @@ fun rgb  (im : image) (co : color) : rgb =
 fun size  (im : image) : xy =
     app1 (dlsym dlh "mgd_size") im
 
-fun charsize (f : font) : xy = 
+fun charsize (f : font) : xy =
     app1 (dlsym dlh "mgd_charsize") (fontcode f)

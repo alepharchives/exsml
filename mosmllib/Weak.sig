@@ -26,9 +26,9 @@ val foldr   : ('a * 'b -> 'b) -> 'b -> 'a array -> 'b
 val modify  : ('a -> 'a) -> 'a array -> unit
 
 val appi    : (int * 'a -> unit) -> 'a array * int * int option -> unit
-val foldli  : (int * 'a * 'b -> 'b) -> 'b -> 'a array * int * int option 
+val foldli  : (int * 'a * 'b -> 'b) -> 'b -> 'a array * int * int option
               -> 'b
-val foldri  : (int * 'a * 'b -> 'b) -> 'b -> 'a array * int * int option 
+val foldri  : (int * 'a * 'b -> 'b) -> 'b -> 'a array * int * int option
               -> 'b
 val modifyi : (int * 'a -> 'a) -> 'a array * int * int option -> unit
 
@@ -62,9 +62,9 @@ val modifyi : (int * 'a -> 'a) -> 'a array * int * int option -> unit
    has not yet been deallocated by the garbage collector.  The
    allocation of any new value may activate the garbage collector and
    cause the object to die.  Thus
-        if not (isweak w) then get w else "blah" 
+        if not (isweak w) then get w else "blah"
    will not raise exception Fail, whereas the following might:
-        if not (isweak w) then ([1,2] @ [3,4]; get w) else "blah" 
+        if not (isweak w) then ([1,2] @ [3,4]; get w) else "blah"
    because evaluation of the list append may cause w to die.
 
    The value of isweak w is the same as that of
@@ -108,7 +108,7 @@ val modifyi : (int * 'a -> 'a) -> 'a array * int * int option -> unit
    be used with great care.
 
    [foldl f e a] folds function f over the live elements of a, from
-   left to right.  
+   left to right.
 
    [foldr f e a] folds function f over the live elements of a, from
    right to left.
@@ -131,12 +131,12 @@ val modifyi : (int * 'a -> 'a) -> 'a array * int * int option -> unit
    is, the slice denotes the suffix of the array starting at i.  Valid
    only if 0 <= i <= length a.  Equivalent to (a, i, SOME(length a - i)).
 
-       slice             meaning 
+       slice             meaning
        ----------------------------------------------------------
-       (a, 0, NONE)      the whole array              a[0..len-1]   
+       (a, 0, NONE)      the whole array              a[0..len-1]
        (a, 0, SOME n)    a left subarray (prefix)     a[0..n-1]
        (a, i, NONE)      a right subarray (suffix)    a[i..len-1]
-       (a, i, SOME n)    a general slice              a[i..i+n-1] 
+       (a, i, SOME n)    a general slice              a[i..i+n-1]
 
    [foldli f e (a, i, SOME n)] folds function f over the live elements
    of the subarray a[i..i+n-1] from left to right.  Raises Subscript
@@ -168,5 +168,5 @@ val modifyi : (int * 'a -> 'a) -> 'a array * int * int option -> unit
 
    [modifyi f (a, i, NONE)] applies f to (j, a[j]) and updates a[j]
    with the result f(j, a[j]) for j=i,i+1,...,len-1, provided a[j] is
-   live.  Raises Subscript if i<0 or i > length a.  
+   live.  Raises Subscript if i<0 or i > length a.
 *)

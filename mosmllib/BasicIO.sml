@@ -46,7 +46,7 @@ type file_perm = int;
 
 datatype open_flag =
     O_APPEND                       (* `open' for appending *)
-  | O_BINARY                       (* `open' in binary mode *)    
+  | O_BINARY                       (* `open' in binary mode *)
   | O_CREAT                        (* create the file if nonexistent *)
   | O_EXCL                         (* fails if the file exists *)
   | O_RDONLY                       (* `open' read-only *)
@@ -122,10 +122,10 @@ prim_val caml_close_out : out_channel -> unit = 1 "close_out"
 	   The behavior is unspecified if any of the above functions is
 	   called on a closed channel. *)
 
-fun raiseIo fcn nam exn = 
+fun raiseIo fcn nam exn =
     raise SysErr ("BasicIO." ^ fcn ^ " on " ^ nam, NONE);
 
-fun raiseClosed fcn nam = 
+fun raiseClosed fcn nam =
     raiseIo fcn nam (Fail "Stream is closed");
 
 fun open_in s =
@@ -183,7 +183,7 @@ fun open_out_bin s =
 
 fun outputc (os as ref {closed, oc}) s =
   if closed then
-    raiseClosed "outputc" "" 
+    raiseClosed "outputc" ""
   else
     (caml_output_string oc s;
      if os = std_err then caml_flush oc else ());
@@ -207,7 +207,7 @@ fun input_line (is as ref {closed, ic}) =
       fun realloc () =
 	  let val newmax = 2 * !max
 	      val newtmp = create_string_ newmax
-	  in 
+	  in
 	      blit_string_ (!tmp) 0 newtmp 0 (!max);
 	      max := newmax;
 	      tmp := newtmp
@@ -217,7 +217,7 @@ fun input_line (is as ref {closed, ic}) =
 	      NONE   => sub_string_ (!tmp) 0 len
 	    | SOME c => (if len >= !max then realloc () else ();
 			 set_nth_char_ (!tmp) len c;
-			 if c = #"\n" then sub_string_ (!tmp) 0 (len+1) 
+			 if c = #"\n" then sub_string_ (!tmp) 0 (len+1)
 			              else h (len+1))
   in h 0 end;
 

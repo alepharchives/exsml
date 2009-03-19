@@ -42,7 +42,7 @@ val fromTimeUniv  : Time.time -> date
 val toTime        : date -> Time.time
 val localOffset   : unit -> Time.time
 
-(* 
+(*
    These functions convert times to dates and vice versa, and format
    and scan dates.
 
@@ -51,7 +51,7 @@ val localOffset   : unit -> Time.time
    offset is SOME t, then t is the offset of the main timezone
    (ignoring daylight savings time) west of UTC.
         When 0 hours <= t < 12 hours, the represented time is to the
-   west of UTC and the local time is UTC-t.  
+   west of UTC and the local time is UTC-t.
         When 12 hours <= t < 23 hours, the represented time is to the
    East of UTC and the local time is UTC+(24-t).
 
@@ -98,7 +98,7 @@ val localOffset   : unit -> Time.time
    DST.  Does not detect invalid dates.
 
    [toString dt] returns a 24 character string representing the date dt
-   in the following format:   
+   in the following format:
                        Wed Mar  8 19:06:45 1995
    The result may be wrong if the date is not representable as a
    Time.time value.  Raises Date if dt is an invalid date.
@@ -129,10 +129,10 @@ val localOffset   : unit -> Time.time
       %y  year of century (00..99)
       %Y  year including century (e.g. 1997)
       %Z  time zone name if it exists; otherwise the empty string
-      %%  the percent character   
+      %%  the percent character
 
    Example: The current local date in ISO format (e.g. 1998-04-06) can
-   be obtained by using: 
+   be obtained by using:
         fmt "%Y-%m-%d" (fromTimeLocal (Time.now ()))
 
    [fromString s] scans a 24-character date from the string s, after
@@ -140,7 +140,7 @@ val localOffset   : unit -> Time.time
    of the string must be as produced by toString.  The fields isDst
    and offset in the resulting date will be NONE.  No check of the
    consistency of the date (weekday, date in the month, ...) is
-   performed. 
+   performed.
 
    [scan getc src] scans a 24-character date from the stream src,
    using the stream accessor getc.  Otherwise works as fromString.  In
@@ -167,6 +167,6 @@ val localOffset   : unit -> Time.time
    can be represented as Time.time values.  Corresponds to the ANSI C
    function `mktime'.
 
-   [localOffset ()] is the local time zone offset west of UTC.  
+   [localOffset ()] is the local time zone offset west of UTC.
    It holds that 0 hours <= localOffset () < 24 hours.
 *)

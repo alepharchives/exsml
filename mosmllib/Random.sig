@@ -9,7 +9,7 @@ val randomlist : int * generator -> real list
 val range      : int * int -> generator -> int
 val rangelist  : int * int -> int * generator -> int list
 
-(* 
+(*
    [generator] is the type of random number generators, here the
    linear congruential generators from Paulson 1991, 1996.
 
@@ -27,5 +27,5 @@ val rangelist  : int * int -> int * generator -> int list
    range [min, max).  Raises Fail if min > max.
 
    [rangelist (min, max) (n, gen)] returns a list of n integral random
-   numbers in the range [min, max).  Raises Fail if min > max.  
+   numbers in the range [min, max).  Raises Fail if min > max.
 *)

@@ -1,6 +1,6 @@
 (* Gdbm -- GNU gdbm persistent string hashtables -- requires Dynlib *)
 
-type table 
+type table
 
 datatype openmode =
     READER                              (* read-only access (nonexclusive) *)
@@ -18,7 +18,7 @@ exception GdbmError of string
 
 val withtable  : string * openmode -> (table -> 'a) -> 'a
 val withtables : (string * openmode) list -> (table list -> 'a) -> 'a
-val add        : table -> datum * datum -> unit 
+val add        : table -> datum * datum -> unit
 val insert     : table -> datum * datum -> unit
 val find       : table -> datum -> datum
 val peek       : table -> datum -> datum option
@@ -30,10 +30,10 @@ val listItems  : table -> (datum * datum) list
 val app        : (datum * datum -> unit) -> table -> unit
 val map        : (datum * datum -> 'a) -> table -> 'a list
 val fold       : (datum * datum * 'a -> 'a) -> 'a -> table -> 'a
-val fastwrite  : bool ref    
+val fastwrite  : bool ref
 val reorganize : table -> unit
 
-(* 
+(*
    [table] is the type of an opened table.  A value of type table can
    be used only in the argument f to the withtable function.  This
    makes sure that the table is closed after use.
@@ -41,7 +41,7 @@ val reorganize : table -> unit
    [openmode] is the type of opening modes.  Read-only access (READER)
    is non-exclusive; read/write access (WRITER, WRCREAT, NEWDB) is
    exclusive.
-    
+
    [withtable (nam, mod) f] first opens the table db in file nam with
    mode mod, then applies f to db, then closes db.  Makes sure to
    close db even if an exception is raised during the evaluation of
@@ -55,10 +55,10 @@ val reorganize : table -> unit
    creating and then opening an empty file, then numItems, listKeys,
    listItems, etc. will raise an exception.
 
-   [withtables nammod f], where nammod = [(nam1, mod1), ..., (namn, modn)], 
-   is equivalent to 
-        withtable (nam1, mod1) (fn db1 => 
-            withtable (nam2, mod2) (fn db2 => 
+   [withtables nammod f], where nammod = [(nam1, mod1), ..., (namn, modn)],
+   is equivalent to
+        withtable (nam1, mod1) (fn db1 =>
+            withtable (nam2, mod2) (fn db2 =>
                 ...
                     f [db1, db2, ...]))
    That is, first opens the databases db1, db2, ... in that order in
@@ -66,7 +66,7 @@ val reorganize : table -> unit
    [db1, db2, ...], and finally closes [db1, db2, ...].  Makes sure to
    close all databases even if an exception is raised during the
    opening of db1, db2, ... or during the evaluation of f[db1, db2, ...].
- 
+
    [add db (k,v)] adds the pair (k, v) to db.  Raises AlreadyThere if
    there is a pair (k, _) in db already.  Raises NotWriter if db is
    not opened in write mode.
@@ -89,13 +89,13 @@ val reorganize : table -> unit
    write mode.
 
    [listKeys db] returns a list of all keys in db in an unspecified
-   order.  
+   order.
 
    [numItems db] is the number of (key, value) pairs in db.
    Equivalent to length(listKeys db).
 
-   [listItems db] returns a list of all (key, value) pairs in db in some 
-   order.  Equivalent to 
+   [listItems db] returns a list of all (key, value) pairs in db in some
+   order.  Equivalent to
         List.map (fn key => (key, find(db,key))) (listKeys db)
 
    [app f db] is equivalent to List.app f (listItems db), provided the
@@ -105,10 +105,10 @@ val reorganize : table -> unit
    [map f db] is equivalent to List.map f (listItems db), provided the
    function f does not change the set of keys in the table.
    Otherwise the result and effect are unpredictable.
-   
-   [fold f a db] is equivalent to 
+
+   [fold f a db] is equivalent to
         List.foldr (fn ((k, v), r) => f(k, v, r)) a (listItems db)
-   provided the function f does not change the set of keys in the 
+   provided the function f does not change the set of keys in the
    table. Otherwise the result and effect are unpredictable.
 
    [fastwrite] can be set to speed up writes to a table.  By default,

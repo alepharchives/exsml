@@ -2,7 +2,7 @@
 
 datatype radix = BIN | OCT | DEC | HEX
 
-datatype realfmt = 
+datatype realfmt =
     SCI of int option   (* scientific,  arg = # dec. digits, dflt=6 *)
   | FIX of int option   (* fixed-point, arg = # dec. digits, dflt=6 *)
   | GEN of int option   (* auto choice of the above,                *)
@@ -15,25 +15,25 @@ type ('a, 'b) reader = 'b -> ('a * 'b) option
 val scanString : ((char, cs) reader -> ('a, cs) reader) -> string -> 'a option
 
 val splitl     : (char -> bool) -> (char, 'a) reader -> 'a -> string * 'a
-val takel      : (char -> bool) -> (char, 'a) reader -> 'a -> string 
-val dropl      : (char -> bool) -> (char, 'a) reader -> 'a -> 'a 
-val skipWS     : (char, 'a) reader -> 'a -> 'a 
+val takel      : (char -> bool) -> (char, 'a) reader -> 'a -> string
+val dropl      : (char -> bool) -> (char, 'a) reader -> 'a -> 'a
+val skipWS     : (char, 'a) reader -> 'a -> 'a
 
 val padLeft    : char -> int -> string -> string
 val padRight   : char -> int -> string -> string
 
-(* 
+(*
    This structure presents tools for scanning strings and values from
    functional character streams, and for simple formatting.
 
    [('elm, 'src) reader] is the type of source readers for reading a
-   sequence of 'elm values from a source of type 'src.  For instance, 
+   sequence of 'elm values from a source of type 'src.  For instance,
    a character source reader
-        getc : (char, cs) reader 
+        getc : (char, cs) reader
    is used for obtaining characters from a functional character source
    src of type cs, one at a time. It should hold that
 
-        getc src = SOME(c, src')        if the next character in src 
+        getc src = SOME(c, src')        if the next character in src
                                         is c, and src' is the rest of src;
                  = NONE                 if src contains no characters
 
@@ -65,7 +65,7 @@ val padRight   : char -> int -> string -> string
    Equivalent to dropl Char.isSpace.
 
    [padLeft c n s] returns the string s if size s >= n, otherwise pads
-   s with (n - size s) copies of the character c on the left.  
+   s with (n - size s) copies of the character c on the left.
    In other words, right-justifies s in a field n characters wide.
 
    [padRight c n s] returns the string s if size s >= n, otherwise pads

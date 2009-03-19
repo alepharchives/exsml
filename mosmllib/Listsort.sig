@@ -3,7 +3,7 @@
 val sort   : ('a * 'a -> order) -> 'a list -> 'a list
 val sorted : ('a * 'a -> order) -> 'a list -> bool
 
-(* 
+(*
    [sort ordr xs] sorts the list xs in nondecreasing order, using the
    given ordering.  Uses Richard O'Keefe's smooth applicative merge
    sort.

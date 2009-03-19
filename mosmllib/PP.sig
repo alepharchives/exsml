@@ -4,7 +4,7 @@ type ppconsumer = { consumer  : string -> unit,
                     linewidth : int,
                     flush     : unit -> unit }
 
-datatype break_style = 
+datatype break_style =
     CONSISTENT
   | INCONSISTENT
 
@@ -20,7 +20,7 @@ val flush_ppstream : ppstream -> unit
 val with_pp        : ppconsumer -> (ppstream -> unit) -> unit
 val pp_to_string   : int -> (ppstream -> 'a -> unit) -> 'a -> string
 
-(* 
+(*
    This structure provides tools for creating customized Oppen-style
    pretty-printers, based on the type ppstream.  A ppstream is an
    output stream that contains prettyprinting commands.  The commands
@@ -33,8 +33,8 @@ val pp_to_string   : int -> (ppstream -> 'a -> unit) -> 'a -> string
    properly nested dynamically.  All calls to begin_block and
    end_block must be properly nested (dynamically).
 
-   [ppconsumer] is the type of sinks for pretty-printing.  A value of 
-   type ppconsumer is a record 
+   [ppconsumer] is the type of sinks for pretty-printing.  A value of
+   type ppconsumer is a record
                  { consumer  : string -> unit,
                    linewidth : int,
                    flush     : unit -> unit }
@@ -63,7 +63,7 @@ val pp_to_string   : int -> (ppstream -> 'a -> unit) -> 'a -> string
    consumer from a ppstream.
 
    [add_break ppstrm (size, offset)] notifies the pretty-printer that
-   a line break is possible at this point.  
+   a line break is possible at this point.
    * When the current block style is CONSISTENT:
       ** if the entire block fits on the remainder of the line, then
          output size spaces; else
@@ -83,7 +83,7 @@ val pp_to_string   : int -> (ppstream -> 'a -> unit) -> 'a -> string
    [begin_block ppstrm style blockoffset] begins a new block and
    level of indentation, with the given style and block offset.
 
-   [end_block ppstrm] closes the current block.  
+   [end_block ppstrm] closes the current block.
 
    [clear_ppstream ppstrm] restarts the stream, without affecting the
    underlying consumer.
@@ -101,30 +101,30 @@ val pp_to_string   : int -> (ppstream -> 'a -> unit) -> 'a -> string
    ppstrm whose consumer accumulates the output in a string s.  Then
    evaluates (printit ppstrm x) and finally returns the string s.
 
-   
+
    Example 1: A simple prettyprinter for Booleans:
 
        load "PP";
-       fun ppbool pps d = 
+       fun ppbool pps d =
            let open PP
            in
-               begin_block pps INCONSISTENT 6; 
+               begin_block pps INCONSISTENT 6;
                add_string pps (if d then "right" else "wrong");
                end_block pps
            end;
 
    Now one may define a ppstream to print to, and exercise it:
 
-       val ppstrm = PP.mk_ppstream {consumer  = 
-                                    fn s => TextIO.output(TextIO.stdOut, s), 
+       val ppstrm = PP.mk_ppstream {consumer  =
+                                    fn s => TextIO.output(TextIO.stdOut, s),
                                     linewidth = 72,
-                                    flush     = 
+                                    flush     =
                                      fn () => TextIO.flushOut TextIO.stdOut};
 
        fun ppb b = (ppbool ppstrm b; PP.flush_ppstream ppstrm);
 
        - ppb false;
-       wrong> val it = () : unit   
+       wrong> val it = () : unit
 
    The prettyprinter may also be installed in the toplevel system;
    then it will be used to print all expressions of type bool
@@ -142,25 +142,25 @@ val pp_to_string   : int -> (ppstream -> 'a -> unit) -> 'a -> string
 
    Example 2: Prettyprinting simple expressions (examples/pretty/ppexpr.sml):
 
-       datatype expr = 
-           Cst of int 
+       datatype expr =
+           Cst of int
          | Neg of expr
          | Plus of expr * expr
 
-       fun ppexpr pps e0 = 
+       fun ppexpr pps e0 =
            let open PP
                fun ppe (Cst i)        = add_string pps (Int.toString i)
                  | ppe (Neg e)        = (add_string pps "~"; ppe e)
                  | ppe (Plus(e1, e2)) = (begin_block pps CONSISTENT 0;
                                          add_string pps "(";
-                                         ppe e1; 
+                                         ppe e1;
                                          add_string pps " + ";
                                          add_break pps (0, 1);
-                                         ppe e2; 
+                                         ppe e2;
                                          add_string pps ")";
                                          end_block pps)
            in
-               begin_block pps INCONSISTENT 0; 
+               begin_block pps INCONSISTENT 0;
                ppe e0;
                end_block pps
            end
@@ -176,6 +176,6 @@ val pp_to_string   : int -> (ppstream -> 'a -> unit) -> 'a -> string
        val e5 = Plus(Neg e4, e4);
        val e6 = Plus(e5, e5);
        val e7 = Plus(e6, e6);
-       val e8 = 
+       val e8 =
            Plus(e3, Plus(e3, Plus(e3, Plus(e3, Plus(e3, Plus(e3, e7))))));
 *)

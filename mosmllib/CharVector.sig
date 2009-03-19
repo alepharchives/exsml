@@ -23,7 +23,7 @@ val mapi     : (int * elem -> elem) -> vector * int * int option -> vector
 val foldli   : (int * elem * 'b -> 'b) -> 'b -> vector*int*int option -> 'b
 val foldri   : (int * elem * 'b -> 'b) -> 'b -> vector*int*int option -> 'b
 
-(* 
+(*
    [vector] is the type of one-dimensional, immutable, zero-based
    constant-time-access vectors with elements of type Char.char, that
    is, characters.  Type vector admits equality, and vectors v1 and v2

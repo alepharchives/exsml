@@ -2,7 +2,7 @@
 
 (* Under DOS, real time and cpu time are the same *)
 
-local 
+local
     type tusage = { gcSec : int,  gcUsec : int,
                    sysSec : int, sysUsec : int,
                    usrSec : int, usrUsec : int  }
@@ -12,17 +12,17 @@ in
     type cpu_timer  = {usr : time, sys : time, gc : time};
     type real_timer = time;
 
-    fun startCPUTimer () = 
-	let val {gcSec, gcUsec, sysSec, sysUsec, usrSec, usrUsec} 
-	        = getrutime_ () 
+    fun startCPUTimer () =
+	let val {gcSec, gcUsec, sysSec, sysUsec, usrSec, usrUsec}
+	        = getrutime_ ()
 	in {usr = fromSeconds usrSec + fromMicroseconds usrUsec,
 	    sys = fromSeconds sysSec + fromMicroseconds sysUsec,
 	    gc  = fromSeconds gcSec  + fromMicroseconds gcUsec}
 	end
 
-    fun checkCPUTimer {usr, sys, gc} = 
-	let val {gcSec, gcUsec, sysSec, sysUsec, usrSec, usrUsec} 
-	        = getrutime_ () 
+    fun checkCPUTimer {usr, sys, gc} =
+	let val {gcSec, gcUsec, sysSec, sysUsec, usrSec, usrUsec}
+	        = getrutime_ ()
 	in {usr = fromSeconds usrSec + fromMicroseconds usrUsec - usr,
 	    sys = fromSeconds sysSec + fromMicroseconds sysUsec - sys,
 	    gc  = fromSeconds gcSec  + fromMicroseconds gcUsec  - gc}

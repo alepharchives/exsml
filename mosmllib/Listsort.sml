@@ -11,7 +11,7 @@ fun sort ordr []          = []
 	 GREATER => [x2, x1]
        | _       => xs)
   | sort ordr xs =
-    let fun merge []      ys = ys 
+    let fun merge []      ys = ys
           | merge xs      [] = xs
           | merge (x::xs) (y::ys) =
             if ordr(x, y) <> GREATER then x :: merge xs (y::ys)
@@ -31,7 +31,7 @@ fun sort ordr []          = []
     in sorting xs [] 0 end;
 
 fun sorted ordr []         = true
-  | sorted ordr (y1 :: yr) = 
+  | sorted ordr (y1 :: yr) =
     let fun h x0 []       = true
 	  | h x0 (x1::xr) = ordr(x0, x1) <> GREATER andalso h x1 xr
     in h y1 yr end;

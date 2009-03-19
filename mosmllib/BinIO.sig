@@ -5,7 +5,7 @@ type vector = Word8Vector.vector
 
 (* Binary input *)
 
-type instream 
+type instream
 
 val openIn       : string -> instream
 val closeIn      : instream -> unit
@@ -28,7 +28,7 @@ val output       : outstream * vector -> unit
 val output1      : outstream * elem -> unit
 val flushOut     : outstream -> unit
 
-(* 
+(*
    This structure provides input/output functions on byte streams.
    The functions are state-based: reading from or writing to a stream
    changes the state of the stream.  The streams are buffered: output
@@ -74,7 +74,7 @@ val flushOut     : outstream -> unit
    [inputN(istr, n)] returns the next n bytes from istr as a vector,
    if that many are available; returns all remaining bytes if end of
    stream is reached before n bytes are available; blocks if necessary
-   until one of these conditions holds.  
+   until one of these conditions holds.
 
    [endOfStream istr] returns false if any elements are available in
    istr; returns true if istr is at end of stream or closed; blocks if
@@ -118,7 +118,7 @@ val flushOut     : outstream -> unit
    [getPosIn istr] returns the current position of istr.  Raises Io.Io
    if not supported on istr.
 
-   [endPosIn istr] returns the last position of istr.  
+   [endPosIn istr] returns the last position of istr.
 
    [getPosOut ostr] returns the current position in stream ostr.
    Raises Io.Io if not supported on ostr.

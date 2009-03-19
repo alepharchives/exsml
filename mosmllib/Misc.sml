@@ -8,7 +8,7 @@ fun a before b = a;
 fun getOpt (SOME v, _) = v
   | getOpt (NONE,   a) = a;
 
-fun isSome (SOME _) = true 
+fun isSome (SOME _) = true
   | isSome NONE     = false;
 
 fun valOf (SOME v) = v

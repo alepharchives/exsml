@@ -1,10 +1,10 @@
 (* Arraysort.sml -- adapted for Moscow ML from SML/NJ library v. 0.2
  *
- * COPYRIGHT (c) 1993 by AT&T Bell Laboratories.  
+ * COPYRIGHT (c) 1993 by AT&T Bell Laboratories.
  * See file mosml/copyrght/copyrght.att for details.
  *
  * Structure for in-place sorting of arrays.
- * Uses an engineered version of quicksort due to 
+ * Uses an engineered version of quicksort due to
  * Bentley and McIlroy.
  *
  *)
@@ -23,7 +23,7 @@ local
 fun min (x, y) = if x < y then x else y : int;
 
 fun sortRange (array, start, n, cmp) = let
-      fun swap i j = 
+      fun swap i j =
 	  let val tmp = sub_ array i
 	  in update_ array i (sub_ array j); update_ array j tmp end
       fun vecswap i j 0 = ()
@@ -54,10 +54,10 @@ fun sortRange (array, start, n, cmp) = let
             | (LESS, _  ) =>
 		  (case cmp(sub_ array a, sub_ array c) of LESS => c | _ => a)
             | (_,GREATER) => b
-            |  _          => 
+            |  _          =>
 		  (case cmp(sub_ array a, sub_ array c) of LESS => a | _ => c)
 
-      fun getPivot (a,n) = 
+      fun getPivot (a,n) =
             if n <= 7 then a + n div 2
             else let
               val p1 = a
@@ -74,7 +74,7 @@ fun sortRange (array, start, n, cmp) = let
                     med3 p1 pm pn
                   end
               end
-      
+
       fun quickSort (arg as (a, n)) = let
             fun bottom limit = let
                   fun loop pa pb =
@@ -84,7 +84,7 @@ fun sortRange (array, start, n, cmp) = let
                         | LESS => loop pa (pb+1)
                         | _ => (swap pa pb; loop (pa+1) (pb+1))
                   in loop end
-  
+
             fun top limit = let
                   fun loop pc pd =
                         if limit > pc then (pc, pd)
@@ -94,7 +94,7 @@ fun sortRange (array, start, n, cmp) = let
                         | _ => (swap pc pd; loop (pc-1) (pd-1))
                   in loop end
 
-            fun split pa pb pc pd = 
+            fun split pa pb pc pd =
 		let val (pa,pb) = bottom pc pa pb
 		    val (pc,pd) = top pb pc pd
 		in
@@ -118,18 +118,18 @@ fun sortRange (array, start, n, cmp) = let
             val _ = if n' > 1 then sort(pn-n',n') else ()
             in () end
 
-      and sort (arg as (_, n)) = if n < 7 then insertSort arg 
+      and sort (arg as (_, n)) = if n < 7 then insertSort arg
                                  else quickSort arg
       in sort (start,n) end
 in
 
-fun sort cmp (arr : 'a array) = 
+fun sort cmp (arr : 'a array) =
     sortRange(from_array arr, 0, length arr, cmp)
 
-fun sorted cmp (arr : 'a array) = 
+fun sorted cmp (arr : 'a array) =
     let val len = length arr
 	val array = from_array arr
-	fun s v1 v2 i = 
+	fun s v1 v2 i =
 	    (* s[0..i-2] is sorted & v1 = s[i-2] & v2 = s[i-1] *)
 	    cmp(v1, v2) <> GREATER
 	    andalso (i >= len orelse s v2 (sub_ array i) (i+1))

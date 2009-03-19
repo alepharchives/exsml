@@ -2,7 +2,7 @@
 
 (* Efficiently concatenable word sequences *)
 
-datatype wseq = 
+datatype wseq =
     Empty                               (* The empty sequence         *)
   | Nl                                  (* Newline                    *)
   | $ of string                         (* A string                   *)
@@ -23,7 +23,7 @@ val vec2list : 'a vector -> 'a list
 exception ParamMissing of string
 exception NotInt of string * string
 
-val %        : string -> string      
+val %        : string -> string
 val %?       : string -> bool
 val %#       : string -> int
 val %%       : string * string -> string
@@ -116,7 +116,7 @@ val img      : string -> wseq
 val imga     : string -> string -> wseq
 val map      : string -> wseq -> wseq
 val mapa     : string -> string -> wseq -> wseq
-val area     : { alt : string option, coords : string, 
+val area     : { alt : string option, coords : string,
                  href : string option, shape : string} -> wseq
 
 (* HTML forms etc *)
@@ -149,7 +149,7 @@ val urlencode  : string -> string
 val htmlencode : string -> string
 
 
-(* 
+(*
    This module provides support functions for writing CGI scripts and
    ML Server Page scripts.
 
@@ -170,7 +170,7 @@ val htmlencode : string -> string
    represented by ws1 and ws2.  The function && should be declared
         infix &&
 
-   [prmap f xs] is f x1 && ... && f xn evaluated from left to right, 
+   [prmap f xs] is f x1 && ... && f xn evaluated from left to right,
    when xs is [x1, ..., xn].
 
    [prsep sep f xs] is f x1 && sep && ... && sep && f xn, evaluated
@@ -194,10 +194,10 @@ val htmlencode : string -> string
    [% fnm] returns a string associated with CGI parameter fnm if there
    is any; raises ParamMissing(fnm) if no strings are associated with
    fnm.  Equivalent to
-       case Mosmlcgi.cgi_field_string fnm of 
+       case Mosmlcgi.cgi_field_string fnm of
            NONE   => raise ParamMissing "fnm"
          | SOME v => v
-   In general, multiple strings may be associated with a CGI parameter; 
+   In general, multiple strings may be associated with a CGI parameter;
    use Mosmlcgi.cgi_field_strings if you need to access all of them.
 
    [%# fnm] returns the integer i if there is a string associated with
@@ -239,10 +239,10 @@ val htmlencode : string -> string
 
    [bodya attr ws] generates <BODY attr>ws</BODY>.
 
-   [htmldoc titl ws] generates 
+   [htmldoc titl ws] generates
    <HTML><HEAD><TITLE>titl</TITLE></HEAD><BODY>ws</BODY></HTML>.
 
-   
+
    HTML headings and vertical format:
 
    [h1 ws] generates <H1>ws</H1>.
@@ -265,7 +265,7 @@ val htmlencode : string -> string
 
    [blockquote ws] generates <BLOCKQUOTE>ws</BLOCKQUOTE>.
 
-   [blockquotea attr ws] generates <BLOCKQUOTE attr>ws</BLOCKQUOTE> 
+   [blockquotea attr ws] generates <BLOCKQUOTE attr>ws</BLOCKQUOTE>
 
    [center ws] generates <CENTER>ws</CENTER>.
 
@@ -353,7 +353,7 @@ val htmlencode : string -> string
    [mapa nam attr ws] generates <MAP NAME="name" attr>ws</MAP>.
 
    [area { alt, coords, href, shape}] generates
-       <AREA SHAPE="shape" COORDS="coords" HREF="link" ALT="desc"> 
+       <AREA SHAPE="shape" COORDS="coords" HREF="link" ALT="desc">
    when href is SOME link (where HREF is replaced by NOHREF otherwise)
    and  alt  is SOME desc (where ALT is omitted otherwise).
 
@@ -372,10 +372,10 @@ val htmlencode : string -> string
 
    [inpassword name attr] generates <INPUT TYPE=PASSWORD NAME="name" attr>.
 
-   [incheckbox {name, value} attr] generates 
+   [incheckbox {name, value} attr] generates
    <INPUT TYPE=CHECKBOX NAME="name" VALUE="value" attr>.
 
-   [inradio {name, value} attr] generates 
+   [inradio {name, value} attr] generates
    <INPUT TYPE=RADIO NAME="name" VALUE="value" attr>.
 
    [inreset value attr] generates <INPUT TYPE=RESET VALUE="value" attr>.
@@ -387,7 +387,7 @@ val htmlencode : string -> string
 
    [textarea name ws] generates <TEXTAREA NAME="name">ws</TEXTAREA>.
 
-   [textareaa name attr ws] generates 
+   [textareaa name attr ws] generates
    <TEXTAREA NAME="name" attr>ws</TEXTAREA>.
 
    [select name attr ws] generates <SELECT NAME="name" attr>ws</SELECT>.
@@ -406,12 +406,12 @@ val htmlencode : string -> string
 
    HTML encoding functions:
 
-   [urlencode s] returns the url-encoding of s.  That is, space (ASCII 32) 
-   is replaced by `+' and every non-alphanumeric character c except 
-   the characters - _ . is replaced by %hh, where hh is the hexadecimal 
+   [urlencode s] returns the url-encoding of s.  That is, space (ASCII 32)
+   is replaced by `+' and every non-alphanumeric character c except
+   the characters - _ . is replaced by %hh, where hh is the hexadecimal
    representation of the ASCII code of c.
 
    [htmlencode s] returns the html-encoding of s.  That is, < and >
-   are replaced by &lt; and &gt; respectively, and & is replaced by 
+   are replaced by &lt; and &gt; respectively, and & is replaced by
    &amp;
 *)

@@ -13,7 +13,7 @@ val terminate : status -> 'a
 
 val getEnv    : string -> string option
 
-(* 
+(*
    Portable functions for manipulating processes.
 
    [success] is the unique status value that signifies successful
@@ -34,7 +34,7 @@ val getEnv    : string -> string option
    [exit i] executes all registered actions, then terminates the SML
    process with completion code i.
 
-   [terminate i] terminates the SML process with completion code i 
+   [terminate i] terminates the SML process with completion code i
    (but without executing the registered actions).
 
    [getEnv evar] returns SOME s if the environment variable evar is

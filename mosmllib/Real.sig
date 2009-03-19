@@ -39,7 +39,7 @@ val fromString  : string -> real option
 val scan        : (char, 'a) StringCvt.reader -> (real, 'a) StringCvt.reader
 val fmt         : StringCvt.realfmt -> real -> string
 
-(* 
+(*
    [~]
    [*]
    [/]
@@ -58,7 +58,7 @@ val fmt         : StringCvt.realfmt -> real -> string
 
    [sign x] is ~1, 0, or 1, according as x is negative, zero, or positive.
 
-   [compare(x, y)] returns LESS, EQUAL, or GREATER, according 
+   [compare(x, y)] returns LESS, EQUAL, or GREATER, according
    as x is less than, equal to, or greater than y.
 
    [sameSign(x, y)] is true iff sign x = sign y.
@@ -95,7 +95,7 @@ val fmt         : StringCvt.realfmt -> real -> string
    be >= 0 in the SCI and FIX formats and > 0 in the GEN format;
    otherwise Size is raised, even in a partial application fmt(spec).
 
-      spec          description                            C printf 
+      spec          description                            C printf
       ---------------------------------------------------------------
       SCI NONE      scientific,   6 digits after point       %e
       SCI (SOME n)  scientific,   n digits after point       %.ne
@@ -105,9 +105,9 @@ val fmt         : StringCvt.realfmt -> real -> string
       GEN (SOME n)  auto choice,  n significant digits       %.ng
 
    [toString r] returns a string representing r, with automatic choice
-   of format according to the magnitude of r.  
+   of format according to the magnitude of r.
    Equivalent to (fmt (GEN NONE) r).
-   
+
    [fromString s] returns SOME(r) if a floating-point numeral can be
    scanned from a prefix of string s, ignoring any initial whitespace;
    returns NONE otherwise.  The valid forms of floating-point numerals

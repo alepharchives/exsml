@@ -59,7 +59,7 @@ local
     fun intOf NONE     = NONE
       | intOf (SOME s) = Int.fromString s
 
-    val query_string = 
+    val query_string =
 	case cgi_request_method of
 	    SOME ("GET")  => getOpt(cgi_query_string,"")
 	  | SOME ("POST") => inputN(stdIn, getOpt(intOf cgi_content_length, 0))
@@ -78,7 +78,7 @@ local
 
     (* Get the line starting with string s *)
 
-    fun line s sus = 
+    fun line s sus =
 	let open Substring
 	    val (_, fullline) = position s sus
 	    val after = triml (String.size s) fullline
@@ -86,10 +86,10 @@ local
 
     (* Get the value of boundary *)
 
-    fun getboundary line = 
+    fun getboundary line =
 	let open Substring
 	    val (_, bndeqn) = position "boundary=" line
-	in 
+	in
 	    if isEmpty bndeqn then NONE
 	    else SOME (string (triml 1 (dropl (isn't #"=") bndeqn)))
 	end
@@ -97,11 +97,11 @@ local
 
     (* If CGI request type is multipart/form-data, then SOME(boundary):  *)
 
-    val multipart_boundary = 
+    val multipart_boundary =
 	let open Substring
 	    val content_type = all (valOf cgi_content_type)
-	in 
-	    if isPrefix "multipart/form-data;" content_type then 
+	in
+	    if isPrefix "multipart/form-data;" content_type then
 		getboundary content_type
 	    else
 		NONE
@@ -140,12 +140,12 @@ local
                         | ch => ch::dec(i+1);
         in
             String.implode(dec(0))
-        end handle exn => 
+        end handle exn =>
 	    (err ("decode failed on " ^ Substring.string sus ^ "\n"); "")
 
     fun addItem ((key, value), dict) =
 	Splaymap.insert(dict, key, case Splaymap.peek(dict, key) of
-			                SOME vs => value :: vs 
+			                SOME vs => value :: vs
 				      | NONE    => [value])
 
     fun addField ([keysrc, valsrc], dict) =
@@ -159,7 +159,7 @@ local
 
     (* Decode multipart messages: *)
 
-    fun part_fields dict name = 
+    fun part_fields dict name =
 	case Splaymap.peek (dict, name) of
 	    NONE      => []
 	  | SOME vals => vals
@@ -175,21 +175,21 @@ local
 	    NONE          => default
 	  | SOME(i, rest) => if Substring.isEmpty rest then i else default
 
-    val multiparts = 
+    val multiparts =
 	let open Substring
 	    val boundary = "--" ^ valOf multipart_boundary
-	    val skipbnd = dropl (isn't #"\n") 
+	    val skipbnd = dropl (isn't #"\n")
 	    val (_, contents) = position boundary (all query_string)
 	    fun loop rest =
 		let val (pref, suff) = position boundary rest
-		in 
+		in
 		    if isEmpty pref orelse isEmpty suff then []
 		    else pref :: loop (skipbnd suff)
 		end
 	in loop (skipbnd contents) end
         handle Option => []
 
-    fun decodepart (part : Substring.substring) = 
+    fun decodepart (part : Substring.substring) =
 	let open Char Substring
 	    val crlf2 = "\r\n\r\n"
 	    val (header, rest) = position crlf2 part
@@ -204,30 +204,30 @@ local
 		    val value = triml 2 (trimr 1 v)
 		in addItem((string name, string value), dict) end
 
-	    val dict = 
+	    val dict =
 		List.foldr addField (Splaymap.mkDict String.compare) equations
 
-	    val partname = 
+	    val partname =
 		case part_field dict "name" of
 		    NONE   => "[Anonymous]" (* Is this is good idea? *)
 		  | SOME n => n
-	in 
-	    (partname, 
+	in
+	    (partname,
 	     { fieldnames = keys dict,
 	       tyOpt = if isEmpty typ then NONE else SOME (string typ),
-	       dict  = dict, 
+	       dict  = dict,
 	       (* Strip off CRLFCRLF and CRLF *)
 	       data  = string (trimr 2 (triml 4 rest))
 	     })
 	end
 
-    type part = {fieldnames : string list, 
-		 tyOpt : string option, 
+    type part = {fieldnames : string list,
+		 tyOpt : string option,
 		 dict : (string, string list) Splaymap.dict,
 		 data : string}
-	
+
     val part_dict : (string, part list) Splaymap.dict =
-	List.foldr addItem (Splaymap.mkDict String.compare) 
+	List.foldr addItem (Splaymap.mkDict String.compare)
 	              (List.map decodepart multiparts)
 in
     type part = part
@@ -240,12 +240,12 @@ in
     fun part_data          (p : part) = #data p
     fun part_field_strings (p : part) name = part_fields (#dict p) name
     fun part_field_string  (p : part) name = part_field  (#dict p) name
-    fun part_field_integer (p : part) (name, default) = 
+    fun part_field_integer (p : part) (name, default) =
 	getint (part_field  (#dict p) name) default
 
     val cgi_fieldnames = keys cgi_dict
     fun cgi_field_strings name = part_fields cgi_dict name
     fun cgi_field_string name  = part_field cgi_dict name
-    fun cgi_field_integer (name, default) = 
+    fun cgi_field_integer (name, default) =
 	getint (cgi_field_string name) default
 end;

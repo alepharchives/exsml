@@ -5,7 +5,7 @@ type 'a susp
 val delay : (unit -> 'a) -> 'a susp
 val force : 'a susp -> 'a
 
-(* 
+(*
    ['a susp] is the type of lazily evaluated expressions with result
    type 'a.
 

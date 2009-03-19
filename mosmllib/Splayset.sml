@@ -1,7 +1,7 @@
 (* Splayset -- modified for Moscow ML 1995-04-22
  * from SML/NJ library v. 0.2
  *
- * COPYRIGHT (c) 1993 by AT&T Bell Laboratories.  
+ * COPYRIGHT (c) 1993 by AT&T Bell Laboratories.
  * See file mosml/copyrght/copyrght.att for details.
  *
  * Set of values with an ordering relation, implemented as splay-trees.
@@ -9,7 +9,7 @@
 
 open Splaytree
 
-datatype 'key set = 
+datatype 'key set =
   OS of {cmpKey : 'key * 'key -> order,
 	 root   : 'key splay ref,
 	 nobj   : int}
@@ -19,25 +19,25 @@ fun cmpf cmpKey k = fn k' => cmpKey(k',k)
 
 fun empty cmpKey = OS{cmpKey = cmpKey, root = ref SplayNil, nobj = 0}
 
-fun singleton cmpKey v = 
-    OS{cmpKey= cmpKey, 
+fun singleton cmpKey v =
+    OS{cmpKey= cmpKey,
        root = ref(SplayObj{value=v,left=SplayNil,right=SplayNil}),
        nobj=1}
 
 (* Primitive insertion. *)
 fun insert cmpKey (v,(nobj,root)) =
       case splay (cmpf cmpKey v, root) of
-        (_,SplayNil) => 
+        (_,SplayNil) =>
           (1,SplayObj{value=v,left=SplayNil,right=SplayNil})
-      | (EQUAL,SplayObj{value,left,right}) => 
+      | (EQUAL,SplayObj{value,left,right}) =>
           (nobj,SplayObj{value=v,left=left,right=right})
-      | (LESS,SplayObj{value,left,right}) => 
+      | (LESS,SplayObj{value,left,right}) =>
           (nobj+1,
            SplayObj{
              value=v,
              left=SplayObj{value=value,left=left,right=SplayNil},
              right=right})
-      | (GREATER,SplayObj{value,left,right}) => 
+      | (GREATER,SplayObj{value,left,right}) =>
           (nobj+1,
            SplayObj{
               value=v,
@@ -75,7 +75,7 @@ fun retrieve arg = case peek arg of NONE => raise NotFound | SOME v => v
 fun delete (OS{cmpKey,root,nobj},key) =
   case splay (cmpf cmpKey key, !root) of
     (_,SplayNil) => raise NotFound
-  | (EQUAL,SplayObj{value,left,right}) => 
+  | (EQUAL,SplayObj{value,left,right}) =>
       OS{cmpKey=cmpKey, root=ref(join(left,right)), nobj=nobj-1}
   | (_,r) => (root := r; raise NotFound)
 
@@ -187,7 +187,7 @@ fun listItems (OS{root,...}) =
 (* Apply a function to the entries of the dictionary *)
 fun app af (OS{root,...}) =
       let fun apply SplayNil = ()
-            | apply (SplayObj{value,left,right}) = 
+            | apply (SplayObj{value,left,right}) =
                 (apply left; af value; apply right)
     in
       apply (!root)
@@ -195,7 +195,7 @@ fun app af (OS{root,...}) =
 
 fun revapp af (OS{root,...}) =
     let fun apply SplayNil = ()
-	  | apply (SplayObj{value,left,right}) = 
+	  | apply (SplayObj{value,left,right}) =
 	    (apply right; af value; apply left)
     in apply (!root) end
 
@@ -212,11 +212,11 @@ fun foldl abf b (OS{root,...}) =
 	    apply right (abf(value, apply left res))
     in apply (!root) b end
 
-fun find p (OS{root,...}) = 
+fun find p (OS{root,...}) =
     let fun ex SplayNil = NONE
 	  | ex (SplayObj{value=v,left=l,right=r}) =
             if p v then SOME v
             else case ex l of
 		NONE => ex r
-	      | a => a 
+	      | a => a
     in ex (!root) end
