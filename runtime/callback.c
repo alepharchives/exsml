@@ -2,6 +2,7 @@
 
 /* sestoft@dina.kvl.dk 1999-08-09 */
 
+#include "attributes.h"
 #include "callback.h"
 #include "mlvalues.h"		/* for Field, Reference_tag etc */
 #include "fail.h"		/* for failwith */
@@ -9,6 +10,15 @@
 #include "alloc.h"		/* for copy_string */
 #include "minor_gc.h"		/* for minor_collection */
 #include "interp.h"		/* for callback */
+
+valueptr alloc_valueptr(value);
+value c_var(value);
+value sml_init_register(value);
+value cfun_app1(value, value);
+value cfun_app2(value, value, value);
+value cfun_app3(value, value, value, value);
+value cfun_app4(value, value, value, value, value);
+value cfun_app5(value, int);
 
 /* ML closures for the functions to look up, register and unregister values */
 
@@ -92,7 +102,9 @@ void unregistervalue(char* nam)
 /* Allocate a reference cell in the old heap, so it will not be moved.
    This is to be called from the ML side only: */
 
-valueptr alloc_valueptr(value v) /* ML */
+
+
+valueptr alloc_valueptr(value v)
 {
 	value res;
 	PUSH_ROOTS(r, 1);
@@ -117,7 +129,7 @@ void registercptr(char* nam, void* cptr)
    then obtains pointers to the ML closures for the Callback.register
    and Callback.unregister functions.  */
 
-value sml_init_register(value v)	/* ML */
+value sml_init_register(value v)
 {
 	/* The closure in v may be moved if it is not in the old heap.  We
 	   force it into the old heap by requesting a minor collection: */
@@ -133,12 +145,14 @@ value sml_init_register(value v)	/* ML */
 
 /* Accessing C variables and functions from ML.  Used by Dynlib and Callback */
 
-value c_var(value symhdl) /* ML */
+
+value c_var(value symhdl)
 {
 	return *((value *) symhdl);
 }
 
-value cfun_app1(value cfun, value arg)  /* ML */
+
+value cfun_app1(value cfun, value arg)
 {
 	/* Due to the heavy typecasting, I had to declare a temp variable in
 	   order to get it right.
@@ -148,7 +162,7 @@ value cfun_app1(value cfun, value arg)  /* ML */
 	return (*cp)(arg);
 }
 
-value cfun_app2(value cfun, value arg1, value arg2)  /* ML */
+value cfun_app2(value cfun, value arg1, value arg2)
 {
 	/* again a typecast value */
 	value (*cp)(value,value) = (long (*)(long,long)) cfun;
@@ -156,7 +170,7 @@ value cfun_app2(value cfun, value arg1, value arg2)  /* ML */
 	return (*cp)(arg1,arg2);
 }
 
-value cfun_app3(value cfun, value arg1, value arg2, value arg3)  /* ML */
+value cfun_app3(value cfun, value arg1, value arg2, value arg3)
 {
 	/* again a typecast value */
 	value (*cp)(value,value,value) = (long (*)(long,long,long)) cfun;
@@ -164,7 +178,7 @@ value cfun_app3(value cfun, value arg1, value arg2, value arg3)  /* ML */
 	return (*cp)(arg1,arg2,arg3);
 }
 
-value cfun_app4(value cfun, value arg1, value arg2, value arg3, value arg4)  /* ML */
+value cfun_app4(value cfun, value arg1, value arg2, value arg3, value arg4)
 {
 	/* again a typecast value */
 	value (*cp)(value,value,value,value);
@@ -174,7 +188,7 @@ value cfun_app4(value cfun, value arg1, value arg2, value arg3, value arg4)  /* 
 	return cp(arg1,arg2,arg3,arg4);
 }
 
-value cfun_app5(value args, int argc)  /* ML */
+value cfun_app5(value args, int UNUSED(argc))
 {
 	value cfun = Field(args, 0);
 	value arg1 = Field(args, 1);
