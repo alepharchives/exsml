@@ -1,11 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "alloc.h"
 #include "fail.h"
 #include "memory.h"
 #include "mlvalues.h"
 
-value int_of_string(value s)          /* ML */
+value int_of_string(value);
+value format_int(value, value);
+
+value int_of_string(value s)
 {
 	long res;
 	int sign;
@@ -54,7 +58,8 @@ value int_of_string(value s)          /* ML */
 	return LONG_TO_VAL(sign < 0 ? -res : res);
 }
 
-value format_int(value fmt, value arg)      /* ML */
+
+value format_int(value fmt, value arg)
 {
 	char format_buffer[32];
 	size_t prec;
