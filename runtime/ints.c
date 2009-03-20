@@ -72,7 +72,7 @@ value format_int(value fmt, value arg)
 	prec = 32;
 	for (p = String_val(fmt); *p != 0; p++) {
 		if (*p >= '0' && *p <= '9') {
-			prec = atoi(p) + 5;
+			prec = strtoul(p, NULL, 10);
 			break;
 		}
 	}
