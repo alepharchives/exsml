@@ -22,7 +22,7 @@ double maxdouble = DBL_MAX/2;
 struct longjmp_buffer *external_raise;
 value exn_bucket;		/* ML type: string ref * 'a */
 
-extern void mlraise(value v)
+void mlraise(value v)
 {
 	in_blocking_section = 0;
 	exn_bucket = v;
@@ -47,11 +47,11 @@ void raiseprimitive0(int exnindex) {
 	raiseprimitive1(exnindex, Val_unit);
 }
 
-extern void raise_with_string(int exnindex, char * msg) {
+void raise_with_string(int exnindex, char * msg) {
 	raiseprimitive1(exnindex, copy_string(msg));
 }
 
-extern void failwith (char* msg) {
+void failwith (char* msg) {
 	raise_with_string(SYS__EXN_FAIL, msg);
 }
 
