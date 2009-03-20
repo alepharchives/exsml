@@ -22,6 +22,7 @@ double maxdouble = DBL_MAX/2;
 struct longjmp_buffer *external_raise;
 value exn_bucket;		/* ML type: string ref * 'a */
 
+__attribute__((noreturn))
 void mlraise(value v)
 {
 	in_blocking_section = 0;
@@ -31,6 +32,7 @@ void mlraise(value v)
 
 /* Raise a unary pervasive exception with the given argument */
 
+__attribute__((noreturn))
 void raiseprimitive1(int exnindex, value arg) {
 	value exn;
 
@@ -43,26 +45,32 @@ void raiseprimitive1(int exnindex, value arg) {
 	mlraise(exn);
 }
 
+__attribute__((noreturn))
 void raiseprimitive0(int exnindex) {
 	raiseprimitive1(exnindex, Val_unit);
 }
 
+__attribute__((noreturn))
 void raise_with_string(int exnindex, char * msg) {
 	raiseprimitive1(exnindex, copy_string(msg));
 }
 
+__attribute__((noreturn))
 void failwith (char* msg) {
 	raise_with_string(SYS__EXN_FAIL, msg);
 }
 
+__attribute__((noreturn))
 void invalid_argument (char * msg) {
 	raise_with_string(SYS__EXN_ARGUMENT, msg);
 }
 
+__attribute__((noreturn))
 void raise_out_of_memory() {
 	raiseprimitive0(SYS__EXN_MEMORY);
 }
 
+__attribute__((noreturn))
 void raise_overflow() {
 	raiseprimitive0(SYS__EXN_OVERFLOW);
 }
