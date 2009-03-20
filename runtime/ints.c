@@ -36,6 +36,8 @@ value int_of_string(value s)
 			base = 8; p += 2; break;
 		case 'b': case 'B':
 			base = 2; p += 2; break;
+		default:
+			perror("Internal error in int_of_string");
 		}
 	}
 	res = 0;
