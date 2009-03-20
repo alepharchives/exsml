@@ -12,6 +12,7 @@
 #include "stacks.h"
 #include "unalignd.h"
 
+void print_pc(bytecode_t);
 
 bytecode_t log_buffer[LOG_BUFFER_SIZE];
 bytecode_t * log_ptr;
@@ -62,7 +63,7 @@ static void print_val(value v, long d)
 		default:
 			n = Tag_val(v);
 			if (n < 26) {
-				char c = (char) n + 'A';
+				char c = (char) (n + 'A');
 				printf ("%c", c);
 			}else{
 				printf("tag%ld", n);
@@ -94,8 +95,7 @@ void print_value(value v)
 
 
 
-void print_pc(pc)
-     bytecode_t pc;
+void print_pc(bytecode_t pc)
 {
 /* TODO: Push this back into the runtime config.h */
 	printf(PC_FORMAT, pc - start_code);
@@ -114,6 +114,27 @@ bytecode_t disasm_instr(int cur_instr, bytecode_t pc, value accu)
 		printf("  Global %i : ", u16(pc));
 		print_value(accu_l);
 		break;
+	case GETFIELD0:
+		printf("  Field0: ");
+		print_value(Field(accu, 0));
+		break;
+	case GETFIELD1:
+		printf("  Field1: ");
+		print_value(Field(accu, 1));
+		break;
+	case GETFIELD2:
+		printf("  Field2: ");
+		print_value(Field(accu, 2));
+		break;
+	case GETFIELD3:
+		printf("  Field3: ");
+		print_value(Field(accu, 3));
+		break;
+	case GETFIELD:
+		printf("  u16-pc: %i", u16(pc));
+		printf("  Field: ");
+		print_value(Field(accu, u16(pc)));
+		break;
 	case SETGLOBAL:
 		printf("  Global %i : ", u16(pc));
 		print_value(accu);
@@ -122,6 +143,20 @@ bytecode_t disasm_instr(int cur_instr, bytecode_t pc, value accu)
 		printf("  Tag: %i\n", (unsigned char)(*pc));
 		printf("  Value: ");
 		print_value(accu);
+		break;
+	case PUSHACC0:
+	case PUSHACC1:
+	case PUSHACC2:
+	case PUSHACC3:
+	case PUSHACC4:
+	case PUSHACC5:
+	case PUSHACC6:
+	case PUSHACC7:
+		printf("  Accu: ");
+		print_value(accu);
+		break;
+	case PUSHACC:
+		printf("  u16-pc: %i", u16(pc));
 		break;
 	case C_CALL1:
 		printf("  u16-pc: %i", u16(pc));
