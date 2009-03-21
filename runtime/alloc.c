@@ -43,7 +43,8 @@ value alloc_string(mlsize_t len)
 	}
 	Field (result, wosize - 1) = 0;
 	offset_index = Bsize_wsize (wosize) - 1;
-	Byte (result, offset_index) = offset_index - len;
+	assert(offset_index - len > 0);
+	Byte (result, offset_index) = (char) (offset_index - len);
 	return result;
 }
 
@@ -67,7 +68,7 @@ value copy_double(double d)
 
 value copy_string(char *s)
 {
-	int len;
+	size_t len;
 	value res;
 
 	len = strlen(s);
