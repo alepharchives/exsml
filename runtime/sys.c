@@ -20,7 +20,7 @@
 #include "stacks.h"
 #include "io.h"
 
-void sys_error();
+void sys_error(char *);
 void sys_exit(value);
 value sys_open(value, value, value);
 value sys_close(value);
@@ -59,25 +59,25 @@ char* globalexn[] = {
        "Io" };
 
 
-void sys_error()
+void sys_error(char *err_msg)
 {
-  char *err = strerror(errno);
-  value exnarg;
+	char *err = err_msg == 0 ? strerror(errno) : err_msg;
+	value exnarg;
 
-  /* Raise SysErr with argument (err, SOME errno) */
+	/* Raise SysErr with argument (err, SOME errno) */
 
-  PUSH_ROOTS(r, 2);
-  r[0] = copy_string(err);	/* The error message string	*/
+	PUSH_ROOTS(r, 2);
+	r[0] = copy_string(err);	/* The error message string	*/
 
-  r[1] = alloc(1, SOMEtag);	/* The SOME errno object	*/
-  Field(r[1], 0) = LONG_TO_VAL(errno);
+	r[1] = alloc(1, SOMEtag);	/* The SOME errno object	*/
+	Field(r[1], 0) = LONG_TO_VAL(errno);
 
-  exnarg = alloc_tuple(2);	/* The argument tuple		*/
-  Field(exnarg, 0) = r[0];
-  Field(exnarg, 1) = r[1];
-  POP_ROOTS();
+	exnarg = alloc_tuple(2);	/* The argument tuple		*/
+	Field(exnarg, 0) = r[0];
+	Field(exnarg, 1) = r[1];
+	POP_ROOTS();
 
-  raiseprimitive1(SYS__EXN_SYSERR, exnarg);
+	raiseprimitive1(SYS__EXN_SYSERR, exnarg);
 }
 
 __attribute__((noreturn))
@@ -102,8 +102,11 @@ value sys_open(value path, value flags, value perm)
 
 value sys_close(value fd)
 {
-  if (close(VAL_TO_INT(fd)) != 0) sys_error();
-  return Atom(0);
+	if (close(VAL_TO_INT(fd)) != 0) {
+		sys_error(NULL);
+	}
+
+	return Atom(0);
 }
 
 value sys_remove(value name)
