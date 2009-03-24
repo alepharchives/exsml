@@ -6,6 +6,7 @@
 #include <string.h>
 #include <assert.h>
 #include <inttypes.h>
+#include <stdio.h>
 
 #include "alloc.h"
 #include "debugger.h"
@@ -113,17 +114,20 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 
   switch (mode) {
   case 0:			// initialization
-    raise_break_exn = byte_raise_break_exn;
-    callback1_code = byte_callback1_code;
-    callback2_code = byte_callback2_code;
-    callback3_code = byte_callback3_code;
-    return Atom(0);
+	  raise_break_exn = byte_raise_break_exn;
+	  callback1_code = byte_callback1_code;
+	  callback2_code = byte_callback2_code;
+	  callback3_code = byte_callback3_code;
+	  return Atom(0);
   case 1:			// bytecode execution
-    pc = bprog;
-    break;
+	  pc = bprog;
+	  break;
   case 2:			// bytecode execution, used by callback
-    pc = *rprog;
-    break;
+	  pc = *rprog;
+	  break;
+  default:
+	  perror("Unknown interpretation mode");
+	  break;
   }
 
 /* To read immediate operands, read some bytes after pc: */
@@ -182,9 +186,9 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 
 /* Basic stack operations */
     case SWAP:
-    { value tmp = accu;
+    { value tmp2 = accu;
       accu = sp[0];
-      sp[0] = tmp;
+      sp[0] = tmp2;
       break;
     }
 
@@ -981,12 +985,12 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
       }
       /* If a signal arrives between the following two instructions,
          it will be lost. */
-      { int signal_number = signal_is_pending;
+      { int signal_number2 = signal_is_pending;
         signal_is_pending = 0;
-        if (signal_number) {
+        if (signal_number2) {
           /* Push a return frame to the current code location */
           sp -= 4;
-          sp[0] = INT_TO_VAL(signal_number);
+          sp[0] = INT_TO_VAL(signal_number2);
           sp[1] = (value) pc;
           sp[2] = env;
           sp[3] = LONG_TO_VAL(extra_args);
@@ -1254,7 +1258,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 
     case SMLDIVFLOAT:
 	dtmp = Double_val(accu);
-	if (dtmp == 0) {
+	if (dtmp == 0.0) {
 	    accu = Field(global_data, EXN_DIV);
 	    goto raise_exception;
 	}
