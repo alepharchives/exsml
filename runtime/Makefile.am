@@ -2,10 +2,10 @@
 
 AM_CFLAGS = -I$(top_srcdir) -Wall -Wextra  -Wunused -Wstrict-aliasing \
 	-Wswitch-default -Wswitch-enum -fstrict-aliasing -fstrict-overflow \
-	-Wstrict-overflow -ftree-vrp -Wundef -Wshadow -Wbad-function-cast \
+	-Wstrict-overflow -ftree-vrp -Wundef -Wshadow \
 	-Wcast-qual -Wcast-align -Wmissing-prototypes -Wmissing-noreturn -Winline
 
-# Flags not enabled -Wfloat-equal -Wconversion
+# Flags not enabled -Wfloat-equal -Wconversion -Wbad-function-cast
 
 bin_PROGRAMS = camlrunm
 camlrunm_SOURCES = $(GEN_SOURCES) $(GEN_HS) $(C_SOURCES)
