@@ -10,6 +10,20 @@
 #include "misc.h"
 #include "mlvalues.h"
 
+value format_float(value, value);
+value float_of_string(value);
+value exp_float(value);
+value log_float(value);
+value sqrt_float(value);
+value power_float(value, value);
+value sin_float(value);
+value cos_float(value);
+value tan_float(value);
+value asin_float(value);
+value acos_float(value);
+value atan_float(value);
+value atan2_float(value, value);
+
 #ifdef ALIGN_DOUBLE
 
 double Double_val(value val)
@@ -48,6 +62,7 @@ void Store_double_val(value val, double dbl)
 	}
 }
 #endif
+
 
 value format_float(value fmt, value arg)    /* ML */
 {
