@@ -30,6 +30,22 @@
 
 static struct channel *std_channel[3] = {NULL, NULL, NULL};
 
+value open_descriptor(value);
+value channel_descriptor(struct channel *);
+value channel_size(struct channel *);
+value output_char(struct channel *, value);
+value output_int(struct channel *, value);
+value output(value, value, value, value);
+void nonblocking_mode(int, int);
+value close_out(struct channel *);
+value input_char(struct channel *);
+value input_int(struct channel *);
+value input(value, value, value, value);
+value input_nonblocking(value, value, value, value);
+value seek_in(struct channel *, value);
+value pos_in(struct channel *);
+value input_scan_line(struct channel *);
+
 struct channel * open_descr(int fd)
 {
 	struct channel * channel;
@@ -286,8 +302,7 @@ value input_int(struct channel * channel)
 	return LONG_TO_VAL(i);
 }
 
-int getblock(struct channel * channel, char * p, unsigned n,
-             int nonblocking)
+int getblock(struct channel * channel, char * p, unsigned n, int nonblocking)
 {
 	unsigned m, l;
 
@@ -336,6 +351,8 @@ int really_getblock(struct channel * chan, char * p, unsigned long n)
 	}
 	return 1;
 }
+
+
 
 value input(value channel, value buff, value start, value length)
 {
