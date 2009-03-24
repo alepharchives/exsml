@@ -12,46 +12,52 @@
 #include "mlvalues.h"
 #include "reverse.h"
 
+typedef struct value64_struct value64;
+
+void rev_pointers(value *, mlsize_t);
+int rev_pointers_64(value64 *, mlsize_t);
+
 /* Transform offsets relative to the beginning of the block
    back into pointers. */
 
 void adjust_pointers(value * start, mlsize_t size, color_t color)
 {
-  value * p, * q;
-  mlsize_t sz;
-  header_t hd;
-  tag_t tag;
-  value v;
-  mlsize_t bosize;
+	value * p, * q;
+	mlsize_t sz;
+	header_t hd;
+	tag_t tag;
+	value v;
+	mlsize_t bosize;
 
-  p = start;
-  q = p + size;
-  bosize = Bsize_wsize(size);
-  while (p < q) {
-    hd = *p;
-    sz = Wosize_hd(hd);
-    tag = Tag_hd(hd);
-    *p++ = Make_header(sz, tag, color);
-    if (tag >= No_scan_tag)
-      p += sz;
-    else
-      for( ; sz > 0; sz--, p++) {
-        v = *p;
-        switch(v & 3) {
-        case 0:                 /* 0 -> A bloc represented by its offset. */
-          assert(v >= 0 && v <= bosize && (v & 3) == 0);
-          *p = (value) ((byteoffset_t) start + v);
-          break;
-        case 2:                 /* 2 -> An atom. */
-          v = v >> 2;
-          assert(v >= 0 && v < 256);
-          *p = Atom(v);
-          break;
-        default:                /* 1 or 3 -> An integer. */
-          break;
-        }
-      }
-  }
+	p = start;
+	q = p + size;
+	bosize = Bsize_wsize(size);
+	while (p < q) {
+		hd = *p;
+		sz = Wosize_hd(hd);
+		tag = Tag_hd(hd);
+		*p++ = Make_header(sz, tag, color);
+		if (tag >= No_scan_tag) {
+			p += sz;
+		} else {
+			for( ; sz > 0; sz--, p++) {
+				v = *p;
+				switch(v & 3) {
+				case 0:                 /* 0 -> A bloc represented by its offset. */
+					assert(v >= 0 && v <= bosize && (v & 3) == 0);
+					*p = (value) ((byteoffset_t) start + v);
+					break;
+				case 2:                 /* 2 -> An atom. */
+					v = v >> 2;
+					assert(v >= 0 && v < 256);
+					*p = Atom(v);
+					break;
+				default:                /* 1 or 3 -> An integer. */
+					break;
+				}
+			}
+		}
+	}
 }
 
 /* Reverse all words in a block, in case of endianness clash.
@@ -59,29 +65,29 @@ void adjust_pointers(value * start, mlsize_t size, color_t color)
 
 void rev_pointers(value * p, mlsize_t size)
 {
-  value * q;
-  header_t hd;
-  mlsize_t n;
+	value * q;
+	header_t hd;
+	mlsize_t n;
 
-  q = p + size;
-  while (p < q) {
-    Reverse_word(p);
-    hd = (header_t) *p++;
-    n = Wosize_hd(hd);
-    switch(Tag_hd(hd)) {
-    case String_tag:
-      p += n;
-      break;
-    case Double_tag:
-      Reverse_double(p);
-      p += n;
-      break;
-    default:
-      for( ; n > 0; n--, p++) {
-        Reverse_word(p);
-      }
-    }
-  }
+	q = p + size;
+	while (p < q) {
+		Reverse_word(p);
+		hd = (header_t) *p++;
+		n = Wosize_hd(hd);
+		switch(Tag_hd(hd)) {
+		case String_tag:
+			p += n;
+			break;
+		case Double_tag:
+			Reverse_double(p);
+			p += n;
+			break;
+		default:
+			for( ; n > 0; n--, p++) {
+				Reverse_word(p);
+			}
+		}
+	}
 }
 
 #ifdef SIXTYFOUR
@@ -255,13 +261,12 @@ struct value64_struct {
   value lsw, msw;
 #endif
 };
-typedef struct value64_struct value64;
 
 /* Reverse all words in a block, in case of endianness clash.
    Works with 64-bit words.
    Returns (-1) if a header too large is encountered, 0 otherwise. */
 
-int rev_pointers_64(value64 * p, mlsize_t size)
+int rev_pointers_64(value64 *p, mlsize_t size)
      /* size is the size in 64-bit words */
 {
   value64 * q;
@@ -299,36 +304,35 @@ int rev_pointers_64(value64 * p, mlsize_t size)
 static mlsize_t size_after_shrinkage(value64 * p, mlsize_t len)
      /* len is the length in 64-bit words */
 {
-  mlsize_t res;
-  value64 * q;
-  header_t hd;
-  mlsize_t n;
+	mlsize_t res;
+	value64 * q;
+	header_t hd;
+	mlsize_t n;
+	mlsize_t ofs_last_byte, len2, new_sz;
 
-  for (q = p + len, res = 0; p < q; /*nothing*/) {
-    hd = (header_t)(p->lsw);
-    if (p->msw != 0) return 0;
-    p++;
-    n = Wosize_hd(hd);
-    res++;
-    switch(Tag_hd(hd)) {
-    case String_tag:
-      { mlsize_t ofs_last_byte, len, new_sz;
-        ofs_last_byte = n * sizeof(value64) - 1;
-        len = ofs_last_byte - Byte(p, ofs_last_byte);
-        new_sz = (len + sizeof(value)) / sizeof(value);
-        res += new_sz;
-        break;
-      }
-    case Double_tag:
-      res += sizeof(double) / sizeof(value);
-      break;
-    default:
-      res += n;                 /* all fields will be shrunk 64 -> 32 */
-      break;
-    }
-    p += n;
-  }
-  return res;
+	for (q = p + len, res = 0; p < q; /*nothing*/) {
+		hd = (header_t)(p->lsw);
+		if (p->msw != 0) return 0;
+		p++;
+		n = Wosize_hd(hd);
+		res++;
+		switch(Tag_hd(hd)) {
+		case String_tag:
+			ofs_last_byte = n * sizeof(value64) - 1;
+			len2 = ofs_last_byte - Byte(p, ofs_last_byte);
+			new_sz = (len2 + sizeof(value)) / sizeof(value);
+			res += new_sz;
+			break;
+		case Double_tag:
+			res += sizeof(double) / sizeof(value);
+			break;
+		default:
+			res += n;                 /* all fields will be shrunk 64 -> 32 */
+			break;
+		}
+		p += n;
+	}
+	return res;
 }
 
 /* Convert a 64-bit externed block to a 32-bit block. The resulting block
@@ -336,7 +340,8 @@ static mlsize_t size_after_shrinkage(value64 * p, mlsize_t len)
    Return -1 if the block cannot be shrunk because some integer literals
    or relative displacements are too large, 0 otherwise. */
 
-static int shrink_block(value64 * source, value * dest, mlsize_t source_len, mlsize_t dest_len, color_t color)
+static int shrink_block(value64 * source, value * dest,
+			mlsize_t source_len, mlsize_t dest_len, color_t color)
 {
   value64 * p, * q;
   value * d, * e;
