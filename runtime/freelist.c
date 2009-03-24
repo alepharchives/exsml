@@ -37,6 +37,10 @@ char *fl_merge = Fl_head;        /* Current insertion pointer.  Managed
 #define Next(b) (((block *) (b))->next_bp)
 
 #ifdef DEBUG
+void fl_verify(void);
+#endif
+
+#ifdef DEBUG
 void fl_verify ()
 {
 	char *cur, *prev;
