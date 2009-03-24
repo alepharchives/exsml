@@ -32,6 +32,55 @@
 #include "global_tbl.h"
 #include "mosml.h"
 
+value sml_equal(value, value);
+value sml_not_equal(value, value);
+value sml_system(value);
+value sml_abs_int(value);
+value sml_floor(value);
+value sml_ceil(value);
+value sml_round(value);
+value sml_trunc(value);
+value sml_abs_real(value);
+value sml_sqrt(value);
+value sml_sin(value);
+value sml_cos(value);
+value sml_exp(value);
+value sml_ln(value);
+unsigned long scandec(char *, unsigned long);
+unsigned long scanhex(char *, unsigned long);
+value sml_int_of_string(value);
+value sml_concat(value, value);
+value sml_chr(value);
+value sml_ord(value);
+value sml_float_of_string(value);
+static int countChar(int, char *);
+static void mkSMLMinus(char *);
+value sml_string_of_int(value);
+void string_of_float_aux(char *, double);
+value sml_string_of_float(value);
+value sml_makestring_of_char(value);
+value sml_makestring_of_string(value);
+value sml_getrealtime(value);
+value sml_getrutime(value);
+value sml_errno(value);
+value sml_getdir(value);
+value sml_mkdir(value);
+value sml_rmdir(value);
+value sml_opendir(value);
+value sml_rewinddir(value);
+value sml_readdir(value);
+value sml_closedir(value);
+value sml_isdir(value);
+value sml_modtime(value);
+value sml_settime(value, value);
+value sml_access(value, value);
+value sml_tmpnam(value v);
+value sml_errormsg(value);
+value sml_asin(value);
+value sml_acos(value);
+value sml_atan2(value, value);
+value sml_pow(value, value);
+value sml_localtime(value);
 
 void fatal(char *s) {
 	if (s == NULL) {
@@ -594,7 +643,7 @@ value sml_makestring_of_string(value arg)
    the macros below to compensate. 07Sep95 e
 */
 
-value sml_getrealtime (value v)
+value sml_getrealtime(value v)
 {
   value res;
   struct timeval tp;
@@ -606,7 +655,7 @@ value sml_getrealtime (value v)
   return res;
 }
 
-value sml_getrutime (value v)
+value sml_getrutime(value v)
 {
   value res;
 
@@ -623,7 +672,6 @@ value sml_getrutime (value v)
 
   return res;
 }
-
 
 value sml_errno(value arg)
 {
