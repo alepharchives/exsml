@@ -6,19 +6,18 @@
 
 static unsigned long hash_accu;
 static long hash_univ_limit, hash_univ_count;
+value hash_univ_param(value, value, value);
+static void hash_aux(value);
 
-static void hash_aux();
-
-value hash_univ_param(count, limit, obj)
-     value obj, count, limit;
+value hash_univ_param(value count, value limit, value obj)
 {
-  hash_univ_limit = VAL_TO_LONG(limit);
-  hash_univ_count = VAL_TO_LONG(count);
-  hash_accu = 0;
-  hash_aux(obj);
-  return LONG_TO_VAL(hash_accu & 0x3FFFFFFF);
-  /* The & has two purposes: ensure that the return value is positive
-     and give the same result on 32 bit and 64 bit architectures. */
+	hash_univ_limit = VAL_TO_LONG(limit);
+	hash_univ_count = VAL_TO_LONG(count);
+	hash_accu = 0;
+	hash_aux(obj);
+	return LONG_TO_VAL(hash_accu & 0x3FFFFFFF);
+	/* The & has two purposes: ensure that the return value is positive
+	   and give the same result on 32 bit and 64 bit architectures. */
 }
 
 #define Alpha 65599
@@ -26,8 +25,7 @@ value hash_univ_param(count, limit, obj)
 #define Combine(new)  (hash_accu = hash_accu * Alpha + (new))
 #define Combine_small(new) (hash_accu = hash_accu * Beta + (new))
 
-static void hash_aux(obj)
-     value obj;
+static void hash_aux(value obj)
 {
   unsigned char * p;
   mlsize_t i;
