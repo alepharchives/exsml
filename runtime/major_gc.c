@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <assert.h>
 
 #include "attributes.h"
@@ -195,46 +196,48 @@ static void weak_phase()
 
 static void sweep_slice (long work)
 {
-  char *hp;
-  header_t hd;
+	char *hp;
+	header_t hd;
 
-  while (work > 0){
-    if (gc_sweep_hp < limit){
-      hp = gc_sweep_hp;
-      hd = Hd_hp (hp);
-      work -= Whsize_hd (hd);
-      gc_sweep_hp += Bhsize_hd (hd);
-      switch (Color_hd (hd)){
-      case White:
-	if (Tag_hd (hd) == Final_tag){
-	  Final_fun (Val_hp (hp)) (Val_hp (hp));
+	while (work > 0) {
+		if (gc_sweep_hp < limit) {
+			hp = gc_sweep_hp;
+			hd = Hd_hp (hp);
+			work -= Whsize_hd (hd);
+			gc_sweep_hp += Bhsize_hd (hd);
+			switch (Color_hd (hd)) {
+			case White:
+				if (Tag_hd (hd) == Final_tag) {
+					Final_fun (Val_hp (hp)) (Val_hp (hp));
+				}
+				gc_sweep_hp = fl_merge_block (Bp_hp (hp));
+				break;
+			case Gray:
+				assert (0);     /* Fall through to Black when not in debug mode. */
+			case Black:
+				Hd_hp (hp) = Whitehd_hd (hd);
+				break;
+			case Blue:
+				/* Only the blocks of the free-list are blue.  See [freelist.c]. */
+				fl_merge = Bp_hp (hp);
+				break;
+			default:
+				perror("Unknown GC Color!");
+			}
+			assert (gc_sweep_hp <= limit);
+		} else {
+			chunk = (((heap_chunk_head *) chunk) [-1]).next;
+			if (chunk == NULL){
+				/* Sweeping is done.  Start the next cycle. */
+				++ stat_major_collections;
+				work = 0;
+				start_cycle ();
+			}else{
+				gc_sweep_hp = chunk;
+				limit = chunk + (((heap_chunk_head *) chunk) [-1]).size;
+			}
+		}
 	}
-	gc_sweep_hp = fl_merge_block (Bp_hp (hp));
-	break;
-      case Gray:
-	assert (0);     /* Fall through to Black when not in debug mode. */
-      case Black:
-	Hd_hp (hp) = Whitehd_hd (hd);
-	break;
-      case Blue:
-	/* Only the blocks of the free-list are blue.  See [freelist.c]. */
-	fl_merge = Bp_hp (hp);
-	break;
-      }
-      assert (gc_sweep_hp <= limit);
-    }else{
-      chunk = (((heap_chunk_head *) chunk) [-1]).next;
-      if (chunk == NULL){
-	/* Sweeping is done.  Start the next cycle. */
-        ++ stat_major_collections;
-	work = 0;
-	start_cycle ();
-      }else{
-	gc_sweep_hp = chunk;
-	limit = chunk + (((heap_chunk_head *) chunk) [-1]).size;
-      }
-    }
-  }
 }
 
 void major_collection_slice (void)
