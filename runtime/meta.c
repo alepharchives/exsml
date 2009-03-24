@@ -14,7 +14,7 @@
 extern value interprete(int mode, bytecode_t bprog,
 			int code_size, bytecode_t* rprog);
 
-value start_interp(value may_free, value prog, value offset, value vlen) /* ML */
+value start_interp(value may_free, value prog, value offset, value vlen)
 {
   bytecode_t bprog = (bytecode_t)&Byte(prog, VAL_TO_LONG(offset)); // In ML heap
   int len = VAL_TO_LONG(vlen);
@@ -36,7 +36,7 @@ value start_interp(value may_free, value prog, value offset, value vlen) /* ML *
   return res;
 }
 
-value realloc_global(size)      /* ML */
+value realloc_global(size)
      value size;
 {
   mlsize_t requested_size, actual_size, i;
@@ -59,32 +59,32 @@ value realloc_global(size)      /* ML */
 }
 
 
-value static_alloc(size)        /* ML */
+value static_alloc(size)
      value size;
 {
   return (value) stat_alloc((size_t) VAL_TO_LONG(size));
 }
 
-value static_free(blk)          /* ML */
+value static_free(blk)
      value blk;
 {
   stat_free((char *) blk);
   return Atom(0);
 }
 
-value static_resize(blk, new_size) /* ML */
+value static_resize(blk, new_size)
      value blk, new_size;
 {
   return (value) stat_resize((char *) blk, (size_t) VAL_TO_LONG(new_size));
 }
 
-value obj_is_block(arg)             /* ML */
+value obj_is_block(arg)
      value arg;
 {
   return Atom(IS_BLOCK(arg));
 }
 
-value obj_block(tag, size) /* ML */
+value obj_block(tag, size)
      value tag, size;
 {
   value res;
@@ -101,7 +101,7 @@ value obj_block(tag, size) /* ML */
   return res;
 }
 
-value available_primitives()    /* ML */
+value available_primitives()
 {
   return copy_string_array(names_of_cprim);
 }

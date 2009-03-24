@@ -10,7 +10,7 @@ value dynlib_dlclose(value);
 value dynlib_dlsym(value, value);
 
 /* Ken Larsen (kla@it.dtu.dk) 1998-01-08 */
-value dynlib_dlopen(value libname, value flagval) /* ML */
+value dynlib_dlopen(value libname, value flagval)
 {
 	void *handle;
 

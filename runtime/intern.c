@@ -548,7 +548,7 @@ static value intern_fast_val(struct channel * chan, unsigned long magic)
   return res;
 }
 
-value intern_val(struct channel * chan)          /* ML */
+value intern_val(struct channel * chan)
 {
   unsigned long magic;
 

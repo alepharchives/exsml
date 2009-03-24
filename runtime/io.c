@@ -46,17 +46,17 @@ struct channel * open_descr(int fd)
 	return channel;
 }
 
-value open_descriptor(value fd)       /* ML */
+value open_descriptor(value fd)
 {
 	return (value) open_descr(VAL_TO_INT(fd));
 }
 
-value channel_descriptor(struct channel * channel)   /* ML */
+value channel_descriptor(struct channel * channel)
 {
 	return LONG_TO_VAL(channel->fd);
 }
 
-value channel_size(struct channel * channel)      /* ML */
+value channel_size(struct channel * channel)
 {
 	long end;
 
@@ -84,7 +84,7 @@ static void really_write(int fd, char * p, int n)
 	}
 }
 
-value flush(struct channel * channel)            /* ML */
+value flush(struct channel * channel)
 {
 	int n;
 	n = channel->max - channel->buff;
@@ -106,7 +106,7 @@ void flush_stdouterr(void)
 		flush(std_channel[2]);
 }
 
-value output_char(struct channel * channel, value ch)  /* ML */
+value output_char(struct channel * channel, value ch)
 {
 	putch(channel, VAL_TO_LONG(ch));
 	return Atom(0);
@@ -120,7 +120,7 @@ void putword(struct channel * channel, uint32_t w)
 	putch(channel, w);
 }
 
-value output_int(struct channel * channel, value w)    /* ML */
+value output_int(struct channel * channel, value w)
 {
 	putword(channel, VAL_TO_LONG(w));
 	return Atom(0);
@@ -156,7 +156,7 @@ void putblock(struct channel * channel, char * p, unsigned n)
 	}
 }
 
-value output(value channel, value buff, value start, value length) /* ML */
+value output(value channel, value buff, value start, value length)
 {
 	putblock((struct channel *) channel,
 		 &Byte(buff, VAL_TO_LONG(start)),
@@ -164,7 +164,7 @@ value output(value channel, value buff, value start, value length) /* ML */
 	return Atom(0);
 }
 
-value seek_out(struct channel * channel, value pos)    /* ML */
+value seek_out(struct channel * channel, value pos)
 {
 	long dest;
 
@@ -180,12 +180,12 @@ value seek_out(struct channel * channel, value pos)    /* ML */
 	return Atom(0);
 }
 
-value pos_out(struct channel * channel)          /* ML */
+value pos_out(struct channel * channel)
 {
 	return LONG_TO_VAL(channel->offset + channel->curr - channel->buff);
 }
 
-value close_out(struct channel * channel)     /* ML */
+value close_out(struct channel * channel)
 {
 	if ((unsigned)(channel->fd) >= 3)
 	{
@@ -257,7 +257,7 @@ unsigned char refill(struct channel * channel)
 	return (unsigned char)(channel->buff[0]);
 }
 
-value input_char(struct channel * channel)       /* ML */
+value input_char(struct channel * channel)
 {
 	unsigned char c;
 	c = getch(channel);
@@ -276,7 +276,7 @@ uint32_t getword(struct channel * channel)
 	return res;
 }
 
-value input_int(struct channel * channel)        /* ML */
+value input_int(struct channel * channel)
 {
 	long i;
 	i = getword(channel);
@@ -337,7 +337,7 @@ int really_getblock(struct channel * chan, char * p, unsigned long n)
 	return 1;
 }
 
-value input(value channel, value buff, value start, value length) /* ML */
+value input(value channel, value buff, value start, value length)
 {
 	return LONG_TO_VAL(getblock((struct channel *) channel,
 				 &Byte(buff, VAL_TO_LONG(start)),
@@ -345,7 +345,7 @@ value input(value channel, value buff, value start, value length) /* ML */
 				 /* nonblocking = */ 0));
 }
 
-value input_nonblocking(value channel, value buff, value start, value length) /* ML */
+value input_nonblocking(value channel, value buff, value start, value length)
 {
 	int n = getblock((struct channel *) channel,
 			 &Byte(buff, VAL_TO_LONG(start)),
@@ -360,7 +360,7 @@ value input_nonblocking(value channel, value buff, value start, value length) /*
 	}
 }
 
-value seek_in(struct channel * channel, value pos)     /* ML */
+value seek_in(struct channel * channel, value pos)
 {
 	long dest;
 
@@ -377,19 +377,19 @@ value seek_in(struct channel * channel, value pos)     /* ML */
 	return Atom(0);
 }
 
-value pos_in(struct channel * channel)           /* ML */
+value pos_in(struct channel * channel)
 {
 	return LONG_TO_VAL(channel->offset - (channel->max - channel->curr));
 }
 
-value close_in(struct channel * channel)     /* ML */
+value close_in(struct channel * channel)
 {
 	close(channel->fd);
 	stat_free((char *) channel);
 	return Atom(0);
 }
 
-value input_scan_line(struct channel * channel)       /* ML */
+value input_scan_line(struct channel * channel)
 {
 	char * p;
 	int n;

@@ -128,7 +128,7 @@ static void emit_compact(struct channel * chan, value v)
   }
 }
 
-value extern_compact_val(struct channel * chan, value v) /* ML */
+value extern_compact_val(struct channel * chan, value v)
 {
   value start_loc, final_loc;
   putword(chan, Compact_magic_number);

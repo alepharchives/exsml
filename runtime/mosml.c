@@ -88,22 +88,22 @@ static int sml_equal_aux(value v1, value v2)
   }
 }
 
-value sml_equal(value v1, value v2) /* ML */
+value sml_equal(value v1, value v2)
 {
   return Atom(sml_equal_aux(v1,v2));
 }
 
-value sml_not_equal(value v1, value v2) /* ML */
+value sml_not_equal(value v1, value v2)
 {
   return Atom(!sml_equal_aux(v1,v2));
 }
 
-value sml_system(value cmd)        /* ML */
+value sml_system(value cmd)
 {
   return INT_TO_VAL(system(String_val(cmd)));
 }
 
-value sml_abs_int(value x)          /* ML */
+value sml_abs_int(value x)
 { value tmp, v;
   tmp = VAL_TO_LONG(x);
   if( tmp < 0 ) tmp = -tmp;
@@ -113,7 +113,7 @@ value sml_abs_int(value x)          /* ML */
   return v;
 }
 
-value sml_floor(value f)              /* ML */
+value sml_floor(value f)
 { double r;
   long i;
   value v;
@@ -137,7 +137,7 @@ raise_floor:
     return Val_unit;		/* Can't reach return */
 }
 
-value sml_ceil(value f)              /* ML */
+value sml_ceil(value f)
 { double r;
   long i;
   value v;
@@ -160,7 +160,7 @@ raise_ceil:
     return Val_unit;		/* Can't reach return */
 }
 
-value sml_round(value f)              /* ML */
+value sml_round(value f)
 {
 	double r;
 	long i;
@@ -181,7 +181,7 @@ raise_round:
 	return Val_unit;		/* Can't reach return */
 }
 
-value sml_trunc(value f)              /* ML */
+value sml_trunc(value f)
 { double r;
   long i;
   value v;
@@ -197,7 +197,7 @@ raise_trunc:
   return Val_unit;		/* Can't reach return */
 }
 
-value sml_abs_real(value f)              /* ML */
+value sml_abs_real(value f)
 { double r;
   float_exn = SYS__EXN_OVERFLOW;
   r = Double_val(f);
@@ -209,7 +209,7 @@ value sml_abs_real(value f)              /* ML */
   return copy_double(r);
 }
 
-value sml_sqrt(value f)         /* ML */
+value sml_sqrt(value f)
 { double r;
   float_exn = SYS__EXN_DOMAIN;
   r = Double_val(f);
@@ -219,7 +219,7 @@ value sml_sqrt(value f)         /* ML */
   return copy_double(r);
 }
 
-value sml_sin(value f)         /* ML */
+value sml_sin(value f)
 { double r;
   r = Double_val(f);
   r = sin(r);
@@ -228,7 +228,7 @@ value sml_sin(value f)         /* ML */
   return copy_double(r);
 }
 
-value sml_cos(value f)         /* ML */
+value sml_cos(value f)
 { double r;
   r = Double_val(f);
   r = cos(r);
@@ -237,7 +237,7 @@ value sml_cos(value f)         /* ML */
   return copy_double(r);
 }
 
-value sml_exp(value f)           /* ML */
+value sml_exp(value f)
 { double r;
   float_exn = SYS__EXN_OVERFLOW;
   r = exp(Double_val(f));
@@ -245,7 +245,7 @@ value sml_exp(value f)           /* ML */
   return copy_double(r);
 }
 
-value sml_ln(value f)           /* ML */
+value sml_ln(value f)
 { double r;
   float_exn = SYS__EXN_DOMAIN;
   r = Double_val(f);
@@ -307,7 +307,7 @@ unsigned long scanhex(char * p, unsigned long max)
     return 0;		/* Can't reach return */
 }
 
-value sml_int_of_string(value s)          /* ML */
+value sml_int_of_string(value s)
 { value v;
   long res;
   int sign;
@@ -330,7 +330,7 @@ value sml_int_of_string(value s)          /* ML */
     return Val_unit;		/* Can't reach return */
 }
 
-value sml_concat(value s1, value s2)        /* ML */
+value sml_concat(value s1, value s2)
 {
   mlsize_t len1, len2, len;
   value s;
@@ -355,7 +355,7 @@ value sml_concat(value s1, value s2)        /* ML */
   }
 }
 
-value sml_chr(value v)          /* ML */
+value sml_chr(value v)
 {
   long i;
   value s;
@@ -367,7 +367,7 @@ value sml_chr(value v)          /* ML */
   return s;
 }
 
-value sml_ord(value s)          /* ML */
+value sml_ord(value s)
 {
   long i;
   if( string_length(s) == 0 )
@@ -376,7 +376,7 @@ value sml_ord(value s)          /* ML */
   return LONG_TO_VAL(i);
 }
 
-value sml_float_of_string(value s)        /* ML */
+value sml_float_of_string(value s)
 {
 
   char buff[64];
@@ -448,7 +448,7 @@ static void mkSMLMinus(char * s)
   return;
 }
 
-value sml_string_of_int(value arg)      /* ML */
+value sml_string_of_int(value arg)
 {
   char format_buffer[32];
 
@@ -468,14 +468,14 @@ void string_of_float_aux(char* format_buffer, double x)
     strcat(format_buffer, ".0");
 }
 
-value sml_string_of_float(value arg)    /* ML */
+value sml_string_of_float(value arg)
 {
   char format_buffer[64];
   string_of_float_aux(format_buffer, Double_val(arg));
   return copy_string(format_buffer);
 }
 
-value sml_makestring_of_char(value arg)      /* ML */
+value sml_makestring_of_char(value arg)
 {
   unsigned char c;
   char buff[8];
@@ -515,7 +515,7 @@ value sml_makestring_of_char(value arg)      /* ML */
     }
 }
 
-value sml_makestring_of_string(value arg)      /* ML */
+value sml_makestring_of_string(value arg)
 {
   mlsize_t arg_len, len, i;
   value res;
@@ -594,7 +594,7 @@ value sml_makestring_of_string(value arg)      /* ML */
    the macros below to compensate. 07Sep95 e
 */
 
-value sml_getrealtime (value v) /* ML */
+value sml_getrealtime (value v)
 {
   value res;
   struct timeval tp;
@@ -606,7 +606,7 @@ value sml_getrealtime (value v) /* ML */
   return res;
 }
 
-value sml_getrutime (value v) /* ML */
+value sml_getrutime (value v)
 {
   value res;
 
@@ -625,12 +625,12 @@ value sml_getrutime (value v) /* ML */
 }
 
 
-value sml_errno(value arg)          /* ML */
+value sml_errno(value arg)
 {
   return LONG_TO_VAL(errno);
 }
 
-value sml_getdir(value arg)		/* ML */
+value sml_getdir(value arg)
 {
  char directory[MAXPATHLEN];
  char *res;
@@ -642,14 +642,14 @@ value sml_getdir(value arg)		/* ML */
  return copy_string(directory);
 }
 
-value sml_mkdir(value path)          /* ML */
+value sml_mkdir(value path)
 {
   if (mkdir(String_val(path), 0777) == -1)
       failwith("mkdir");
   return Val_unit;
 }
 
-value sml_rmdir(value path)          /* ML */
+value sml_rmdir(value path)
 {
   if (rmdir(String_val(path)) == -1)
       failwith("rmdir");
@@ -657,7 +657,7 @@ value sml_rmdir(value path)          /* ML */
 }
 
 
-value sml_opendir(value path)          /* ML */
+value sml_opendir(value path)
 {
   DIR * dstr;
 
@@ -667,13 +667,13 @@ value sml_opendir(value path)          /* ML */
   return (value) dstr;
 }
 
-value sml_rewinddir(value v)          /* ML */
+value sml_rewinddir(value v)
 {
   rewinddir((DIR *) v);
   return Val_unit;
 }
 
-value sml_readdir(value v)          /* ML */
+value sml_readdir(value v)
 {
   struct dirent *direntry;
 
@@ -683,14 +683,14 @@ value sml_readdir(value v)          /* ML */
   return copy_string((*direntry).d_name);
 }
 
-value sml_closedir(value v)          /* ML */
+value sml_closedir(value v)
 {
   if (closedir((DIR *) v) == -1)
       failwith("closedir");
   return Val_unit;
 }
 
-value sml_isdir(value path)          /* ML */
+value sml_isdir(value path)
 {
   struct stat buf;
 
@@ -699,7 +699,7 @@ value sml_isdir(value path)          /* ML */
   return (Val_bool(S_ISDIR(buf.st_mode)));
 }
 
-value sml_modtime(value path)          /* ML */
+value sml_modtime(value path)
 { struct stat buf;
 
   if (stat(String_val(path), &buf) == -1)
@@ -707,7 +707,7 @@ value sml_modtime(value path)          /* ML */
   return (copy_double ((double) (buf.st_mtime)));
 }
 
-value sml_settime(value path, value time)          /* ML */
+value sml_settime(value path, value time)
 {
   struct utimbuf tbuf;
 
@@ -717,7 +717,7 @@ value sml_settime(value path, value time)          /* ML */
   return Val_unit;
 }
 
-value sml_access(value path, value permarg)          /* ML */
+value sml_access(value path, value permarg)
 {
   long perms;
   long perm = VAL_TO_LONG(permarg);
@@ -732,7 +732,7 @@ value sml_access(value path, value permarg)          /* ML */
   return Val_bool(0);
 }
 
-value sml_tmpnam(value v)          /* ML */
+value sml_tmpnam(value v)
 {
   /*  char *res;
       res = tmpnam(NULL);
@@ -743,14 +743,14 @@ value sml_tmpnam(value v)          /* ML */
   return Val_unit;
 }
 
-value sml_errormsg(value err)   /* ML */
+value sml_errormsg(value err)
 {
   int errnum;
   errnum = VAL_TO_LONG(err);
   return copy_string(strerror(errnum));
 }
 
-value sml_asin(value f)           /* ML */
+value sml_asin(value f)
 { double r = Double_val(f);
   float_exn = SYS__EXN_DOMAIN;
   Raise_float_if( r < -1.0 || r > 1.0 );
@@ -759,7 +759,7 @@ value sml_asin(value f)           /* ML */
   return copy_double(r);
 }
 
-value sml_acos(value f)           /* ML */
+value sml_acos(value f)
 { double r = Double_val(f);
   float_exn = SYS__EXN_DOMAIN;
   Raise_float_if( r < -1.0 || r > 1.0 );
@@ -768,7 +768,7 @@ value sml_acos(value f)           /* ML */
   return copy_double(r);
 }
 
-value sml_atan2(value f1, value f2)           /* ML */
+value sml_atan2(value f1, value f2)
 { double r, r1, r2;
   float_exn = SYS__EXN_DOMAIN;
   r1 = Double_val(f1);
@@ -781,7 +781,7 @@ value sml_atan2(value f1, value f2)           /* ML */
   return copy_double(r);
 }
 
-value sml_pow(value f1, value f2)           /* ML */
+value sml_pow(value f1, value f2)
 { double r, r1, r2;
   float_exn = SYS__EXN_DOMAIN;
   r1 = Double_val(f1);
@@ -800,7 +800,7 @@ value sml_pow(value f1, value f2)           /* ML */
   return copy_double(r);
 }
 
-value sml_localtime (value v) /* ML */
+value sml_localtime (value v)
 {
   value res;
   struct tm *tmr;
@@ -820,7 +820,7 @@ value sml_localtime (value v) /* ML */
   return res;
 }
 
-value sml_gmtime (value v) /* ML */
+value sml_gmtime (value v)
 {
   value res;
   struct tm *tmr;
@@ -839,7 +839,7 @@ value sml_gmtime (value v) /* ML */
   return res;
 }
 
-value sml_mktime (value v) /* ML */
+value sml_mktime (value v)
 {
   struct tm tmr;
 
@@ -856,7 +856,7 @@ value sml_mktime (value v) /* ML */
   return copy_double((double) mktime(&tmr));
 }
 
-value sml_asctime (value v) /* ML */
+value sml_asctime (value v)
 {
   struct tm tmr;
   char *res;
@@ -877,7 +877,7 @@ value sml_asctime (value v) /* ML */
   return copy_string(res);
 }
 
-value sml_strftime (value fmt, value v) /* ML */
+value sml_strftime (value fmt, value v)
 {
   struct tm tmr;
 #define BUFSIZE 256
@@ -901,7 +901,7 @@ value sml_strftime (value fmt, value v) /* ML */
 #undef BUFSIZE
 }
 
-value sml_general_string_of_float(value fmt, value arg)    /* ML */
+value sml_general_string_of_float(value fmt, value arg)
 {
 #define BUFSIZE 512
   char format_buffer[BUFSIZE];
@@ -921,7 +921,7 @@ value sml_general_string_of_float(value fmt, value arg)    /* ML */
 #undef BUFSIZE
 }
 
-value sml_filesize(value path)          /* ML */
+value sml_filesize(value path)
 { struct stat buf;
 
   if (stat(String_val(path), &buf) == -1)
@@ -929,7 +929,7 @@ value sml_filesize(value path)          /* ML */
   return (LONG_TO_VAL (buf.st_size));
 }
 
-value sml_int_of_hex(value s)          /* ML */
+value sml_int_of_hex(value s)
 { value v;
   long res;
   int sign;
@@ -957,7 +957,7 @@ value sml_int_of_hex(value s)          /* ML */
     return Val_unit;		/* Can't reach return */
 }
 
-value sml_word_of_hex(value s)          /* ML */
+value sml_word_of_hex(value s)
 { value v;
   long res;
   char * p;
@@ -973,7 +973,7 @@ value sml_word_of_hex(value s)          /* ML */
   return v;
 }
 
-value sml_word_of_dec(value s)          /* ML */
+value sml_word_of_dec(value s)
 { value v;
   long res;
   char * p;
@@ -988,7 +988,7 @@ value sml_word_of_dec(value s)          /* ML */
   return v;
 }
 
-value sml_hexstring_of_word(value arg)      /* ML */
+value sml_hexstring_of_word(value arg)
 {
   char format_buffer[32];
 
@@ -996,7 +996,7 @@ value sml_hexstring_of_word(value arg)      /* ML */
   return copy_string(format_buffer);
 }
 
-value sml_sinh(value f)         /* ML */
+value sml_sinh(value f)
 { double r;
   float_exn = SYS__EXN_OVERFLOW;
   r = Double_val(f);
@@ -1005,7 +1005,7 @@ value sml_sinh(value f)         /* ML */
   return copy_double(r);
 }
 
-value sml_cosh(value f)         /* ML */
+value sml_cosh(value f)
 { double r;
   float_exn = SYS__EXN_OVERFLOW;
   r = Double_val(f);
@@ -1014,7 +1014,7 @@ value sml_cosh(value f)         /* ML */
   return copy_double(r);
 }
 
-value sml_tanh(value f)         /* ML */
+value sml_tanh(value f)
 { double r;
   float_exn = SYS__EXN_DOMAIN;
   r = Double_val(f);
@@ -1046,7 +1046,7 @@ int isdead(value v)
 	     && IS_BLOCK(v) && Is_in_heap(v) && Is_white_val(v));
 }
 
-value weak_sub(value arr, value index)			/* ML */
+value weak_sub(value arr, value index)
 {
   value v = Field(arr, VAL_TO_LONG(index));
   if (isdead(v))
@@ -1057,12 +1057,12 @@ value weak_sub(value arr, value index)			/* ML */
   return v;
 }
 
-value weak_isdead(value arr, value index)             /* ML */
+value weak_isdead(value arr, value index)
 {
   return Val_bool(isdead(Field(arr, VAL_TO_LONG(index))));
 }
 
-value weak_arr(value size)				/* ML */
+value weak_arr(value size)
 {
   value res;
   mlsize_t sz, i;
@@ -1078,7 +1078,7 @@ value weak_arr(value size)				/* ML */
 
 /* Turn an ML value into an externalized ML value (a string), a la extern.c */
 
-value string_mlval(value val)	/* ML */
+value string_mlval(value val)
 {
   value s;
   byteoffset_t res;
@@ -1113,7 +1113,7 @@ value string_mlval(value val)	/* ML */
 
 /* Turn an externalized ML value (a string) into an ML value, a la intern.c */
 
-value mlval_string(value s)	/* ML */
+value mlval_string(value s)
 {
   value res;
   mlsize_t whsize, wosize;
@@ -1152,7 +1152,7 @@ value mlval_string(value s)	/* ML */
 /* Make a double from a float object, represented as a big-endian
    four-byte Word8Vector value */
 
-value w8vectofloat(value v)		/* ML */
+value w8vectofloat(value v)
 {
   /* The v vector must have length = 4 bytes */
   union { float flt; char w8[4]; } buf;
@@ -1171,7 +1171,7 @@ value w8vectofloat(value v)		/* ML */
 /* Make a big-endian four-byte Word8Vector value from a float,
    represented as a double. */
 
-value floattow8vec(value v)		/* ML */
+value floattow8vec(value v)
 {
   union { float flt; char w8[4]; } buf;
   value res;
@@ -1193,7 +1193,7 @@ value floattow8vec(value v)		/* ML */
 /* Make a double from a double object, represented as a big-endian
    eight-byte Word8Vector value */
 
-value w8vectodouble(value v)		/* ML */
+value w8vectodouble(value v)
 {
   /* The v vector must have length = 8 bytes */
 
@@ -1218,7 +1218,7 @@ value w8vectodouble(value v)		/* ML */
 
 /* Make a big-endian eight-byte Word8Vector value from a double. */
 
-value doubletow8vec(value v)		/* ML */
+value doubletow8vec(value v)
 {
   value res;
   PUSH_ROOTS(r, 1);
@@ -1244,7 +1244,7 @@ value doubletow8vec(value v)		/* ML */
 
 /* Modified from John Reppy's code (see SML Basis mail of 1997-08-01) */
 
-value sml_localoffset(value v)	/* ML */
+value sml_localoffset(value v)
 {
   struct tm   *gmt;
   time_t      t1, t2;
@@ -1260,7 +1260,7 @@ value sml_localoffset(value v)	/* ML */
 
 /* Return a name (as a string) of SML exception exn */
 
-value sml_exnname(value exn)	/* ML */
+value sml_exnname(value exn)
 {
   value strval = Field(Field(exn, 0), 0);
   return strval;
@@ -1311,7 +1311,7 @@ char* exnmessage_aux(value exn)
 
 /* Return a string representation of SML exception exn, if possible */
 
-value sml_exnmessage(value exn)	/* ML */
+value sml_exnmessage(value exn)
 {
   char* buf = exnmessage_aux(exn);
   value res = copy_string(buf);

@@ -64,7 +64,7 @@ struct parser_env {       /* Mirrors parser_env in ../mosmllib/Parsing.sml */
 
 /* The pushdown automata */
 
-value parse_engine(tables, env, cmd, arg) /* ML */
+value parse_engine(tables, env, cmd, arg)
      struct parser_tables * tables;
      struct parser_env * env;
      value cmd;

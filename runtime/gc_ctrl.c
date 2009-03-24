@@ -30,7 +30,7 @@ extern int verb_gc;                   /*        cf. misc.c */
 
 /* This will also thoroughly verify the heap if compiled in DEBUG mode. */
 
-value gc_stat (value v) /* ML */
+value gc_stat (value v)
 {
   value res;
   long live_words = 0, live_blocks = 0,
@@ -108,7 +108,7 @@ value gc_stat (value v) /* ML */
   return res;
 }
 
-value gc_get (value v) /* ML */
+value gc_get (value v)
 {
   value res;
 
@@ -142,7 +142,7 @@ static long norm_minsize (long s)
   return s;
 }
 
-value gc_set (value v) /* ML */
+value gc_set (value v)
 {
   int newpf;
   /* Order of elements changed for Moscow ML */
@@ -169,14 +169,14 @@ value gc_set (value v) /* ML */
   return Atom (0);
 }
 
-value gc_minor (value v) /* ML */
+value gc_minor (value v)
 {
 	assert (v == Atom (0));
 	minor_collection ();
 	return Atom (0);
 }
 
-value gc_major (value v) /* ML */
+value gc_major (value v)
 {
 	assert (v == Atom (0));
 	minor_collection ();
@@ -184,7 +184,7 @@ value gc_major (value v) /* ML */
 	return Atom (0);
 }
 
-value gc_full_major (value v) /* ML */
+value gc_full_major (value v)
 {
 	assert (v == Atom (0));
 	minor_collection ();

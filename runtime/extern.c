@@ -126,7 +126,7 @@ byteoffset_t emit_all(value root)
   return res;
 }
 
-value extern_val(chan, v)       /* ML */
+value extern_val(chan, v)
      struct channel * chan;
      value v;
 {

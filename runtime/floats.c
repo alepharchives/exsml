@@ -64,7 +64,7 @@ void Store_double_val(value val, double dbl)
 #endif
 
 
-value format_float(value fmt, value arg)    /* ML */
+value format_float(value fmt, value arg)
 {
 	char format_buffer[64];
 	size_t prec, i;
@@ -104,62 +104,62 @@ value format_float(value fmt, value arg)    /* ML */
 	return res;
 }
 
-value float_of_string(value s)        /* ML */
+value float_of_string(value s)
 {
 	return copy_double(atof(String_val(s)));
 }
 
-value exp_float(value f)              /* ML */
+value exp_float(value f)
 {
 	return copy_double(exp(Double_val(f)));
 }
 
-value log_float(value f)              /* ML */
+value log_float(value f)
 {
 	return copy_double(log(Double_val(f)));
 }
 
-value sqrt_float(value f)             /* ML */
+value sqrt_float(value f)
 {
 	return copy_double(sqrt(Double_val(f)));
 }
 
-value power_float(value f, value g)         /* ML */
+value power_float(value f, value g)
 {
 	return copy_double(pow(Double_val(f), Double_val(g)));
 }
 
-value sin_float(value f)              /* ML */
+value sin_float(value f)
 {
 	return copy_double(sin(Double_val(f)));
 }
 
-value cos_float(value f)              /* ML */
+value cos_float(value f)
 {
 	return copy_double(cos(Double_val(f)));
 }
 
-value tan_float(value f)              /* ML */
+value tan_float(value f)
 {
 	return copy_double(tan(Double_val(f)));
 }
 
-value asin_float(value f)             /* ML */
+value asin_float(value f)
 {
 	return copy_double(asin(Double_val(f)));
 }
 
-value acos_float(value f)             /* ML */
+value acos_float(value f)
 {
 	return copy_double(acos(Double_val(f)));
 }
 
-value atan_float(value f)             /* ML */
+value atan_float(value f)
 {
 	return copy_double(atan(Double_val(f)));
 }
 
-value atan2_float(value f, value g)        /* ML */
+value atan2_float(value f, value g)
 {
 	return copy_double(atan2(Double_val(f), Double_val(g)));
 }

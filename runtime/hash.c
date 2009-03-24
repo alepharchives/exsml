@@ -9,7 +9,7 @@ static long hash_univ_limit, hash_univ_count;
 
 static void hash_aux();
 
-value hash_univ_param(count, limit, obj) /* ML */
+value hash_univ_param(count, limit, obj)
      value obj, count, limit;
 {
   hash_univ_limit = VAL_TO_LONG(limit);
