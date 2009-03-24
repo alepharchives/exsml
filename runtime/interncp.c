@@ -1,5 +1,6 @@
 /* Structured input, compact format */
 
+#include <stdio.h>
 #include <assert.h>
 
 #include "debugger.h"
@@ -79,65 +80,68 @@ static void read_compact(struct channel * chan, value * dest)
       Byte(v, ofs_ind) = ofs_ind - len;
       really_getblock(chan, String_val(v), len);
     } else {
-      switch(code) {
-      case CODE_INT8:
-        v = LONG_TO_VAL(input_bytes(chan, 1, 1));
-        break;
-      case CODE_INT16:
-        v = LONG_TO_VAL(input_bytes(chan, 2, 1));
-        break;
-      case CODE_INT32:
-        v = LONG_TO_VAL(input_bytes(chan, 4, 1));
-        break;
-      case CODE_INT64:
-#ifdef SIXTYFOUR
-        v = LONG_TO_VAL(input_bytes(chan, 8, 1));
-        break;
+	    switch(code) {
+	    case CODE_INT8:
+		    v = LONG_TO_VAL(input_bytes(chan, 1, 1));
+		    break;
+	    case CODE_INT16:
+		    v = LONG_TO_VAL(input_bytes(chan, 2, 1));
+		    break;
+	    case CODE_INT32:
+		    v = LONG_TO_VAL(input_bytes(chan, 4, 1));
+		    break;
+	    case CODE_INT64:
+#if (SIZEOF_LONG_P == 8)
+		    v = LONG_TO_VAL(input_bytes(chan, 8, 1));
+		    break;
 #else
-        stat_free((char *) intern_obj_table);
-        Hd_val(intern_block) = intern_header; /* Don't confuse the GC */
-        failwith("input_value: integer too large");
-        break;
+		    stat_free((char *) intern_obj_table);
+		    Hd_val(intern_block) = intern_header; /* Don't confuse the GC */
+		    failwith("input_value: integer too large");
+		    break;
 #endif
-      case CODE_SHARED8:
-        ofs = input_bytes(chan, 1, 0);
-      read_shared:
-        assert(ofs > 0 && ofs <= obj_counter);
-        v = intern_obj_table[obj_counter - ofs];
-        break;
-      case CODE_SHARED16:
-        ofs = input_bytes(chan, 2, 0);
-        goto read_shared;
-      case CODE_SHARED32:
-        ofs = input_bytes(chan, 4, 0);
-        goto read_shared;
-      case CODE_BLOCK32:
-        header = (header_t) input_bytes(chan, 4, 0);
-        tag = Tag_hd(header);
-        size = Wosize_hd(header);
-        goto read_block;
-      case CODE_STRING8:
-        len = input_bytes(chan, 1, 0);
-        goto read_string;
-      case CODE_STRING32:
-        len = input_bytes(chan, 4, 0);
-        goto read_string;
-      case CODE_DOUBLE:
-        if (sizeof(double) != 8) {
-          stat_free((char *) intern_obj_table);
-          Hd_val(intern_block) = intern_header; /* Don't confuse the GC */
-          invalid_argument("input_value: non-standard floats");
-        }
-        v = Val_hp(intern_ptr);
-        intern_obj_table[obj_counter++] = v;
-        *intern_ptr = Make_header(Double_wosize, Double_tag, intern_color);
-        intern_ptr += 1 + Double_wosize;
-        really_getblock(chan, (char *) v, 8);
+	    case CODE_SHARED8:
+		    ofs = input_bytes(chan, 1, 0);
+	    read_shared:
+		    assert(ofs > 0 && ofs <= obj_counter);
+		    v = intern_obj_table[obj_counter - ofs];
+		    break;
+	    case CODE_SHARED16:
+		    ofs = input_bytes(chan, 2, 0);
+		    goto read_shared;
+	    case CODE_SHARED32:
+		    ofs = input_bytes(chan, 4, 0);
+		    goto read_shared;
+	    case CODE_BLOCK32:
+		    header = (header_t) input_bytes(chan, 4, 0);
+		    tag = Tag_hd(header);
+		    size = Wosize_hd(header);
+		    goto read_block;
+	    case CODE_STRING8:
+		    len = input_bytes(chan, 1, 0);
+		    goto read_string;
+	    case CODE_STRING32:
+		    len = input_bytes(chan, 4, 0);
+		    goto read_string;
+	    case CODE_DOUBLE:
+		    if (sizeof(double) != 8) {
+			    stat_free((char *) intern_obj_table);
+			    Hd_val(intern_block) = intern_header; /* Don't confuse the GC */
+			    invalid_argument("input_value: non-standard floats");
+		    }
+		    v = Val_hp(intern_ptr);
+		    intern_obj_table[obj_counter++] = v;
+		    *intern_ptr = Make_header(Double_wosize, Double_tag, intern_color);
+		    intern_ptr += 1 + Double_wosize;
+		    really_getblock(chan, (char *) v, 8);
 #ifndef WORDS_BIGENDIAN
-        Reverse_double(v);
+		    Reverse_double(v);
 #endif
-        break;
-      }
+		    break;
+	    default:
+		    perror("Unknown compact read form");
+		    break;
+	    }
     }
   }
   *dest = v;
