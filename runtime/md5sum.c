@@ -154,11 +154,19 @@ typedef struct MD5state
 }MD5state;
 MD5state *nil;
 
+typedef unsigned long my_ulong;	/* To avoid collision with predefined */
+typedef unsigned char my_uchar;	/* To avoid collision with predefined */
+
+static my_uchar t64d[256];
+static char t64e[64];
+
 void encode(byte*, my_uint*, my_uint);
 void decode(my_uint*, byte*, my_uint);
 MD5state* md5(byte*, my_uint, byte*, MD5state*);
+value md5sum(value);
+int dec64(my_uchar *out, char *, int);
 
-extern value md5sum(value str)
+value md5sum(value str)
 {
 	byte *buf;
 	byte digest[16], pr64[25];
@@ -191,8 +199,7 @@ extern value md5sum(value str)
  *  I require len to be a multiple of 64 for all but
  *  the last call
  */
-MD5state*
-md5(byte *p, my_uint len, byte *digest, MD5state *s)
+MD5state* md5(byte *p, my_uint len, byte *digest, MD5state *s)
 {
 	my_uint a, b, c, d, tmp;
 	my_uint i, done;
@@ -258,6 +265,8 @@ md5(byte *p, my_uint len, byte *digest, MD5state *s)
 			case 3:
 				a += c ^ (b | ~d);
 				break;
+			default:
+				break;
 			}
 			a += x[t->x] + t->sin;
 			a = (a << t->rot) | (a >> (32 - t->rot));
@@ -290,8 +299,7 @@ md5(byte *p, my_uint len, byte *digest, MD5state *s)
  *	encodes input (my_uint) into output (byte). Assumes len is
  *	a multiple of 4.
  */
-void
-encode(byte *output, my_uint *input, my_uint len)
+void encode(byte *output, my_uint *input, my_uint len)
 {
 	my_uint x;
 	byte *e;
@@ -309,8 +317,7 @@ encode(byte *output, my_uint *input, my_uint len)
  *	decodes input (byte) into output (my_uint). Assumes len is
  *	a multiple of 4.
  */
-void
-decode(my_uint *output, byte *input, my_uint len)
+void decode(my_uint *output, byte *input, my_uint len)
 {
 	byte *e;
 
@@ -320,16 +327,7 @@ decode(my_uint *output, byte *input, my_uint len)
 }
 
 
-
-
-typedef unsigned long my_ulong;	/* To avoid collision with predefined */
-typedef unsigned char my_uchar;	/* To avoid collision with predefined */
-
-static my_uchar t64d[256];
-static char t64e[64];
-
-static void
-init64(void)
+static void init64(void)
 {
 	int c, i;
 
@@ -354,8 +352,9 @@ init64(void)
 	t64d['/'] = i;
 }
 
-int
-dec64(my_uchar *out, char *in, int n)
+
+
+int dec64(my_uchar *out, char *in, int n)
 {
 	my_ulong b24;
 	my_uchar *start = out;
@@ -387,6 +386,8 @@ dec64(my_uchar *out, char *in, int n)
 			*out++ = b24;
 			i = -1;
 			break;
+		default:
+			break;
 		}
 		i++;
 	}
@@ -398,13 +399,14 @@ dec64(my_uchar *out, char *in, int n)
 		*out++ = b24>>16;
 		*out++ = b24>>8;
 		break;
+	default:
+		break;
 	}
 	*out = 0;
 	return out - start;
 }
 
-int
-enc64(byte *out, my_uchar *in, int n)
+int enc64(byte *out, my_uchar *in, int n)
 {
 	int i;
 	my_ulong b24;
@@ -435,6 +437,8 @@ enc64(byte *out, my_uchar *in, int n)
 		*out++ = t64e[(b24>>18)];
 		*out++ = t64e[(b24>>12)&0x3f];
 		*out++ = '=';
+		break;
+	default:
 		break;
 	}
 	*out++ = '=';
