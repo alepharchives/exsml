@@ -28,6 +28,8 @@ header_t first_atoms[256];
 bytecode_t start_code;
 size_t code_size;
 
+int attempt_open(char **, struct exec_trailer *, int);
+
 static void init_atoms(void)
 {
   int i;
@@ -156,14 +158,16 @@ int main(int argc, char * argv[])
 
     switch(fd) {
     case FILE_NOT_FOUND:
-      fatal_error_arg("Fatal error: cannot find file %s\n", argv[i]);
-      break;
+	    fatal_error_arg("Fatal error: cannot find file %s\n", argv[i]);
+	    break;
     case TRUNCATED_FILE:
     case BAD_MAGIC_NUM:
-      fatal_error_arg(
-        "Fatal error: the file %s is not a bytecode executable file\n",
-        argv[i]);
-      break;
+	    fatal_error_arg(
+		    "Fatal error: the file %s is not a bytecode executable file\n",
+		    argv[i]);
+	    break;
+    default: /* By default, accept */
+	    break;
     }
   }
 
@@ -178,6 +182,9 @@ int main(int argc, char * argv[])
 	case 'i': sscanf (opt, "=%ld", &heap_chunk_init); break;
 	case 'o': sscanf (opt, "=%d", &percent_free_init); break;
 	case 'v': sscanf (opt, "=%d", &verbose_init); break;
+	default:
+		perror("Unknown CAMLRUNPARAM Option");
+		break;
 	}
       }
     }
