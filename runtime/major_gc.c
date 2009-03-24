@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include "attributes.h"
 #include "config.h"
 #include "debugger.h"
 #include "fail.h"
@@ -100,9 +101,9 @@ void darken (value v)
   }
 }
 
-static void darken_root (value *p, value v)
+static void darken_root (value *UNUSED(p), value v)
 {
-  darken (v);
+	darken (v);
 }
 
 static void start_cycle (void)
