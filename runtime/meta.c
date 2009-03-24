@@ -14,6 +14,15 @@
 extern value interprete(int mode, bytecode_t bprog,
 			int code_size, bytecode_t* rprog);
 
+value start_interp(value, value, value, value);
+value realloc_global(value);
+value static_alloc(value);
+value static_free(value);
+value static_resize(value, value);
+value obj_is_block(value);
+value obj_block(value, value);
+value available_primitives(void);
+
 value start_interp(value may_free, value prog, value offset, value vlen)
 {
   bytecode_t bprog = (bytecode_t)&Byte(prog, VAL_TO_LONG(offset)); // In ML heap
@@ -36,8 +45,7 @@ value start_interp(value may_free, value prog, value offset, value vlen)
   return res;
 }
 
-value realloc_global(size)
-     value size;
+value realloc_global(value size)
 {
   mlsize_t requested_size, actual_size, i;
   value new_global_data;
@@ -58,34 +66,28 @@ value realloc_global(size)
   return Atom(0);
 }
 
-
-value static_alloc(size)
-     value size;
+value static_alloc(value size)
 {
   return (value) stat_alloc((size_t) VAL_TO_LONG(size));
 }
 
-value static_free(blk)
-     value blk;
+value static_free(value blk)
 {
   stat_free((char *) blk);
   return Atom(0);
 }
 
-value static_resize(blk, new_size)
-     value blk, new_size;
+value static_resize(value blk, value new_size)
 {
   return (value) stat_resize((char *) blk, (size_t) VAL_TO_LONG(new_size));
 }
 
-value obj_is_block(arg)
-     value arg;
+value obj_is_block(value arg)
 {
   return Atom(IS_BLOCK(arg));
 }
 
-value obj_block(tag, size)
-     value tag, size;
+value obj_block(value tag, value size)
 {
   value res;
   mlsize_t sz, i;
