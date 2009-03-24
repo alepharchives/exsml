@@ -6,6 +6,8 @@
 #include "mlvalues.h"
 #include "stacks.h"
 
+void local_roots (void (*) (void));
+
 void local_roots (void (*copy_fn) ())
 {
 	value *sp, *block;
