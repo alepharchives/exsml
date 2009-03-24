@@ -20,7 +20,7 @@
 #include <limits.h>
 
 int percent_free;
-long major_heap_increment;
+size_t major_heap_increment;
 char *heap_start, *heap_end;
 char *page_table;
 size_t page_table_size;
