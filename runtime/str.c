@@ -16,10 +16,9 @@ static unsigned char printable_chars_iso[] = /* 0x20-0x7E 0xA1-0xFF */
 
 mlsize_t string_length(value s)
 {
-  mlsize_t temp;
-  temp = Bosize_val(s) - 1;
+  mlsize_t temp = Bosize_val(s) - 1;
   assert (Byte (s, temp - Byte (s, temp)) == 0);
-  return temp - Byte (s, temp);
+  return temp - ((unsigned) Byte (s, temp));
 }
 
 value create_string(value len)        /* ML */
