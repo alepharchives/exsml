@@ -28,7 +28,8 @@ extern char *gc_sweep_hp;
 #define In_heap 1
 #define Not_in_heap 0
 
-#define Page(p) (((char *) (p) - (char *) heap_start) >> Page_log)
+/* Cast to unsigned... This is always positive */
+#define Page(p) ((unsigned) (((char *) (p) - (char *) heap_start) >> Page_log))
 #define Is_in_heap(p) \
   ((char *)(p) >= (char *)heap_start && (char *)(p) < (char *)heap_end \
    && page_table [Page (p)] == In_heap)

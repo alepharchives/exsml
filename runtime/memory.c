@@ -99,7 +99,6 @@ static char *expand_heap (mlsize_t request)
 		page_table_size = new_page_table_size;
 	}
 
-	assert(Page(mem + malloc_request) >= 0);
 	for (i = Page (mem); i < (unsigned) Page (mem + malloc_request); i++){
 		page_table [i] = In_heap;
 	}
