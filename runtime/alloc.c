@@ -43,7 +43,6 @@ value alloc_string(mlsize_t len)
 	}
 	Field (result, wosize - 1) = 0;
 	offset_index = Bsize_wsize (wosize) - 1;
-	assert(offset_index - len > 0);
 	Byte (result, offset_index) = (char) (offset_index - len);
 	return result;
 }
