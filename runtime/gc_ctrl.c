@@ -28,6 +28,13 @@ extern int verb_gc;                   /*        cf. misc.c */
 #define Chunk_next(c) (((heap_chunk_head *) (c)) [-1]).next
 #define Next(hp) ((hp) + Bhsize_hp (hp))
 
+value gc_stat(value);
+value gc_get(value);
+value gc_set(value);
+value gc_minor(value);
+value gc_major(value);
+value gc_full_major(value);
+
 /* This will also thoroughly verify the heap if compiled in DEBUG mode. */
 
 value gc_stat (value v)
