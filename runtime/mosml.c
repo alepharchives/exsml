@@ -1328,16 +1328,16 @@ value doubletow8vec(value v)
 /* Modified from John Reppy's code (see SML Basis mail of 1997-08-01) */
 value sml_localoffset(value UNUSED(v))
 {
-  struct tm   *gmt;
-  time_t      t1, t2;
-  double      td;
+	struct tm   *gmt;
+	time_t      t1, t2;
+	double      td;
 
-  t1 = time((time_t*)0);
-  gmt = gmtime (&t1);
-  t2 = mktime(gmt);
-  td = difftime(t2, t1);
+	t1 = time((time_t*)0);
+	gmt = gmtime (&t1);
+	t2 = mktime(gmt);
+	td = difftime(t2, t1);
 
-  return copy_double(td); /* not SYStoSMLtime(td) */
+	return copy_double(td); /* not SYStoSMLtime(td) */
 }
 
 /* Return a name (as a string) of SML exception exn */
@@ -1353,40 +1353,41 @@ value sml_exnname(value exn)
 char* exnmessage_aux(value exn)
 {
 #define BUFSIZE 256
-  char* buf = (char*)malloc(BUFSIZE+1);
-  /* An exn val is a pair (strref, argval) : string ref * 'a */
-  value strref = Field(exn, 0);
-  value strval = Field(strref, 0);
-  value argval = Field(exn, 1);
-  if (strref == Field(global_data, SYS__EXN_SYSERR)) {
-    value msgval = Field(argval, 0);
-    snprintf(buf, BUFSIZE, "%s: %s",
-	     String_val(strval), String_val(msgval));
-    return buf;
-  } else if (strref == Field(global_data, SYS__EXN_IO)) {
-    value causeval = Field(argval, 0);
-    value fcnval   = Field(argval, 1);
-    value nameval  = Field(argval, 2);
-    char* causetxt = exnmessage_aux(causeval);
-    snprintf(buf, BUFSIZE, "%s: %s failed on `%s'; %s",
-	     String_val(strval), String_val(fcnval),
-	     String_val(nameval), causetxt);
-    free(causetxt);
-    return buf;
-  } else if (IS_BLOCK(argval)) {
-    if (Tag_val(argval) == String_tag) {
-      snprintf(buf, BUFSIZE, "%s: %s", String_val(strval), String_val(argval));
-      return buf;
-    } else if (Tag_val(argval) == Double_tag){
-      char doubletxt[64];
-      string_of_float_aux(doubletxt, Double_val(argval));
-      snprintf(buf, BUFSIZE, "%s: %s", String_val(strval), doubletxt);
-      return buf;
-    }
-  }
-  /* If unknown exception, copy the name and return it */
-  snprintf(buf, BUFSIZE, "%s", String_val(strval));
-  return buf;
+	char* buf = (char*)malloc(BUFSIZE+1);
+	/* An exn val is a pair (strref, argval) : string ref * 'a */
+	value strref = Field(exn, 0);
+	value strval = Field(strref, 0);
+	value argval = Field(exn, 1);
+	if (strref == Field(global_data, SYS__EXN_SYSERR)) {
+		value msgval = Field(argval, 0);
+		snprintf(buf, BUFSIZE, "%s: %s",
+			 String_val(strval), String_val(msgval));
+		return buf;
+	} else if (strref == Field(global_data, SYS__EXN_IO)) {
+		value causeval = Field(argval, 0);
+		value fcnval   = Field(argval, 1);
+		value nameval  = Field(argval, 2);
+		char* causetxt = exnmessage_aux(causeval);
+		snprintf(buf, BUFSIZE, "%s: %s failed on `%s'; %s",
+			 String_val(strval), String_val(fcnval),
+			 String_val(nameval), causetxt);
+		free(causetxt);
+		return buf;
+	} else if (IS_BLOCK(argval)) {
+		if (Tag_val(argval) == String_tag) {
+			snprintf(buf, BUFSIZE, "%s: %s",
+				 String_val(strval), String_val(argval));
+			return buf;
+		} else if (Tag_val(argval) == Double_tag){
+			char doubletxt[64];
+			string_of_float_aux(doubletxt, Double_val(argval));
+			snprintf(buf, BUFSIZE, "%s: %s", String_val(strval), doubletxt);
+			return buf;
+		}
+	}
+	/* If unknown exception, copy the name and return it */
+	snprintf(buf, BUFSIZE, "%s", String_val(strval));
+	return buf;
 #undef BUFSIZE
 }
 
@@ -1395,8 +1396,9 @@ char* exnmessage_aux(value exn)
 
 value sml_exnmessage(value exn)
 {
-  char* buf = exnmessage_aux(exn);
-  value res = copy_string(buf);
-  free(buf);
-  return res;
+	char* buf = exnmessage_aux(exn);
+	value res = copy_string(buf);
+	free(buf);
+
+	return res;
 }
