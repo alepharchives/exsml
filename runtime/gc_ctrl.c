@@ -2,6 +2,7 @@
    Updated 2008-03-05 to prevent malloc from using mmap()
 */
 #include <malloc.h>
+#include <stdio.h>
 #include <assert.h>
 
 #include "alloc.h"
@@ -88,6 +89,8 @@ value gc_stat (value v)
 		|| (Color_hp (Next (cur_hp)) != Blue
 		    && Wosize_hp (Next (cur_hp)) > 0));
 	break;
+      default:
+	      perror("Impossible");
       }
       prev_hp = cur_hp;
       cur_hp = Next (cur_hp);
