@@ -81,7 +81,33 @@ value sml_acos(value);
 value sml_atan2(value, value);
 value sml_pow(value, value);
 value sml_localtime(value);
+value sml_exnmessage(value);
+value sml_exnname(value exn);
+value sml_localoffset(value);
+value doubletow8vec(value);
+value w8vectodouble(value);
+value floattow8vec(value);
+value w8vectofloat(value);
+value mlval_string(value);
+value string_mlval(value);
+value weak_arr(value);
+value weak_isdead(value, value);
+value sml_mktime(value);
+value sml_asctime(value);
+value sml_strftime(value, value);
+value sml_general_string_of_float(value, value);
+value weak_sub(value, value);
+int isdead(value);
+value sml_tanh(value);
+value sml_cosh(value);
+value sml_sinh(value);
+value sml_hexstring_of_word(value);
+value sml_word_of_dec(value);
+value sml_word_of_hex(value);
+value sml_int_of_hex(value);
+value sml_filesize(value);
 
+__attribute__((noreturn))
 void fatal(char *s) {
 	if (s == NULL) {
 		perror(strerror(errno));
@@ -903,7 +929,6 @@ value sml_mktime (value v)
 
   return copy_double((double) mktime(&tmr));
 }
-
 value sml_asctime (value v)
 {
   struct tm tmr;
@@ -970,11 +995,14 @@ value sml_general_string_of_float(value fmt, value arg)
 }
 
 value sml_filesize(value path)
-{ struct stat buf;
+{
+	struct stat buf;
 
-  if (stat(String_val(path), &buf) == -1)
-      failwith("stat");
-  return (LONG_TO_VAL (buf.st_size));
+	if (stat(String_val(path), &buf) == -1) {
+		failwith("stat");
+	}
+
+	return (LONG_TO_VAL (buf.st_size));
 }
 
 value sml_int_of_hex(value s)
@@ -1063,12 +1091,13 @@ value sml_cosh(value f)
 }
 
 value sml_tanh(value f)
-{ double r;
-  float_exn = SYS__EXN_DOMAIN;
-  r = Double_val(f);
-  r = tanh(r);
-  Check_float(r);
-  return copy_double(r);
+{
+	double r;
+	float_exn = SYS__EXN_DOMAIN;
+	r = Double_val(f);
+	r = tanh(r);
+	Check_float(r);
+	return copy_double(r);
 }
 
 /* A weak pointer v is dead (dangling) if NULL, or if we are in the
@@ -1160,7 +1189,6 @@ value string_mlval(value val)
 }
 
 /* Turn an externalized ML value (a string) into an ML value, a la intern.c */
-
 value mlval_string(value s)
 {
   value res;
@@ -1265,7 +1293,6 @@ value w8vectodouble(value v)
 }
 
 /* Make a big-endian eight-byte Word8Vector value from a double. */
-
 value doubletow8vec(value v)
 {
   value res;
@@ -1291,7 +1318,6 @@ value doubletow8vec(value v)
 }
 
 /* Modified from John Reppy's code (see SML Basis mail of 1997-08-01) */
-
 value sml_localoffset(value v)
 {
   struct tm   *gmt;
@@ -1307,7 +1333,6 @@ value sml_localoffset(value v)
 }
 
 /* Return a name (as a string) of SML exception exn */
-
 value sml_exnname(value exn)
 {
   value strval = Field(Field(exn, 0), 0);
@@ -1315,6 +1340,7 @@ value sml_exnname(value exn)
 }
 
 /* Create a string representation of SML exception exn, if possible. */
+
 
 char* exnmessage_aux(value exn)
 {
