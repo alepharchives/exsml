@@ -19,6 +19,7 @@
 
 #include <assert.h>
 
+#include "attributes.h"
 #include "mlvalues.h"
 #include "fail.h"
 #include "memory.h"
@@ -97,7 +98,7 @@ value sml_asctime(value);
 value sml_strftime(value, value);
 value sml_general_string_of_float(value, value);
 value weak_sub(value, value);
-int isdead(value);
+static int isdead(value);
 value sml_tanh(value);
 value sml_cosh(value);
 value sml_sinh(value);
@@ -106,6 +107,7 @@ value sml_word_of_dec(value);
 value sml_word_of_hex(value);
 value sml_int_of_hex(value);
 value sml_filesize(value);
+value sml_gmtime(value);
 
 __attribute__((noreturn))
 void fatal(char *s) {
@@ -118,12 +120,12 @@ void fatal(char *s) {
 	}
 }
 
-#define Raise_float_if(cond) \
+#define RAISE_FLOAT_IF(cond) \
   if( cond )					\
     { raiseprimitive0(float_exn); }
 
-#define Check_float(dval)					\
-   Raise_float_if( (dval > maxdouble) || (dval < -maxdouble) )
+#define CHECK_FLOAT(dval)					\
+   RAISE_FLOAT_IF( (dval > maxdouble) || (dval < -maxdouble) )
 
 /* Structural equality on trees. */
 /* Note how reference cells are treated! */
@@ -280,7 +282,7 @@ value sml_abs_real(value f)
     return f;
   else
     r = -r;
-  Check_float(r);
+  CHECK_FLOAT(r);
   return copy_double(r);
 }
 
@@ -288,9 +290,9 @@ value sml_sqrt(value f)
 { double r;
   float_exn = SYS__EXN_DOMAIN;
   r = Double_val(f);
-  Raise_float_if( r < 0.0 );
+  RAISE_FLOAT_IF( r < 0.0 );
   r = sqrt(r);
-  Check_float(r);
+  CHECK_FLOAT(r);
   return copy_double(r);
 }
 
@@ -316,7 +318,7 @@ value sml_exp(value f)
 { double r;
   float_exn = SYS__EXN_OVERFLOW;
   r = exp(Double_val(f));
-  Check_float(r);
+  CHECK_FLOAT(r);
   return copy_double(r);
 }
 
@@ -324,62 +326,70 @@ value sml_ln(value f)
 { double r;
   float_exn = SYS__EXN_DOMAIN;
   r = Double_val(f);
-  Raise_float_if( r <= 0.0 );
+  RAISE_FLOAT_IF( r <= 0.0 );
   r = log(r);
-  Check_float(r);
+  CHECK_FLOAT(r);
   return copy_double(r);
 }
 
 unsigned long scandec(char * p, unsigned long max)
-{ unsigned long res;
-  int c, d;
-  res = 0;
-  while (1) {
-    c = *p;
-    if (c >= '0' && c <= '9')
-      d = c - '0';
-    else
-      break;
-    if( (res > (max/10)) ||
-        ((res == (max/10) && ((max % 10) <= d))) )
-      goto raise_failure;
-    res = 10 * res + d;
-    p++;
-  }
-  if (*p != 0)
-    goto raise_failure;
-  return res;
+{
+	unsigned long res, d;
+	int c;
+	res = 0;
+	while (1) {
+		c = *p;
+		if (c >= '0' && c <= '9') {
+			d = c - '0';
+		} else {
+			break;
+		}
 
-  raise_failure:
-    failwith("scandec");
-    return 0;		/* Can't reach return */
+		if ((res > (max/10)) ||
+		    ((res == (max/10) && ((max % 10) <= d))) ) {
+			failwith("scandec");
+		}
+
+		res = 10 * res + d;
+		p++;
+	}
+
+	if (*p != 0) {
+		failwith("scandec");
+	}
+
+	return res;
 }
 
 unsigned long scanhex(char * p, unsigned long max)
-{ unsigned long res;
-  int c, d;
-  res = 0;
-  while (1) {
-    c = toupper(*p);
-    if (c >= '0' && c <= '9')
-      d = c - '0';
-    else if (c >= 'A' && c <= 'F')
-      d = c + (10 - 'A');
-    else
-      break;
-    if( (res > (max/16)) ||
-        ((res == (max/16) && ((max % 16) <= d))) )
-      goto raise_failure;
-    res = 16 * res + d;
-    p++;
-  }
-  if (*p != 0)
-    goto raise_failure;
-  return res;
+{
+	unsigned long res, d;
+	int c;
+	res = 0;
+	while (1) {
+		c = toupper(*p);
+		if (c >= '0' && c <= '9') {
+			d = c - '0';
+		} else if (c >= 'A' && c <= 'F') {
+			d = c + (10 - 'A');
+		} else {
+			break;
+		}
 
-  raise_failure:
-    failwith("scanhex");
-    return 0;		/* Can't reach return */
+		if( (res > (max/16)) ||
+		    ((res == (max/16) && ((max % 16) <= d))) ) {
+			failwith("scanhex");
+		}
+
+		res = 16 * res + d;
+		p++;
+	}
+
+	if (*p != 0) {
+		failwith("scanhex");
+	}
+
+	return res;
 }
 
 value sml_int_of_string(value s)
@@ -453,38 +463,44 @@ value sml_ord(value s)
 
 value sml_float_of_string(value s)
 {
+	char buff[64];
+	mlsize_t len, i;
+	int e_len;
+	char c;
+	char *p;
+	double r;
 
-  char buff[64];
-  mlsize_t len;
-  int i, e_len;
-  char c;
-  char *p;
-  double r;
+	len = string_length(s);
+	if(len > sizeof(buff) - 1) {
+		failwith("sml_float_of_string: argument too large");
+	}
 
-  len = string_length(s);
-  if(len > sizeof(buff) - 1)
-    failwith("sml_float_of_string: argument too large");
-  p = String_val(s);
-  e_len = -1;
-  for (i = 0; i<len; i++) {
-    c = *p++;
-    switch( c ) {
-        case '~':
-          buff[i] = '-'; break;
-        case 'E':
-          buff[i] = 'e'; e_len = 0; break;
-        default:
-          buff[i] = c;
-          if( e_len >= 0 ) e_len++;
-          Raise_float_if( e_len > 5 )
-          break;
-    }
-  }
-  buff[len] = 0;
-  r = atof(buff);
-  if( (r > maxdouble) || (r < -maxdouble) )
-    failwith("sml_float_of_string: result too large");
-  return copy_double(r);
+	p = String_val(s);
+	e_len = -1;
+	for (i = 0; i < len; i++) {
+		c = *p++;
+		switch( c ) {
+		case '~':
+			buff[i] = '-';
+			break;
+		case 'E':
+			buff[i] = 'e'; e_len = 0;
+			break;
+		default:
+			buff[i] = c;
+			if( e_len >= 0 ) {
+				e_len++;
+			}
+
+			RAISE_FLOAT_IF( e_len > 5 );
+			break;
+		}
+	}
+	buff[len] = 0;
+	r = atof(buff);
+	if( (r > maxdouble) || (r < -maxdouble) )
+		failwith("sml_float_of_string: result too large");
+	return copy_double(r);
 }
 
 static int countChar(int c, char * s)
@@ -664,12 +680,7 @@ value sml_makestring_of_string(value arg)
 
 #define TIMEBASE (-1073741824)
 
-/* There is another problem on the Mac: with a time base of 1904,
-   most times are simply out of range of mosml integers. So, I added
-   the macros below to compensate. 07Sep95 e
-*/
-
-value sml_getrealtime(value v)
+value sml_getrealtime(value UNUSED(v))
 {
   value res;
   struct timeval tp;
@@ -681,7 +692,7 @@ value sml_getrealtime(value v)
   return res;
 }
 
-value sml_getrutime(value v)
+value sml_getrutime(value UNUSED(v))
 {
   value res;
 
@@ -699,12 +710,12 @@ value sml_getrutime(value v)
   return res;
 }
 
-value sml_errno(value arg)
+value sml_errno(value UNUSED(arg))
 {
   return LONG_TO_VAL(errno);
 }
 
-value sml_getdir(value arg)
+value sml_getdir(value UNUSED(arg))
 {
  char directory[MAXPATHLEN];
  char *res;
@@ -781,11 +792,11 @@ value sml_modtime(value path)
   return (copy_double ((double) (buf.st_mtime)));
 }
 
-value sml_settime(value path, value time)
+value sml_settime(value path, value time_val)
 {
   struct utimbuf tbuf;
 
-  tbuf.actime = tbuf.modtime = (long) (Double_val(time));
+  tbuf.actime = tbuf.modtime = (long) (Double_val(time_val));
   if (utime(String_val(path), &tbuf) == -1)
       failwith("utime");
   return Val_unit;
@@ -806,15 +817,10 @@ value sml_access(value path, value permarg)
   return Val_bool(0);
 }
 
-value sml_tmpnam(value v)
+value sml_tmpnam(value UNUSED(v))
 {
-  /*  char *res;
-      res = tmpnam(NULL);
-      if (res == NULL)
-      failwith("tmpnam");
-      return copy_string(res); */
-  failwith("tmpnam is dangerous");
-  return Val_unit;
+	failwith("tmpnam is dangerous, don't use!");
+	return Val_unit;
 }
 
 value sml_errormsg(value err)
@@ -827,18 +833,18 @@ value sml_errormsg(value err)
 value sml_asin(value f)
 { double r = Double_val(f);
   float_exn = SYS__EXN_DOMAIN;
-  Raise_float_if( r < -1.0 || r > 1.0 );
+  RAISE_FLOAT_IF( r < -1.0 || r > 1.0 );
   r = asin(r);
-  Raise_float_if( r != r );
+  RAISE_FLOAT_IF( r != r );
   return copy_double(r);
 }
 
 value sml_acos(value f)
 { double r = Double_val(f);
   float_exn = SYS__EXN_DOMAIN;
-  Raise_float_if( r < -1.0 || r > 1.0 );
+  RAISE_FLOAT_IF( r < -1.0 || r > 1.0 );
   r = acos(r);
-  Raise_float_if( r != r );
+  RAISE_FLOAT_IF( r != r );
   return copy_double(r);
 }
 
@@ -850,8 +856,8 @@ value sml_atan2(value f1, value f2)
   if (r1 == 0.0 && r2 == 0.0)
     return copy_double(0.0);
   r = atan2(r1, r2);
-  Check_float(r);
-  Raise_float_if( r != r );
+  CHECK_FLOAT(r);
+  RAISE_FLOAT_IF( r != r );
   return copy_double(r);
 }
 
@@ -868,9 +874,9 @@ value sml_pow(value f1, value f2)
     raiseprimitive0(float_exn);
   r = pow(r1, r2);
   float_exn = SYS__EXN_OVERFLOW;
-  Check_float(r);
+  CHECK_FLOAT(r);
   float_exn = SYS__EXN_DOMAIN;
-  Raise_float_if( r != r );
+  RAISE_FLOAT_IF( r != r );
   return copy_double(r);
 }
 
@@ -878,8 +884,8 @@ value sml_localtime (value v)
 {
   value res;
   struct tm *tmr;
-  time_t clock = (long) (Double_val(v));
-  tmr = localtime(&clock);
+  time_t clk = (long) (Double_val(v));
+  tmr = localtime(&clk);
   res = alloc (9, 0);
   Field (res, 0) = LONG_TO_VAL ((*tmr).tm_hour);
   Field (res, 1) = LONG_TO_VAL ((*tmr).tm_isdst);
@@ -894,12 +900,12 @@ value sml_localtime (value v)
   return res;
 }
 
-value sml_gmtime (value v)
+value sml_gmtime(value v)
 {
   value res;
   struct tm *tmr;
-  time_t clock = (long) (Double_val(v));
-  tmr = gmtime(&clock);
+  time_t clk = (long) (Double_val(v));
+  tmr = gmtime(&clk);
   res = alloc (9, 0);
   Field (res, 0) = LONG_TO_VAL ((*tmr).tm_hour);
   Field (res, 1) = LONG_TO_VAL ((*tmr).tm_isdst);
@@ -1077,7 +1083,7 @@ value sml_sinh(value f)
   float_exn = SYS__EXN_OVERFLOW;
   r = Double_val(f);
   r = sinh(r);
-  Check_float(r);
+  CHECK_FLOAT(r);
   return copy_double(r);
 }
 
@@ -1086,7 +1092,7 @@ value sml_cosh(value f)
   float_exn = SYS__EXN_OVERFLOW;
   r = Double_val(f);
   r = cosh(r);
-  Check_float(r);
+  CHECK_FLOAT(r);
   return copy_double(r);
 }
 
@@ -1096,7 +1102,7 @@ value sml_tanh(value f)
 	float_exn = SYS__EXN_DOMAIN;
 	r = Double_val(f);
 	r = tanh(r);
-	Check_float(r);
+	CHECK_FLOAT(r);
 	return copy_double(r);
 }
 
@@ -1116,27 +1122,29 @@ value sml_tanh(value f)
      not be deallocated, but sweeping may have changed its color already).
 */
 
-int isdead(value v)
+static int isdead(value v)
 {
-  return v == (value)NULL
-         || (gc_phase == Phase_weak
-	     && IS_BLOCK(v) && Is_in_heap(v) && Is_white_val(v));
+	return v == ((value) NULL)
+		|| (gc_phase == Phase_weak
+		    && IS_BLOCK(v) && Is_in_heap(v) && Is_white_val(v));
 }
 
-value weak_sub(value arr, value index)
+value weak_sub(value arr, value idx)
 {
-  value v = Field(arr, VAL_TO_LONG(index));
-  if (isdead(v))
-    failwith("Dangling weak pointer");
-  else
-    if (gc_phase == Phase_mark)
-      darken(v);
-  return v;
+	value v = Field(arr, VAL_TO_LONG(idx));
+	if (isdead(v)) {
+		failwith("Dangling weak pointer");
+	} else {
+		if (gc_phase == Phase_mark) {
+			darken(v);
+		}
+	}
+	return v;
 }
 
-value weak_isdead(value arr, value index)
+value weak_isdead(value arr, value idx)
 {
-  return Val_bool(isdead(Field(arr, VAL_TO_LONG(index))));
+  return Val_bool(isdead(Field(arr, VAL_TO_LONG(idx))));
 }
 
 value weak_arr(value size)
@@ -1318,7 +1326,7 @@ value doubletow8vec(value v)
 }
 
 /* Modified from John Reppy's code (see SML Basis mail of 1997-08-01) */
-value sml_localoffset(value v)
+value sml_localoffset(value UNUSED(v))
 {
   struct tm   *gmt;
   time_t      t1, t2;
