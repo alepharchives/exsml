@@ -240,8 +240,9 @@ static int really_read(int fd, char * p, unsigned n, int nonblocking)
 {
 	int retcode;
 
-	if (nonblocking)
+	if (nonblocking) {
 		nonblocking_mode(fd, nonblocking);	   /* set non-blocking */
+	}
 
 	enter_blocking_section();
 
@@ -255,8 +256,10 @@ static int really_read(int fd, char * p, unsigned n, int nonblocking)
 		nonblocking_mode(fd, 0);			/* unset non-blocking */
 		if (retcode == -1 && errno != EAGAIN)
 			sys_error();
-	} else if (retcode == -1)
+	} else if (retcode == -1) {
 		sys_error();
+	}
+
 	return retcode;
 }
 
@@ -302,9 +305,10 @@ value input_int(struct channel * channel)
 	return LONG_TO_VAL(i);
 }
 
-int getblock(struct channel * channel, char * p, unsigned n, int nonblocking)
+int getblock(struct channel * channel, char * p, size_t n, int nonblocking)
 {
-	unsigned m, l;
+	int dread;
+	unsigned m;
 
 	m = channel->max - channel->curr;
 	if (n <= m) {
@@ -316,13 +320,16 @@ int getblock(struct channel * channel, char * p, unsigned n, int nonblocking)
 		channel->curr += m;
 		return m;
 	} else if (n < IO_BUFFER_SIZE) {
-		l = really_read(channel->fd, channel->buff, IO_BUFFER_SIZE, nonblocking);
-		if (l == -1) /* Non-blocking read returned no data */
+		dread = really_read(channel->fd, channel->buff, IO_BUFFER_SIZE, nonblocking);
+		if (dread == -1) {/* Non-blocking read returned no data */
 			return -1;
-		else {
-			channel->offset += l;
-			channel->max = channel->buff + l;
-			if (n > l) n = l;
+		} else {
+			assert(dread >= 0);
+			channel->offset += dread;
+			channel->max = channel->buff + dread;
+			if (n > ((unsigned) dread)) {
+				n = dread;
+			}
 			memmove(p, channel->buff, n);
 			channel->curr = channel->buff + n;
 			return n;
@@ -330,12 +337,12 @@ int getblock(struct channel * channel, char * p, unsigned n, int nonblocking)
 	} else {
 		channel->curr = channel->buff;
 		channel->max = channel->buff;
-		l = really_read(channel->fd, p, n, nonblocking);
-		if (l == -1)	/* Non-blocking read returned no data */
+		dread = really_read(channel->fd, p, n, nonblocking);
+		if (dread == -1)	/* Non-blocking read returned no data */
 			return -1;
 		else {
-			channel->offset += l;
-			return l;
+			channel->offset += dread;
+			return dread;
 		}
 	}
 }
