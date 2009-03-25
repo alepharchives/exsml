@@ -164,6 +164,13 @@ bytecode_t disasm_instr(int cur_instr, bytecode_t pc, value accu)
 		print_value(accu);
 		printf("  C-fn: %i (%s)\n", u16(pc), names_of_cprim[u16(pc)]);
 		break;
+	case C_CALL2:
+		printf("  u16-pc: %i", u16(pc));
+		printf("  Value: ");
+		print_value(accu);
+		printf("Stack top TODO\n");
+		printf("  C-fn: %i (%s)\n", u16(pc), names_of_cprim[u16(pc)]);
+
 	default:
 		break;
 	}
