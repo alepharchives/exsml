@@ -15,7 +15,7 @@ extern int trace_flag;
 
 void failed_assert (char *, char *, int);
 void print_value (value);
-bytecode_t disasm_instr (int, bytecode_t, value);
+bytecode_t disasm_instr (int, bytecode_t, value, value*);
 void post_mortem (int);
 unsigned long not_random (void);
 

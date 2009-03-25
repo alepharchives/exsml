@@ -103,7 +103,11 @@ void print_pc(bytecode_t pc)
 
 /* Disassembling one instruction */
 
-bytecode_t disasm_instr(int cur_instr, bytecode_t pc, value accu)
+/*
+ * We get the current instruction, the program counter, the accumulator, and
+ * the stackpointer
+ */
+bytecode_t disasm_instr(int cur_instr, bytecode_t pc, value accu, value sp[])
 {
 	value accu_l;
 	printf("Executing %s\n", names_of_instructions[cur_instr]);
@@ -168,9 +172,9 @@ bytecode_t disasm_instr(int cur_instr, bytecode_t pc, value accu)
 		printf("  u16-pc: %i", u16(pc));
 		printf("  Value: ");
 		print_value(accu);
-		printf("Stack top TODO\n");
+		printf("  SP[1]: ");
+		print_value(sp[1]);
 		printf("  C-fn: %i (%s)\n", u16(pc), names_of_cprim[u16(pc)]);
-
 	default:
 		break;
 	}

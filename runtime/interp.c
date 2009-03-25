@@ -99,15 +99,15 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 
   bytecode_t pc = bprog;
   value accu;
-  value * sp;
+  value *sp;
 
   value env;
   int extra_args;
   struct longjmp_buffer * initial_external_raise;
   int initial_sp_offset;
-  value * initial_c_roots_head;
+  value *initial_c_roots_head;
   struct longjmp_buffer raise_buf;
-  value * modify_dest, modify_newval;
+  value *modify_dest, modify_newval;
   value tmp;
   int cur_instr;
   double dtmp;
@@ -177,7 +177,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 	  assert(sp >= stack_low);
 	  assert(sp <= stack_high);
 	  cur_instr = *pc++;
-	  disasm_instr(cur_instr, pc, accu);
+	  disasm_instr(cur_instr, pc, accu, sp);
 #else
 	  cur_instr = *pc++;
 #endif
