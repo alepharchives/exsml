@@ -132,14 +132,9 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 
 /* To read immediate operands, read some bytes after pc: */
 
-#define SHORT  (sizeof(short))
-#define LONG   (sizeof(int32_t))
-#define DOUBLE (sizeof(double))
-
 #define u8pc  (unsigned char)(*pc)
 #define u8pci (unsigned char)(*pc++)
 #define s16pc s16(pc)
-#define u16pc u16(pc)
 #define s32pc s32(pc)
 #define u32pc u32(pc)
 #define JUMPTGT(offset) (bytecode_t)(pc + offset)
@@ -247,14 +242,14 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 		case PUSHACC:
 			*--sp = accu; /* Fallthrough */
 		case ACCESS:
-			accu = sp[u16pc]; pc += SHORT;
+			accu = sp[u16(pc)]; pc += sizeof(short);
 			break;
 
 		case POP:
-			sp += u16pc; pc += SHORT;
+			sp += u16(pc); pc += sizeof(short);
 			break;
 		case ASSIGN:
-			sp[u16pc] = accu; pc += SHORT;
+			sp[u16(pc)] = accu; pc += sizeof(short);
 			accu = Val_unit;
 			break;
 
@@ -305,8 +300,8 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 		case PUSHENVACC:
 			*--sp = accu; /* Fallthrough */
 		case ENVACC:
-			accu = Field(env, u16pc);
-			pc += SHORT;
+			accu = Field(env, u16(pc));
+			pc += sizeof(short);
 			break;
 
 		case PUSH_ENV1_APPLY1:
@@ -371,8 +366,8 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 
 		case PUSH_ENV1_APPTERM1:
 		{
-			sp = sp + u16pc - 2;
-			pc += SHORT;
+			sp = sp + u16(pc) - 2;
+			pc += sizeof(short);
 
 			sp[0] = accu;
 		} /* Fall through */
@@ -386,7 +381,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 		case PUSH_ENV1_APPTERM2:
 		{
 			value arg2 = sp[0];
-			sp = sp + u16pc - 3; pc += SHORT;
+			sp = sp + u16(pc) - 3; pc += sizeof(short);
 			sp[0] = accu;
 			sp[1] = arg2;
 			extra_args += 1;
@@ -397,7 +392,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 		{
 			value arg2 = sp[0];
 			value arg3 = sp[1];
-			sp = sp + u16pc - 4; pc += SHORT;
+			sp = sp + u16(pc) - 4; pc += sizeof(short);
 			sp[0] = accu;
 			sp[1] = arg2;
 			sp[2] = arg3;
@@ -410,7 +405,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			value arg2 = sp[0];
 			value arg3 = sp[1];
 			value arg4 = sp[2];
-			sp = sp + u16pc - 5; pc += SHORT;
+			sp = sp + u16(pc) - 5; pc += sizeof(short);
 			sp[0] = accu;
 			sp[1] = arg2;
 			sp[2] = arg3;
@@ -426,7 +421,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			sp[0] = (value) (JUMPTGT(s32pc));
 			sp[1] = env;
 			sp[2] = LONG_TO_VAL(extra_args);
-			pc += LONG;
+			pc += sizeof(int32_t);
 			break;
 		}
 
@@ -493,10 +488,10 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 
 		case APPTERM: {
 			int nargs = u8pci;
-			int slotsize = u16pc;
+			int slotsize = u16(pc);
 			value * newsp;
 			int i;
-			pc += SHORT;
+			pc += sizeof(short);
 			/* Slide the nargs bottom words of the current frame to the top
 			   of the frame, and discard the remainder of the frame */
 			newsp = sp + slotsize - nargs;
@@ -510,7 +505,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 
 		case APPTERM1: {
 			value arg1 = sp[0];
-			sp = sp + u16pc - 1; pc += SHORT;
+			sp = sp + u16(pc) - 1; pc += sizeof(short);
 			sp[0] = arg1;
 			goto appterm;
 		}
@@ -518,7 +513,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 		case APPTERM2: {
 			value arg1 = sp[0];
 			value arg2 = sp[1];
-			sp = sp + u16pc - 2; pc += SHORT;
+			sp = sp + u16(pc) - 2; pc += sizeof(short);
 			sp[0] = arg1;
 			sp[1] = arg2;
 			extra_args += 1;
@@ -529,7 +524,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			value arg1 = sp[0];
 			value arg2 = sp[1];
 			value arg3 = sp[2];
-			sp = sp + u16pc - 3; pc += SHORT;
+			sp = sp + u16(pc) - 3; pc += sizeof(short);
 			sp[0] = arg1;
 			sp[1] = arg2;
 			sp[2] = arg3;
@@ -542,7 +537,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			value arg2 = sp[1];
 			value arg3 = sp[2];
 			value arg4 = sp[3];
-			sp = sp + u16pc - 4; pc += SHORT;
+			sp = sp + u16(pc) - 4; pc += sizeof(short);
 			sp[0] = arg1;
 			sp[1] = arg2;
 			sp[2] = arg3;
@@ -574,7 +569,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			goto return_code;
 
 		case RETURN:
-			sp += u16pc; pc += SHORT;
+			sp += u16(pc); pc += sizeof(short);
 			goto return_code;
 
 		case RESTART: {
@@ -596,7 +591,9 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 				num_args = 1 + extra_args; /* arg1 + extra args */
 				ALLOC_SMALL(accu, num_args + 2, Closure_tag);
 				Field(accu, 1) = env;
-				for (i = 0; i < num_args; i++) Field(accu, i + 2) = sp[i];
+				for (i = 0; i < num_args; i++) {
+					Field(accu, i + 2) = sp[i];
+				}
 				/* Point to the preceding RESTART instruction.  This works in the
 				   bytecode as well as the threaded code; in both cases we have
 				   three slots: RESTART, GRAB, n; and pc pointing past n now. */
@@ -613,7 +610,10 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 		case CLOSURE: {
 			int nvars = u8pci;
 			int i;
-			if (nvars > 0) *--sp = accu;
+			if (nvars > 0) {
+				*--sp = accu;
+			}
+
 			ALLOC_SMALL(accu, 1 + nvars, Closure_tag);
 			//      printf("pc = %d, s32pc = %d\n", pc, s32pc);
 			Code_val(accu) = JUMPTGT(s32pc);
@@ -622,7 +622,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 				Field(accu, i + 1) = sp[i];
 			}
 			sp += nvars;
-			pc += LONG;
+			pc += sizeof(int32_t);
 			break;
 		}
 
@@ -638,17 +638,19 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			for (i = 0; i < nvars; i++) Field(accu, i + 2) = sp[i];
 			sp += nvars;
 			modify(&Field(accu, 1), accu);
-			pc += LONG;
+			pc += sizeof(int32_t);
 			break;
 		}
 
 /* For recursive definitions */
 
 		case DUMMY: {
-			int size = u16pc + 1; /* size + 1 to match CLOSURE */
-			pc += SHORT;
+			int size = u16(pc) + 1; /* size + 1 to match CLOSURE */
+			pc += sizeof(short);
 			ALLOC_SMALL(accu, size, 0);
-			while (size--) Field(accu, size) = LONG_TO_VAL(0);
+			while (size--) {
+				Field(accu, size) = LONG_TO_VAL(0);
+			}
 			break;
 		}
 
@@ -671,16 +673,16 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			*--sp = accu;
 			/* Fallthrough */
 		case GETGLOBAL:
-			accu = Field(global_data, u16pc);
-			pc += SHORT;
+			accu = Field(global_data, u16(pc));
+			pc += sizeof(short);
 			break;
 
 		case PUSH_GETGLOBAL_APPLY1:
 		{
 			sp -= 4;
 			sp[0] = accu;
-			accu = Field(global_data, u16pc);
-			pc += SHORT;
+			accu = Field(global_data, u16(pc));
+			pc += sizeof(short);
 			sp[1] = (value)pc;
 			sp[2] = env;
 			sp[3] = LONG_TO_VAL(extra_args);
@@ -716,8 +718,8 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			sp -= 4;
 			sp[0] = accu;
 			sp[1] = arg2;
-			accu = Field(global_data, u16pc);
-			pc += SHORT;
+			accu = Field(global_data, u16(pc));
+			pc += sizeof(short);
 			sp[2] = (value)pc;
 			sp[3] = env;
 			sp[4] = LONG_TO_VAL(extra_args);
@@ -733,8 +735,8 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			sp[0] = accu;
 			sp[1] = arg2;
 			sp[2] = arg3;
-			accu = Field(global_data, u16pc);
-			pc += SHORT;
+			accu = Field(global_data, u16(pc));
+			pc += sizeof(short);
 			sp[3] = (value)pc;
 			sp[4] = env;
 			sp[5] = LONG_TO_VAL(extra_args);
@@ -752,8 +754,8 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			sp[1] = arg2;
 			sp[2] = arg3;
 			sp[3] = arg4;
-			accu = Field(global_data, u16pc);
-			pc += SHORT;
+			accu = Field(global_data, u16(pc));
+			pc += sizeof(short);
 			sp[4] = (value)pc;
 			sp[5] = env;
 			sp[6] = LONG_TO_VAL(extra_args);
@@ -763,10 +765,10 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 
 		case PUSH_GETGLOBAL_APPTERM1:
 			/* opcode, popnbr, globalindex */
-			sp = sp + u16pc - 2; pc += SHORT;
+			sp = sp + u16(pc) - 2; pc += sizeof(short);
 			sp[0] = accu;
 		getglobal_appterm:
-			accu = Field(global_data, u16pc);
+			accu = Field(global_data, u16(pc));
 			pc = Code_val(accu);
 			env = accu;
 			goto check_signals;
@@ -774,7 +776,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 		case PUSH_GETGLOBAL_APPTERM2:
 		{
 			value arg2 = sp[0];
-			sp = sp + u16pc - 3; pc += SHORT;
+			sp = sp + u16(pc) - 3; pc += sizeof(short);
 			sp[0] = accu;
 			sp[1] = arg2;
 			extra_args += 1;
@@ -785,7 +787,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 		{
 			value arg2 = sp[0];
 			value arg3 = sp[1];
-			sp = sp + u16pc - 4; pc += SHORT;
+			sp = sp + u16(pc) - 4; pc += sizeof(short);
 			sp[0] = accu;
 			sp[1] = arg2;
 			sp[2] = arg3;
@@ -798,7 +800,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			value arg2 = sp[0];
 			value arg3 = sp[1];
 			value arg4 = sp[2];
-			sp = sp + u16pc - 5; pc += SHORT;
+			sp = sp + u16(pc) - 5; pc += sizeof(short);
 			sp[0] = accu;
 			sp[1] = arg2;
 			sp[2] = arg3;
@@ -808,9 +810,9 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 		}
 
 		case SETGLOBAL:
-			modify(&Field(global_data, u16pc), accu);
+			modify(&Field(global_data, u16(pc)), accu);
 			accu = Val_unit; /* ? */
-			pc += SHORT;
+			pc += sizeof(short);
 			break;
 
 /* Allocation of blocks */
@@ -863,7 +865,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			int i;
 
 			hdr = u32pc;
-			pc += LONG;
+			pc += sizeof(int32_t);
 			size = Wosize_hd(hdr);
 			tag = Tag_hd(hdr);
 			if (size < Max_young_wosize) {
@@ -942,8 +944,8 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			accu = Field(accu, 3);
 			break;
 		case GETFIELD:
-			accu = Field(accu, u16pc);
-			pc += SHORT;
+			accu = Field(accu, u16(pc));
+			pc += sizeof(short);
 			break;
 
 		case GETFIELD0_0:
@@ -986,8 +988,8 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			modify_newval = accu;
 			goto modify;
 		case SETFIELD:
-			modify_dest = &Field(*sp++, u16pc);
-			pc += SHORT;
+			modify_dest = &Field(*sp++, u16(pc));
+			pc += sizeof(short);
 			modify_newval = accu;
 			goto modify;
 
@@ -1028,14 +1030,14 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			if (Tag_val(accu) != 0) {
 				pc = JUMPTGT(s32pc);
 			} else {
-				pc += LONG;
+				pc += sizeof(int32_t);
 			}
 			break;
 		case BRANCHIFNOT:
 			if (Tag_val(accu) == 0) {
 				pc = JUMPTGT(s32pc);
 			} else {
-				pc += LONG;
+				pc += sizeof(int32_t);
 			}
 			break;
 		case POPBRANCHIFNOT:
@@ -1044,14 +1046,14 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			if (Tag_val(tmp) == 0) {
 				pc = JUMPTGT(s32pc);
 			} else {
-				pc += LONG;
+				pc += sizeof(int32_t);
 			}
 			break;
 		case BRANCHIFNEQTAG:
 			if (Tag_val(accu) != u8pci) {
 				pc = JUMPTGT(s32pc);
 			} else {
-				pc += LONG;
+				pc += sizeof(int32_t);
 			}
 			break;
 		case SWITCH:
@@ -1072,7 +1074,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			sp[2] = env;
 			sp[3] = LONG_TO_VAL(extra_args);
 			trapsp = sp;
-			pc += LONG;
+			pc += sizeof(int32_t);
 			break;
 
 		case POPTRAP:
@@ -1141,37 +1143,37 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 
 		case C_CALL1:
 			SETUP_FOR_C_CALL;
-			accu = (cprim[u16pc])(accu);
+			accu = (cprim[u16(pc)])(accu);
 			RESTORE_AFTER_C_CALL;
-			pc += SHORT;
+			pc += sizeof(short);
 			break;
 		case C_CALL2:
 			SETUP_FOR_C_CALL;
 			/* sp[0] temporarily holds the environment pointer */
-			accu = (cprim[u16pc])(sp[1], accu);
+			accu = (cprim[u16(pc)])(sp[1], accu);
 			RESTORE_AFTER_C_CALL;
-			pc += SHORT;
+			pc += sizeof(short);
 			sp += 1;
 			break;
 		case C_CALL3:
 			SETUP_FOR_C_CALL;
-			accu = (cprim[u16pc])(sp[2], sp[1], accu);
+			accu = (cprim[u16(pc)])(sp[2], sp[1], accu);
 			RESTORE_AFTER_C_CALL;
-			pc += SHORT;
+			pc += sizeof(short);
 			sp += 2;
 			break;
 		case C_CALL4:
 			SETUP_FOR_C_CALL;
-			accu = (cprim[u16pc])(sp[3], sp[2], sp[1], accu);
+			accu = (cprim[u16(pc)])(sp[3], sp[2], sp[1], accu);
 			RESTORE_AFTER_C_CALL;
-			pc += SHORT;
+			pc += sizeof(short);
 			sp += 3;
 			break;
 		case C_CALL5:
 			SETUP_FOR_C_CALL;
-			accu = (cprim[u16pc])(sp[4], sp[3], sp[2], sp[1], accu);
+			accu = (cprim[u16(pc)])(sp[4], sp[3], sp[2], sp[1], accu);
 			RESTORE_AFTER_C_CALL;
-			pc += SHORT;
+			pc += sizeof(short);
 			sp += 4;
 			break;
 		case C_CALLN:
@@ -1185,9 +1187,9 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			for (i = 0; i < n; i++) {
 				args[i] = sp[n-i];
 			}
-			accu = (cprim[u16pc])(args, n);
+			accu = (cprim[u16(pc)])(args, n);
 			RESTORE_AFTER_C_CALL;
-			pc += SHORT;
+			pc += sizeof(short);
 			free(args);
 			sp += n;
 			break;
@@ -1201,7 +1203,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 
 		case CONSTSHORT:
 			accu = s16pc;
-			pc += SHORT;
+			pc += sizeof(short);
 			break;
 
 /* Integer constants */
@@ -1234,7 +1236,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			*--sp = accu; /* Fallthrough */
 		case CONSTINT:
 			accu = INT_TO_VAL(s32pc);
-			pc += LONG;
+			pc += sizeof(int32_t);
 			break;
 
 /* Unsigned integer arithmetic modulo 2^(wordsize-1) */
@@ -1298,7 +1300,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			if (*sp++ == accu) {
 				pc = JUMPTGT(s32pc);
 			} else {
-				pc += LONG;
+				pc += sizeof(int32_t);
 			}
 			break;
 		case NEQ:
@@ -1308,7 +1310,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			if (*sp++ != accu) {
 				pc = JUMPTGT(s32pc);
 			} else {
-				pc += LONG;
+				pc += sizeof(int32_t);
 			}
 			break;
 		case LTINT:
@@ -1318,7 +1320,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			if (*sp++ < accu) {
 				pc = JUMPTGT(s32pc);
 			} else {
-				pc += LONG;
+				pc += sizeof(int32_t);
 			}
 			break;
 		case GTINT:
@@ -1328,7 +1330,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			if (*sp++ > accu) {
 				pc = JUMPTGT(s32pc);
 			} else {
-				pc += LONG;
+				pc += sizeof(int32_t);
 			}
 			break;
 		case LEINT:
@@ -1338,7 +1340,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			if (*sp++ <= accu) {
 				pc = JUMPTGT(s32pc);
 			} else {
-				pc += LONG;
+				pc += sizeof(int32_t);
 			}
 			break;
 		case GEINT:
@@ -1348,7 +1350,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			if (*sp++ >= accu) {
 				pc = JUMPTGT(s32pc);
 			} else {
-				pc += LONG;
+				pc += sizeof(int32_t);
 			}
 			break;
 		case TAGOF:
@@ -1382,12 +1384,12 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 				pc = JUMPTGT(s32pc);
 				break;
 			}
-			pc += LONG;
+			pc += sizeof(int32_t);
 			if (accu > high_bound) {
 				pc = JUMPTGT(s32pc);
 				break;
 			}
-			pc += LONG;
+			pc += sizeof(int32_t);
 			accu = accu - low_bound + 1;
 			break;
 		}
