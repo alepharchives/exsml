@@ -44,5 +44,6 @@ echo "=== Running test $progname"
 
 CMP="${CMP-cmp}"
 MOSMLC="TODO"
-CAMLRUNM="$top_builddir/runtime/camlrunm"
 
+#CAMLRUNM=camlrunm
+CAMLRUNM="$top_builddir/runtime/camlrunm"
