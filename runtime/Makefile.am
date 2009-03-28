@@ -1,9 +1,6 @@
 # Makefile for the Moscow ML 2.00 version of the Caml Light runtime system
 
-AM_CFLAGS = -I$(top_srcdir) -Wall -Wextra  -Wunused -Wstrict-aliasing \
-	-Wswitch-default -Wswitch-enum -fstrict-aliasing -fstrict-overflow \
-	-Wstrict-overflow -ftree-vrp -Wundef -Wshadow \
-	-Wcast-qual -Wcast-align -Wmissing-prototypes -Wmissing-noreturn -Winline
+AM_CFLAGS = -I$(top_srcdir)
 
 # Flags not enabled -Wfloat-equal -Wconversion -Wbad-function-cast
 

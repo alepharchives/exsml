@@ -169,15 +169,55 @@ AC_SUBST(WORD_WORDSIZE)
 AC_SUBST(WORD_MAXPOS)
 AC_SUBST(MAX_STRING_LEN)
 
+AC_DEFUN([CHECK_CFLAG], [
+    current_cflags=$CFLAGS
+    CFLAGS="$CFLAGS $1 -Werror"
+    AC_COMPILE_IFELSE([
+#include <stdio.h>
+int main()
+{
+    printf("Goat");
+    return 0;
+}
+    ],
+    [cflags_success=yes],
+    [cflags_success=no])
+
+    CFLAGS="$current_cflags"
+
+    if test "x$cflags_success" = "xyes" ; then
+        CFLAGS="$CFLAGS $1"
+        cflags_message="$cflags_message $1"
+    fi
+])
+AC_MSG_CHECKING([for compiler flags])
+CHECK_CFLAG([-Wall])
+CHECK_CFLAG([-Wcast-align])
+CHECK_CFLAG([-Wcast-qual])
+CHECK_CFLAG([-Wextra])
+CHECK_CFLAG([-Winline])
+CHECK_CFLAG([-Wmissing-noreturn])
+CHECK_CFLAG([-Wmissing-prototypes])
+CHECK_CFLAG([-Wshadow])
+CHECK_CFLAG([-Wstrict-aliasing])
+CHECK_CFLAG([-Wstrict-overflow])
+CHECK_CFLAG([-Wswitch-default])
+CHECK_CFLAG([-Wswitch-enum])
+CHECK_CFLAG([-Wundef])
+CHECK_CFLAG([-Wunused])
+CHECK_CFLAG([-fstrict-aliasing])
+CHECK_CFLAG([-fstrict-overflow])
+CHECK_CFLAG([-ftree-vrp])
+AC_MSG_RESULT([${cflags_message}])
 
 AC_OUTPUT(
-          Makefile
-	  compiler/Makefile
-	  mosmllib/Makefile
-	  mosmllib/Architecture.sml
-	  runtime/Makefile
-	  mosmlyac/Makefile
-	  libsml_crypt/Makefile
-	  libsml_unix/Makefile
-	  libsml_socket/Makefile
+      Makefile
+      compiler/Makefile
+      mosmllib/Makefile
+      mosmllib/Architecture.sml
+      runtime/Makefile
+      mosmlyac/Makefile
+      libsml_crypt/Makefile
+      libsml_unix/Makefile
+      libsml_socket/Makefile
 )
