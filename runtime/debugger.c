@@ -148,6 +148,13 @@ bytecode_t disasm_instr(int cur_instr, bytecode_t pc, value accu, value sp[])
 		printf("  Value: ");
 		print_value(accu);
 		break;
+	case MAKEBLOCK2:
+		printf("  Tag: %i\n", (unsigned char)(*pc));
+		printf("  Field0: ");
+		print_value(sp[0]);
+		printf("  Field1: ");
+		print_value(accu);
+		break;
 	case PUSH:
 	case PUSHACC0:
 		printf("  Pushed: ");
