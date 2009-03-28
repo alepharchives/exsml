@@ -45,6 +45,7 @@ src/camlrunm
 src/config/m.h
 src/config/s.h
 mosmllib/Architecture.sml
+regression/testSubDir
 runtime/.deps
 runtime/camlrunm
 runtime/prims.c

@@ -217,6 +217,7 @@ AC_OUTPUT(
       mosmllib/Architecture.sml
       runtime/Makefile
       mosmlyac/Makefile
+      regression/Makefile
       libsml_crypt/Makefile
       libsml_unix/Makefile
       libsml_socket/Makefile

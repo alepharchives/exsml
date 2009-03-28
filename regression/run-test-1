@@ -1,0 +1,51 @@
+#!/bin/sh
+# -*- sh -*-
+
+if test -z "$srcdir"; then
+    srcdir=$(echo "$0" | sed 's,[^/]*$,,')
+    test "$srcdir" = "$0" && srcdir=.
+    test -z "$srcdir" && srcdir=.
+    test "${VERBOSE+set}" != set && VERBOSE=1
+fi
+
+. $srcdir/defs
+
+# Simple dummy test script
+cat << EOF > in.sml
+val _ = print "Hello\n"
+EOF
+
+# Expected output
+cat << EOF > in.sml.ok
+Hello
+EOF
+
+cat <<EOF > in.sml.errok
+EOF
+
+# Run test
+mosmlc -o a.out in.sml
+camlrunm a.out 2> err | tee -i out >&2
+
+if ${CMP} -s out in.sml.ok; then
+    :
+else
+    echo "ok: " >&2
+    cat in.sml.ok >&2
+    exit 1
+fi
+
+# Munge error output to remove leading directories, `lt-' or
+# trailing `.exe'
+sed -e "s,^[^:]*[lt-]*sic[.ex]*:,sic:," err >sederr && mv sederr err
+
+# Show stderr if doesnt match expected output if VERBOSE == 1
+if "$CMP" -s err in.sml.errok; then
+    :
+else
+    echo "err:" >&2
+    cat err >&2
+    echo "errok:" >&2
+    cat in.sml.errok >&2
+    exit 1
+fi
