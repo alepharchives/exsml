@@ -25,7 +25,7 @@ EOF
 
 # Run test
 mosmlc -o a.out in.sml
-camlrunm a.out 2> err | tee -i out >&2
+${CAMLRUNM} a.out 2> err | tee -i out >&2
 
 if ${CMP} -s out in.sml.ok; then
     :
