@@ -305,7 +305,7 @@ value input_int(struct channel * channel)
 	return LONG_TO_VAL(i);
 }
 
-int getblock(struct channel * channel, char * p, size_t n, int nonblocking)
+int getblock(struct channel *channel, char *p, size_t n, int nonblocking)
 {
 	int dread;
 	unsigned m;
