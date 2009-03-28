@@ -52,7 +52,7 @@ typedef unsigned long mark_t;
 #define VAL_TO_LONG(x)     ((x) >> 1)
 #define MAX_TAGGED_LONG ((long)((1L << (8 * sizeof(value) - 2)) - 1))
 #define MIN_TAGGED_LONG ((long) -(1L << (8 * sizeof(value) - 2)))
-#define INT_TO_VAL(x)      ((x) >> 1)
+#define INT_TO_VAL(x)      (((int)(x) << 1) + 1)
 #define VAL_TO_INT(x) ((int) VAL_TO_LONG(x))
 
 /* Structure of the header:
