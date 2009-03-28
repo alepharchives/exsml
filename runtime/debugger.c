@@ -152,57 +152,55 @@ bytecode_t disasm_instr(int cur_instr, bytecode_t pc, value accu, value sp[])
 	case PUSHACC0:
 		printf("  Pushed: ");
 		print_value(accu);
-		printf("  Acc <-- ");
-		print_value(sp[0]);
 		break;
 	case PUSHACC1:
 		printf("  Pushed: ");
 		print_value(accu);
 		printf("  Acc <-- ");
-		print_value(sp[1]);
+		print_value(sp[0]);
 		break;
 	case PUSHACC2:
 		printf("  Pushed: ");
 		print_value(accu);
 		printf("  Acc <-- ");
-		print_value(sp[2]);
+		print_value(sp[1]);
 		break;
 	case PUSHACC3:
 		printf("  Pushed: ");
 		print_value(accu);
 		printf("  Acc <-- ");
-		print_value(sp[3]);
+		print_value(sp[2]);
 		break;
 	case PUSHACC4:
 		printf("  Pushed: ");
 		print_value(accu);
 		printf("  Acc <-- ");
-		print_value(sp[4]);
+		print_value(sp[3]);
 		break;
 	case PUSHACC5:
 		printf("  Pushed: ");
 		print_value(accu);
 		printf("  Acc <-- ");
-		print_value(sp[5]);
+		print_value(sp[4]);
 		break;
 	case PUSHACC6:
 		printf("  Pushed: ");
 		print_value(accu);
 		printf("  Acc <-- ");
-		print_value(sp[6]);
+		print_value(sp[5]);
 		break;
 	case PUSHACC7:
 		printf("  Pushed: ");
 		print_value(accu);
 		printf("  Acc <-- ");
-		print_value(sp[7]);
+		print_value(sp[6]);
 		break;
 	case PUSHACC:
 		printf("  u16-pc: %i", u16(pc));
 		printf("  Pushed: ");
 		print_value(accu);
 		printf("  Acc <-- ");
-		print_value(sp[u16(pc)]);
+		print_value(sp[u16(pc)-1]);
 		break;
 	case ACC0:
 		printf("  Acc <-- ");
