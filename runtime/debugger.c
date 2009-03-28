@@ -113,6 +113,19 @@ bytecode_t disasm_instr(int cur_instr, bytecode_t pc, value accu, value sp[])
 	printf("Executing %s\n", names_of_instructions[cur_instr]);
 
 	switch (cur_instr) {
+	case BRANCHIFNOT:
+		if (Tag_val(accu) == 0) {
+			printf("True --> Jumping\n");
+		} else {
+			printf("False --> Continuing\n");
+		}
+		break;
+	case EQ:
+		printf("  Accu: ");
+		print_value(accu);
+		printf("  sp[0]: ");
+		print_value(sp[0]);
+		break;
 	case GETGLOBAL:
 		accu_l = Field(global_data, u16(pc));
 		printf("  Global %i : ", u16(pc));
@@ -142,6 +155,15 @@ bytecode_t disasm_instr(int cur_instr, bytecode_t pc, value accu, value sp[])
 	case SETGLOBAL:
 		printf("  Global %i : ", u16(pc));
 		print_value(accu);
+		break;
+	case LTINT:
+		printf("  sp[0] < accu\n");
+		printf("  Accu: ");
+		print_value(accu);
+		printf("  sp[0]: ");
+		print_value(sp[0]);
+		printf("  Acc <-- ");
+		print_value(Atom(sp[0] < accu));
 		break;
 	case MAKEBLOCK1:
 		printf("  Tag: %i\n", (unsigned char)(*pc));
