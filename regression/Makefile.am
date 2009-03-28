@@ -3,8 +3,8 @@
 EXTRA_DIST = defs $(TESTS)
 MAINTAINERCLEANFILES = Makefile.in
 testsubdir = testSubDir
-TESTS_ENVIRONMENT = top_builddir=$(top_builddir)
-TESTS = run-test-1
+TESTS_ENVIRONMENT = ${srcdir}/run-test-ok
+TESTS = tests/hello-world.sml
 
 distclean-local:
 	-rm -fr $(testsubdir)
