@@ -51,10 +51,65 @@ TESTS = tests/hello-world.sml \
 	tests/vector-loop.sml \
 	tests/15.sml \
 	tests/circular.sml \
-	tests/tak.sml
-
+	tests/tak.sml \
+	tests/kitmandelbrot.sml \
+	tests/polymorphic-recursion.sml \
+	tests/ref-flatten.6.sml \
+	tests/known-case0.sml \
+	tests/ref-flatten.sml \
+	tests/unary.2.sml \
+	tests/array5.sml \
+	tests/array7.sml \
+	tests/binio.sml \
+	tests/known-case1.sml \
+	tests/lex.sml \
+	tests/flat-vector.sml \
+	tests/useless-string.sml \
+	tests/layout.sml \
+	tests/kitfib35.sml \
+	tests/exn.sml \
+	tests/tststrcmp.sml \
+	tests/exhaustive.sml \
+	tests/klife_eq.sml \
+	tests/listpair.sml \
+	tests/bool-triple.sml \
+	tests/stringcvt.sml \
+	tests/jump.sml \
+	tests/FuhMishra.sml \
+	tests/withtype.sml \
+	tests/flat-array.2.sml \
+	tests/int.sml \
+	tests/array3.sml \
+	tests/local-ref.sml \
+	tests/flat-array.sml \
+	tests/list.sml \
+	tests/kitloop2.sml \
+	tests/lambda-list-ref.sml \
+	tests/unary.sml \
+	tests/time3.sml \
+	tests/kitdangle.sml \
+	tests/21.sml \
+	tests/vector2.sml \
+	tests/string2.sml \
+	tests/poly-equal.sml \
+	tests/deep-flatten.sml
 
 ## All these fails on mosml. Some have explanations added
+#	tests/suspend.sml \
+#	tests/generate/all-overloads.sml \
+#	tests/time.sml \
+#	tests/string.fromString.sml \
+#	tests/general.sml \
+#	tests/3.sml \
+#	tests/weak.sml \
+#	tests/sigs.sml \
+#	tests/rlimit.sml \
+#	tests/word-all.sml \
+#	tests/conv.sml \
+#	tests/12.sml \
+#	tests/array6.sml \
+#	tests/where-and.sml \
+#	tests/word8vector.sml \
 #	tests/ring.sml \
 #	tests/type-check.sml \
 #	tests/slow2.sml \
@@ -65,6 +120,9 @@ TESTS = tests/hello-world.sml \
 #	tests/ffi-opaque.sml
 #	tests/math.sml \ -- fails on mosml
 #	tests/23.sml \ -- nonterminating on purpose
+#	tests/ex.sml \ -- nonterminating on purpose
+#	tests/only-one-exception.sml \ -- nonterminating on purpose
+#	tests/dead.sml \ -- nonterminating
 #	tests/cycle.sml \
 #	tests/int-inf.log2.sml \
 #	tests/7.sml \
@@ -145,131 +203,73 @@ TESTS = tests/hello-world.sml \
 # tests/ieee-real.sml \
 # tests/functor.sml \
 # tests/opaque2.sml
-
-
-## These are the tests that has not been added to the suite yet
-# tests/finalize.4.sml
+# tests/int-inf.1.sml \
+# tests/20.sml \
+# tests/callcc3.sml \
+# tests/4.sml \
+# tests/string.sml \
+# tests/char0.sml \
+# tests/lib.sml \
+# tests/nextAfter.sml \
+# tests/harmonic.sml \
+# tests/typespec.sml \
+# tests/exnHistory3.sml \
+# tests/pack-real.sml \
+# tests/id.sml \
+# tests/wordn-array.sml \
+# tests/signals.sml \
+# tests/int-inf.0.sml \
+# tests/finalize.2.sml \
+# tests/expansive-valbind.sml \
+# tests/thread2.sml \
+# tests/cmdline.sml \
+# tests/mlton.overload.sml \
+# tests/time4.sml \
+# tests/where.sml \
+# tests/substring-overflow.sml \
+# tests/conv2.sml \
+# tests/finalize.4.sml \
 # tests/ftruncate.sml
-# tests/kitmandelbrot.sml
-# tests/polymorphic-recursion.sml
-# tests/substring-overflow.sml
-# tests/conv2.sml
-# tests/ref-flatten.6.sml
-# tests/known-case0.sml
-# tests/exnHistory3.sml
-# tests/ref-flatten.sml
-# tests/pack-real.sml
-# tests/id.sml
-# tests/wordn-array.sml
-# tests/signals.sml
-# tests/int-inf.0.sml
-# tests/finalize.2.sml
-# tests/expansive-valbind.sml
-# tests/unary.2.sml
-# tests/array5.sml
-# tests/array7.sml
-# tests/thread2.sml
-# tests/cmdline.sml
-# tests/mlton.overload.sml
-# tests/time4.sml
-# tests/where.sml
-# tests/binio.sml
-# tests/char0.sml
-# tests/lib.sml
-# tests/known-case1.sml
-# tests/nextAfter.sml
-# tests/lex.sml
-# tests/harmonic.sml
-# tests/typespec.sml
-# tests/flat-vector.sml
-# tests/weak.2.sml
-# tests/echo.sml
-# tests/useless-string.sml
-# tests/layout.sml
-# tests/20.sml
-# tests/callcc3.sml
-# tests/4.sml
-# tests/string.sml
-# tests/kitfib35.sml
-# tests/int-inf.1.sml
-# tests/exn.sml
-# tests/ex.sml
-# tests/word.sml
+# tests/thread1.sml \
+# tests/default-overloads.sml \
+# tests/eqtype.sml \
+# tests/date.sml \
+# tests/5.sml \
+# tests/ex.sml \
+# tests/widechar.sml \
+# tests/flat-array.3.sml \
+# tests/serialize.sml \
+# tests/textio.sml \
+# tests/llv.sml \
+# tests/word.sml \
 # tests/14.sml
-# tests/tststrcmp.sml
-# tests/textio.sml
-# tests/llv.sml
-# tests/exhaustive.sml
-# tests/klife_eq.sml
-# tests/5.sml
-# tests/listpair.sml
-# tests/widechar.sml
-# tests/flat-array.3.sml
-# tests/serialize.sml
-# tests/bool-triple.sml
-# tests/stringcvt.sml
-# tests/date.sml
-# tests/jump.sml
-# tests/thread1.sml
-# tests/default-overloads.sml
-# tests/eqtype.sml
-# tests/FuhMishra.sml
-# tests/thread-switch-size.sml
-# tests/cobol.sml
-# tests/exnHistory.sml
-# tests/vector.sml
-# tests/word8array.sml
-# tests/socket.sml
-# tests/finalize.6.sml
-# tests/pseudokit.sml
-# tests/withtype.sml
-# tests/flat-array.2.sml
-# tests/8.sml
-# tests/taut.sml
+#tests/thread-switch-size.sml \
+#tests/cobol.sml \
+#tests/exnHistory.sml \
+#tests/vector.sml \
+#tests/word8array.sml \
+#tests/socket.sml \
+#tests/finalize.6.sml \
+#tests/pseudokit.sml
+# tests/nonterminate/8.sml \
+# tests/int-inf.bitops.sml \
+# tests/substring.sml \
+# tests/real-str.sml \
+# tests/grow-raise.sml \
+# tests/pack-word.sml \
+# tests/poly-equal.2.sml \
+# tests/6.sml \
+# tests/16.sml \
+# tests/8.sml \
+# tests/taut.sml \
 # tests/msort.sml
-# tests/int.sml
-# tests/16.sml
-# tests/kitreynolds3.sml
-# tests/int-inf.bitops.sml
-# tests/substring.sml
-# tests/real-str.sml
-# tests/grow-raise.sml
-# tests/pack-word.sml
-# tests/poly-equal.2.sml
-# tests/6.sml
-# tests/nonterminate/8.sml
-# tests/word8vector.sml
-# tests/only-one-exception.sml
-# tests/array3.sml
-# tests/local-ref.sml
-# tests/array6.sml
-# tests/where-and.sml
-# tests/flat-array.sml
-# tests/list.sml
-# tests/kitloop2.sml
-# tests/12.sml
-# tests/dead.sml
-# tests/time.sml
-# tests/3.sml
-# tests/weak.sml
-# tests/sigs.sml
-# tests/rlimit.sml
-# tests/word-all.sml
-# tests/conv.sml
-# tests/lambda-list-ref.sml
-# tests/general.sml
-# tests/unary.sml
-# tests/time3.sml
-# tests/kitdangle.sml
-# tests/21.sml
-# tests/string.fromString.sml
-# tests/vector2.sml
-# tests/suspend.sml
-# tests/generate/all-overloads.sml
-# tests/string2.sml
-# tests/poly-equal.sml
-# tests/deep-flatten.sml
 
+
+
+
+### These are the tests that has not been added to the suite yet
+## BENCHMARKS
+#  Some of these are wickedly expensive to run. But we ought to have them in a test run.
 
 # benchmarks/ratio-regions.sml
 # benchmarks/logic.sml
@@ -325,6 +325,7 @@ TESTS = tests/hello-world.sml \
 # tests/int-overflow.sml
 # tests/word.sml \   -- Currently fails on mosml
 
+## Failing tests -- should be added in due time
 # tests/fail/datatype.1.sml
 # tests/fail/datatype.4.sml
 # tests/fail/datatype-where-complex.sml
