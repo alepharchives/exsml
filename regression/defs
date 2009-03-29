@@ -43,7 +43,7 @@ cd $testsubdir \
 echo "=== Running test $progname"
 
 CMP="${CMP-cmp}"
-MOSMLC="TODO"
+MOSMLC="mosmlc -P full"
 
 #CAMLRUNM=camlrunm
 CAMLRUNM="$top_builddir/runtime/camlrunm"
