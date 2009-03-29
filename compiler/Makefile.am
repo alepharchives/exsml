@@ -87,13 +87,6 @@ mosmltop: $(COMP_OBJS) $(T_OBJS)
 	$(MOSMLL) $(LINKFLAGS) -o mosmltop Maint.uo 
 
 
-#depend: Filename.sml Config.sml Opcodes.sml Parser.sml Parser.sig Lexer.sml \
-#    Predef.sml Prim_c.sml
-#	rm -f Makefile.bak
-#	mv Makefile Makefile.bak
-#	$(MOSMLCUT) < Makefile.bak > Makefile
-#	$(MOSMLDEP) >> Makefile
-
 #regress:
 #	echo "building current lib"
 #	cd ../mosmllib; make -s current
