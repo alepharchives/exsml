@@ -32,7 +32,7 @@ all: Array.uo Array2.uo Arraysort.uo \
 OS.ui: FileSys.ui Path.ui Process.ui
 
 ## TODO: Hoist this!
-CAMLRUNM=camlrunm
+CAMLRUNM=$(top_srcdir)/runtime/camlrunm
 MOSMLC=$(CAMLRUNM) $(top_srcdir)/bootstrap/mosmlcmp \
 	-stdlib $(top_srcdir)/mosmllib -P none
 MOSMLLEX=mosmllex

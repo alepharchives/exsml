@@ -7,11 +7,12 @@ CLEANFILES = mosmlcmp mosmllnk mosmltop *.ui *.uo Opcodes.sml \
 	Prim_c.sml Makefile.bak
 
 ## TODO: Move this away
-MOSMLC=camlrunm $(top_srcdir)/bootstrap/mosmlcmp \
+CAMLRUNM=$(top_srcdir)/runtime/camlrunm
+MOSMLC=$(CAMLRUNM) $(top_srcdir)/bootstrap/mosmlcmp \
 	-stdlib $(top_srcdir)/mosmllib -P none
 MOSMLLEX=mosmllex
 MOSMLYAC=mosmlyac
-MOSMLL=camlrunm $(top_srcdir)/bootstrap/mosmllnk -stdlib $(top_srcdir)/mosmllib -P none
+MOSMLL=$(CAMLRUNM) $(top_srcdir)/bootstrap/mosmllnk -stdlib $(top_srcdir)/mosmllib -P none
 MOSMLTOOLS= $(top_srcdir)/src/tools
 
 SUFFIXES = .sml .ui .uo .sig .mllex .mlyacc .mlp
