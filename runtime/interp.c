@@ -313,7 +313,9 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			sp[3] = LONG_TO_VAL(extra_args);
 			extra_args = 0;
 			accu = Field(env, 1);
-			goto apply;
+			pc = Code_val(accu);
+			env = accu;
+			goto stack_check;
 		}
 
 		case PUSH_ENV1_APPLY2:
@@ -327,7 +329,9 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			sp[4] = LONG_TO_VAL(extra_args);
 			extra_args = 1;
 			accu = Field(env, 1);
-			goto apply;
+			pc = Code_val(accu);
+			env = accu;
+			goto stack_check;
 		}
 
 		case PUSH_ENV1_APPLY3:
@@ -343,7 +347,9 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			sp[5] = LONG_TO_VAL(extra_args);
 			extra_args = 2;
 			accu = Field(env, 1);
-			goto apply;
+			pc = Code_val(accu);
+			env = accu;
+			goto stack_check;
 		}
 
 		case PUSH_ENV1_APPLY4:
@@ -361,7 +367,9 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			sp[6] = LONG_TO_VAL(extra_args);
 			extra_args = 3;
 			accu = Field(env, 1);
-			goto apply;
+			pc = Code_val(accu);
+			env = accu;
+			goto stack_check;
 		}
 
 		case PUSH_ENV1_APPTERM1:
@@ -427,7 +435,9 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 
 		case APPLY: {
 			extra_args = u8pc - 1;
-			goto apply;
+			pc = Code_val(accu);
+			env = accu;
+			goto stack_check;
 		}
 
 		case APPLY1: {
@@ -438,7 +448,9 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			sp[2] = env;
 			sp[3] = LONG_TO_VAL(extra_args);
 			extra_args = 0;
-			goto apply;
+			pc = Code_val(accu);
+			env = accu;
+			goto stack_check;
 		}
 
 		case APPLY2: {
@@ -451,7 +463,9 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			sp[3] = env;
 			sp[4] = LONG_TO_VAL(extra_args);
 			extra_args = 1;
-			goto apply;
+			pc = Code_val(accu);
+			env = accu;
+			goto stack_check;
 		}
 
 		case APPLY3: {
@@ -466,7 +480,9 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			sp[4] = env;
 			sp[5] = LONG_TO_VAL(extra_args);
 			extra_args = 2;
-			goto apply;
+			pc = Code_val(accu);
+			env = accu;
+			goto stack_check;
 		}
 
 		case APPLY4: {
@@ -483,7 +499,9 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			sp[5] = env;
 			sp[6] = LONG_TO_VAL(extra_args);
 			extra_args = 3;
-			goto apply;
+			pc = Code_val(accu);
+			env = accu;
+			goto stack_check;
 		}
 
 		case APPTERM: {
@@ -687,16 +705,11 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			sp[2] = env;
 			sp[3] = LONG_TO_VAL(extra_args);
 			extra_args = 0;
+			pc = Code_val(accu);
+			env = accu;
 		}
-		apply:
-		//    printf("apply: Code_val(%d) = %d\n", accu, Code_val(accu) /* minus bprog or realcode */);
-
-		pc = Code_val(accu);
-		env = accu;
-
-		/* Fall through to
-		   stack check:
-		*/
+		/* Fall through to stack check */
+		stack_check:
 		if (sp < stack_threshold) {
 			extern_sp = sp;
 			realloc_stack();
@@ -724,7 +737,9 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			sp[3] = env;
 			sp[4] = LONG_TO_VAL(extra_args);
 			extra_args = 1;
-			goto apply;
+			pc = Code_val(accu);
+			env = accu;
+			goto stack_check;
 		}
 
 		case PUSH_GETGLOBAL_APPLY3:
@@ -741,7 +756,9 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			sp[4] = env;
 			sp[5] = LONG_TO_VAL(extra_args);
 			extra_args = 2;
-			goto apply;
+			pc = Code_val(accu);
+			env = accu;
+			goto stack_check;
 		}
 
 		case PUSH_GETGLOBAL_APPLY4:
@@ -760,7 +777,9 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			sp[5] = env;
 			sp[6] = LONG_TO_VAL(extra_args);
 			extra_args = 3;
-			goto apply;
+			pc = Code_val(accu);
+			env = accu;
+			goto stack_check;
 		}
 
 		case PUSH_GETGLOBAL_APPTERM1:
