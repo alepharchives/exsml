@@ -20,7 +20,7 @@ functor F (S: sig
 
       (* Test ~ *)
       val _ = List.app (p o ~) trials
-         
+
       (* Test Algebraic simplifications. *)
       val _ = List.app (fn w => p (rol (w, 0w0))) trials
       val _ = List.app (fn w => p (ror (w, 0w0))) trials

@@ -53,7 +53,7 @@ val test1 =
            (closeOut empty; 
             fileSize "empty.dat" = 0 
             andalso fileSize "empty.dat" = 0));
-    
+
 val test2 = 
     tst' "test2" (fn _ => 
            (output1(small, #"+");
@@ -93,7 +93,7 @@ val test6 =
             output(text, "Line 3");
             closeOut text;
             fileSize "text.dat" = 20 andalso fileSize "text.dat" = 20));
-    
+
 (* Test that stdErr is flushed immediately, that flushOut works, and
  * that print flushes stdOut.  Assumes that stdOut is *not* flushed
  * immediately: *)
@@ -201,7 +201,7 @@ val test8e =
                 andalso not (endOfStream is))
                before closeIn is 
            end);
-   
+
 val test8f =
     tst' "test8f" (fn _ =>
            let val is = openIn "medium.dat"
@@ -211,7 +211,7 @@ val test8f =
                 andalso endOfStream is)
                before closeIn is 
            end);
-   
+
 val test9a =
     tst' "test9a" (fn _ =>
            let val is = openIn "empty.dat"
@@ -262,7 +262,7 @@ val test9e =
                andalso String.substring(input is, 0, 15) = "abcdefgabcdefga"
                before closeIn is 
            end);
-   
+
 val test10 = 
     tst' "test10" (fn _ =>
            let val is = openIn "medium.dat"

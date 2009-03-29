@@ -220,7 +220,7 @@ val test17 = tst' "test17"
            (sa, 4, 1) = base(takel finda ssa2)
            andalso (sa, 4, 5) = base(takel findb ssa2)
            andalso base ssa1 = base(takel finda ssa1));
-    
+
 val test18 = tst' "test18" 
     (fn _ =>
            (sa, 9, 0) = base(taker finda ssa2)
@@ -300,7 +300,7 @@ local
     val v = ref 0
     fun setv c = v := ord c;
 in 
-    
+
 val test26a = tst' "test26a" 
     (fn _ => 
            (v := 0;

@@ -10,7 +10,7 @@ struct
         fun finalize x = ()
       in
         F.addFinalizer(t,finalize);
-        t
+
       end
 
   fun from_string (_:string) = 
@@ -39,7 +39,7 @@ struct
       end
 
 end
- 
+
 structure B = Bug
 
 fun bigsum (n,store) =

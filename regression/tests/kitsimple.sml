@@ -157,7 +157,7 @@ functor Simple(val grid_max: int val step_count: int) (* : BMARK *) =
     infix 9 sub
 
 
-    
+
     fun min (x:real,y:real) = if x<y then x else y
     fun max (x:real,y:real) = if x<y then y else x
     exception MaxList
@@ -278,7 +278,7 @@ fun for_west_zones f = for {from=kmin+1, step=1, to=kmax+1}(fn k => f (k,lmin))
 
 type 'a reflect_dir = int * int -> {size: int * int, value: 'a ref list}
         * ((int * int) * (int * int)) -> 'a
-  
+
 fun reflect dir node A = sub2(A, dir node)
 val reflect_north : real reflect_dir = reflect north
 val reflect_south : real reflect_dir = reflect south
@@ -373,7 +373,7 @@ fun make_position_matrix interior_function =
                 val zb          =  zx - zax + omega*zyx
             in (rb, zb)
             end
-        
+
         fun reflect_node (x_dir, y_dir, a_dir, node) =
             let val rx = reflect x_dir  node  r'
                 val zx = reflect x_dir  node  z'
@@ -471,7 +471,7 @@ fun make_position ((r,z),delta_t:real,(u',w')) =
              sub2(z,node) + delta_t*sub2(w',node))
     in make_position_matrix interior_position
     end
-        
+
 
 fun make_area_density_volume(rho, s, x') =
     let val alpha' = array2(dimension_all_zones, 0.0)
@@ -671,7 +671,7 @@ fun make_sigma(deltat, rho_prime, alpha_prime) =
              print ( (* makestring specific_heat ^ *) " ");
              print ( (* makestring deltat ^ *) "\n");
              raise Overflow)
-                    
+
     in  if !trace 
         then print ("\t\tmake_sigma:deltat = " (* ^ makestring deltat *) ^ "\n")
         else ();
@@ -1002,7 +1002,7 @@ fun print_state ((v1,v2),(r,z),alpha,s,rho,p,q,epsilon,theta,deltat,c) = (
       print "\n\nPosition matrices = \n";
       printarray2 r; print "\n\n";
       printarray2 z;
-     
+
       print "\n\nalpha = \n";
       printarray2 alpha;
 
@@ -1017,7 +1017,7 @@ fun print_state ((v1,v2),(r,z),alpha,s,rho,p,q,epsilon,theta,deltat,c) = (
 
       print "\n\nq = \n";
       printarray2 q;
-    
+
       print "\n\nepsilon = \n";
       printarray2 epsilon;
 

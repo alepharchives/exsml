@@ -382,7 +382,7 @@ structure Cobol = struct
   datatype file_and_sort_description_entry =
     FILE_DESCRIPTION_ENTRY of file_description_entry
   | SORT_DESCRIPTION_ENTRY of sort_description_entry
-    
+
   datatype file_description_paragraph =
     FILE_DESCRIPTION_PARAGRAPH of file_and_sort_description_entry *
                                   record_description_entries
@@ -684,7 +684,7 @@ datatype cexpression =
 
 
 
-             
+
 structure MlyValue = 
 struct
 datatype svalue = VOID | ntVOID of unit | PSEUDOTEXT of  (string)
@@ -832,7 +832,7 @@ exception Hojfeld of string
 (*og s: LrTable.NT |-> hojfelds_NT*)
 
 (*TODO 13/01/1998 14:54. hojfeld.: mine erklringer slut*)
-  
+
 fun actions(i392:int, defaultPos:pos, stack:(unit (*LrTable.state*) * (svalue * pos * pos)) list,  
             ():arg
             ) =

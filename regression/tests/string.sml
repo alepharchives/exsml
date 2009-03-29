@@ -50,7 +50,7 @@ val test6 =
                   "" = concat [] andalso "" = concat [s1] 
                   andalso s2 = concat [s2] andalso s2^s2 = concat [s2,s2]
                   andalso "ABCD" = concat ["A","B","C","D"]);
-    
+
 val test7 = tst' "test7" (fn _ => "A" = str(chr 65));
 
 val test8 = 

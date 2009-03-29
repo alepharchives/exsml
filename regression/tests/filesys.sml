@@ -48,7 +48,7 @@ val test1b = tst0 "test1b" ((mkDir "testdir" seq "WRONG")
                             handle OS.SysErr _ => "OK" | _ => "WRONG")
 
 val test2 = tst' "test2" (fn _ => isDir "testdir");
-    
+
 val test3a = tst' "test3a" (fn _ => access("testdir", [A_READ, A_EXEC, A_WRITE]));
 
 local 
@@ -139,7 +139,7 @@ val test9a =
            setTime ("README", SOME (Time.fromReal 1E6)) = ());
 val test9b = 
     tst' "test9b" (fn _ => modTime "README" = Time.fromReal 1E6);
-    
+
 val test10a = tst0 "test10a" ((remove "testdir" seq "WRONG")
                               handle OS.SysErr _ => "OK" | _ => "WRONG")
 val test10b = 
@@ -211,7 +211,7 @@ val _ =
     ; if access ("hardlinkB", [])
          then ()
       else Posix.FileSys.link {old = "hardlinkA", new = "hardlinkB"})
-   
+
 val test15f = 
   tst' "test15f" (fn _ => fileId "hardlinkA" = fileId "hardlinkB")
 val test15g =

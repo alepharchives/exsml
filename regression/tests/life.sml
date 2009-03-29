@@ -9,7 +9,7 @@ local
           | loop (x::xs) = f x :: loop xs
     in loop l
     end
-  
+
   fun rev l =
     let fun rev_rec(p as ([], acc)) = p
           | rev_rec(x::xs, acc) = rev_rec(xs, x::acc)
@@ -20,21 +20,21 @@ local
 
   fun app f [] = ()
     | app f (x::xs) = (f x; app f xs)
-  
-  
+
+
   fun eq_integer_curry(x)(y:int) = x= y
   fun eq_int_pair_curry (x:int,x':int)(y,y'): bool =
     x=y andalso x'=y'
-  
+
   exception ex_undefined of string
   fun error str = raise ex_undefined str
-  
+
   fun accumulate f a [] = a   (* this now has no escaping regions, although still an escaping arrow effect*)
     | accumulate f a (b::x) = accumulate f (f a b) x
-  
+
   fun accumulate' (f, a, []) = a
     | accumulate' (f, a, b::x) = accumulate'(f, f(a,b), x)
-  
+
   fun filter pred l = 
     let fun loop [] = []
           | loop (x::xs) = 
@@ -42,8 +42,8 @@ local
     in
         loop l
     end
-  
-  
+
+
   fun exists pred l = 
     let fun loop [] = false
           | loop (x::xs) = 
@@ -51,9 +51,9 @@ local
     in
         loop l
     end
-    
+
   fun member eq x a = exists (eq a) x
-  
+
   fun cons a x = a::x
 
   fun revonto x y = accumulate' ((fn (x,y) => y::x), x, y)
@@ -68,9 +68,9 @@ local
           #2(loop(check x, y))
       end
   end
-  
+
   fun copy n x = repeat (cons x) n []
-  
+
   fun spaces n = implode (copy n #" ")
 
 
@@ -79,11 +79,11 @@ local
           let val l = cp_list rest
           in (x,y):: l
           end
-  
+
   fun lexless(a2,b2)(a1:int,b1:int) = 
     if a2<a1 then true else if a2=a1 then b2<b1 else false
-  
-  
+
+
   local
       fun copy [] = []
         | copy (x::xs) = x :: copy xs
@@ -111,14 +111,14 @@ local
                    )
       fun lexordset x = tmergesort x
   end
-  
-  
+
+
   fun collect f list =
                let fun accumf sofar [] = sofar
                      | accumf sofar (a::x) = accumf (revonto sofar (f a)) x
                 in accumf [] list        (* note: this worked without changes!*)
                end
-  
+
   fun occurs3 x = 
             (* finds coords which occur exactly 3 times in coordlist x *)
             let fun f (q) =
@@ -132,12 +132,12 @@ local
                 fun diff x y = filter (fn x => not(member eq_int_pair_curry y x)) x  (* unfolded o *)
                 val (xover, x3, _, _, _) = f ([],[],[],[],x)
              in diff x3 xover end
-  
-  
+
+
   fun neighbours (i,j) = [(i-1,j-1),(i-1,j),(i-1,j+1),
                             (i,j-1),(i,j+1),
                             (i+1,j-1),(i+1,j),(i+1,j+1)]
-  
+
   infix footnote
   fun x footnote y = x
 
@@ -160,7 +160,7 @@ local
       in mkgen (cp_list(survivors @ newborn))
       end
   end
-  
+
   local 
     val xstart = 0 and ystart = 0
     fun markafter n string = string ^ spaces n ^ "0"
@@ -178,7 +178,7 @@ local
     fun plot coordlist = plotfrom(xstart,ystart) "" 
                                  (filter good coordlist)
   end
-  
+
   (* the initial generation *)
 
   fun gun() = mkgen         
@@ -187,11 +187,11 @@ local
         (6,22),(6,23),(6,28),(6,29),(6,30),(6,31),(6,36),(7,19),(7,21),(7,28),
         (7,31),(7,40),(7,41),(8,20),(8,28),(8,29),(8,30),(8,31),(8,40),(8,41),
         (9,29),(9,30),(9,31),(9,32)]
-  
-  
+
+
 
   fun show(x) = app (fn s => (print s; print "\n"))(plot(alive x));
-  
+
   local 
     fun nthgen'(p as(0,g)) = p 
       | nthgen'(p as(i,g)) = 
@@ -200,7 +200,7 @@ local
                             (*resetRegions g;*)  (* resetRegions g can actually be omitted here, since *)
                             copy g'          (* copy will reset the regions of g!                  *)
                         end)
-  
+
   in 
     fun iter n = #2(nthgen'(n,gun()))
   end
@@ -210,4 +210,4 @@ local
 in
   val _ = testit ()
 end
- 
+

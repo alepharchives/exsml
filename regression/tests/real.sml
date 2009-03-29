@@ -10,13 +10,13 @@ infix == !=
 datatype z = datatype IEEEReal.float_class
 datatype z = datatype IEEEReal.rounding_mode
 datatype z = datatype General.order
-   
+
 val b2s = Bool.toString
 val i2s = Int.toString
 val exact = fmt StringCvt.EXACT
 
 val s2r = valOf o fromString
-   
+
 val zero = s2r "0.0"
 val one = s2r "1.0"
 val two = s2r "2.0"
@@ -24,7 +24,7 @@ val nan = posInf + negInf
 
 val halfMaxFinite = maxFinite / two
 val halfMinNormalPos = minNormalPos / two
-   
+
 val reals =
    [maxFinite,
     halfMaxFinite,
@@ -165,7 +165,7 @@ val _ =
          | _ => (checkFloat r; true) handle _ => false)
        then ()
     else raise Fail "checkFloat bug")
-   
+
 val _ = print "\nTesting class, isFinite, isNan, isNormal\n"
 val _ =
    for'
@@ -213,7 +213,7 @@ local
 in
   val minNormalPos = min isNormal
   val minPos = min isPositive
-    
+
   val maxFinite =
     let
       fun up (x: real): real =
@@ -378,7 +378,7 @@ val _ =
 
 
 val _ = print "\nTesting {from,to}Decimal\n"
-   
+
 val _ =
    List.app (fn r =>
              let
@@ -546,7 +546,7 @@ val _ =
      end))
 
 val _ = print "\nTesting Real.Math.{acos,asin,atan,cos,cosh,exp,ln,log10,sin,sinh,sqrt,tan,tanh}\n"
-   
+
 val _ =
    for' (fn r =>
          List.app
@@ -727,7 +727,7 @@ val _ = for (fn r =>
              else raise Fail "abs bug")
 
 val _ = print "\nTesting {from,to}ManExp\n"
-         
+
 val _ =
    for
    (fn x =>

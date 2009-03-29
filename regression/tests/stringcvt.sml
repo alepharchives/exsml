@@ -58,7 +58,7 @@ local
             before 
             closeIn is
         end;
-            
+
     fun testtrip (s, res) = 
         scanString triple s = res
         andalso putandscan triple s = res
@@ -190,7 +190,7 @@ val test10 =
             ("",       NONE),
             ("gryf",   NONE)
             ]);
-    
+
 (*val _ = FileSys.remove tmpfile*)
 
 end

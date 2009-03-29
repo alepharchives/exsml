@@ -15,7 +15,7 @@ datatype exp =
   | Construct of con * exp list
   | Case of exp * (pattern * exp) list
   | Let of ident * exp * exp
- 
+
   | LamD of ident * exp
   | AppD of exp * exp
   | ConstructD of con * exp list
@@ -72,7 +72,7 @@ fun shift f =
 exception UnboundVar of ident
 
 fun update r var value = (var, value) :: r
-        
+
 fun lookup [] var = raise (UnboundVar var)
   | lookup ((var, value) :: r) var' =
     if var = var' then value else lookup r var'
@@ -126,25 +126,25 @@ fun generatePattern (r, p) =
             in
                 (r, PConstruct (c, ps))
             end
-        
+
 (* the specializer *)
 fun spec e r =
     case e of
         Var x => lookup r x
-            
+
       (* Specialization of Static Stuff - standard semantics *)
       | Lam (x, e) => Fun (fn y => spec e (update r x y))
-            
+
       | App (f, a) => 
             let val Fun ff = spec f r in 
                 ff (spec a r) 
             end 
-        
+
       | Construct (c, es) =>
             let val vs = List.map (fn e => spec e r) es in
                 Con (c, vs)
             end
-        
+
       | Case (test, cls) =>
             let val testv = spec test r 
                 (* exhaustive by restriction on patterns *)
@@ -156,9 +156,9 @@ fun spec e r =
                              end
                        | [] => Wrong)
             in loop cls end
-        
+
       | Let (x, e1, e2) => let val v1 = spec e1 r in spec e2 (update r x v1) end
-  
+
       (* Specialization of Dynamic stuff *)
       | LamD (x, e) => 
                 let val xx = gensym x  
@@ -167,21 +167,21 @@ fun spec e r =
                 in
                     Code (Lam (xx, body))
                 end
-            
+
       | AppD (f, a) => 
                 let val Code ff = spec f r 
                     val Code aa = spec a r 
                 in
                     Code (App (ff, aa))
                 end
-            
+
       | ConstructD (c, es) =>
                 let val es' = List.map (fn e => let val Code v = spec e r
                                                 in v end) es
                 in
                     Code (Construct (c, es'))
                 end
-            
+
       | LetD (x, e1, e2) => 
                 let val xx = gensym x in
                     shift (fn k => 
@@ -192,7 +192,7 @@ fun spec e r =
                                Code (Let (xx, e1', e2'))
                            end)
                 end
-            
+
       | CaseD (test, cls) =>
                 shift (fn k =>
                        let val Code testd = spec test r  
@@ -205,7 +205,7 @@ fun spec e r =
                        in
                            Code (Case(testd, newCls))
                        end)
-                
+
       (* first-order lifting *)
       | Lift e => 
                 let val Con(c, []) = spec e r in
@@ -233,7 +233,7 @@ val sampleProg1D = LamD("q", App(LetD("id",
                                       AppD(Var "q", Var "q"),
                                       Lam("z", Var "z")),
                                  Var "q"))
-         
+
 val sampleProg2D = LamD("f", LamD("x", 
                                   App(CaseD(Var "x", 
                                             [(PConstructD("True",[]), 

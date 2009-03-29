@@ -220,11 +220,11 @@ fun lexordset x = tmergesort x
                        ()
                       )  (* had to uncurry show, as iter 50 gave attop
                             also made it return a different unit *)
-      
+
     fun testit _ = show(iter 250)    (* inserted call of iter *)
-    
+
     val _ = testit ()
 in
     val done = "done";
 end
- 
+

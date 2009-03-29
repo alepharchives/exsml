@@ -48,7 +48,7 @@ val test5 = tst0 "test5" ((Char.chr ~1 seq "WRONG") handle Chr => "OK" | _ => "W
 
 val test6 = tst0 "test6" ((Char.chr (Char.maxOrd+1) seq "WRONG") 
                           handle Chr => "OK" | _ => "WRONG")
-        
+
 val test7 = tst "test7" ("" = Byte.bytesToString (Word8Vector.fromList []));
 
 val test8 = 
@@ -57,7 +57,7 @@ val test8 =
            [65, 66, 68, 67]);
 
 val unpackString = Byte.unpackString o Word8ArraySlice.slice
-   
+
 val test9 = tst "test9" ("" = unpackString (Word8Array.fromList [], 0, SOME 0))
 
 local 

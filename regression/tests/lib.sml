@@ -58,4 +58,3 @@ fun readWord(is): string Option =
   of "" => None
    | word => Some word
 
-        

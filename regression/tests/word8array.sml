@@ -81,7 +81,7 @@ val e = array(203, i2w 0);
 val _ = (copy{src=d, si=0, dst=e, di=0,        len=NONE}; 
          copy{src=b, si=0, dst=e, di=length d, len=NONE};
          copy{src=d, si=0, dst=e, di=length d + length b, len=NONE});
-         
+
 fun a2v a = extract(a, 0, NONE);
 val ev = Word8Vector.concat [a2v d, a2v b, a2v d];
 
@@ -105,7 +105,7 @@ fun equal (v, v') =
    in
       n = n' andalso loop 0
    end
-   
+
 val test9:unit = tst' "test9" (fn () => equal (f, a2v b));
 
 val test9a:unit = tst' "test9a" (fn () => equal (ev, extract(e, 0, NONE))

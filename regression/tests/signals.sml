@@ -13,7 +13,7 @@ fun print s = let open TextIO
               end
 
 val sleep = sleep o Time.fromSeconds
-   
+
 val _ =
    case fork () of
       NONE =>

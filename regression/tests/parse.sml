@@ -54,9 +54,9 @@
 (*
     This file is part of the FunctionalIO project -
     which provides functional input streams.
-    
+
     Copyright (C) 2000 ANOQ of the Sun (alias Johnny Andersen).
-    
+
     E-mail: anoq@HardcoreProcessing.com
 
     This library is free software; you can redistribute it and/or
@@ -90,7 +90,7 @@
 signature FUNCTIONAL_IO =
   sig
     include IO
-  
+
     type vector
     type elem
     type instream
@@ -119,9 +119,9 @@ signature FUNC_TEXT_IO = FUNC_BIN_IO(* stop of FunctionalIO/srcSML/FunctionalIO_
 (*
     This file is part of the FunctionalIO project -
     which provides functional input streams.
-    
+
     Copyright (C) 2000 ANOQ of the Sun (alias Johnny Andersen).
-    
+
     E-mail: anoq@HardcoreProcessing.com
 
     This library is free software; you can redistribute it and/or
@@ -224,7 +224,7 @@ functor FFunctionalIO(type vec
           in
             fInputN 0 acc inStrRef (!inStrRef) n
           end
-          
+
 
     (* FIXME: Return 0-length vector for NONE? *)
     fun inputN ((pos, inStr), n) =
@@ -324,9 +324,9 @@ structure FuncTextIO =
 (*
     This file is part of the ParsingToolkit project -
     which provides combinator parsers for functional input streams.
-    
+
     Copyright (C) 2000 ANOQ of the Sun (alias Johnny Andersen).
-    
+
     Authors: Fritz Henglein <henglein@it.edu>
              ANOQ of the Sun (alias Johnny Andersen)
                <anoq@HardcoreProcessing.com>
@@ -440,9 +440,9 @@ signature PARSER_COMBINATORS =
 (*
     This file is part of the ParsingToolkit project -
     which provides combinator parsers for functional input streams.
-    
+
     Copyright (C) 2000 ANOQ of the Sun (alias Johnny Andersen).
-    
+
     Authors: Fritz Henglein <henglein@it.edu>
              ANOQ of the Sun (alias Johnny Andersen)
                <anoq@HardcoreProcessing.com>
@@ -502,7 +502,7 @@ functor FParserCombinators(structure FIO : FUNCTIONAL_IO
     type instream = FIO.instream
     type vec = vec
     type elem = elem
-    
+
     (* FIXME: Use FIO.StreamIO.PrimIO.compare instead... *)
     (* val csSize = Substring.size *)
 
@@ -610,7 +610,7 @@ functor FParserCombinators(structure FIO : FUNCTIONAL_IO
                     end
                       handle SyntaxError _ =>
                         (NONE, stream)
-  
+
               fun rep n acc (NONE, stream) =
                     raise SyntaxError ("Could not repeat parser the last " ^ (Int.toString n) ^ " times!", stream)
                 | rep n acc (SOME(res), stream) =
@@ -677,9 +677,9 @@ structure BinIOParserCombinators =
 (*
     This file is part of the ParsingToolkit project -
     which provides combinator parsers for functional input streams.
-    
+
     Copyright (C) 2000 ANOQ of the Sun (alias Johnny Andersen).
-    
+
     Authors: Fritz Henglein <henglein@it.edu>
              ANOQ of the Sun (alias Johnny Andersen)
                <anoq@HardcoreProcessing.com>
@@ -737,9 +737,9 @@ signature TEXT_IO_PARSER_COMB_EXTRA =
 (*
     This file is part of the ParsingToolkit project -
     which provides combinator parsers for functional input streams.
-    
+
     Copyright (C) 2000 ANOQ of the Sun (alias Johnny Andersen).
-    
+
     Authors: Fritz Henglein <henglein@it.edu>
              ANOQ of the Sun (alias Johnny Andersen)
                <anoq@HardcoreProcessing.com>
@@ -779,7 +779,7 @@ signature TEXT_IO_PARSER_COMB_EXTRA =
 functor FTextIOParserCombExtra() :> TEXT_IO_PARSER_COMB_EXTRA =
   struct
     open TextIOParserCombinators
-    
+
     (* Character predicates *)
 
     fun isWhitespaceChar #" " = true

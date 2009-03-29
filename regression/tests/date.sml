@@ -54,7 +54,7 @@ local
     val y2kW1 = 
         date {year=2000, month=Jan, day=1, hour=0, minute=0, second=0,
               offset = SOME (Time.fromSeconds 3600) }
-    
+
 val _ = 
     ((*print "This is (local time) now:        "; print (later 0);
      print "This is UTC now:                 "; 
@@ -93,7 +93,7 @@ val _ =
      print (fmt "%B" (nowdate()) ^ "\n");
      print "Today's ISO date:                ";
      print (fmt "%Y-%m-%d" (nowdate ()) ^ "\n")*))
-    
+
 
 val test1 = 
 tst' "test1" (fn _ => 

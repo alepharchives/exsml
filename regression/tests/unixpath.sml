@@ -25,7 +25,7 @@ val _ = print "\nFile unixpath.sml: Testing structure Path...\n"
 
 local 
     open OS.Path
-    
+
 val test1a = 
     tst' "test1a" (fn _ => fromString "" = {isAbs=false, vol = "", arcs = []});
 val test1b = 
@@ -144,7 +144,7 @@ val test6b = tst0 "test6b" ((concat ("a", "/b") seq "WRONG")
                             handle Path => "OK" | _ => "WRONG")
 
 val mkAbsolute = fn (p, r) => mkAbsolute {path = p, relativeTo = r}
-   
+
 val test7a = 
     tst' "test7a" (fn _ => 
            mkAbsolute("/a/b", "/c/d") = "/a/b"
@@ -222,7 +222,7 @@ val test10a =
                 orelse isCanonical "a/."
                 orelse isCanonical "a/b/"
                 orelse isCanonical "a/.."))
-                
+
 val test11a = 
     tst' "test11a" (fn _ => 
            splitDirFile "" = {dir = "", file = ""}

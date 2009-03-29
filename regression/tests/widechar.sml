@@ -35,7 +35,7 @@ val test5 = tst0 "test5" ((WideChar.chr ~1 seq "WRONG") handle Chr => "OK" | _ =
 
 val test6 = tst0 "test6" ((WideChar.chr (WideChar.maxOrd+1) seq "WRONG") 
                           handle Chr => "OK" | _ => "WRONG")
-        
+
 val test18 = tst "test18" (not (WideChar.contains "" (WideChar.chr 65))
                    andalso not (WideChar.contains "aBCDE" (WideChar.chr 65))
                    andalso (WideChar.contains "ABCD" (WideChar.chr 67))

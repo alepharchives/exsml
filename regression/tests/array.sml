@@ -88,7 +88,7 @@ val e = array(203, 0);
 val _ = (copy{src=d, si=0, dst=e, di=0,        len=NONE}; 
          copy{src=b, si=0, dst=e, di=length d, len=NONE};
          copy{src=d, si=0, dst=e, di=length d + length b, len=NONE});
-         
+
 fun a2v a = extract(a, 0, NONE);
 val ev = Vector.concat [a2v d, a2v b, a2v d]; (* length e = 203 *)
 

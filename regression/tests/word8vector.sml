@@ -1,5 +1,5 @@
 type word8 = Word8.word
-   
+
 (* Auxiliary functions for test cases *)
 
 infix 1 seq

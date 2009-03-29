@@ -10,7 +10,7 @@ fun read socket : string =
 fun readNB socket : string option =
    Option.map (Byte.unpackStringVec o Word8VectorSlice.full)
    (Socket.recvVecNB (socket, 100))
-   
+
 fun write (socket, s: string): unit =
    (Socket.sendVec (socket, Word8VectorSlice.full (Byte.stringToBytes s))
     ; ())

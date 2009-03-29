@@ -17,7 +17,7 @@ structure Main =
    struct
       structure Signal = MLton.Signal
       structure Itimer = MLton.Itimer
-         
+
       val alrmHandler = fn t => t
       fun setItimer t =
          Itimer.set (Itimer.Real,

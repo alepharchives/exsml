@@ -1,5 +1,5 @@
 val toString = Int.toString
-   
+
 (* Ported to kit 23/4/97 by Mads.
    Commented out module phrases and changed a couple of sml/nj things (like makestring)
    No rewriting to please region inference.
@@ -11,7 +11,7 @@ val toString = Int.toString
 
    The code is ugly at places, and no consideration has been given to
    effeciency  -- please accept my apologies 
-   
+
    -- Mads*)
 
 (*
@@ -24,7 +24,7 @@ struct
 
   fun isin(x,[])=false
     | isin(x,(y::rest)) = x=y orelse isin(x,rest)
-  
+
   fun union([],l) = l
     | union((x::rest),l) = if isin(x,l) then union(rest,l) 
                            else x:: union(rest,l);
@@ -94,7 +94,7 @@ of oldsets *)
                   S1
                  )
               end
-                        
+
     fun add_S (S,(found_fixpt, oldsets)) : bool * 'a set list =
       let
         val (found_fixpt1, _, L1, S1) = 
@@ -125,9 +125,9 @@ local
 (*  open List Variables*)
 in
 *)  datatype ty = INT | REAL | ARROW of ty * ty | PROD of ty * ty | TYVAR of int
-  
+
   type subst = ty -> ty
-  
+
   fun mk_subst_ty(i: int,ty:ty):subst =
   let
     fun S(INT) = INT
@@ -138,21 +138,21 @@ in
   in 
     S
   end;
-  
+
   val Id = fn x => x;
-  
+
   val r = ref 0;  (* counter for fresh type variables *)
   fun fresh() = (r:= !r + 1; ! r);
   fun fresh_ty() = TYVAR(fresh());
 
   (* free variables *)
-  
+
   fun fv_ty (INT,acc) = acc
     | fv_ty (REAL,acc) = acc
     | fv_ty(ARROW(t1,t2), acc) = fv_ty(t1,fv_ty(t2,acc))
     | fv_ty(PROD(t1,t2), acc) = fv_ty(t1,fv_ty(t2,acc))
     | fv_ty((TYVAR i),acc) = if isin(i,acc) then acc else i :: acc;
-  
+
   fun tyvars(t:ty) = fv_ty(t,[])
 
   fun fv_tyenv TE =
@@ -189,7 +189,7 @@ in
   fun class_of([],a) = raise ClassOff
     | class_of((class::rest), a) = 
        if isin(a,class) then class else class_of(rest,a);
- 
+
   (* [t]^M, page 168: the set of type variables eqivalent to some type variable
      occurring in non-atomic type t *)
 
@@ -198,7 +198,7 @@ in
 
   fun transitive_closure(oldsets,newsets) = 
      #2(transClos(op = : ty*ty-> bool)(false)(newsets,oldsets))
-  
+
   (* Coercion sets *)
 
   type coercion = ty * ty
@@ -226,7 +226,7 @@ in
         | PROD(t1,t2) => diag(t1,diag(t2,acc))
         | ARROW(t1,t2) => diag(t1,diag(t2,acc))
         | TYVAR _ => union([t],acc)
-    
+
       fun diag2((t1,t2),acc) = diag(t1,diag(t2,acc))
 
       val atomics = foldr diag2 [] C
@@ -253,16 +253,16 @@ in
          else if atomic t1 then expansion(t1,t2,C,S,M)
          else if atomic t2 then expansion(t2,t1,C,S,M)
          else decomposition(t1,t2,C,S,M)
-  
+
     and atomicElimination(t1,t2,C,S,M) =
          match1(C,S,transitive_closure(M,[[t1,t2]]))
-  
+
     and decomposition(ARROW(t1,t2),ARROW(t1',t2'),C,S,M)=
          match1((t1',t1)::(t2,t2')::C, S, M)
       | decomposition(PROD(t1,t2),PROD(t1',t2'),C,S,M)=
          match1((t1,t1')::(t2,t2')::C, S, M)
       | decomposition(_) = raise MATCH
-  
+
     and expansion(t1:ty,t2:ty,C,S,M) =
          case intersect(class_of(M,t1), equiv_tyvars(t2,M))  (* occurs check *)
          of 
@@ -284,10 +284,10 @@ in
                    in
                      loop(class_of(M,t1),C,S,M)
                    end
-          
+
                else (* matching of int or real with arrow or prod *)
                     raise MATCH
-  
+
          | _ => (* occurs check failed *)
                     raise MATCH
   in
@@ -303,18 +303,18 @@ in
   (* looking up variables in the type environement *)
 
   exception Lookup;
-  
+
   fun lookup(i,[]) = raise Lookup
     | lookup(i,((j,sigma)::rest)) = if i=j then sigma else lookup(i,rest);
 
   fun on_tyenv(S:subst,TE:tyenv) = 
       map (fn(i,tau) => (i, S tau)) TE
-  
+
   (* pretty printing -- actually not very pretty, but it will do *)
-  
+
   (* precedences: ->  :  1
                   *   :  2  *)
-  
+
   fun pp_ty' (context:int,INT) = "INT"
     | pp_ty'(_,REAL) = "REAL"
     | pp_ty'(context,ARROW(ty1, ty2)) = 
@@ -330,9 +330,9 @@ in
           else s
         end
     | pp_ty'(context,(TYVAR i)) = "'a" ^ toString i;
-  
+
   fun pp_ty ty = pp_ty'(0,ty)
-  
+
   local
     fun filter [] = []
       | filter ((x,sigma)::rest) = 
@@ -340,7 +340,7 @@ in
              (* hack to avoid printing of built-in variables fst, snd and floor *)
           then filter rest
           else (x,sigma)::filter rest
-    
+
     fun pp_tyenv [] = ""
       | pp_tyenv ([(x,sigma)]) = 
              x ^ ":" ^ pp_ty sigma ^ " "
@@ -432,7 +432,7 @@ in
             end
         | INTCON i => TY(rest, (INT, tau):: C)
         | REALCON i => TY(rest, (REAL, tau):: C)
-      
+
         | PLUS e1 =>  TY((TE,e1, PROD(INT,INT))::rest, (PROD(INT,INT),tau):: C)
         | MINUS e1 => TY((TE,e1, PROD(INT,INT))::rest, (PROD(INT,INT),tau):: C)
         | PAIR(e1,e2) =>
@@ -455,7 +455,7 @@ end (* local *)
 end;
 *)
 
-  
+
 (*structure Run =
 struct
 local
@@ -468,17 +468,17 @@ in
     in
       LET("Id",Id, pair)
     end;
-  
+
   val e1 = (* let val makepair = fn x => (x,x) in makepair 3.14 *)
     let
       val makepair = LAM("x",PAIR(VAR "x", VAR "x"))
     in
       LET("makepair", makepair, APP(VAR "makepair", REALCON 3.14))
     end
-  
+
   val e2 = (* let fun mappair = fn f => fn x => (f (fst x), f (snd x)) 
               in mappair floor (3.14,2.18) end  *)
-  
+
     let
       val mappair = LAM("f",LAM("x",
                           PAIR(APP(VAR "f",APP(VAR "fst", VAR "x")), 
@@ -487,7 +487,7 @@ in
       LET("mappair",mappair, APP(APP(VAR "mappair", VAR "floor"), 
                   PAIR(REALCON 3.14, REALCON 2.18)))
     end;
-  
+
   val e3 = (* fn x => x *) 
      LAM("x",VAR "x")
   val e4 = (* fn f => fn x => f x *)   
@@ -515,7 +515,7 @@ in
   in
     TextIO.closeOut os
   end;
-  
+
   val _ = run(e0,"outFuhMishra0");
   val _ = run(e1,"outFuhMishra1");
   val _ = run(e2,"outFuhMishra2");

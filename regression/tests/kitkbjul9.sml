@@ -1,7 +1,7 @@
 (*kitkbjul9.sml*)
 
 (* kitknuth-bendixnewcopy.sml
- 
+
  This is a revised version of knuth-bendix.sml in which 
     (a) val has been converted to fun for function values
     (b) exceptions that carry values have been avoided
@@ -16,7 +16,7 @@
 val eq_integer: int * int -> bool = op =
 (* fun eq_string  (x: string, y: string): bool = prim("=", "=", (x, y))  *)
 val eq_string: string * string -> bool = op =
-   
+
 (* 
 signature KB =
   sig

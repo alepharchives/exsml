@@ -65,7 +65,7 @@ fun tmergesort [] = []
       in merge(tmergesort(take(k, xs)),
                tmergesort(drop(k, xs)))
       end
- 
+
 
 val result = 
 let 
@@ -78,4 +78,4 @@ in
   tmergesort xs;
   report("Sorted " ^ int_to_string n ^ " numbers\n")
 end
-    
+

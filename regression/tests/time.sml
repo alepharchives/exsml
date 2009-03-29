@@ -90,7 +90,7 @@ val test9b =
            andalso fmt 4 litt = "454.5017"
            andalso fmt 5 litt = "454.50170"
            andalso fmt 6 litt = "454.501701");
-    
+
 fun chk (s, r) = 
     tst' "test10a" (fn _ => 
            case fromString s of

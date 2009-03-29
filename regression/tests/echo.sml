@@ -7,7 +7,7 @@
 exception Error of string
 
 val data = "Hello there sailor\n"
-    
+
 val num = 100
 
 val (port, listener) =
