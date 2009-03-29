@@ -31,32 +31,4 @@ all: Array.uo Array2.uo Arraysort.uo \
 
 OS.ui: FileSys.ui Path.ui Process.ui
 
-## TODO: Hoist this!
-CAMLRUNM=$(top_srcdir)/runtime/camlrunm
-MOSMLC=$(CAMLRUNM) $(top_srcdir)/bootstrap/mosmlcmp \
-	-stdlib $(top_srcdir)/mosmllib -P none
-MOSMLLEX=mosmllex
-MOSMLYAC=mosmlyac
-MOSMLL=$(CAMLRUNM) mosmllnk -stdlib ../mosmllnk -P none
-MOSMLDEP=$(CAMLRUNM) ../bootstrap/mosmldep
-
-SUFFIXES = .sml .ui .uo .sig .mllex .mlyacc .mlp
-
-depend:
-	$(MOSMLDEP) > Makefile.mosml_deps
-
-.sig.ui:
-	 $(MOSMLC) $(COMPFLAGS) $<
-
-.mlp.sml:
-	cpp -P $< > $@
-
-.sml.uo:
-	 $(MOSMLC) $(COMPFLAGS) $<
-
-.lex.sml:
-	 $(MOSMLLEX) $<
-
-.mlyac.sml:
-	 $(MOSMLYAC) $<
-
+include ../Makefile.mosml

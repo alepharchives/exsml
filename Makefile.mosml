@@ -1,0 +1,31 @@
+## This makefile describes the general targets for the MOSMLC
+## compiler
+
+CAMLRUNM=$(top_srcdir)/runtime/camlrunm
+MOSMLC=$(CAMLRUNM) $(top_srcdir)/bootstrap/mosmlcmp \
+	-stdlib $(top_srcdir)/mosmllib -P none
+MOSMLLEX=mosmllex
+MOSMLYAC=mosmlyac
+MOSMLL=$(CAMLRUNM) $(top_srcdir)/bootstrap/mosmllnk -stdlib $(top_srcdir)/mosmllib -P none
+MOSMLDEP=$(CAMLRUNM) $(top_srcdir)/bootstrap/mosmldep
+
+SUFFIXES = .sml .ui .uo .sig .mllex .mlyacc .mlp
+
+depend:
+	$(MOSMLDEP) > Makefile.mosml_deps
+
+.sig.ui:
+	 $(MOSMLC) $(COMPFLAGS) $<
+
+.mlp.sml:
+	cpp -P $< > $@
+
+.sml.uo:
+	 $(MOSMLC) $(COMPFLAGS) $<
+
+.lex.sml:
+	 $(MOSMLLEX) $<
+
+.mlyac.sml:
+	 $(MOSMLYAC) $<
+

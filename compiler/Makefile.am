@@ -6,31 +6,7 @@ CLEANFILES = mosmlcmp mosmllnk mosmltop *.ui *.uo Opcodes.sml \
 	Parser.sml Parser.sig Parser.output Lexer.sml Predef.sml \
 	Prim_c.sml Makefile.bak
 
-## TODO: Move this away
-CAMLRUNM=$(top_srcdir)/runtime/camlrunm
-MOSMLC=$(CAMLRUNM) $(top_srcdir)/bootstrap/mosmlcmp \
-	-stdlib $(top_srcdir)/mosmllib -P none
-MOSMLLEX=mosmllex
-MOSMLYAC=mosmlyac
-MOSMLL=$(CAMLRUNM) $(top_srcdir)/bootstrap/mosmllnk -stdlib $(top_srcdir)/mosmllib -P none
-MOSMLTOOLS= $(top_srcdir)/src/tools
-
-SUFFIXES = .sml .ui .uo .sig .mllex .mlyacc .mlp
-
-.sig.ui:
-	 $(MOSMLC) $(COMPFLAGS) $<
-
-.mlp.sml:
-	$(CPP) $< >$@
-
-.sml.uo:
-	 $(MOSMLC) $(COMPFLAGS) $<
-
-.lex.sml:
-	 $(MOSMLLEX) $<
-
-.mlyac.sml:
-	 $(MOSMLYAC) $<
+include ../Makefile.mosml
 
 COMPFLAGS=
 # Option `-g' exports the exception table for mosmltop to read:
