@@ -1,7 +1,7 @@
 (* Notice: This test will not be passed on platforms like Win32!
            But for Linux it happens to work... *)
 
-val filename = OS.FileSys.tmpName ()
+val filename = "textio.testfile"
 
 fun testRange (start, length) =
       let

@@ -1,4 +1,4 @@
-val filename = OS.FileSys.tmpName ()
+val filename = "binio.testfile"
 
 fun testRange (start, length) =
       let
