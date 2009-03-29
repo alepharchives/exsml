@@ -548,6 +548,14 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 
 		case RETURN1:
 			sp += 1;
+			goto return_code;
+
+		case RETURN2:
+			sp += 2;
+			goto return_code;
+
+		case RETURN:
+			sp += u16(pc); pc += sizeof(short);
 		return_code:
 			if (extra_args > 0) {
 				extra_args--;
@@ -563,14 +571,6 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 				}
 			}
 			break;
-
-		case RETURN2:
-			sp += 2;
-			goto return_code;
-
-		case RETURN:
-			sp += u16(pc); pc += sizeof(short);
-			goto return_code;
 
 		case RESTART: {
 			int num_args = Wosize_val(env) - 2;
