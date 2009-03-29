@@ -11,7 +11,11 @@ TESTS = tests/hello-world.sml \
 	tests/kitsimple.sml \
 	tests/kitreynolds2.sml \
 	tests/kitreynolds3.sml \
-	tests/kitqsort.sml
+	tests/kitqsort.sml \
+	tests/kitdangle3.sml \
+	tests/kitfib35.sml \
+	tests/kitkbjul9.sml
+# tests/int-overflow.sml
 # tests/word.sml \   -- Currently fails on mosml
 
 distclean-local:
