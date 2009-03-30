@@ -1,13 +1,105 @@
 TODO List for Mosml-llvm
 
+* Upgrade make system and fix it.
+   Things that can be done:
+
+- Install targets
+   Provide correct install targets for everything. This is seriously
+   lacking at the moment.
+- Bump bootstrap target
+   Provide a way to make the current compiler/linker/toplevel into the
+   new bootstrap compiler/linker/toplevel. It only has to be done on a
+   flag-day, but it is important to support this kind of
+   bootstrapping.
+- Support top_builddir
+   We have been using top_srcdir in a lot of places where it should
+   have been top_builddir. Correcting this lets you compile the code
+   in a place separate from the place where you have the source
+   code. Some buildsystems does exactly that, so supporting it is
+   important.
+
+* Make the IntInf work
+   First, hoist it out of dynlib. Since we are MUST have
+   LargeInt == IntInf if IntInf is present, and LargeInt is
+   non-optional, we are forced to always provide IntInf. Hence there
+   is little reason for having it in a dynlib structure.
+
+   Next, use IntInf constrained to INTEGER to provide LargeInt.
+
+* Make Time correct (depends on IntInf)
+   Time is required to produce LargeInt.int types all over, so this
+   should be fixed.
+
+* Produce GIT_HEAD version strings all over
+   Rather than Moscow ML v 2.01 all over, produce the GIT_HEAD version
+   string where applicable. Places of interest:
+
+   mosmlc.in
+   camlrunm
+   mosmlcmp
+   mosmllnk
+
+* DYNLIB: Do .so visibility right
+
+* Clean up C code for warnings
+   There are plenty. Cleaning them away is important.
+
+* Implement more tracing routines.
+   Easy task and quite effective when debugging the bytecode backend.
+
+* 
+* COPYING:
+   We need the license mess to be sorted out. The current plan is to
+   keep the compiler proper as a GPL project, but get the backend to
+   use an INRIA-friendly license. Goals:
+
+   ; Produce a piece of software that can be used for commercial
+   projects without you having to virally give away your source
+   code. Preferably LGPL the runtime.
+
+   ; Protect the compiler itself with GPLv2. I prefer it be kept as a
+   project in the public scrutiny.
+
+   ; Make the system obey the Debian Free Software Guidelines. If we
+   are inside the limits of DFSG, we are at the right place.
+
+   Carrying out this is a bit of lobbying work. Ultimately it is about
+   knowing where we stand and having a frame we work inside. If the
+   runtime can't be "liberated" into DFSG limits, then we'll have to
+   rewrite it and our general plan has to change.
+
 * Write the type checker for LLVM function calls.
    This will take some time, but it is doable with some hard work.
    You just need to be aware of the little details in the game.
+
+- Finish the typechecker
+   There are still some loose ends with instructions.
+
+- Clean up LLVM misconceptions
+   There are some misconceptions between constant expressions and
+   instructions regarding type checking in LLVM. These must be sorted
+   out with the LLVM people.
+
+* Eradicate the Not_Implemented in LLVM.sml
+   This means a full implementation of LLVM.
+
+* Setup a toolset for benchmark runs.
+   Has to be thought out, but I would like to be able to:
+
+   ; Benchmark multiple SML compilers
+   ; Benchmark their performance movement over time
+   ; Keep track of old benchmark results in a simple format.
+   ; Be able to plot results over time
+   ; Use geometric mean for a final number.
+
+* Set up buildbot
+
+* Rewrite documentation
+
 * Begin figuring out how to fix, mix, and match Lambda with LLVM
 * Get benchmarks from MLton added
-* Get the test suite from MLton added
-* We need a way to run regressions
+
 * Lambda seems to be compilable down to code
 * Check the ocaml system. Code and documentation!
-* Upgrade make system and fix it.
+
 
