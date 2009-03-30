@@ -30,7 +30,7 @@ TODO List for Mosml-llvm
    Time is required to produce LargeInt.int types all over, so this
    should be fixed.
 
-* Produce GIT_HEAD version strings all over
+o [jlouis] Produce GIT_HEAD version strings all over
    Rather than Moscow ML v 2.01 all over, produce the GIT_HEAD version
    string where applicable. Places of interest:
 
@@ -47,7 +47,6 @@ TODO List for Mosml-llvm
 * Implement more tracing routines.
    Easy task and quite effective when debugging the bytecode backend.
 
-* 
 * COPYING:
    We need the license mess to be sorted out. The current plan is to
    keep the compiler proper as a GPL project, but get the backend to
