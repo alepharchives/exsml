@@ -12,10 +12,6 @@ compopt="-conservative"
 linkopt=""
 custom=""
 linkfiles=""
-cc=gcc
-ccfiles=""
-cclib=""
-ccopt=""
 linkout=a.out
 context="-structure"
 
