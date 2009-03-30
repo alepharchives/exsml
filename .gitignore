@@ -53,6 +53,8 @@ runtime/instruct.h
 runtime/instruct.c
 runtime/Makefile
 runtime/global_tbl.h
+scripts/mosml
+scripts/mosmlc
 src/launch/camlexec
 src/launch/camlexec.c
 src/launch/mosml

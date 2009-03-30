@@ -18,6 +18,12 @@ AC_CONFIG_SRCDIR([runtime/interp.c])
 AC_CONFIG_MACRO_DIR([m4])
 AC_LANG([C])
 
+## Default installation areas; can be overridden.
+AC_ARG_VAR([mosmllibdir],[location of the mosml standard library [$libdir/mosml]])
+mosmllibdir=$libdir/mosml
+AC_ARG_VAR([mosmllibexecdir],[location of the mosml byte executables [$libexecdir/mosml]])
+mosmllibexecdir=$libexecdir/mosml
+
 ## Libtool
 AC_PROG_LIBTOOL
 
@@ -221,4 +227,6 @@ AC_OUTPUT(
       libsml_crypt/Makefile
       libsml_unix/Makefile
       libsml_socket/Makefile
+      scripts/mosml
+      scripts/mosmlc
 )

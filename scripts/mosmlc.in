@@ -1,7 +1,10 @@
 #!/bin/sh
 
-stdlib=LIBDIR
-mosmlbin=BINDIR
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@mosmllibdir@
+libexecdir=@mosmllibexecdir@
+mosmlbin=@bindir@
 
 linkalso=true
 includes=""
@@ -21,8 +24,8 @@ while : ; do
     "")
       break;;
     *.sml)
-      $mosmlbin/camlrunm $stdlib/mosmlcmp -stdlib $stdlib $includes $compopt $context $1 || exit $?
-      case $1 in 
+      $bindir/camlrunm $libexecdir/mosmlcmp -stdlib $libdir $includes $compopt $context $1 || exit $?
+      case $1 in
 	    */*)
 	    context="$context `dirname $1`/`basename $1 .sml`.ui"
 	    ;;
@@ -31,8 +34,8 @@ while : ; do
       esac
       linkfiles="$linkfiles $1";;
     *.sig)
-      $mosmlbin/camlrunm $stdlib/mosmlcmp -stdlib $stdlib $includes $compopt $context $1 || exit $?
-      case $1 in 
+      $bindir/camlrunm $libexecdir/mosmlcmp -stdlib $libdir $includes $compopt $context $1 || exit $?
+      case $1 in
 	    */*)
 	    context="$context `dirname $1`/`basename $1 .sig`.ui"
 	    ;;
@@ -48,7 +51,7 @@ while : ; do
     -structure|-toplevel)
       context="$context $1";;
     -c)
-      linkalso=false;;      
+      linkalso=false;;
     -I|-include)
       includes="$includes -I $2"
       shift;;
@@ -75,7 +78,7 @@ while : ; do
       linkout=$2
       shift;;
     -standalone)
-      linkopt="$linkopt $1";;      
+      linkopt="$linkopt $1";;
     -stdlib)
       stdlib=$2
       shift;;
@@ -103,7 +106,7 @@ while : ; do
 done
 
 if $linkalso && test -n "$linkfiles"; then
-  $mosmlbin/camlrunm $stdlib/mosmllnk -stdlib $stdlib $includes $custom $linkopt \
+  $bindir/camlrunm $libexecdir/mosmllnk -stdlib $libdir $includes $custom $linkopt \
     -exec $linkout $linkfiles || exit $?
 fi
 
