@@ -43,7 +43,9 @@ cd $testsubdir \
 echo "=== Running test $progname"
 
 CMP="${CMP-cmp}"
-MOSMLC="mosmlc -P full"
-
 #CAMLRUNM=camlrunm
 CAMLRUNM="$top_builddir/runtime/camlrunm"
+MOSMLC="${CAMLRUNM} $top_builddir/compiler/mosmlcmp -stdlib $top_builddir/mosmllib -P full "
+MOSMLLNK="${CAMLRUNM} $top_builddir/compiler/mosmllnk -stdlib $top_builddir/mosmllib -noheader -P full "
+
+

@@ -15,7 +15,8 @@ fi
 . $srcdir/defs
 
 # Run test
-${MOSMLC} -o a.out ${srcdir}/${program}
+${MOSMLC} ${srcdir}/${program}
+${MOSMLLNK} -exec a.out ${srcdir}/${program}
 ${CAMLRUNM} a.out 2> err | tee -i out >&2
 
 if ${CMP} -s out ${srcdir}/${ok_output}; then
