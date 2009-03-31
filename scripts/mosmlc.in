@@ -6,6 +6,7 @@ libdir=@mosmllibdir@
 libexecdir=@mosmllibexecdir@
 mosmlbin=@bindir@
 version=@VERSION@
+git_head=@GITHEAD@
 
 linkalso=true
 includes=""
@@ -80,7 +81,8 @@ while : ; do
       stdlib=$2
       shift;;
     -v|-version)
-	  echo "Project Ex-SML, version $version"
+	  echo "Project Ex-SML, version ${version}"
+	  echo "  git commit ${git_head}"
 	  echo "  (standard library from $libdir)"
 	  $bindir/camlrunm -V
 	  $bindir/camlrunm $libexecdir/mosmlcmp -version

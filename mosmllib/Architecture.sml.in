@@ -18,6 +18,7 @@
 *)
 
 val version = "@VERSION@"
+val git_head = "@GITHEAD@"
 
 val integer_precision = @INT_PRECISION@
 val word_size = @WORD_WORDSIZE@

@@ -67,6 +67,8 @@ fun show_version() =
   msgIBlock 0;
   msgString ("Ex-SML linker version "^Config.version);
   msgEOL();
+  msgString ("  git commit "^Config.git_head);
+  msgEOL();
   msgString "Based in part on Caml Light, and Moscow ML";
   msgEOL();
   msgEBlock();

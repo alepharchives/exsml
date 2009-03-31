@@ -20,6 +20,7 @@
 
 (* The version of the system *)
 val version : string
+val git_head : string
 
 (* The precision in bits of an integer *)
 val integer_precision : int

@@ -130,6 +130,8 @@ fun main () =
 	(msgIBlock 0;
 	 msgString ("Ex-SML version "^Config.version);
 	 msgEOL();
+	 msgString ("  git commit "^Config.git_head);
+	 msgEOL();
 	 msgString "Enter `quit();' to quit.";
 	 msgEOL();
 	 msgEBlock();

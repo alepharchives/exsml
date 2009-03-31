@@ -2,6 +2,7 @@ local open Fnlib in
 
 (* version string *)
 val version = Architecture.version;
+val git_head = Architecture.git_head;
 
 (* Integer ranges *)
 

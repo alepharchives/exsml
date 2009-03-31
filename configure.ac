@@ -141,6 +141,7 @@ fi
 AC_MSG_CHECKING([for git version])
 AC_MSG_RESULT([$GITHEAD])
 AC_SUBST([GITHEAD])
+AC_DEFINE_UNQUOTED([GIT_HEAD], "${GITHEAD}", [Git commit version])
 
 GENERATED_FILE=misc/generated-file.txt
 AC_SUBST_FILE(GENERATED_FILE)

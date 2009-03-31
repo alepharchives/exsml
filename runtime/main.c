@@ -145,6 +145,7 @@ int main(int argc, char * argv[])
       case 'V':
         fprintf(stderr, "The Caml Light runtime system for Ex-SML, version %s\n",
                 VERSION);
+	fprintf(stderr, "  git commit %s\n", GIT_HEAD);
 	sys_exit(INT_TO_VAL(0));
       default:
         fatal_error_arg("Unknown option %s.\n", argv[i]);
