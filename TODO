@@ -30,15 +30,10 @@ TODO List for Mosml-llvm
    Time is required to produce LargeInt.int types all over, so this
    should be fixed.
 
-o [jlouis] Produce GIT_HEAD version strings all over
-   Rather than Moscow ML v 2.01 all over, produce the GIT_HEAD version
-   string where applicable. Places of interest:
-
-   mosmlc.in
-   camlrunm
-   mosmlcmp
-   mosmllnk
-   mosmltop
+* Update TextIO to reflect 2003 basis more
+   It should be fairly straigtforward to do but some parts of the code
+   might need updating in the process. This will enable us to PASS the
+   textio.sml benchmark.
 
 * DYNLIB: Do .so visibility right
 
