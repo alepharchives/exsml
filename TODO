@@ -30,11 +30,6 @@ TODO List for Mosml-llvm
    Time is required to produce LargeInt.int types all over, so this
    should be fixed.
 
-* Update TextIO to reflect 2003 basis more
-   It should be fairly straigtforward to do but some parts of the code
-   might need updating in the process. This will enable us to PASS the
-   textio.sml benchmark.
-
 * DYNLIB: Do .so visibility right
 
 * Clean up C code for warnings

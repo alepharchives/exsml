@@ -77,6 +77,7 @@ TESTS =	tests/15.sml \
 	tests/stringcvt.sml \
 	tests/tak.sml \
 	tests/testdyn1.sml \
+	tests/textio.sml \
 	tests/textio.2.sml \
 	tests/time2.sml \
 	tests/time3.sml \
@@ -236,7 +237,6 @@ TESTS =	tests/15.sml \
 # tests/widechar.sml \
 # tests/flat-array.3.sml \
 # tests/serialize.sml \
-# tests/textio.sml \ -- This one fails since the basis library is wrong on TextIO.inputLine (2003 issue)
 # tests/llv.sml \
 # tests/word.sml \
 # tests/14.sml
