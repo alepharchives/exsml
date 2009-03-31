@@ -4,7 +4,7 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@mosmllibdir@
 libexecdir=@mosmllibexecdir@
-mosmlbin=@bindir@
+bindir=@bindir@
 version=@VERSION@
 git_head=@GITHEAD@
 
