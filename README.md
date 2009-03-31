@@ -1,11 +1,14 @@
-# What is this?
+# Project Ex-SML
+
+## What is this?
 
 This is a fork of Moscow ML 2.01 onto which it is the plan to add a
-backend for the LLVM system with the Ocaml garbage collector.
+backend for the LLVM system and then extend Standard ML with some new
+ideas.
 
 Jesper Louis Andersen - 2008,2009.
 
-## Current status
+### Current status
 
 Currently, we are pretty far from a working system. We have chosen to
 implement a representation of the LLVM ASCII assembler format for
@@ -16,7 +19,7 @@ We still need a compilation from the internal Lambda IR to LLVM and
 probably a closure conversion phase as well. After that we need to
 build glue.
 
-## Ideology
+### Ideology
 
 Use UNIX tools all the way. We want a pipeline of commands, not some
 big buildsystem built into the REPL. Use Autotools. Prefer sh(1) for
@@ -27,11 +30,11 @@ scripting and Python if it is more expensive.
    * Kill old MSDOS code.
    * Kill the Threaded/Direct Jump compiler.
 
-## Original readme:
+### Original readme:
 
 This is file README for Moscow ML 2.00 for Linux/Unix (June 2000)
 
-### EXTENT OF THE IMPLEMENTATION
+#### EXTENT OF THE IMPLEMENTATION
 
 The current version 2.00 of Moscow ML
 
@@ -70,19 +73,13 @@ New in version 2.00 of Moscow ML
    * The Gdimage structure now produces PNG images (using Thomas
      Boutell's gd library).
 
-### SYSTEM REQUIREMENTS
+#### SYSTEM REQUIREMENTS
 
 Compilation under Unix is best done using GNU make, gcc, and Perl.  A
 binary installation requires 5 MB disk space; a source installation
 requires 25 MB disk space.
 
-### LIST OF FILES
-
-Executables and bytecode files:
-
-   * bin/* : Moscow ML top-level system and batch compiler
-   * lib/* : Bytecode files and standard libraries
-   * tools/* : Tools to infer unit inter-dependencies
+#### LIST OF FILES
 
 Documentation files:
 
@@ -93,9 +90,16 @@ Documentation files:
    * doc/mosmllib.pdf : Moscow ML library documentation with an index
    * doc/mosmllib/*.html : Moscow ML library documentation in HTML format
 
+Executables:
+   * bootstrap : Bytecode to bootstrap the compiler
+
 Source files:
 
-   * src/compiler : The Moscow ML compiler
+   * compiler : The compiler
    * runtime : The C-based caml-light runtime
-   * mosmlyac : The Moscow ML yacc compiler
+   * mosmlyac : The ML yacc compiler
+   * mosmllib : The standard library
+   * smllib_* : Dynamically loadable libraries
+   * regression : The regression framework, imported from MLton
+   * scripts : Shell scripts working as compiler drivers
 
