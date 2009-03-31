@@ -5,94 +5,91 @@ MAINTAINERCLEANFILES = Makefile.in
 testsubdir = testSubDir
 CLEANFILES = tests/*.ui tests/*.uo
 TESTS_ENVIRONMENT = ${srcdir}/run-test-ok
-TESTS = tests/hello-world.sml \
-	tests/int.sml \
-	tests/kittmergesort.sml \
-	tests/life.sml \
-	tests/kitsimple.sml \
-	tests/kitreynolds2.sml \
-	tests/kitreynolds3.sml \
-	tests/kitqsort.sml \
-	tests/kitdangle3.sml \
-	tests/kitfib35.sml \
-	tests/kitkbjul9.sml \
+TESTS =	tests/15.sml \
+	tests/21.sml \
 	tests/22.sml \
-	tests/fact.sml \
-	tests/fast.sml \
-	tests/exponential.sml \
-	tests/print-self.sml \
-	tests/fast2.sml \
-	tests/pat.sml \
-	tests/array4.sml \
-	tests/ffi.sml \
-	tests/ref-flatten.3.sml \
-	tests/time2.sml \
-	tests/check_arrays.sml \
-	tests/ref-flatten.5.sml \
-	tests/big-array.sml \
-	tests/nested-loop.sml \
-	tests/textio.2.sml \
-	tests/fft.sml \
-	tests/vector3.sml \
-	tests/down.sml \
-	tests/testdyn1.sml \
-	tests/vector4.sml \
-	tests/valrec.sml \
-	tests/os-exit.sml \
-	tests/kitlife35u.sml \
-	tests/kkb_eq.sml \
-	tests/kkb36c.sml \
-	tests/nonexhaustive.sml \
-	tests/cases.sml \
-	tests/rem-unused.1.sml \
-	tests/datatype-with-free-tyvars.sml \
 	tests/array2.sml \
-	tests/hello-world.sml \
-	tests/vector-loop.sml \
-	tests/15.sml \
-	tests/circular.sml \
-	tests/tak.sml \
-	tests/kitmandelbrot.sml \
-	tests/polymorphic-recursion.sml \
-	tests/ref-flatten.6.sml \
-	tests/known-case0.sml \
-	tests/ref-flatten.sml \
-	tests/unary.2.sml \
+	tests/array3.sml \
+	tests/array4.sml \
 	tests/array5.sml \
 	tests/array7.sml \
+	tests/big-array.sml \
 	tests/binio.sml \
-	tests/known-case1.sml \
-	tests/lex.sml \
-	tests/flat-vector.sml \
-	tests/useless-string.sml \
-	tests/layout.sml \
-	tests/kitfib35.sml \
-	tests/exn.sml \
-	tests/tststrcmp.sml \
-	tests/exhaustive.sml \
-	tests/klife_eq.sml \
-	tests/listpair.sml \
 	tests/bool-triple.sml \
-	tests/stringcvt.sml \
-	tests/jump.sml \
-	tests/FuhMishra.sml \
-	tests/withtype.sml \
+	tests/cases.sml \
+	tests/check_arrays.sml \
+	tests/circular.sml \
+	tests/datatype-with-free-tyvars.sml \
+	tests/deep-flatten.sml \
+	tests/down.sml \
+	tests/exhaustive.sml \
+	tests/exn.sml \
+	tests/exponential.sml \
+	tests/fact.sml \
+	tests/fast2.sml \
+	tests/fast.sml \
+	tests/ffi.sml \
+	tests/fft.sml \
 	tests/flat-array.2.sml \
-	tests/int.sml \
-	tests/array3.sml \
-	tests/local-ref.sml \
 	tests/flat-array.sml \
-	tests/list.sml \
-	tests/kitloop2.sml \
-	tests/lambda-list-ref.sml \
-	tests/unary.sml \
-	tests/time3.sml \
+	tests/flat-vector.sml \
+	tests/FuhMishra.sml \
+	tests/hello-world.sml \
+	tests/int.sml \
+	tests/jump.sml \
+	tests/kitdangle3.sml \
 	tests/kitdangle.sml \
-	tests/21.sml \
-	tests/vector2.sml \
-	tests/string2.sml \
+	tests/kitfib35.sml \
+	tests/kitkbjul9.sml \
+	tests/kitlife35u.sml \
+	tests/kitloop2.sml \
+	tests/kitmandelbrot.sml \
+	tests/kitqsort.sml \
+	tests/kitreynolds2.sml \
+	tests/kitreynolds3.sml \
+	tests/kitsimple.sml \
+	tests/kittmergesort.sml \
+	tests/kkb36c.sml \
+	tests/kkb_eq.sml \
+	tests/klife_eq.sml \
+	tests/known-case0.sml \
+	tests/known-case1.sml \
+	tests/lambda-list-ref.sml \
+	tests/layout.sml \
+	tests/lex.sml \
+	tests/life.sml \
+	tests/listpair.sml \
+	tests/list.sml \
+	tests/local-ref.sml \
+	tests/nested-loop.sml \
+	tests/nonexhaustive.sml \
+	tests/os-exit.sml \
+	tests/pat.sml \
 	tests/poly-equal.sml \
-	tests/deep-flatten.sml
+	tests/polymorphic-recursion.sml \
+	tests/print-self.sml \
+	tests/ref-flatten.3.sml \
+	tests/ref-flatten.5.sml \
+	tests/ref-flatten.6.sml \
+	tests/ref-flatten.sml \
+	tests/rem-unused.1.sml \
+	tests/string2.sml \
+	tests/stringcvt.sml \
+	tests/tak.sml \
+	tests/testdyn1.sml \
+	tests/textio.2.sml \
+	tests/time2.sml \
+	tests/time3.sml \
+	tests/tststrcmp.sml \
+	tests/unary.2.sml \
+	tests/unary.sml \
+	tests/useless-string.sml \
+	tests/valrec.sml \
+	tests/vector2.sml \
+	tests/vector3.sml \
+	tests/vector4.sml \
+	tests/vector-loop.sml \
+	tests/withtype.sml
 
 ## All these fails on mosml. Some have explanations added
 #	tests/suspend.sml \
