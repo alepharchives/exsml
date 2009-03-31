@@ -17,7 +17,7 @@ fi
 # Run test
 ${MOSMLC} ${srcdir}/${program}
 ${MOSMLLNK} -exec a.out ${srcdir}/${program}
-${CAMLRUNM} a.out 2> err | tee -i out >&2
+${CAMLRUNM} a.out 2>&1 | tee -i out
 
 if ${CMP} -s out ${srcdir}/${ok_output}; then
     :
@@ -29,15 +29,15 @@ fi
 
 # Munge error output to remove leading directories, `lt-' or
 # trailing `.exe'
-sed -e "s,^[^:]*[lt-]*sic[.ex]*:,sic:," err >sederr && mv sederr err
+#sed -e "s,^[^:]*[lt-]*sic[.ex]*:,sic:," err >sederr && mv sederr err
 
 # Show stderr if doesnt match expected output if VERBOSE == 1
-if "$CMP" -s err ${srcdir}/${errok_output}; then
-    :
-else
-    echo "err:" >&2
-    cat err >&2
-    echo "errok:" >&2
-    cat ${srcdir}/${errok_output} >&2
-    exit 1
-fi
+#if "$CMP" -s err ${srcdir}/${errok_output}; then
+#    :
+#else
+#    echo "err:" >&2
+#    cat err >&2
+#    echo "errok:" >&2
+#    cat ${srcdir}/${errok_output} >&2
+#    exit 1
+#fi
