@@ -38,6 +38,7 @@ o [jlouis] Produce GIT_HEAD version strings all over
    camlrunm
    mosmlcmp
    mosmllnk
+   mosmltop
 
 * DYNLIB: Do .so visibility right
 
