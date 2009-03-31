@@ -2,7 +2,7 @@
 
 (* Checks parsing of semicolons. *)
 
-structure A = struct ;;;;;;;; end;
-signature S = sig ;;;;;;;;;;; end;
+structure semicolon = struct ;;;;;;;; end;
+(* signature S = sig ;;;;;;;;;;; end; *)
 
 ;;;;;;;;;;;;;;;;

@@ -73,6 +73,7 @@ TESTS =	tests/15.sml \
 	tests/ref-flatten.6.sml \
 	tests/ref-flatten.sml \
 	tests/rem-unused.1.sml \
+	tests/semicolon.sml \
 	tests/string2.sml \
 	tests/stringcvt.sml \
 	tests/tak.sml \
@@ -144,7 +145,6 @@ TESTS =	tests/15.sml \
 # tests/mlton.share.sml \
 # tests/parse.sml \
 # tests/real-int.sml \
-# tests/semicolon.sml \
 # tests/testMatrix.sml \
 # tests/thread-switch-share.sml \
 # tests/bytechar.sml \

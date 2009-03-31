@@ -30,6 +30,23 @@ TODO List for Mosml-llvm
    Time is required to produce LargeInt.int types all over, so this
    should be fixed.
 
+* Analyze the need to redefine how signatures and structures work
+   Currently there are some odd rules w.r.t signatures and structures
+   because the way we search for .ui and .uo files. This can probably
+   be removed once we begin to run with LLVM.
+
+   The problem is that you can't sometimes have a signature at
+   top-level inside a .sml file. And you can't have a top level
+   structure with a name different from the file name.
+
+   I don't like the idea of using the file name to find modules.
+
+   This task is to analyze:
+
+   ; What is going on?
+   ; Is there a sensible way to get around it?
+   ; Eventually devise a fix.
+
 * DYNLIB: Do .so visibility right
 
 * Clean up C code for warnings
