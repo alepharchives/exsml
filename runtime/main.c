@@ -143,7 +143,7 @@ int main(int argc, char * argv[])
         verbose_init = 1;
         break;
       case 'V':
-        fprintf(stderr, "The Caml Light runtime system, version %s\n",
+        fprintf(stderr, "The Caml Light runtime system for Ex-SML, version %s\n",
                 VERSION);
 	sys_exit(INT_TO_VAL(0));
       default:

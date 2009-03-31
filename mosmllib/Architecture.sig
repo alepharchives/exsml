@@ -17,6 +17,10 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 *)
 
+
+(* The version of the system *)
+val version : string
+
 (* The precision in bits of an integer *)
 val integer_precision : int
 

@@ -128,7 +128,7 @@ fun main () =
     if !Exec_phr.quietdec then ()
     else
 	(msgIBlock 0;
-	 msgString ("Moscow ML version "^Config.version);
+	 msgString ("Ex-SML version "^Config.version);
 	 msgEOL();
 	 msgString "Enter `quit();' to quit.";
 	 msgEOL();

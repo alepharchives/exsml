@@ -1,7 +1,7 @@
 local open Fnlib in
 
 (* version string *)
-val version = "2.01 (January 2004)";
+val version = Architecture.version;
 
 (* Integer ranges *)
 

@@ -17,6 +17,8 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 *)
 
+val version = "@VERSION@"
+
 val integer_precision = @INT_PRECISION@
 val word_size = @WORD_WORDSIZE@
 val word_maxpos = @WORD_MAXPOS@

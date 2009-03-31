@@ -96,9 +96,9 @@ fun set_msgstyle p =
 fun show_version() =
 (
   msgIBlock 0;
-  msgString ("Moscow ML compiler version "^Config.version);
+  msgString ("Ex-SML compiler version "^Config.version);
   msgEOL();
-  msgString "Based in part on Caml Light and the ML Kit";
+  msgString "Based in part on Caml Light, the ML Kit and Moscow ML";
   msgEOL();
   msgEBlock();
   msgFlush();

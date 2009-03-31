@@ -65,9 +65,9 @@ fun set_exec_file e =
 fun show_version() =
 (
   msgIBlock 0;
-  msgString ("Moscow ML linker version "^Config.version);
+  msgString ("Ex-SML linker version "^Config.version);
   msgEOL();
-  msgString "Based in part on Caml Light";
+  msgString "Based in part on Caml Light, and Moscow ML";
   msgEOL();
   msgEBlock();
   msgFlush();

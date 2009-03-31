@@ -5,6 +5,7 @@ exec_prefix=@exec_prefix@
 libdir=@mosmllibdir@
 libexecdir=@mosmllibexecdir@
 mosmlbin=@bindir@
+version=@VERSION@
 
 linkalso=true
 includes=""
@@ -79,11 +80,11 @@ while : ; do
       stdlib=$2
       shift;;
     -v|-version)
-      echo "The Moscow ML system, version 2.00 (June 2000)"
-      echo "  (standard library from $stdlib)"
-      $mosmlbin/camlrunm -V
-      $mosmlbin/camlrunm $stdlib/mosmlcmp -version
-      $mosmlbin/camlrunm $stdlib/mosmllnk -version;;
+	  echo "Project Ex-SML, version $version"
+	  echo "  (standard library from $libdir)"
+	  $bindir/camlrunm -V
+	  $bindir/camlrunm $libexecdir/mosmlcmp -version
+	  $bindir/camlrunm $libexecdir/mosmllnk -version;;
     -imptypes)
       compopt="$compopt $1";;
     -valuepoly)
