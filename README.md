@@ -91,6 +91,7 @@ Documentation files:
    * doc/mosmllib/*.html : Moscow ML library documentation in HTML format
 
 Executables:
+
    * bootstrap : Bytecode to bootstrap the compiler
 
 Source files:
