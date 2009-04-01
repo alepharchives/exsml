@@ -91,7 +91,9 @@ TESTS =	tests/15.sml \
 	tests/vector3.sml \
 	tests/vector4.sml \
 	tests/vector-loop.sml \
-	tests/withtype.sml
+	tests/withtype.sml \
+	tests/word.sml
+
 
 ## All these fails on mosml. Some have explanations added
 #	tests/suspend.sml \
@@ -238,7 +240,6 @@ TESTS =	tests/15.sml \
 # tests/flat-array.3.sml \
 # tests/serialize.sml \
 # tests/llv.sml \
-# tests/word.sml \
 # tests/14.sml
 #tests/thread-switch-size.sml \
 #tests/cobol.sml \

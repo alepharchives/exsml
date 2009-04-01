@@ -115,8 +115,8 @@ in
 		      case getc src of
 			  SOME(#"x", rest) => getdigs after0 rest
 			| SOME(#"X", rest) => getdigs after0 rest
-			| SOME _           => getdigs after0 src
-			| NONE => SOME(fromInt 0, after0)
+			| SOME _           => SOME(fromInt 0, after0)
+			| NONE             => SOME(fromInt 0, after0)
 	  in
 	      case getc source of
 		  SOME(#"0", after0) =>
