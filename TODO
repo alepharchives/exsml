@@ -18,6 +18,9 @@ TODO List for Mosml-llvm
    code. Some buildsystems does exactly that, so supporting it is
    important.
 
+* Make failwith() not return!
+   By marking it as notreturn we have a better encoding.
+
 * Make the IntInf work
    First, hoist it out of dynlib. Since we are MUST have
    LargeInt == IntInf if IntInf is present, and LargeInt is
