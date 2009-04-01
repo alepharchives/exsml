@@ -86,7 +86,7 @@ fun rwp i 0 = i
 val test9a = checkrange (0,29)
     (fn k => pwr2 k = w2i (<< (i2w 1, i2w k)));
 val _ = pr_ln "test9a" test9a
-val test9b = checkrange (32,65)
+val test9b = checkrange (Word.wordSize,65)
     (fn k => 0 = w2i (<< (i2w 1, i2w k)));
 val _ = pr_ln "test9b" test9b
 val test9c = check (maxnegint = w2i (<< (i2w 1, i2w (Word.wordSize-1))));
@@ -100,7 +100,7 @@ val _ = pr_ln "test9e" test9e
 val test9f = checkrange (0,65)
     (fn k => rwp maxposint k = w2i (>> (i2w maxposint, i2w k)));
 val _ = pr_ln "test9f" test9f
-val test9g = checkrange (32,65)
+val test9g = checkrange (Word.wordSize,65)
     (fn k => 0 = w2i (<< (i2w ~1, i2w k)));
 val _ = pr_ln "test9g" test9g
 val test9h = checkrange (1,65)
