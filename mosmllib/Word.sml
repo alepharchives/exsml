@@ -34,6 +34,7 @@ in
     fun xorb (x, y) = xorb_ x y;
     fun notb x      = xorb_ x (fromInt ~1);
 
+    fun ~ i = (notb i) + 0wx1
 
     fun << (w, k) =
 	if toInt k >= wordSize orelse toInt k < 0 then fromInt 0

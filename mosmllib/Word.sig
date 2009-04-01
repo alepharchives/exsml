@@ -13,6 +13,7 @@ val <<         : word * word -> word
 val >>         : word * word -> word
 val ~>>        : word * word -> word
 
+val ~          : word -> word
 val +          : word * word -> word
 val -          : word * word -> word
 val *          : word * word -> word
@@ -76,6 +77,8 @@ val fromLargeInt  : int -> word
 
    To make <<, >>, and ~>> infix, use the declaration
                           infix 5 << >> ~>>
+
+   [~ i] returns the 2's complement of i.
 
    [+]
    [-]

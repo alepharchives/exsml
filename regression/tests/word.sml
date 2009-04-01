@@ -140,6 +140,11 @@ val test11h = check (i2w maxposint < i2w maxnegint);
 val _ = pr_ln "test11h" test11h
 val test11i = check (i2w maxnegint < i2w ~1);
 val _ = pr_ln "test11i" test11i
+val test11j = check (~3 = w2i (Word.~(i2w 3)))
+val _ = pr_ln "test11j" test11j
+val test11k = check (3 = w2i (Word.~(i2w ~3)))
+val _ = pr_ln "test11k" test11k
+
 end;
 
 local
