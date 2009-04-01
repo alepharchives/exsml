@@ -7,7 +7,6 @@
  */
 
 /* General includes */
-
 #include <errno.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -19,12 +18,13 @@
 #include <signal.h>
 
 /* Moscow ML includes */
-#include <mlvalues.h>
-#include <alloc.h>
-#include <memory.h>
-#include <fail.h>
-#include <str.h>
-#include <signals.h>
+#include "attributes.h"
+#include "mlvalues.h"
+#include "alloc.h"
+#include "memory.h"
+#include "fail.h"
+#include "str.h"
+#include "signals.h"
 
 /* ML representations of values used in this interface:
 
@@ -61,26 +61,56 @@ Type ml_s_addr    = ML abstract object containing an INET socket's address
 /* Decomposition of ml_s_addr values: */
 #define Saddr_mlsaddrval(mlsa) Field(mlsa, 0)
 
+#define VAL_TO_SOCK(x) ((int) Field(x,0))
+
+#define NILval Atom(0)
+#define CONStag 1
+
 union saddr {
-  struct sockaddr sockaddr_gen;
-  struct sockaddr_un sockaddr_unix;
-  struct sockaddr_in sockaddr_inet;
+	struct sockaddr sockaddr_gen;
+	struct sockaddr_un sockaddr_unix;
+	struct sockaddr_in sockaddr_inet;
 };
 
+typedef unsigned long s_addr_t;
+
+value msocket_constants(value);
+value newsinaddrport(s_addr_t, value);
+value msocket_desccmp(value, value);
+value msocket_newfileaddr(value);
+int my_aton(const char *, struct in_addr *);
+value msocket_newinetaddr(value, value);
+value msocket_socket(value, value);
+value msocket_getinetaddr(value);
+value msocket_accep(value);
+value msocket_accept(value);
+value msocket_bind(value, value);
+value msocket_connect(value, value);
+value msocket_listen(value, value);
+value msocket_close(value);
+value msocket_shutdown(value, value);
+value msocket_send(value, value, value, value, value);
+value msocket_sendto(value, value, value, value, value);
+value msocket_recv(value, value, value, value, value);
+value msocket_recvfrom(value, value, value, value, value);
+value msocket_select(value rsocks, value wsocks, value esocks,
+		     int tsec, int tusec);
+
 /* ML type: unit -> int * int * int * int * int * int * int * int * int *int */
-value msocket_constants(value dummy) {
-  value res = alloc_tuple(10);
-  Field(res, 0) = Val_long(SOCK_STREAM);
-  Field(res, 1) = Val_long(SOCK_DGRAM);
-  Field(res, 2) = Val_long(PF_UNIX);
-  Field(res, 3) = Val_long(PF_INET);
-  Field(res, 4) = Val_long(0); /* NO_RECVS */
-  Field(res, 5) = Val_long(1); /* NO_SENDS */
-  Field(res, 6) = Val_long(2); /* NO_RECVS_OR_SENDS */
-  Field(res, 7) = Val_long(MSG_OOB);
-  Field(res, 8) = Val_long(MSG_PEEK);
-  Field(res, 9) = Val_long(MSG_DONTROUTE);
-  return res;
+value msocket_constants(value UNUSED(dummy))
+{
+	value res = alloc_tuple(10);
+	Field(res, 0) = LONG_TO_VAL(SOCK_STREAM);
+	Field(res, 1) = LONG_TO_VAL(SOCK_DGRAM);
+	Field(res, 2) = LONG_TO_VAL(PF_UNIX);
+	Field(res, 3) = LONG_TO_VAL(PF_INET);
+	Field(res, 4) = LONG_TO_VAL(0); /* NO_RECVS */
+	Field(res, 5) = LONG_TO_VAL(1); /* NO_SENDS */
+	Field(res, 6) = LONG_TO_VAL(2); /* NO_RECVS_OR_SENDS */
+	Field(res, 7) = LONG_TO_VAL(MSG_OOB);
+	Field(res, 8) = LONG_TO_VAL(MSG_PEEK);
+	Field(res, 9) = LONG_TO_VAL(MSG_DONTROUTE);
+	return res;
 }
 
 /* Warning: allocates in the heap, may cause a GC */
@@ -91,7 +121,7 @@ static value newsocket(int sock) {
   return result;
 }
 
-typedef unsigned long s_addr_t;
+
 
 /* Warning: allocates in the heap, may cause a GC */
 static value newinaddr(s_addr_t sa) {
@@ -104,9 +134,9 @@ static value newinaddr(s_addr_t sa) {
 
 /* Maps a : addr to s : union saddr */
 static void make_saddr(union saddr *s, value a) {
-  int size = Int_val(Size_addrval(a));
+  int size = VAL_TO_INT(Size_addrval(a));
 
-  switch(Int_val(Nspace_addrval(a))) {
+  switch(VAL_TO_INT(Nspace_addrval(a))) {
   case AF_UNIX:
     s->sockaddr_unix.sun_family = AF_UNIX;
     bcopy(String_val(Data_addrval(a)), s->sockaddr_unix.sun_path, size + 1);
@@ -117,9 +147,11 @@ static void make_saddr(union saddr *s, value a) {
     s->sockaddr_inet.sin_addr.s_addr =
       *((s_addr_t*) Mlsaddr_sapval(sinaddrport));
     /* Maybe this should be htonl? / sestoft */
-    s->sockaddr_inet.sin_port = htons(Int_val(Port_sapval(sinaddrport)));
+    s->sockaddr_inet.sin_port = htons(VAL_TO_INT(Port_sapval(sinaddrport)));
     break;
   }
+  default:
+	  assert(0); /* Never reached */
   }
 }
 
@@ -131,8 +163,8 @@ static value newaddr(int len, int namespace, value addrdata) {
   r[0] = addrdata;
   res = alloc_tuple(3);
   Data_addrval(res) = r[0];
-  Size_addrval(res) = Val_int(len);
-  Nspace_addrval(res) = Val_int(namespace);
+  Size_addrval(res) = INT_TO_VAL(len);
+  Nspace_addrval(res) = INT_TO_VAL(namespace);
   POP_ROOTS();
   return (value) res;
 }
@@ -157,31 +189,35 @@ value newsinaddrport(s_addr_t sa, value port) {
 /* Warning: allocates in the heap, may cause a GC */
 /* ML result type: addr */
 static value from_saddr(union saddr *s, int len) {
-  switch(s->sockaddr_gen.sa_family) {
-  case AF_UNIX: {
-    value name = copy_string(s->sockaddr_unix.sun_path);
-    return newaddr(len, AF_UNIX, name);
-  }
-  case AF_INET: {
-    value sinaddrport =
-      newsinaddrport(s->sockaddr_inet.sin_addr.s_addr,
-                     Val_int(ntohs(s->sockaddr_inet.sin_port)));
-    /* The native representation of a sinaddrport is struct sockaddr_in */
-    return newaddr(sizeof(struct sockaddr_in), AF_INET, sinaddrport);
-  }
-  }
+	switch(s->sockaddr_gen.sa_family) {
+	case AF_UNIX: {
+		value name = copy_string(s->sockaddr_unix.sun_path);
+		return newaddr(len, AF_UNIX, name);
+	}
+	case AF_INET: {
+		value sinaddrport =
+			newsinaddrport(s->sockaddr_inet.sin_addr.s_addr,
+				       INT_TO_VAL(ntohs(s->sockaddr_inet.sin_port)));
+		/* The native representation of a sinaddrport is struct sockaddr_in */
+		return newaddr(sizeof(struct sockaddr_in), AF_INET, sinaddrport);
+	}
+	default:
+		assert(0); /* Never reached */
+	}
 }
 
 /* ML type: sock_ -> sock_ -> int */
 value msocket_desccmp(value sockval1, value sockval2) {
-  int sock1 = Sock_val(sockval1);
-  int sock2 = Sock_val(sockval2);
-  if (sock1 < sock2)
-    return Val_long(-1);
-  else if (sock1 > sock2)
-    return Val_long(1);
-  else
-    return Val_long(0);
+	int sock1 = VAL_TO_SOCK(sockval1);
+	int sock2 = VAL_TO_SOCK(sockval2);
+
+	if (sock1 < sock2) {
+		return LONG_TO_VAL(-1);
+	} else if (sock1 > sock2) {
+		return LONG_TO_VAL(1);
+	} else {
+		return LONG_TO_VAL(0);
+	}
 }
 
 /* ML type: string -> addr */
@@ -201,25 +237,27 @@ value msocket_newfileaddr(value name) {
 /* Solaris 2.5, MacOS and MS Win32 lack inet_aton: */
 
 int my_aton(const char* name, struct in_addr *inp) {
-  return inet_aton(name, inp);
+	return inet_aton(name, inp);
 }
 
 /* ML type: string -> int -> addr */
 value msocket_newinetaddr(value name, value port) {
-  struct sockaddr_in addr;
-  value res;
-  if (my_aton(String_val(name), &addr.sin_addr)) {
-    value sinaddrport = newsinaddrport(addr.sin_addr.s_addr, port);
-    res = newaddr(sizeof(struct sockaddr_in), AF_INET, sinaddrport);
-  } else
-    failwith("Invalid address");
+	struct sockaddr_in addr;
+	value res = Val_unit;
 
-  return res;
+	if (my_aton(String_val(name), &addr.sin_addr)) {
+		value sinaddrport = newsinaddrport(addr.sin_addr.s_addr, port);
+		res = newaddr(sizeof(struct sockaddr_in), AF_INET, sinaddrport);
+	} else {
+		failwith("Invalid address");
+	}
+
+	return res;
 }
 
 /* ML type: int -> int -> sock_ */
 value msocket_socket(value namespace, value style) {
-  int result = socket(Int_val(namespace), Int_val(style), 0);
+  int result = socket(VAL_TO_INT(namespace), VAL_TO_INT(style), 0);
   if (result < 0)
     failwith(strerror(errno));
   return newsocket(result);
@@ -237,59 +275,64 @@ value msocket_getinetaddr(value addr) {
 
 /* ML type: sock_ -> sock_ * addr */
 value msocket_accept(value sock) {
-  int ret;
-  union saddr addr;
-  value res;
+	int ret;
+	union saddr addr;
+	value res = Val_unit;
 
-  int len = sizeof(addr);
-  enter_blocking_section();
-  ret = accept(Sock_val(sock), &addr.sockaddr_gen, &len);
-  leave_blocking_section();
-  if (ret == -1)
-    failwith(strerror(errno));
-  else {
-    PUSH_ROOTS(roots, 2);
-    roots[0] = from_saddr(&addr, len);
-    roots[1] = newsocket(ret);
-    res = alloc_tuple(2);
-    modify(&Field(res, 0), roots[1]);
-    modify(&Field(res, 1), roots[0]);
-    POP_ROOTS();
-  }
-  return res;
+	size_t len = sizeof(addr);
+	enter_blocking_section();
+	ret = accept(VAL_TO_SOCK(sock), &addr.sockaddr_gen, &len);
+	leave_blocking_section();
+	if (ret == -1) {
+		failwith(strerror(errno));
+	} else {
+		PUSH_ROOTS(roots, 2);
+		roots[0] = from_saddr(&addr, len);
+		roots[1] = newsocket(ret);
+		res = alloc_tuple(2);
+		modify(&Field(res, 0), roots[1]);
+		modify(&Field(res, 1), roots[0]);
+		POP_ROOTS();
+	}
+
+	return res;
 }
 
 /* ML type: sock_ -> addr -> unit */
-value msocket_bind(value socket, value address) {
-  int ret, size;
-  union saddr addr;
-  make_saddr(&addr, address);
-  size  = Int_val(Size_addrval(address));
-  ret = bind(Sock_val(socket), &addr.sockaddr_gen, size);
-  if (ret == -1)
-    failwith(strerror(errno));
-  return Val_unit;
+value msocket_bind(value sock, value address)
+{
+	int ret, size;
+	union saddr addr;
+	make_saddr(&addr, address);
+	size  = VAL_TO_INT(Size_addrval(address));
+	ret = bind(VAL_TO_SOCK(sock), &addr.sockaddr_gen, size);
+	if (ret == -1) {
+		failwith(strerror(errno));
+	}
+	return Val_unit;
 }
 
 /* ML type: sock_ -> addr -> unit */
-value msocket_connect(value socket, value address) {
-  int ret, size;
-  union saddr addr;
+value msocket_connect(value sock, value address)
+{
+	int ret, size;
+	union saddr addr;
 
-  make_saddr(&addr, address);
-  size  = Int_val(Size_addrval(address));
+	make_saddr(&addr, address);
+	size  = VAL_TO_INT(Size_addrval(address));
 
-  /* should enter_blocking_section() be inserted? */
-  ret = connect(Sock_val(socket), &addr.sockaddr_gen, size);
-  if (ret == -1)
-    failwith(strerror(errno));
-  return Val_unit;
+	/* should enter_blocking_section() be inserted? */
+	ret = connect(VAL_TO_SOCK(sock), &addr.sockaddr_gen, size);
+	if (ret == -1) {
+		failwith(strerror(errno));
+	}
+	return Val_unit;
 }
 
 /* ML type: sock_ -> int -> unit */
 value msocket_listen(value sock, value queuelength) {
   int ret;
-  ret =listen(Sock_val(sock), Int_val(queuelength));
+  ret =listen(VAL_TO_SOCK(sock), VAL_TO_INT(queuelength));
   if (ret == -1)
     failwith(strerror(errno));
   return Val_unit;
@@ -297,114 +340,115 @@ value msocket_listen(value sock, value queuelength) {
 
 /* ML type: sock_ -> unit */
 value msocket_close(value sock) {
-  if (close(Sock_val(sock)) == -1)
-    failwith("msocket: error closing socket");
-  return Val_unit;
+	if (close(VAL_TO_SOCK(sock)) == -1) {
+		failwith("msocket: error closing socket");
+	}
+	return Val_unit;
 }
 
 /* ML type: sock_ -> int -> unit */
 value msocket_shutdown(value sock, value how) {
-  int ret;
-  ret = shutdown(Sock_val(sock), Int_val(how));
-  if (ret == -1)
-    failwith(strerror(errno));
-  return Val_unit;
+	int ret;
+	ret = shutdown(VAL_TO_SOCK(sock), VAL_TO_INT(how));
+	if (ret == -1) {
+		failwith(strerror(errno));
+	}
+	return Val_unit;
 }
 
 /* ML type: sock_ -> string -> int -> int -> int -> int */
 value msocket_send(value sock, value buff, value offset, value size,
                             value flags) {
-  int ret;
+	int ret;
 
-  /* Ignore SIGPIPE signals; instead send will return -1: */
-  signal(SIGPIPE, SIG_IGN);
+	/* Ignore SIGPIPE signals; instead send will return -1: */
+	signal(SIGPIPE, SIG_IGN);
 
-  enter_blocking_section();
-  ret = send(Sock_val(sock), &Byte(buff, Long_val(offset)), Int_val(size),
-             Int_val(flags));
-  leave_blocking_section();
-  if (ret == -1)
-    failwith(strerror(errno));
-  return Val_int(ret);
+	enter_blocking_section();
+	ret = send(VAL_TO_SOCK(sock), &Byte(buff, VAL_TO_LONG(offset)), VAL_TO_INT(size),
+		   VAL_TO_INT(flags));
+	leave_blocking_section();
+	if (ret == -1) {
+		failwith(strerror(errno));
+	}
+	return INT_TO_VAL(ret);
 }
 
 /* ML type: sock_ -> Word8Vector.vector -> int * int -> int -> addr -> int */
 value msocket_sendto(value sock, value buff, value tup, value flags,
 		     value address) {
-  int ret;
-  union saddr addr;
+	int ret;
+	union saddr addr;
 
-  /* Ignore SIGPIPE signals; instead sendto will return -1: */
-  signal(SIGPIPE, SIG_IGN);
+	/* Ignore SIGPIPE signals; instead sendto will return -1: */
+	signal(SIGPIPE, SIG_IGN);
 
-  make_saddr(&addr, address);
-  enter_blocking_section();
-  ret = sendto(Sock_val(sock), &Byte(buff, Long_val(Field(tup,0))),
-               Int_val(Field(tup, 1)), Int_val(flags),
-               &addr.sockaddr_gen, Int_val(Size_addrval(address)));
-  leave_blocking_section();
-  if (ret == -1)
-    failwith(strerror(errno));
-  return Val_int(ret);
+	make_saddr(&addr, address);
+	enter_blocking_section();
+	ret = sendto(VAL_TO_SOCK(sock), &Byte(buff, VAL_TO_LONG(Field(tup,0))),
+		     VAL_TO_INT(Field(tup, 1)), VAL_TO_INT(flags),
+		     &addr.sockaddr_gen, VAL_TO_INT(Size_addrval(address)));
+	leave_blocking_section();
+	if (ret == -1) {
+		failwith(strerror(errno));
+	}
+	return INT_TO_VAL(ret);
 }
 
 /* ML type: sock_ -> Word8Vector.vector -> int -> int -> int -> int */
 value msocket_recv(value sock, value buff, value offset,
                             value len, value flags) {
-  int ret;
+	int ret;
 
-  enter_blocking_section();
-  ret = recv(Sock_val(sock), &Byte(buff, Long_val(offset)), Int_val(len),
-             Int_val(flags));
-  leave_blocking_section();
-  if (ret == -1)
-    failwith(strerror(errno));
-  return Val_int(ret);
+	enter_blocking_section();
+	ret = recv(VAL_TO_SOCK(sock), &Byte(buff, VAL_TO_LONG(offset)), VAL_TO_INT(len),
+		   VAL_TO_INT(flags));
+	leave_blocking_section();
+	if (ret == -1) {
+		failwith(strerror(errno));
+	}
+	return INT_TO_VAL(ret);
 }
 
 /* ML type: sock_ -> Word8Vector.vector -> int -> int -> int -> int * addr */
 value msocket_recvfrom(value sock, value buff, value offset,
                                 value size, value flags) {
-  int ret;
-  value res;
-  union saddr addr;
+	int ret;
+	value res = Val_unit;
+	union saddr addr;
 
-  int len = sizeof(addr);
+	size_t len = sizeof(addr);
 
-  enter_blocking_section();
-  ret = recvfrom(Sock_val(sock), &Byte(buff, Long_val(offset)),
-                 Int_val(size),
-                 Int_val(flags), &addr.sockaddr_gen, &len);
-  leave_blocking_section();
+	enter_blocking_section();
+	ret = recvfrom(VAL_TO_SOCK(sock), &Byte(buff, VAL_TO_LONG(offset)),
+		       VAL_TO_INT(size),
+		       VAL_TO_INT(flags), &addr.sockaddr_gen, &len);
+	leave_blocking_section();
 
-  if (ret == -1)
-    failwith(strerror(errno));
-  else {
-    PUSH_ROOTS(roots, 1);
-    roots[0] = from_saddr(&addr, len);
-    res = alloc_tuple(2);
-    modify(&Field(res, 0), Val_int(len));
-    modify(&Field(res, 1), roots[0]);
-    POP_ROOTS();
-  }
+	if (ret == -1) {
+		failwith(strerror(errno));
+	} else {
+		PUSH_ROOTS(roots, 1);
+		roots[0] = from_saddr(&addr, len);
+		res = alloc_tuple(2);
+		modify(&Field(res, 0), INT_TO_VAL(len));
+		modify(&Field(res, 1), roots[0]);
+		POP_ROOTS();
+	}
 
-  return res;
+	return res;
 }
 
 /* This makes fd_set a set of the sockets in vector sockv */
 
 static void vec_to_fdset(value sockv, fd_set *fds) {
-  int i, vlen = Wosize_val(sockv);
+	int i, vlen = Wosize_val(sockv);
 
-  FD_ZERO(fds);
-  for(i = 0; i < vlen; i++) {
-    FD_SET(Sock_val(Field(sockv, i)), fds);
-  }
+	FD_ZERO(fds);
+	for (i = 0; i < vlen; i++) {
+		FD_SET(VAL_TO_SOCK(Field(sockv, i)), fds);
+	}
 }
-
-
-#define NILval Atom(0)
-#define CONStag 1
 
 /* This returns a list of those elements of vector sockv which are
    also in fd_set fds, in the order in which they appear in sockv.
@@ -413,33 +457,34 @@ static void vec_to_fdset(value sockv, fd_set *fds) {
 /* Warning: allocates in the heap, may cause a GC */
 /* ML return type: sock list */
 static value fdset_to_list(value sockv, fd_set *fds) {
-  int i, fd, vlen = Wosize_val(sockv);
-  value res;
+	int i, fd, vlen = Wosize_val(sockv);
+	value res;
 
 #define xs ls[0]
 #define ys ls[1]
 #define sockv_ ls[2]
 #define sock_  ls[3]
-  PUSH_ROOTS(ls, 4);
-  sockv_ = sockv;
-  xs = NILval;
-  for (i = vlen-1; i >= 0; i--) {
-    sock_ = Field(sockv_, i);
-    fd = Sock_val(sock_);
-    if (FD_ISSET(fd, fds)) {
-      ys = alloc(2, CONStag);
-      modify(&Field(ys, 0), sock_);
-      modify(&Field(ys, 1), xs);
-      xs = ys;
-    }
-  }
-  res = xs;
-  POP_ROOTS();
+	PUSH_ROOTS(ls, 4);
+	sockv_ = sockv;
+	xs = NILval;
+	for (i = vlen-1; i >= 0; i--) {
+		sock_ = Field(sockv_, i);
+		fd = VAL_TO_SOCK(sock_);
+		if (FD_ISSET(fd, fds)) {
+			ys = alloc(2, CONStag);
+			modify(&Field(ys, 0), sock_);
+			modify(&Field(ys, 1), xs);
+			xs = ys;
+		}
+	}
+	res = xs;
+	POP_ROOTS();
 #undef xs
 #undef ys
 
-  return res;
+	return res;
 }
+
 
 /* Warning: allocates in the heap, may cause a GC */
 /* ML return type: sock list * sock list * sock list */
@@ -454,12 +499,12 @@ value msocket_select(value rsocks, value wsocks, value esocks,
   vec_to_fdset(wsocks, &wfd);
   vec_to_fdset(esocks, &efd);
 
-  if (Int_val(tsec) < 0) {
+  if (VAL_TO_INT(tsec) < 0) {
     top = NULL;
   }
   else {
-    timeout.tv_sec = Int_val(tsec);
-    timeout.tv_usec = Int_val(tusec);
+    timeout.tv_sec = VAL_TO_INT(tsec);
+    timeout.tv_usec = VAL_TO_INT(tusec);
     top = &timeout;
   }
   ret = select(FD_SETSIZE, &rfd, &wfd, &efd, top);
