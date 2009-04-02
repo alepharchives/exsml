@@ -43,6 +43,14 @@ o [jlouis] Make String 2003 Basis
 
 - Enable String test cases.
 
+* Update tools/mosmldep
+   This tool currently looks like a fastcoded mess. Cleaning it up
+   would be beneficial. Also remember to kill its output of trailing
+   whitespace in the process.
+
+   It might be the case you want to wait until we have a bit more
+   Filesystem utils in the standard library at our discretion.
+
 * Make Time correct (depends on IntInf)
    Time is required to produce LargeInt.int types all over, so this
    should be fixed.
