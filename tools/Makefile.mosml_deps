@@ -1,0 +1,5 @@
+Mosmldep.uo: Deppars.ui Deplex.uo
+Deppars.uo: Deppars.ui
+Deplex.uo: Deppars.ui
+Smltope.uo: Smltope.ui Deplex.uo Deppars.ui
+Maine.uo: Maine.ui Smltope.ui

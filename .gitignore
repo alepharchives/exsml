@@ -65,9 +65,8 @@ src/lex/Grammar.sig
 src/lex/Grammar.sml
 src/lex/Scanner.sml
 src/lex/mosmllex
-src/toolssrc/Deplex.sml
-src/toolssrc/Deppars.sig
-src/toolssrc/Deppars.sml
-src/toolssrc/Mosmldep.sml
-src/toolssrc/cutdeps
-src/toolssrc/mosmldep
+tools/Deplex.sml
+tools/Deppars.sig
+tools/Deppars.sml
+tools/Mosmldep.sml
+tools/mosmldep

@@ -230,4 +230,5 @@ AC_OUTPUT(
       libsml_socket/Makefile
       scripts/mosml
       scripts/mosmlc
+      tools/Makefile
 )
