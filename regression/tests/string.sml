@@ -241,7 +241,7 @@ val test19 =
     end;
 
 val test20 =
-    tst' "test20" (fn _ => List.all (fn arg => isSome (fromString arg))
+    tst' "test20" (fn _ => List.all (fn arg => NONE = (fromString arg))
            ["\\",
             "\\c",
             "\\F",
@@ -341,7 +341,7 @@ val test23 =
     end;
 
 val test24 =
-    let fun checkFromCStringFail arg = isSome (fromCString arg)
+    let fun checkFromCStringFail arg = NONE = (fromCString arg)
     in
         tst' "test24" (fn _ => List.all checkFromCStringFail
                ["\\",
@@ -380,7 +380,7 @@ val test26 =
 		      andalso isSuffix "bcde" "abcde"
 		      andalso isSuffix "abcde" "abcde"
 		      andalso not (isSuffix "abcdef" "abcde")
-		      andalso not (isSuffix "Abcde" "abcde"))
+		      andalso not (isSuffix "Abcde" "abcde")
 		      andalso not (isSuffix "abcdE" "abcde")
 		      andalso not (isSuffix "De" "abcde"))
 
