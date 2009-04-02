@@ -28,7 +28,7 @@ fun extract (s, i, NONE) =
 
 fun substring (s, i, n) = extract(s, i, SOME n);
 
-fun all s = (s, 0, size s)
+fun full s = (s, 0, size s)
 
 fun getc (s, i, 0) = NONE
   | getc (s, i, n) = SOME(sub_ s i, (s, i+1, n-1))

@@ -29,7 +29,7 @@ local
 	    fun removeBWS sus = concat (fields (is #" ") sus)
 	in
 	    List.map removeBWS (tokens (is #";")
-			       (all (Option.getOpt(http_cookie, ""))))
+			       (full (Option.getOpt(http_cookie, ""))))
 	end
 
     (* Return (name, value) for the desired cookie name *)
@@ -37,7 +37,7 @@ local
     fun lookupcookie cookie : (string * substring) option =
 	let open Substring
 	    fun matchCookie (x::xr)=
-	        let val (pref, suff) = position "=" (all x)
+	        let val (pref, suff) = position "=" (full x)
 		in
 		    if string pref = cookie then SOME (x, suff)
 		    else matchCookie xr

@@ -46,7 +46,7 @@ val regexec_sus_ : regex -> word -> substring -> substring vector option
     = app3 (dlsym dlh "mregex_regexec_sus")
 
 fun regexec regex eflags tgt =
-    (regexec_sus_ regex (eflagsval eflags) (Substring.all tgt))
+    (regexec_sus_ regex (eflagsval eflags) (Substring.full tgt))
     handle Fail msg => error "regexec" msg
 
 fun regnexec regex eflags sus =
@@ -57,7 +57,7 @@ val regexec_bool_ : regex -> word -> substring -> bool
     = app3 (dlsym dlh "mregex_regexec_bool")
 
 fun regexecBool regex eflags tgt =
-    (regexec_bool_ regex (eflagsval eflags) (Substring.all tgt))
+    (regexec_bool_ regex (eflagsval eflags) (Substring.full tgt))
     handle Fail msg => error "regexecBool" msg
 
 fun regnexecBool regex eflags sus =
@@ -70,7 +70,7 @@ val regmatch_sus_ : string -> word -> word -> substring
 
 fun regmatch { pat : string, tgt : string } cflags eflags =
     (regmatch_sus_ pat (cflagsval cflags) (eflagsval eflags)
-                   (Substring.all tgt))
+                   (Substring.full tgt))
     handle Fail msg => error "regmatch" msg
 
 val regmatch_bool_ : string -> word -> word -> substring -> bool
@@ -78,7 +78,7 @@ val regmatch_bool_ : string -> word -> word -> substring -> bool
 
 fun regmatchBool { pat : string, tgt : string } cflags eflags =
     (regmatch_bool_ pat (cflagsval cflags) (eflagsval eflags)
-                    (Substring.all tgt))
+                    (Substring.full tgt))
     handle Fail msg => error "regmatchBool" msg
 
 
@@ -127,16 +127,16 @@ datatype replacer =
 fun applyreplacer suss replacer res =
     let open Substring
 	fun h []                  res = res
-	  | h (Str s :: rest)     res = h rest (all s :: res)
+	  | h (Str s :: rest)     res = h rest (full s :: res)
 	  | h (Sus i :: rest)     res = h rest (Vector.sub(suss, i) :: res)
 	  | h (Tr (f,i)  :: rest) res =
-	    h rest (all (f (string (Vector.sub(suss, i)))) :: res)
-	  | h (Trs f :: rest) res     = h rest (all (f suss) :: res)
+	    h rest (full (f (string (Vector.sub(suss, i)))) :: res)
+	  | h (Trs f :: rest) res     = h rest (full (f suss) :: res)
     in h replacer res end
 
 fun replace1 regex replacer s =
     let open Substring
-	val sus = all s
+	val sus = full s
     in
 	case regexec_sus_ regex 0w0 sus of
 	    NONE      => s
@@ -165,7 +165,7 @@ fun replace_aux regex fcn replacer s =
 			else
 			    h (right s match) revres1
 		    end
-    in h (all s) [] end
+    in h (full s) [] end
 
 fun replace regex replacer s =
     replace_aux regex "replace" replacer s
@@ -192,7 +192,7 @@ fun split regex fcn add s =
 			else
 			    h (right s match) revres1
 		    end
-    in h (all s) [] end
+    in h (full s) [] end
 
 fun addfield sus res =
     sus :: res
@@ -220,7 +220,7 @@ fun fold regex (fa, fb) e s =
 			else
 			    h (right s match) res1
 		    end
-    in h (all s) e end
+    in h (full s) e end
 
 fun map regex f s =
     let open Substring
@@ -238,7 +238,7 @@ fun map regex f s =
 			else
 			    h (right s match) revres1
 		    end
-    in h (all s) [] end
+    in h (full s) [] end
 
 fun app regex f s =
     let open Substring
@@ -256,6 +256,6 @@ fun app regex f s =
 			else
 			    h (right s match)
 		    end
-    in h (all s) end
+    in h (full s) end
 
 

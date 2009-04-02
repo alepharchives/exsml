@@ -254,7 +254,7 @@ in
 	in ((hour, min, sec), src3) end
 
     fun db_getdatetime dbres fno tupno : Date.date =
-	let val src = Substring.all (db_getstring dbres fno tupno)
+	let val src = Substring.full (db_getstring dbres fno tupno)
 	    val ((yr,mo,da), src1) = scandate src
 	    val src2 = drop (fn c => c = #" ") src1
 	    val ((hr,mi,se), _   ) = scantime src2
@@ -269,11 +269,11 @@ in
         handle Option.Option => raise Fail "Mysql.db_getdatetime 2"
 
     fun db_gettime dbres fno tupno : int * int * int =
-	#1(scantime(Substring.all(db_getstring dbres fno tupno)))
+	#1(scantime(Substring.full(db_getstring dbres fno tupno)))
 	handle Option.Option => raise Fail "Mysql.db_gettime"
 
     fun db_getdate dbres fno tupno : int * int * int =
-	#1(scandate (Substring.all (db_getstring dbres fno tupno)))
+	#1(scandate (Substring.full (db_getstring dbres fno tupno)))
 	handle Option.Option => raise Fail "Mysql.db_getdate"
 end
 
@@ -488,7 +488,7 @@ fun copytablefrom (dconn as { conn, closed } : dbconn,
 	fun istab c     = (c = #"\t")
 
 	fun removetrailingnewlines str =
-	    dropr isnewline (all str)
+	    dropr isnewline (full str)
 
         fun split orgstr =
 	    fields istab orgstr
@@ -500,8 +500,8 @@ fun copytablefrom (dconn as { conn, closed } : dbconn,
 		  | loop (y1::yr) = sep :: pr y1 @ loop yr
 	    in pr x1 @ loop xr end
 
-	val comma = all ","
-	val quote = all "'"
+	val comma = full ","
+	val quote = full "'"
 
         (* NB: Special case to handle NULL=\\N values *)
 	fun enquote sus =
@@ -518,7 +518,7 @@ fun copytablefrom (dconn as { conn, closed } : dbconn,
 		val linesus =
 		    case suss of
 			[sus] => sus
-		      | _     => all (concat suss)
+		      | _     => full (concat suss)
 		val fields = split linesus
 		val quotedfields = quoteandcommaseparate fields
 		val query =
@@ -546,7 +546,7 @@ fun copytablefrom (dconn as { conn, closed } : dbconn,
 	    end
 
 	fun put linefrag : unit =
-	    processfrags(fields isnewline (all linefrag))
+	    processfrags(fields isnewline (full linefrag))
     in
 	useput put
         (* Should we do something about possible left-overs in strbuf?

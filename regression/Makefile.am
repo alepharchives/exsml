@@ -76,6 +76,7 @@ TESTS =	tests/15.sml \
 	tests/semicolon.sml \
 	tests/string2.sml \
 	tests/stringcvt.sml \
+	tests/substring.sml \
 	tests/tak.sml \
 	tests/testdyn1.sml \
 	tests/textio.sml \

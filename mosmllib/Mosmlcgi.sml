@@ -99,7 +99,7 @@ local
 
     val multipart_boundary =
 	let open Substring
-	    val content_type = all (valOf cgi_content_type)
+	    val content_type = full (valOf cgi_content_type)
 	in
 	    if isPrefix "multipart/form-data;" content_type then
 		getboundary content_type
@@ -110,7 +110,7 @@ local
 
     val the_fields =
 	case multipart_boundary of
-	    NONE => Substring.tokens (is #"&") (Substring.all query_string)
+	    NONE => Substring.tokens (is #"&") (Substring.full query_string)
 	  | _    => []
 
     val dict_with_codes = List.map (Substring.fields (is #"=")) the_fields;
@@ -171,7 +171,7 @@ local
 
     fun getint NONE       default = default
       | getint (SOME str) default =
-	case Int.scan StringCvt.DEC Substring.getc (Substring.all str) of
+	case Int.scan StringCvt.DEC Substring.getc (Substring.full str) of
 	    NONE          => default
 	  | SOME(i, rest) => if Substring.isEmpty rest then i else default
 
@@ -179,7 +179,7 @@ local
 	let open Substring
 	    val boundary = "--" ^ valOf multipart_boundary
 	    val skipbnd = dropl (isn't #"\n")
-	    val (_, contents) = position boundary (all query_string)
+	    val (_, contents) = position boundary (full query_string)
 	    fun loop rest =
 		let val (pref, suff) = position boundary rest
 		in

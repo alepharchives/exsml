@@ -175,7 +175,7 @@ fun joinBaseExt {base, ext = NONE}    = base
 fun splitBaseExt s =
     let val {dir, file} = splitDirFile s
         open Substring
-        val (fst, snd) = splitr (fn c => c <> #".") (all file)
+        val (fst, snd) = splitr (fn c => c <> #".") (full file)
     in
         if isEmpty snd         (* dot at right end     *)
            orelse isEmpty fst  (* no dot               *)

@@ -4,7 +4,7 @@ type substring
 
 val substring : string * int * int -> substring
 val extract   : string * int * int option -> substring
-val all       : string -> substring
+val full      : string -> substring
 val string    : substring -> string
 val base      : substring -> (string * int * int)
 
@@ -64,7 +64,7 @@ val app       : (char -> unit) -> substring -> unit
    consisting of the substring of s with length n starting at i.
    Raises Subscript if i<0 or n<0 or i+n > size s.
 
-   [all s] is the substring (s, 0, size s).
+   [full s] is the substring (s, 0, size s).
 
    [string sus] is the string s[i..i+n-1] represented by sus = (s, i, n).
 
