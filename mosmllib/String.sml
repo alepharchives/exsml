@@ -1,7 +1,6 @@
 (* String -- 1994-12-10, 1995-11-07, 1999-04-22 *)
 
 local
-    type char = Char.char;
     prim_val sub_      : string -> int -> char         = 2 "get_nth_char";
     prim_val mkstring_ : int -> string                 = 1 "create_string";
     prim_val update_   : string -> int -> char -> unit = 3 "set_nth_char";
@@ -12,6 +11,7 @@ local
     fun (f o g) x = f (g x);
 in
 
+type char = Char.char;
 type string = string
 val maxSize = Strbase.maxlen
 val size = size
