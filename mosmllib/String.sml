@@ -116,6 +116,25 @@ fun isPrefix s1 s2 =
 	    j = stop orelse sub_ s1 j = sub_ s2 j andalso h (j+1)
     in n1 <= n2 andalso h 0 end;
 
+(* Th isSuffix implementation here is based on the isPrefix implementation
+ * it just reverses the search direction and updates the start point, the
+ * end point and the traversal direction
+ *)
+fun isSuffix s1 s2 =
+    let
+      val n1 = size s1
+      val n2 = size s2
+      val stop = if n1 < n2 then n2-n1 else 0
+      fun h j = (* At this point s1[n2-j+1..n2] = s2[n1-j+1..n2] *)
+	  if (n2-j) = stop
+	  then
+	    sub_ s1 (n1-j) = sub_ s2 (n2-j)
+	  else
+	    sub_ s1 (n1-j) = sub_ s2 (n2-j) andalso (h (j+1))
+    in
+      n1 <= n2 andalso h 0
+    end
+
 fun foldl f e s =
     let val stop = size s
 	fun h j res = if j>=stop then res

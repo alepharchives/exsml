@@ -158,7 +158,6 @@ val test16b =
                     andalso LESS = compare("abcd", "abcde")
                     andalso GREATER = compare("abcde", "abcd"));
 
-
 (* Test cases for SML string escape functions. *)
 
 val test17 =
@@ -370,5 +369,29 @@ val test25 =
                    andalso not (isPrefix "abcdef"  "abcde")
                    andalso not (isPrefix "Abcde"  "abcde")
                    andalso not (isPrefix "abcdE"  "abcde"))
+
+
+
+(* Test isSuffix *)
+val test26 =
+    tst' "test26" (fn _ =>
+		      isSuffix "" ""
+		      andalso isSuffix "e" "abcde"
+		      andalso isSuffix "bcde" "abcde"
+		      andalso isSuffix "abcde" "abcde"
+		      andalso not (isSuffix "abcdef" "abcde")
+		      andalso not (isSuffix "Abcde" "abcde"))
+		      andalso not (isSuffix "abcdE" "abcde")
+		      andalso not (isSuffix "De" "abcde"))
+
+
+
+
+(* Test concatWith *)
+val test27 =
+    tst' "test27" (fn _ =>
+		      "abc" = (concatWith "" ["a","b","c"])
+		      andalso "a, b, c" = (concatWith ", " ["a", "b", "c"])
+		      andalso "" = concatWith "something" [])
 
 end

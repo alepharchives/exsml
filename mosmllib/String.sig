@@ -20,7 +20,7 @@
     val fields    : (char -> bool) -> string -> string list
     val isPrefix  : string -> string -> bool
 (*    val isSubstring : string -> string -> bool *)
-(*    val isSuffix    : string -> string -> bool *)
+    val isSuffix    : string -> string -> bool
 
     val compare   : string * string -> order
     val collate   : (char * char -> order) -> string * string -> order
