@@ -74,6 +74,7 @@ TESTS =	tests/15.sml \
 	tests/ref-flatten.sml \
 	tests/rem-unused.1.sml \
 	tests/semicolon.sml \
+	tests/string.sml \
 	tests/string2.sml \
 	tests/stringcvt.sml \
 	tests/substring.sml \

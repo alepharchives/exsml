@@ -32,16 +32,22 @@ TODO List for Mosml-llvm
 o [jlouis] Make String 2003 Basis
    Update String to 2003 Basis
 
-- Write a test case for String.concatWith
-
-- Implement and write test cases for isSubstring and isSuffix
+- Implement and write test cases for isSubstring
 
 - Implement and write test cases for String.scan
 
-- Fix the scanner bugs w.r.t. String.fromString
-   Perhaps also look at String.fromString.sml
+* Mail John H. Reppy
+   We need to get a resolution w.r.t String.fromString and how
+   scanning should work. It is not at all clear from the specification
+   how it is supposed to work, so I need the formal clarification
+   behind the scanning and how it is supposed to work.
 
-- Enable String test cases.
+   Relevant test cases:
+
+   ; The inversion of test 20 and test 24 in string.sml
+
+   ; The string.fromString.sml test case
+
 
 * Update tools/mosmldep
    This tool currently looks like a fastcoded mess. Cleaning it up
