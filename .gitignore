@@ -68,5 +68,4 @@ src/lex/mosmllex
 tools/Deplex.sml
 tools/Deppars.sig
 tools/Deppars.sml
-tools/Mosmldep.sml
 tools/mosmldep

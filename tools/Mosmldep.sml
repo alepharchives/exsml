@@ -178,12 +178,6 @@ fun processarg arg =
             add_unit unit
 	end;
 
-(*
-fun main () =
-    (List.app processfile (Mosml.listDir "."))
-    handle OS.SysErr (str, _) => output(std_err, str ^ "\n\n")
-*)
-
 fun main () =
   (case CommandLine.arguments() of
      []   => (* revert to old behaviour, infer dependencies *)
