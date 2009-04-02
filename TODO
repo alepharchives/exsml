@@ -29,6 +29,20 @@ TODO List for Mosml-llvm
 
    Next, use IntInf constrained to INTEGER to provide LargeInt.
 
+o [jlouis] Make String 2003 Basis
+   Update String to 2003 Basis
+
+- Write a test case for String.concatWith
+
+- Implement and write test cases for isSubstring and isSuffix
+
+- Implement and write test cases for String.scan
+
+- Fix the scanner bugs w.r.t. String.fromString
+   Perhaps also look at String.fromString.sml
+
+- Enable String test cases.
+
 * Make Time correct (depends on IntInf)
    Time is required to produce LargeInt.int types all over, so this
    should be fixed.

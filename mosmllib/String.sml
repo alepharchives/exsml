@@ -33,6 +33,16 @@ fun concat strs =
 
 val op ^ = op ^;
 
+(* Working, but non-optimal solution *)
+fun concatWith sep lst =
+  let
+    fun cw [] = ""
+      | cw [last] = last
+      | cw (str :: rest) = str ^ sep ^ (cw rest)
+  in
+    cw lst
+  end
+
 fun str c =
     let val newstr = mkstring_ 1
     in update_ newstr 0 c; newstr end;

@@ -9,7 +9,7 @@
     val substring : string * int * int -> string
     val ^         : string * string -> string
     val concat    : string list -> string
-(*    val concatWith : string -> string list -> string *)
+    val concatWith : string -> string list -> string
     val str       : char -> string
     val implode   : char list -> string
     val explode   : string -> char list
