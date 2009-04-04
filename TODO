@@ -29,6 +29,12 @@ TODO List for Mosml-llvm
 
    Next, use IntInf constrained to INTEGER to provide LargeInt.
 
+* Implement OS.Process.sleep
+   Easy task. Add a new primitive, convert the time to something the
+   backend can process and fire it down to the lower level. Since the
+   system is not threaded at all it is not that hard to get to succeed
+   at the moment.
+
 o [jlouis] Make String 2003 Basis
    Update String to 2003 Basis
 

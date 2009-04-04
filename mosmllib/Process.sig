@@ -1,9 +1,10 @@
 (* OS.Process -- SML Basis Library *)
 
-eqtype status
+type status
 
 val success   : status
 val failure   : status
+val isSuccess : status -> bool
 
 val system    : string -> status
 
@@ -23,6 +24,8 @@ val getEnv    : string -> string option
    [failure] is a status value that signifies an error during
    execution of a process.  Note that in contrast to the success
    value, there may be several distinct failure values.
+
+   [isSuccess sts] test whether the status value is a success value.
 
    [system cmd] asks the operating system to execute command cmd, and
    returns a status value.

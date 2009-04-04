@@ -8,6 +8,8 @@ val failure : status = ~1;
 
 prim_val system : string -> status = 1 "sml_system";
 
+fun isSuccess s = s = success
+
 local
     prim_val getenv_ : string -> string = 1 "sys_getenv";
 in
