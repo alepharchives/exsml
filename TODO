@@ -40,6 +40,10 @@ TODO List for Mosml-llvm
    before you do the task think hard on circumventing a a big switch
    in the world of C. Clever conversion routines would be preferable.
 
+* Add testcases for ListPairs -Eq functions.
+   Since the tests are ooold, there are no tests for the -Eq
+   functions. This ought to be remedied.
+
 o [jlouis] Make String 2003 Basis
    Update String to 2003 Basis
 
@@ -47,7 +51,7 @@ o [jlouis] Make String 2003 Basis
 
 - Implement and write test cases for String.scan
 
-* Mail John H. Reppy
+o [jlouis] Mail John H. Reppy
    We need to get a resolution w.r.t String.fromString and how
    scanning should work. It is not at all clear from the specification
    how it is supposed to work, so I need the formal clarification
@@ -58,7 +62,6 @@ o [jlouis] Make String 2003 Basis
    ; The inversion of test 20 and test 24 in string.sml
 
    ; The string.fromString.sml test case
-
 
 * Update tools/mosmldep
    This tool currently looks like a fastcoded mess. Cleaning it up
