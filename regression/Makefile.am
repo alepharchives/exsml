@@ -5,7 +5,17 @@ MAINTAINERCLEANFILES = Makefile.in
 testsubdir = testSubDir
 CLEANFILES = tests/*.ui tests/*.uo
 TESTS_ENVIRONMENT = ${srcdir}/run-test-ok
-TESTS =	tests/15.sml \
+TESTS =	tests/3.sml \
+	tests/4.sml \
+	tests/6.sml \
+	tests/7.sml \
+	tests/8.sml \
+	tests/9.sml \
+	tests/10.sml \
+	tests/11.sml \
+	tests/12.sml \
+	tests/14.sml \
+	tests/15.sml \
 	tests/21.sml \
 	tests/22.sml \
 	tests/array2.sml \
