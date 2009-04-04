@@ -30,11 +30,15 @@ TESTS =	tests/3.sml \
 	tests/char0.sml \
 	tests/check_arrays.sml \
 	tests/circular.sml \
+	tests/comment-end.sml \
 	tests/datatype-with-free-tyvars.sml \
+	tests/default-overloads.sml \
 	tests/deep-flatten.sml \
 	tests/down.sml \
 	tests/exhaustive.sml \
 	tests/exn.sml \
+	tests/exn2.sml \
+	tests/expansive-valbind.sml \
 	tests/exponential.sml \
 	tests/fact.sml \
 	tests/fast2.sml \
@@ -68,10 +72,12 @@ TESTS =	tests/3.sml \
 	tests/lambda-list-ref.sml \
 	tests/layout.sml \
 	tests/lex.sml \
+	tests/lib.sml \
 	tests/life.sml \
 	tests/listpair.sml \
 	tests/list.sml \
 	tests/local-ref.sml \
+	tests/msort.sml \
 	tests/nested-loop.sml \
 	tests/nonexhaustive.sml \
 	tests/os-exit.sml \
@@ -90,11 +96,13 @@ TESTS =	tests/3.sml \
 	tests/stringcvt.sml \
 	tests/substring.sml \
 	tests/tak.sml \
+	tests/taut.sml \
 	tests/testdyn1.sml \
 	tests/textio.sml \
 	tests/textio.2.sml \
 	tests/time2.sml \
 	tests/time3.sml \
+	tests/type-check.sml \
 	tests/tststrcmp.sml \
 	tests/unary.2.sml \
 	tests/unary.sml \
