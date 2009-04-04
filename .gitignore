@@ -31,6 +31,7 @@ libsml_socket/libsml_socket.la
 aclocal.m4
 autom4te.cache
 config.h.in
+confdefs.h
 configure
 Makefile
 Makefile.in
