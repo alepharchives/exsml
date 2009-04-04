@@ -17,6 +17,7 @@ TESTS =	tests/15.sml \
 	tests/binio.sml \
 	tests/bool-triple.sml \
 	tests/cases.sml \
+	tests/char0.sml \
 	tests/check_arrays.sml \
 	tests/circular.sml \
 	tests/datatype-with-free-tyvars.sml \
