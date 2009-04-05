@@ -7,6 +7,7 @@ local
     prim_val strcmp_   : string -> string -> int       = 2 "compare_strings";
     prim_val blit_     : string -> int -> string -> int -> int -> unit
                                                        = 5 "blit_string";
+    prim_val kmp_search_ : string -> string -> bool    = 2 "kmp_search";
 
     fun (f o g) x = f (g x);
 in
@@ -134,6 +135,9 @@ fun isSuffix s1 s2 =
     in
       n1 <= n2 andalso h 0
     end
+
+fun isSubstring s1 s2 =
+    kmp_search_ s1 s2;
 
 fun foldl f e s =
     let val stop = size s
