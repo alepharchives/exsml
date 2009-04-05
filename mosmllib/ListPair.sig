@@ -48,6 +48,12 @@ val allEq : ('a * 'b -> bool) -> 'a list * 'b list -> bool
    variant raises UnequalLengths if the lengths mismatches while the
    app variant does not.
 
+   Implementation note: The appEq does not test the length before
+   applying f to the first bunch of pair elements. That is, the
+   side-effect of f is executed until it is found out that the list
+   differs in size; then the exception is raised. The implementation
+   is the one specified en the 2003 basis library.
+
    [mapEq f (xs, ys)]
    [map f (xs, ys)] applies function f to the pairs of corresponding
    elements of xs and ys and returns the list of results.  Hence map f
