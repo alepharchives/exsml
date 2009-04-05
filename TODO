@@ -44,6 +44,15 @@ TODO List for Mosml-llvm
    Since the tests are ooold, there are no tests for the -Eq
    functions. This ought to be remedied.
 
+o [jlouis] Implement ARRAY and ARRAY_SLICE poperly
+   The current implementation is a conglomerate of Array and
+   ArraySlice and could be split into the correct implementation of
+   those. Should be pretty straightforward.
+
+   Also, remember to update the next library in alphabetical order
+   that is not 2003 compliant here, so we can keep track of when we
+   have 2003 basis support properly.
+
 o [jlouis] Make String 2003 Basis
    Update String to 2003 Basis
 
