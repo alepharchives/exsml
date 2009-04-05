@@ -43,25 +43,24 @@ val maxBlockTag = closureTag-1;
 val reservedUnitNames = ["General", "Top", "Meta"];
 val pervasiveOpenedUnits = ["General"];
 
-val fulllib = ["Option", "List", "ListPair", "Strbase", "Char", "String",
-	       "StringCvt", "TextIO", "BasicIO", "Vector",
-	       "Array", "Misc", "Substring",
-	       "Bool", "Int", "Real", "Math",
-	       "Word", "Word8", "Word8Vector", "Word8Array", "Byte",
-	       "BinIO", "CharVector", "CharArray",
-	       "Time", "Timer", "Date", "Path",
-	       "FileSys", "Process", "OS",
-	       "Mosml", "PP", "CommandLine"]
+val fulllib = ["Architecture", "Option", "List", "ListPair",
+	       "Strbase", "Char", "String", "StringCvt", "TextIO",
+	       "BasicIO", "Vector", "Array", "Misc", "Substring",
+	       "Bool", "Int", "Real", "Math", "Word", "Word8",
+	       "Word8Vector", "Word8Array", "Byte", "BinIO",
+	       "CharVector", "CharArray", "Time", "Timer", "Date",
+	       "Path", "FileSys", "Process", "OS", "Mosml", "PP",
+	       "CommandLine"]
 
 val preloadedUnitSets = [
-  ("default",  ["Option", "List", "Strbase", "Char", "String",
+  ("default",  ["Architecture", "Option", "List", "Strbase", "Char", "String",
 		"StringCvt", "TextIO", "BasicIO", "Vector",
 		"Array", "Misc"]),
   ("full",     fulllib),
-  ("sml90",    ["Option", "List", "Strbase", "Char", "String",
+  ("sml90",    ["Architecture", "Option", "List", "Strbase", "Char", "String",
                 "StringCvt", "TextIO", "BasicIO", "Vector",
 		"Array", "Misc", "SML90"]),
-  ("nj93",     ["Option", "List", "Strbase", "Char", "String",
+  ("nj93",     ["Architecture", "Option", "List", "Strbase", "Char", "String",
 		"StringCvt", "TextIO", "BasicIO", "NJ93", "Vector",
 		"Array", "Misc"])
 ];
