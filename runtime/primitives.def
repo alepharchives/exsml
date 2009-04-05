@@ -162,3 +162,4 @@ cfun_app5
 dynlib_dlopen
 dynlib_dlclose
 dynlib_dlsym
+kmp_search
