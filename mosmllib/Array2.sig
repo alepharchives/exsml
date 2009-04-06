@@ -20,7 +20,6 @@ val column     : 'a array * int -> 'a Vector.vector
 
 type 'a region = { base : 'a array, row : int, col : int,
                    nrows : int option, ncols : int option}
-
 val copy       : { src : 'a region, dst : 'a array,
                    dst_row : int, dst_col : int } -> unit
 
