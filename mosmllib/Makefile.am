@@ -9,7 +9,7 @@ include Makefile.mosml_deps
 
 # Make with the supplied compiler
 
-all: Array.uo Array2.uo Arraysort.uo \
+all: Array.uo ArraySlice.uo Array2.uo Arraysort.uo \
      BasicIO.uo Binaryset.uo Binarymap.uo BinIO.uo Bool.uo Byte.uo \
      Callback.uo Char.uo CharArray.uo CharVector.uo CommandLine.uo \
      Date.uo Dynarray.uo Dynlib.uo \

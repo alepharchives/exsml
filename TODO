@@ -1,5 +1,11 @@
 TODO List for Mosml-llvm
 
+o [jlouis] Make some tests of the Array/ArraySlice 2003 basis
+   The current tests are quite incomplete and does not test that Array
+   and ArraySlice have correctly implemented functions. Hence we will
+   fix it by writing a large set of tests that can test the
+   cornercases of these functions.
+
 * Upgrade make system and fix it.
    Things that can be done:
 
