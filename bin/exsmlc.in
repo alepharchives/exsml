@@ -22,7 +22,7 @@ while : ; do
     "")
       break;;
     *.sml)
-      $bindir/camlrunm $libexecdir/mosmlcmp -stdlib $libdir $includes $compopt $context $1 || exit $?
+      $bindir/exsmlrunm $libexecdir/mosmlcmp -stdlib $libdir $includes $compopt $context $1 || exit $?
       case $1 in
 	    */*)
 	    context="$context `dirname $1`/`basename $1 .sml`.ui"
@@ -32,7 +32,7 @@ while : ; do
       esac
       linkfiles="$linkfiles $1";;
     *.sig)
-      $bindir/camlrunm $libexecdir/mosmlcmp -stdlib $libdir $includes $compopt $context $1 || exit $?
+      $bindir/exsmlrunm $libexecdir/mosmlcmp -stdlib $libdir $includes $compopt $context $1 || exit $?
       case $1 in
 	    */*)
 	    context="$context `dirname $1`/`basename $1 .sig`.ui"
@@ -84,9 +84,9 @@ while : ; do
 	  echo "Project Ex-SML, version ${version}"
 	  echo "  git commit ${git_head}"
 	  echo "  (standard library from $libdir)"
-	  $bindir/camlrunm -V
-	  $bindir/camlrunm $libexecdir/mosmlcmp -version
-	  $bindir/camlrunm $libexecdir/mosmllnk -version;;
+	  $bindir/exsmlrunm -V
+	  $bindir/exsmlrunm $libexecdir/mosmlcmp -version
+	  $bindir/exsmlrunm $libexecdir/mosmllnk -version;;
     -imptypes)
       compopt="$compopt $1";;
     -valuepoly)
@@ -105,7 +105,7 @@ while : ; do
 done
 
 if $linkalso && test -n "$linkfiles"; then
-  $bindir/camlrunm $libexecdir/mosmllnk -stdlib $libdir $includes $custom $linkopt \
+  $bindir/exsmlrunm $libexecdir/mosmllnk -stdlib $libdir $includes $custom $linkopt \
     -exec $linkout $linkfiles || exit $?
 fi
 

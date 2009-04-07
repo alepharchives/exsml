@@ -20,8 +20,8 @@ Makefile.in
 TAGS
 aclocal.m4
 autom4te.cache
-bin/mosml
-bin/mosmlc
+bin/exsml
+bin/exsmlc
 compiler/Opcodes.sml
 compiler/Parser.sig
 compiler/Parser.sml

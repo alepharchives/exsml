@@ -12,7 +12,7 @@ options="-conservative"
 while : ; do
   case $1 in
     "")
-      exec $bindir/camlrunm $libexecdir/mosmltop -stdlib $libdir $includes $options;;
+      exec $bindir/exsmlrunm $libexecdir/mosmltop -stdlib $libdir $includes $options;;
     -I|-include)
       includes="$includes -I $2"
       shift;;
@@ -40,7 +40,7 @@ while : ; do
     -*)
       echo "Unknown option \"$1\", ignored" >&2;;
     *)
-      exec $bindir/camlrunm $libdir/mosmltop -stdlib $libdir $includes $options $* ;;
+      exec $bindir/exsmlrunm $libdir/mosmltop -stdlib $libdir $includes $options $* ;;
   esac
   shift
 done

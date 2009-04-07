@@ -1,6 +1,6 @@
 ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = runtime mosmlyac mosmllib compiler \
-	regression tools doc
+	regression tools doc bin
 EXTRA_DIST = autogen.sh
 
 

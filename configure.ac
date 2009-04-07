@@ -231,8 +231,9 @@ AC_MSG_RESULT([${cflags_message}])
 
 AC_OUTPUT(
     Makefile
-    bin/mosml
-    bin/mosmlc
+    bin/Makefile
+    bin/exsml
+    bin/exsmlc
     compiler/Makefile
     doc/Makefile
     doc/moscow-ml-manual/Makefile 
