@@ -19,8 +19,8 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_LANG([C])
 
 ## Default installation areas; can be overridden.
-AC_ARG_VAR([exsmllibdir],[location of the exsml standard library [$libdir/exsml]])
-exsmllibdir=$libdir/exsml
+AC_ARG_VAR([exsmllibdir],[location of the exsml standard library [$datarootdir/exsml]])
+exsmllibdir=$datarootdir/exsml/exsmllib/
 AC_ARG_VAR([exsmllibexecdir],[location of the exsml byte executables [$libexecdir/exsml]])
 exsmllibexecdir=$libexecdir/exsml
 

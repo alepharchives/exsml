@@ -4,8 +4,10 @@
 COMPFLAGS=-imptypes
 
 CLEANFILES = *.ui *.uo
-
 include Makefile.mosml_deps
+
+installexsmllibdir = $(exsmllibdir)
+installexsmllib_DATA = *.ui *.uo *.sig *.sml
 
 # Make with the supplied compiler
 
