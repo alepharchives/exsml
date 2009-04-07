@@ -1,7 +1,7 @@
 MOSMLC=mosmlc
 MOSMLLEX=mosmllex
 MOSMLYAC=mosmlyac
-MOSMLL=camlrunm mosmllnk -stdlib ../mosmllib -P none
+MOSMLL=exsmlrunm mosmllnk -stdlib ../mosmllib -P none
 
 SUFFIXES = .sml .ui .uo .sig .mllex .mlyacc .mlp
 

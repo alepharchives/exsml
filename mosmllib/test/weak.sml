@@ -1,7 +1,7 @@
 (* weak.sml -- test weak pointers -- 1998-01-10 *)
 
 (* May be run with         
-	camlrunm -v ~/mosml/lib/mosmltop -stdlib ~/mosml/lib -P full weak.sml
+	exsmlrunm -v ~/mosml/lib/mosmltop -stdlib ~/mosml/lib -P full weak.sml
    if you want to see how tests interleave with garbage collection.
 *)
 

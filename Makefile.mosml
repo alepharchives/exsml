@@ -1,7 +1,7 @@
 ## This makefile describes the general targets for the MOSMLC
 ## compiler
 
-CAMLRUNM=$(top_srcdir)/runtime/camlrunm
+CAMLRUNM=$(top_srcdir)/runtime/exsmlrunm
 MOSMLC=$(CAMLRUNM) $(top_srcdir)/bootstrap/mosmlcmp \
 	-stdlib $(top_srcdir)/mosmllib -P none
 MOSMLLEX=mosmllex

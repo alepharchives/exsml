@@ -14,7 +14,7 @@ libtest: links
 
 # with the current compiler and the current library 
 newtest: links
-	../../camlrunm ../../compiler/mosmltop -stdlib .. -P full test.sml > result 2>&1
+	../../exsmlrunm ../../compiler/mosmltop -stdlib .. -P full test.sml > result 2>&1
 	diff result result.ok
 
 # with the current compiler and the current library (as above)

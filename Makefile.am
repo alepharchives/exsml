@@ -7,7 +7,7 @@ EXTRA_DIST = autogen.sh
 ## Run a top-level interpreter for the compiled code
 .phony: runtop
 runtop: all
-	$(top_builddir)/runtime/camlrunm \
+	$(top_builddir)/runtime/exsmlrunm \
 	$(top_builddir)/compiler/mosmltop \
 	-stdlib $(top_builddir)/mosmllib \
 	-conservative

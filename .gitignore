@@ -51,14 +51,14 @@ mosmlyac/mosmlyac
 regression/testSubDir
 runtime/.deps
 runtime/Makefile
-runtime/camlrunm
+runtime/exsmlrunm
 runtime/global_tbl.h
 runtime/instruct.c
 runtime/instruct.h
 runtime/prims.c
-src/camlrunm
 src/config/m.h
 src/config/s.h
+src/exsmlrunm
 src/launch/camlexec
 src/launch/camlexec.c
 src/launch/mosml
