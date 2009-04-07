@@ -234,9 +234,6 @@ AC_OUTPUT(
       compiler/Makefile
       doc/Makefile
       doc/moscow-ml-manual/Makefile 
-      libsml_crypt/Makefile
-      libsml_socket/Makefile
-      libsml_unix/Makefile
       mosmllib/Architecture.sml
       mosmllib/Makefile
       mosmlyac/Makefile
