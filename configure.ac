@@ -35,6 +35,18 @@ AC_PROG_SED
 AC_PROG_INSTALL
 AM_CONFIG_HEADER(config.h)
 
+AC_DEFUN([AC_PROG_PDFLATEX],[
+AC_CHECK_PROGS(pdflatex,[pdflatex],no)
+export pdflatex;
+if test $pdflatex = "no" ;
+then
+	AC_MSG_ERROR([Unable to find a PDFLaTeX application]);
+fi
+AC_SUBST(pdflatex)
+])
+
+AC_PROG_PDFLATEX
+
 ## Checks for libs
 AC_CHECK_LIB(m, cos)
 AC_CHECK_LIB(dl, dlopen)
@@ -220,14 +232,16 @@ AC_MSG_RESULT([${cflags_message}])
 AC_OUTPUT(
       Makefile
       compiler/Makefile
-      mosmllib/Makefile
+      doc/Makefile
+      doc/moscow-ml-manual/Makefile 
+      libsml_crypt/Makefile
+      libsml_socket/Makefile
+      libsml_unix/Makefile
       mosmllib/Architecture.sml
-      runtime/Makefile
+      mosmllib/Makefile
       mosmlyac/Makefile
       regression/Makefile
-      libsml_crypt/Makefile
-      libsml_unix/Makefile
-      libsml_socket/Makefile
+      runtime/Makefile
       scripts/mosml
       scripts/mosmlc
       tools/Makefile

@@ -2,6 +2,12 @@
 *.o
 *.lo
 *.patch
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
 core.*
 core
 .deps
@@ -22,6 +28,8 @@ compiler/Predef.sml
 compiler/Prim_c.sml
 compiler/mosmllnk
 compiler/mosmltop
+doc/moscow-ml-manual/*.pdf
+doc/moscow-ml-manual/auto*
 libsml_crypt/.libs
 libsml_crypt/libsml_crypt.la
 libsml_unix/.libs
