@@ -95,6 +95,7 @@ TESTS = tests/1.sml \
 	tests/poly-equal.sml \
 	tests/polymorphic-recursion.sml \
 	tests/print-self.sml \
+	tests/pseudokit.sml \
 	tests/ref-flatten.3.sml \
 	tests/ref-flatten.5.sml \
 	tests/ref-flatten.6.sml \
@@ -233,7 +234,6 @@ TESTS = tests/1.sml \
 # tests/int-inf.1.sml \
 # tests/callcc3.sml \
 # tests/string.sml \
-# tests/char0.sml \
 # tests/lib.sml \
 # tests/nextAfter.sml \
 # tests/harmonic.sml \
@@ -265,20 +265,13 @@ TESTS = tests/1.sml \
 #tests/vector.sml \
 #tests/word8array.sml \
 #tests/socket.sml \
-#tests/pseudokit.sml
 # tests/nonterminate/8.sml \
 # tests/int-inf.bitops.sml \
-# tests/substring.sml \
 # tests/real-str.sml \
 # tests/grow-raise.sml \
 # tests/pack-word.sml \
 # tests/poly-equal.2.sml \
-# tests/16.sml \
-# tests/taut.sml \
-# tests/msort.sml
-
-
-
+# tests/16.sml
 
 ### These are the tests that has not been added to the suite yet
 ## BENCHMARKS
