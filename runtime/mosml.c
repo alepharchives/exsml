@@ -676,7 +676,7 @@ value sml_makestring_of_string(value arg)
   return res;
 }
 
-/* The following must agree with timebase in mosmllib/Time.sml: */
+/* The following must agree with timebase in exsmllib/Time.sml: */
 
 #define TIMEBASE (-1073741824)
 

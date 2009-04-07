@@ -5,7 +5,7 @@
 #include "mlvalues.h"
 #include "memory.h"
 
-struct parser_tables {    /* Mirrors parse_tables in ../mosmllib/Parsing.sml */
+struct parser_tables {    /* Mirrors parse_tables in ../exsmllib/Parsing.sml */
   value actions;
   value transl;
   char * lhs;
@@ -20,7 +20,7 @@ struct parser_tables {    /* Mirrors parse_tables in ../mosmllib/Parsing.sml */
   char * check;
 };
 
-struct parser_env {       /* Mirrors parser_env in ../mosmllib/Parsing.sml */
+struct parser_env {       /* Mirrors parser_env in ../exsmllib/Parsing.sml */
   value s_stack;
   value v_stack;
   value symb_start_stack;
@@ -46,7 +46,7 @@ struct parser_env {       /* Mirrors parser_env in ../mosmllib/Parsing.sml */
 #define Trace(act)
 
 /* Input codes */
-/* Mirrors parserInput in ../mosmllib/Parsing.sml */
+/* Mirrors parserInput in ../exsmllib/Parsing.sml */
 
 #define SEMANTIC_ACTION_COMPUTED 0
 #define STACKS_GROWN_1 1
@@ -55,7 +55,7 @@ struct parser_env {       /* Mirrors parser_env in ../mosmllib/Parsing.sml */
 #define TOKEN_READ 4
 
 /* Output codes */
-/* Mirrors parserOutput in ../mosmllib/Parsing.sml */
+/* Mirrors parserOutput in ../exsmllib/Parsing.sml */
 
 #define COMPUTE_SEMANTIC_ACTION Atom(0)
 #define GROW_STACKS_1 Atom(1)

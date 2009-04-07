@@ -1,5 +1,5 @@
 ACLOCAL_AMFLAGS = -I m4
-SUBDIRS = runtime mosmlyac mosmllib compiler \
+SUBDIRS = runtime mosmlyac exsmllib compiler \
 	regression tools doc bin
 EXTRA_DIST = autogen.sh
 
@@ -9,5 +9,5 @@ EXTRA_DIST = autogen.sh
 runtop: all
 	$(top_builddir)/runtime/exsmlrunm \
 	$(top_builddir)/compiler/mosmltop \
-	-stdlib $(top_builddir)/mosmllib \
+	-stdlib $(top_builddir)/exsmllib \
 	-conservative

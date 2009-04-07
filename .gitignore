@@ -46,7 +46,7 @@ doc/moscow-ml-manual/auto*
 libtool
 ltmain.sh
 m4
-mosmllib/Architecture.sml
+exsmllib/Architecture.sml
 mosmlyac/mosmlyac
 regression/testSubDir
 runtime/.deps

@@ -19,10 +19,10 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_LANG([C])
 
 ## Default installation areas; can be overridden.
-AC_ARG_VAR([mosmllibdir],[location of the mosml standard library [$libdir/mosml]])
-mosmllibdir=$libdir/mosml
-AC_ARG_VAR([mosmllibexecdir],[location of the mosml byte executables [$libexecdir/mosml]])
-mosmllibexecdir=$libexecdir/mosml
+AC_ARG_VAR([exsmllibdir],[location of the exsml standard library [$libdir/exsml]])
+exsmllibdir=$libdir/exsml
+AC_ARG_VAR([exsmllibexecdir],[location of the exsml byte executables [$libexecdir/exsml]])
+exsmllibexecdir=$libexecdir/exsml
 
 ## Libtool
 AC_PROG_LIBTOOL
@@ -60,7 +60,7 @@ AC_CHECK_FUNCS([getgroups])
 AC_FUNC_CHOWN
 AC_FUNC_GETGROUPS
 
-## Check for various platform specific stuff needed in the mosml runtime
+## Check for various platform specific stuff needed in the exsml runtime
 # Endianness, define WORDS_BIGENDIAN on Big endian bastards
 AC_C_BIGENDIAN
 
@@ -237,8 +237,8 @@ AC_OUTPUT(
     compiler/Makefile
     doc/Makefile
     doc/moscow-ml-manual/Makefile 
-    mosmllib/Architecture.sml
-    mosmllib/Makefile
+    exsmllib/Architecture.sml
+    exsmllib/Makefile
     mosmlyac/Makefile
     regression/Makefile
     runtime/Makefile
