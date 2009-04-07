@@ -153,6 +153,24 @@ fun foldli f e {arr, index, len} =
 		       res
     in lr 0 e end
 
+fun foldr f e {arr, index, len} =
+    let
+      fun rl j res = if j >= 0 then
+		       rl (j-1) (f (Array.sub(arr, index+j), res))
+		     else res
+    in
+     rl len e
+    end
+
+fun foldri f e {arr, index, len} =
+    let
+      fun rl j res = if j >= 0 then
+		       rl (j-1) (f (j, Array.sub(arr, index+j), res))
+		     else res
+    in
+      rl len e
+    end
+
 fun modify f {arr, index, len} =
     let
       fun lr j = if j < len then
@@ -169,5 +187,16 @@ fun modifyi f {arr, index, len} =
 		    lr (j+1))
 		 else ()
     in lr 0 end
+
+fun collate f (slc1, slc2) =
+    case (getItem slc1, getItem slc2) of
+      (NONE, SOME _) => LESS
+    | (SOME _, NONE) => GREATER
+    | (NONE, NONE) => EQUAL
+    | (SOME (e1, r1), SOME (e2, r2)) =>
+        (case f (e1, e2) of
+	   LESS => LESS
+	 | GREATER => GREATER
+	 | EQUAL => collate f (r1, r2))
 
 end

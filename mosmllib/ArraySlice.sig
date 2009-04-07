@@ -35,21 +35,16 @@ val all : ('a -> bool) -> 'a slice -> bool
 
 val foldli : (int * 'a * 'b -> 'b) -> 'b -> 'a slice -> 'b
 val foldl  : ('a * 'b -> 'b) -> 'b -> 'a slice -> 'b
+val foldri : (int * 'a * 'b -> 'b) -> 'b -> 'a slice -> 'b
+val foldr  : ('a * 'b -> 'b) -> 'b -> 'a slice -> 'b
+
 
 val modifyi : (int * 'a -> 'a) -> 'a slice -> unit
 val modify  : ('a -> 'a) -> 'a slice -> unit
 
-(*
-
-
-
-val foldri : (int * 'a * 'b -> 'b) -> 'b -> 'a slice -> 'b
-
-val foldr  : ('a * 'b -> 'b) -> 'b -> 'a slice -> 'b
-
 val collate : ('a * 'a -> order)
                 -> 'a slice * 'a slice -> order
-*)
+
 end
 
 (*
@@ -113,6 +108,10 @@ end
    [foldl f e slc] perform a foldl over the slice slc. The foldli
    variant also supplies the index to the function f.
 
+   [foldri f e slc]
+   [foldr f e slc] perform a foldr over the slice slc. The foldri
+   variant also supplies the index to the function f.
+
    [findi p slc]
    [find p slc] searches the slice in increasing index order. The
    first element to satisfy the predicate p is returned. The findi
@@ -126,5 +125,8 @@ end
    all elements in slc satisfies the predicate p; false otherwise.
 
    Implementation note: exists and all are short-circuiting.
+
+   [collate f (slc1, slc2)] use the ordering function f to do
+   lexicographic ordering on the slices slc1 and slc2
 
  *)
