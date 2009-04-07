@@ -230,16 +230,16 @@ CHECK_CFLAG([-ftree-vrp])
 AC_MSG_RESULT([${cflags_message}])
 
 AC_OUTPUT(
-      Makefile
-      compiler/Makefile
-      doc/Makefile
-      doc/moscow-ml-manual/Makefile 
-      mosmllib/Architecture.sml
-      mosmllib/Makefile
-      mosmlyac/Makefile
-      regression/Makefile
-      runtime/Makefile
-      scripts/mosml
-      scripts/mosmlc
-      tools/Makefile
+    Makefile
+    bin/mosml
+    bin/mosmlc
+    compiler/Makefile
+    doc/Makefile
+    doc/moscow-ml-manual/Makefile 
+    mosmllib/Architecture.sml
+    mosmllib/Makefile
+    mosmlyac/Makefile
+    regression/Makefile
+    runtime/Makefile
+    tools/Makefile
 )
