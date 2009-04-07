@@ -1,5 +1,10 @@
 TODO List for Mosml-llvm
 
+o [jlouis] Change the buildsystem to use -toplevel builds all the way through.
+   Many things w.r.t clean code depends on this being done.
+
+* Consider making -toplevel the default buildmode.
+
 * 2003 Basis implementation:
 
    These things still needs to be done. Done in this case means that
@@ -20,6 +25,8 @@ TODO List for Mosml-llvm
 
    CharArray :> MONO_ARRAY
    CharArraySlice :> MONO_ARRAY_SLICE
+     Seriously needs -toplevel
+
    Char :> CHAR
    CharVector :> MONO_VECTOR
    CharVectorSlice :> MONO_VECTOR_SLICE
