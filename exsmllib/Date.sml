@@ -224,14 +224,12 @@ in
 
     fun localOffset () = Time.fromSeconds (Real.round localoffset mod 86400)
 
-    fun toString date =
-	String.substring(asctime_ (dateToTmoz date), 0, 24)
-	handle Fail _    => raise Date
-	     | Subscript => raise (Fail "Date.toString: internal error");
-
     fun fmt fmtstr date =
 	(strftime_ fmtstr (dateToTmoz date))
 	handle Fail _ => raise Date
+
+    fun toString date =
+	fmt "%a %b %d %H:%M:%S %Y" date
 
     (* To scan dates in the format "Wed Mar  8 19:06:45 1995" *)
 

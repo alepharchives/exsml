@@ -37,6 +37,7 @@ TESTS = tests/1.sml \
 	tests/comment-end.sml \
 	tests/constraint.sml \
 	tests/datatype-with-free-tyvars.sml \
+	tests/date.sml \
 	tests/default-overloads.sml \
 	tests/deep-flatten.sml \
 	tests/down.sml \
@@ -254,7 +255,6 @@ TESTS = tests/1.sml \
 # tests/thread1.sml \
 # tests/default-overloads.sml \
 # tests/eqtype.sml \
-# tests/date.sml \
 # tests/ex.sml \
 # tests/widechar.sml \
 # tests/flat-array.3.sml \
