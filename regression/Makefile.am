@@ -110,7 +110,6 @@ TESTS = tests/1.sml \
 	tests/testdyn1.sml \
 	tests/textio.sml \
 	tests/textio.2.sml \
-#	tests/time2.sml \ <- needs intinf first.
 	tests/time3.sml \
 	tests/type-check.sml \
 	tests/tststrcmp.sml \
@@ -125,6 +124,8 @@ TESTS = tests/1.sml \
 	tests/where.sml \
 	tests/withtype.sml \
 	tests/word.sml
+
+#	tests/time2.sml \ <- needs intinf first.
 
 
 
