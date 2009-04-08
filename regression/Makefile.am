@@ -3,7 +3,8 @@
 EXTRA_DIST = defs $(TESTS)
 MAINTAINERCLEANFILES = Makefile.in
 testsubdir = testSubDir
-CLEANFILES = tests/*.ui tests/*.uo
+CLEANFILES = tests/*.ui tests/*.uo benchmark benchmark.sml benchmark.lnk \
+	*.ui *.uo
 TESTS_ENVIRONMENT = ${srcdir}/run-test-ok
 TESTS = tests/1.sml \
 	tests/2.sml \

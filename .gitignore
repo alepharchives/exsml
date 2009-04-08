@@ -48,6 +48,9 @@ ltmain.sh
 m4
 exsmllib/Architecture.sml
 mosmlyac/mosmlyac
+regression/benchmark
+regression/benchmark.lnk
+regression/benchmark.sml
 regression/testSubDir
 runtime/.deps
 runtime/Makefile
