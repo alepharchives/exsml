@@ -86,6 +86,23 @@ def mosml_compile(options, benchmark):
     except:
         t.print_exc()
 
+def mlton_compile(options, benchmark):
+    """Compile a benchmark with mlton"""
+    benchmark_name = batch_benchmark(options, benchmark)
+    mlton_command = 'mlton'
+
+    sys_str = ' '.join([mlton_command, '-output', './benchmark', benchmark_name])
+    command = "os.system('%s')" % sys_str
+
+    t = timeit.Timer(stmt=command, setup='import os')
+    try:
+        return t.timeit(number=1)
+    except:
+        t.print_exc()
+
+compilers = { 'mosml' : mosml_compile,
+              'mlton' : mlton_compile }
+
 def batch_benchmark(options, benchmark):
     """
     Build a batch benchmark.
@@ -141,6 +158,10 @@ def parse_options():
                       default=None, action='store', type='int',
                       help="Explicitly specify a number of runs")
 
+    parser.add_option('--compiler', action='store', type='string',
+                      default='mosml', dest='compiler',
+                      help="The compiler used for running the benchmarks")
+
     return parser.parse_args()
 
 def main(options, args):
@@ -156,9 +177,15 @@ def main(options, args):
 
         benchmarks_to_run = options.run_only
 
+    try:
+        compiler = compilers[options.compiler]
+    except:
+        raise RuntimeError("No such compiler")
+
+
     for benchmark in benchmarks_to_run:
         print "Running %s" % benchmark
-        compile_time = mosml_compile(options, benchmark)
+        compile_time = compiler(options, benchmark)
         print "Compilation time: %s" % compile_time
         run_time = run_benchmark('benchmark')
         print "Run time: %s" % run_time
@@ -168,4 +195,6 @@ if __name__ == '__main__':
         sys.exit(main(*parse_options()))
     except NoSuchBench, nb:
         print "Non existant benchmark: %s" % nb
+    except RuntimeError, e:
+        print "Runtime error: %s" % e
 

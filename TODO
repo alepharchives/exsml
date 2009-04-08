@@ -11,7 +11,6 @@ TODO List for Mosml-llvm
 
 - Current-build Ex-SML compiler driver
 - Installed Ex-SML compiler driver
-- MLton compiler driver
 - JSON output
    Make the system output JSON data
 
