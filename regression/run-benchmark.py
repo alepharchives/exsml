@@ -8,6 +8,7 @@ from __future__ import with_statement
 import sys
 import os
 import timeit
+import datetime
 
 import simplejson
 
@@ -238,7 +239,9 @@ def main(options, args):
                                     { 'compile_time' : compile_time,
                                       'run_time'     : run_time }})
 
-    print simplejson.dumps(benchmark_results, indent=1)
+    now = datetime.datetime.now().strftime('%Y-%m-%d')
+    res = {now : { options.compiler : benchmark_results } }
+    print simplejson.dumps(res, indent=1)
 
 if __name__ == '__main__':
     try:
