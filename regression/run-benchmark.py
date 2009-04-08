@@ -86,6 +86,20 @@ def mosml_compile(options, benchmark):
     except:
         t.print_exc()
 
+def exsml_reference_compile(options, benchmark):
+    """Compile a benchmark for Ex-SML"""
+    benchmark_name = batch_benchmark(options, benchmark)
+    mosml_command = 'exsmlc -orthodox -standalone -toplevel'
+
+    sys_str = ' '.join([mosml_command, '-o', 'benchmark', benchmark_name])
+    command = "os.system('%s')" % sys_str
+
+    t = timeit.Timer(stmt=command, setup='import os')
+    try:
+        return t.timeit(number=1)
+    except:
+        t.print_exc()
+
 def mlton_compile(options, benchmark):
     """Compile a benchmark with mlton"""
     benchmark_name = batch_benchmark(options, benchmark)
@@ -131,7 +145,8 @@ def exsml_current_compile(options, benchmark):
 
 compilers = { 'mosml' : mosml_compile,
               'mlton' : mlton_compile,
-              'exsml-current' : exsml_current_compile }
+              'exsml-current' : exsml_current_compile,
+              'exsml-reference' : exsml_reference_compile }
 
 def batch_benchmark(options, benchmark):
     """
