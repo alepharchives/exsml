@@ -1,5 +1,21 @@
 TODO List for Mosml-llvm
 
+* Setup a toolset for benchmark runs.
+   Has to be thought out, but I would like to be able to:
+
+   ; Benchmark multiple SML compilers
+   ; Benchmark their performance movement over time
+   ; Keep track of old benchmark results in a simple format.
+   ; Be able to plot results over time
+   ; Use geometric mean for a final number.
+
+- Current-build Ex-SML compiler driver
+- Installed Ex-SML compiler driver
+- MLton compiler driver
+- JSON output
+   Make the system output JSON data
+
+
 o [jlouis] Change the buildsystem to use -toplevel builds all the way through.
    Many things w.r.t clean code depends on this being done.
 
@@ -205,14 +221,6 @@ o [jlouis] Mail John H. Reppy
 * Eradicate the Not_Implemented in LLVM.sml
    This means a full implementation of LLVM.
 
-* Setup a toolset for benchmark runs.
-   Has to be thought out, but I would like to be able to:
-
-   ; Benchmark multiple SML compilers
-   ; Benchmark their performance movement over time
-   ; Keep track of old benchmark results in a simple format.
-   ; Be able to plot results over time
-   ; Use geometric mean for a final number.
 
 * Set up buildbot
 
