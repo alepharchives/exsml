@@ -9,6 +9,8 @@ import sys
 import os
 import timeit
 
+import simplejson
+
 from optparse import OptionParser
 
 class NoSuchBench(Exception):
@@ -228,12 +230,15 @@ def main(options, args):
         raise RuntimeError("No such compiler")
 
 
+    benchmark_results = []
     for benchmark in benchmarks_to_run:
-        print "Running %s" % benchmark
         compile_time = compiler(options, benchmark)
-        print "Compilation time: %s" % compile_time
         run_time = run_benchmark('benchmark')
-        print "Run time: %s" % run_time
+        benchmark_results.append({benchmark :
+                                    { 'compile_time' : compile_time,
+                                      'run_time'     : run_time }})
+
+    print simplejson.dumps(benchmark_results, indent=1)
 
 if __name__ == '__main__':
     try:
