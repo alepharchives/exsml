@@ -9,11 +9,8 @@ TODO List for Mosml-llvm
    ; Be able to plot results over time
    ; Use geometric mean for a final number.
 
-- Current-build Ex-SML compiler driver
-- Installed Ex-SML compiler driver
-- JSON output
-   Make the system output JSON data
-
+- Store the run-type in the database as well.
+- Only store runs if we are running in fast or slow mode.
 
 o [jlouis] Change the buildsystem to use -toplevel builds all the way through.
    Many things w.r.t clean code depends on this being done.
