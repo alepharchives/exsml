@@ -75,7 +75,13 @@ def mosml_compile(options, benchmark):
     mosml_command = 'mosmlc -orthodox -standalone -toplevel'
 
     sys_str = ' '.join([mosml_command, '-o', 'benchmark', benchmark])
-    os.system(sys_str)
+    command = "os.system('%s')" % sys_str
+
+    t = timeit.Timer(stmt=command, setup='import os')
+    try:
+        return t.timeit(number=1)
+    except:
+        t.print_exc()
 
 def batch_benchmark(options, benchmark):
     """
@@ -96,16 +102,25 @@ def batch_benchmark(options, benchmark):
             contents = in_file.read()
         out.write(contents)
         (slow, fast) = bench_counts[benchmark]
-        if options.slow:
-            out.write("val _ = Main.doit(%d)\n" % slow)
+        if options.runs is not None:
+            num = options.runs
+        elif options.slow:
+            num = slow
         else:
-            out.write("val _ = Main.doit(%d)\n" % fast)
+            num = fast
+
+        out.write("val _ = Main.doit(%d)\n" % num)
 
     return 'benchmark.sml' # Generalize this
 
 def run_benchmark(f):
     """Runs a benchmark executable in the file f"""
-    os.system(''.join(['./', f]))
+    command = "os.system('%s')" % (''.join(['./', f]))
+    t = timeit.Timer(stmt=command, setup='import os')
+    try:
+        return t.timeit(number=1)
+    except:
+        t.print_exc()
 
 def parse_options():
     """Parse options for the benchmark driver via Pythons option parser"""
@@ -116,9 +131,12 @@ def parse_options():
     parser.add_option('--slow', dest="slow",
                       default=False, action='store_true',
                       help="Run the large (slow) benchmark.")
-    parser.add_option("-r", '--run', dest='run_only',
+    parser.add_option("-b", '--benchmark', dest='run_only',
                       default=[], action='append',
                       help="Run this benchmark. Default: Run all")
+    parser.add_option('--runs', dest='runs',
+                      default=None, action='store', type='int',
+                      help="Explicitly specify a number of runs")
 
     return parser.parse_args()
 
@@ -138,8 +156,10 @@ def main(options, args):
     for benchmark in benchmarks_to_run:
         print "Running %s" % benchmark
         benchmark_name = batch_benchmark(options, benchmark)
-        mosml_compile(options, benchmark_name)
-        run_benchmark('benchmark')
+        compile_time = mosml_compile(options, benchmark_name)
+        print "Compilation time: %s" % compile_time
+        run_time = run_benchmark('benchmark')
+        print "Run time: %s" % run_time
 
 if __name__ == '__main__':
     try:
