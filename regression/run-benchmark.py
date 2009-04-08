@@ -11,6 +11,14 @@ import timeit
 
 from optparse import OptionParser
 
+class NoSuchBench(Exception):
+    """Exception used for nonexistant benchmarks"""
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return repr(self.value)
+
 # Counts from benchmarks from MLton
 ## The benchmark counts is a name, a number of iterations for the fast run
 ## and a number of iterations for the slow run. Some of these are spensive to
@@ -114,19 +122,11 @@ def parse_options():
 
     return parser.parse_args()
 
-class NoSuchBench(Exception):
-    """Exception used for nonexistant benchmarks"""
-    def __init__(self, value):
-        self.value = value
-
-    def __str__(self):
-        return repr(self.value)
-
 def main(options, args):
     """Main runner, run benchmarks"""
     #for benchmark in bench_counts.keys():
     if options.run_only == []:
-        benchmarks_to_run = bench_counts.keys()
+        benchmarks_to_run = sorted(bench_counts.keys())
     else:
         # Process them and bail if the benchmark doesn't exist
         for b in options.run_only:
