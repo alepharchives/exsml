@@ -100,8 +100,30 @@ def mlton_compile(options, benchmark):
     except:
         t.print_exc()
 
+def exsml_add_exsmlrunm_header():
+    pass
+
+def exsml_current_compile(options, benchmark):
+    """Compile with the currently build exsml compiler and exsmllib"""
+    benchmark_name = batch_benchmark(options, benchmark)
+    exsml_command = '../runtime/exsmlrunm ../compiler/mosmlcmp -stdlib ../exsmllib -P full -orthodox -toplevel'
+    exsml_lnk_command = "../runtime/exsmlrunm ../compiler/mosmllnk -stdlib ../exsmllib  -P full "
+    sys_str = ' '.join([exsml_command, benchmark_name])
+    sys_lnk_str = ' '.join([exsml_lnk_command, '-noheader', '-exec', 'benchmark',
+                            benchmark_name])
+    print sys_lnk_str
+    command = "os.system('%s')\nos.system('%s')" % (sys_str, sys_lnk_str)
+
+    t = timeit.Timer(stmt=command, setup='import os')
+    try:
+        return t.timeit(number=1)
+        exsml_add_exsmlrunm_header()
+    except:
+        t.print_exc()
+
 compilers = { 'mosml' : mosml_compile,
-              'mlton' : mlton_compile }
+              'mlton' : mlton_compile,
+              'exsml-current' : exsml_current_compile }
 
 def batch_benchmark(options, benchmark):
     """
