@@ -101,7 +101,13 @@ def mlton_compile(options, benchmark):
         t.print_exc()
 
 def exsml_add_exsmlrunm_header():
-    pass
+    """Add a header on the compiled file"""
+    with open('benchmark', 'wb') as out:
+        with open('benchmark.lnk', 'rb') as in_file:
+            data = in_file.read()
+
+        out.write("#!../runtime/exsmlrunm\n")
+        out.write(data)
 
 def exsml_current_compile(options, benchmark):
     """Compile with the currently build exsml compiler and exsmllib"""
@@ -109,15 +115,17 @@ def exsml_current_compile(options, benchmark):
     exsml_command = '../runtime/exsmlrunm ../compiler/mosmlcmp -stdlib ../exsmllib -P full -orthodox -toplevel'
     exsml_lnk_command = "../runtime/exsmlrunm ../compiler/mosmllnk -stdlib ../exsmllib  -P full "
     sys_str = ' '.join([exsml_command, benchmark_name])
-    sys_lnk_str = ' '.join([exsml_lnk_command, '-noheader', '-exec', 'benchmark',
+    sys_lnk_str = ' '.join([exsml_lnk_command, '-noheader', '-exec', 'benchmark.lnk',
                             benchmark_name])
     print sys_lnk_str
     command = "os.system('%s')\nos.system('%s')" % (sys_str, sys_lnk_str)
 
     t = timeit.Timer(stmt=command, setup='import os')
     try:
-        return t.timeit(number=1)
+        time_from_run = t.timeit(number=1)
         exsml_add_exsmlrunm_header()
+        os.chmod('benchmark', 0755)
+        return time_from_run
     except:
         t.print_exc()
 
