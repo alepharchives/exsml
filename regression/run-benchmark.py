@@ -69,6 +69,19 @@ bench_counts = { "barnes-hut" : (4096, 1024),
                  "zebrapig" : (15, 3),
                  "zern" : (2000, 500) }
 
+def read_database(db_file):
+    """
+    Read in the database from the db_file. On error, return a new
+    empty database.
+    """
+    try:
+        with open(db_file, 'r') as f:
+            db = simplejson.load(f)
+
+        return db
+    except IOError, e:
+        return {}
+
 def smlify(benchmark):
     """Add .sml to the end of a benchmark name (the name is a string)"""
     return benchmark + '.sml'
@@ -205,15 +218,22 @@ def parse_options():
     parser.add_option('--runs', dest='runs',
                       default=None, action='store', type='int',
                       help="Explicitly specify a number of runs")
-
     parser.add_option('--compiler', action='store', type='string',
                       default='mosml', dest='compiler',
                       help="The compiler used for running the benchmarks")
+    parser.add_option('--database', action='store', type='string',
+                      dest='database', default='runs.json',
+                      help='The database to update with the benchmark runs')
+    parser.add_option('--dry-run', action='store_true', default=False,
+                      help='Do not update the database, run dry')
 
     return parser.parse_args()
 
 def main(options, args):
     """Main runner, run benchmarks"""
+
+    db = read_database(options.database)
+
     #for benchmark in bench_counts.keys():
     if options.run_only == []:
         benchmarks_to_run = sorted(bench_counts.keys())
@@ -241,7 +261,10 @@ def main(options, args):
 
     now = datetime.datetime.now().strftime('%Y-%m-%d')
     res = {now : { options.compiler : benchmark_results } }
-    print simplejson.dumps(res, indent=1)
+    if options.dry_run:
+        print simplejson.dumps(res, indent=1)
+    else:
+        print "Database stuff not written yet"
 
 if __name__ == '__main__':
     try:
