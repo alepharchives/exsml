@@ -89,6 +89,14 @@ def write_database(db_file, db):
     with open(db_file, 'w') as f:
         simplejson.dump(db, f)
 
+def merge_results(results, db):
+    """Merge the compilation results into the db"""
+    for r in results.keys():
+        if db.has_key(r):
+            db[r].append(results[r])
+        else:
+            db[r] = [results[r]]
+
 def smlify(benchmark):
     """Add .sml to the end of a benchmark name (the name is a string)"""
     return benchmark + '.sml'
@@ -258,19 +266,26 @@ def main(options, args):
         raise RuntimeError("No such compiler")
 
 
-    benchmark_results = []
+    benchmark_results = {}
     for benchmark in benchmarks_to_run:
         compile_time = compiler(options, benchmark)
         run_time = run_benchmark('benchmark')
-        benchmark_results.append({benchmark :
-                                    { 'compile_time' : compile_time,
-                                      'run_time'     : run_time }})
+        benchmark_results[benchmark] = [{ 'compile_time' : compile_time,
+                                         'run_time'     : run_time }]
 
     now = datetime.datetime.now().strftime('%Y-%m-%d')
-    res = {now : { options.compiler : benchmark_results } }
     if options.dry_run:
+        res = { now : { options.compiler : benchmark_results } }
         print simplejson.dumps(res, indent=1)
     else:
+        if db.has_key(now):
+            d = db[now]
+            if d.has_key(options.compiler):
+                merge_results(benchmark_results, d[options.compiler])
+            else:
+                d[options.compiler] = benchmark_results
+        else:
+            db[now] = { options.compiler : benchmark_results }
         write_database(options.database, db)
 
 if __name__ == '__main__':
