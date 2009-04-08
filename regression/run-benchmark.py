@@ -82,6 +82,13 @@ def read_database(db_file):
     except IOError, e:
         return {}
 
+def write_database(db_file, db):
+    """
+    Write the database in db out to db_file
+    """
+    with open(db_file, 'w') as f:
+        simplejson.dump(db, f)
+
 def smlify(benchmark):
     """Add .sml to the end of a benchmark name (the name is a string)"""
     return benchmark + '.sml'
@@ -264,7 +271,7 @@ def main(options, args):
     if options.dry_run:
         print simplejson.dumps(res, indent=1)
     else:
-        print "Database stuff not written yet"
+        write_database(options.database, db)
 
 if __name__ == '__main__':
     try:
