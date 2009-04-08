@@ -7,6 +7,8 @@ from __future__ import with_statement
 
 import sys
 import os
+import timeit
+
 from optparse import OptionParser
 
 # Counts from benchmarks from MLton
@@ -85,8 +87,12 @@ def batch_benchmark(options, benchmark):
         with open(program, 'r') as in_file:
             contents = in_file.read()
         out.write(contents)
-        (fast, slow) = bench_counts[benchmark]
-        out.write("val _ = Main.doit(%d)\n" % fast)
+        (slow, fast) = bench_counts[benchmark]
+        if options.slow:
+            out.write("val _ = Main.doit(%d)\n" % slow)
+        else:
+            out.write("val _ = Main.doit(%d)\n" % fast)
+
     return 'benchmark.sml' # Generalize this
 
 def run_benchmark(f):
@@ -99,17 +105,45 @@ def parse_options():
     parser.add_option('--benchmarkdir', dest="benchmarkdir", type='string',
                       help="Directory of benchmarks",
                       default="benchmarks")
+    parser.add_option('--slow', dest="slow",
+                      default=False, action='store_true',
+                      help="Run the large (slow) benchmark.")
+    parser.add_option("-r", '--run', dest='run_only',
+                      default=[], action='append',
+                      help="Run this benchmark. Default: Run all")
 
     return parser.parse_args()
+
+class NoSuchBench(Exception):
+    """Exception used for nonexistant benchmarks"""
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return repr(self.value)
 
 def main(options, args):
     """Main runner, run benchmarks"""
     #for benchmark in bench_counts.keys():
-    for benchmark in ['zebrapig']:
+    if options.run_only == []:
+        benchmarks_to_run = bench_counts.keys()
+    else:
+        # Process them and bail if the benchmark doesn't exist
+        for b in options.run_only:
+            if not bench_counts.has_key(b):
+                raise NoSuchBench(b)
+
+        benchmarks_to_run = options.run_only
+
+    for benchmark in benchmarks_to_run:
         print "Running %s" % benchmark
         benchmark_name = batch_benchmark(options, benchmark)
         mosml_compile(options, benchmark_name)
         run_benchmark('benchmark')
 
 if __name__ == '__main__':
-    sys.exit(main(*parse_options()))
+    try:
+        sys.exit(main(*parse_options()))
+    except NoSuchBench, nb:
+        print "Non existant benchmark: %s" % nb
+
