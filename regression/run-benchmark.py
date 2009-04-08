@@ -10,6 +10,9 @@ import os
 from optparse import OptionParser
 
 # Counts from benchmarks from MLton
+## The benchmark counts is a name, a number of iterations for the fast run
+## and a number of iterations for the slow run. Some of these are spensive to
+## run, so take it easy and wait it out.
 bench_counts = { "barnes-hut" : (4096, 1024),
                  "boyer" : (3000, 1000),
                  "checksum" : (1500, 150),
@@ -53,17 +56,29 @@ bench_counts = { "barnes-hut" : (4096, 1024),
                  "zebrapig" : (15, 3),
                  "zern" : (2000, 500) }
 
-def smlify(test):
-    return test + '.sml'
+def smlify(benchmark):
+    """Add .sml to the end of a benchmark name (the name is a string)"""
+    return benchmark + '.sml'
 
 def mosml_compile(options, benchmark):
-
+    """Compile a benchmark for Moscow ML"""
     mosml_command = 'mosmlc -orthodox -standalone -toplevel'
 
     sys_str = ' '.join([mosml_command, '-o', 'benchmark', benchmark])
     os.system(sys_str)
 
 def batch_benchmark(options, benchmark):
+    """
+    Build a batch benchmark.
+
+    Some SML systems can do batch-compilation as you would expect in a UNIX system
+    That is, they know to execute 'val _ = Main.doit n' for some n if it is in the
+    file. Other systems, like PolyML and SML/NJ do not understand how to do this
+    properly.
+
+    This function batches a benchmark, ie, adds the call to Main.doit in the end of
+    it and returns the name of the batched benchmark.
+    """
     program = '/'.join([options.benchmarkdir, smlify(benchmark)])
 
     with open('benchmark.sml', 'w') as out:
@@ -72,8 +87,10 @@ def batch_benchmark(options, benchmark):
         out.write(contents)
         (fast, slow) = bench_counts[benchmark]
         out.write("val _ = Main.doit(%d)\n" % fast)
+    return 'benchmark.sml' # Generalize this
 
 def run_benchmark(f):
+    """Runs a benchmark executable in the file f"""
     os.system(''.join(['./', f]))
 
 def parse_options():
@@ -86,12 +103,12 @@ def parse_options():
     return parser.parse_args()
 
 def main(options, args):
-    """Main runner"""
+    """Main runner, run benchmarks"""
     #for benchmark in bench_counts.keys():
     for benchmark in ['zebrapig']:
         print "Running %s" % benchmark
-        batch_benchmark(options, benchmark)
-        mosml_compile(options, 'benchmark.sml')
+        benchmark_name = batch_benchmark(options, benchmark)
+        mosml_compile(options, benchmark_name)
         run_benchmark('benchmark')
 
 if __name__ == '__main__':
