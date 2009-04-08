@@ -72,9 +72,12 @@ def smlify(benchmark):
 
 def mosml_compile(options, benchmark):
     """Compile a benchmark for Moscow ML"""
+
+    # Mosml can do batch compiles
+    benchmark_name = batch_benchmark(options, benchmark)
     mosml_command = 'mosmlc -orthodox -standalone -toplevel'
 
-    sys_str = ' '.join([mosml_command, '-o', 'benchmark', benchmark])
+    sys_str = ' '.join([mosml_command, '-o', 'benchmark', benchmark_name])
     command = "os.system('%s')" % sys_str
 
     t = timeit.Timer(stmt=command, setup='import os')
@@ -155,8 +158,7 @@ def main(options, args):
 
     for benchmark in benchmarks_to_run:
         print "Running %s" % benchmark
-        benchmark_name = batch_benchmark(options, benchmark)
-        compile_time = mosml_compile(options, benchmark_name)
+        compile_time = mosml_compile(options, benchmark)
         print "Compilation time: %s" % compile_time
         run_time = run_benchmark('benchmark')
         print "Run time: %s" % run_time
