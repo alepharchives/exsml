@@ -251,8 +251,6 @@ def parse_options():
 def main(options, args):
     """Main runner, run benchmarks"""
 
-    db = read_database(options.database)
-
     #for benchmark in bench_counts.keys():
     if options.run_only == []:
         benchmarks_to_run = sorted(bench_counts.keys())
@@ -272,25 +270,20 @@ def main(options, args):
 
     benchmark_results = {}
     for benchmark in benchmarks_to_run:
+        print "Compiling benchmark %s" % benchmark
         compile_time = compiler(options, benchmark)
+        print "Running benchmark %s" % benchmark
         run_time = run_benchmark('benchmark')
         benchmark_results[benchmark] = [{ 'compile_time' : compile_time,
-                                         'run_time'     : run_time }]
+                                          'run_time'     : run_time }]
 
-    now = datetime.datetime.now().strftime('%Y-%m-%d')
-    if options.dry_run:
-        res = { now : { options.compiler : benchmark_results } }
-        print simplejson.dumps(res, indent=1)
-    else:
-        if db.has_key(now):
-            d = db[now]
-            if d.has_key(options.compiler):
-                merge_results(benchmark_results, d[options.compiler])
-            else:
-                d[options.compiler] = benchmark_results
-        else:
-            db[now] = { options.compiler : benchmark_results }
+    if options.update:
+        db = read_database(options.database)
+        db[options.tag] = benchmark_results
         write_database(options.database, db)
+    else:
+        print simplejson.dumps({ options.tag : benchmark_results}, indent=1)
+
 
 if __name__ == '__main__':
     try:
