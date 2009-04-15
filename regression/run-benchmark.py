@@ -239,8 +239,12 @@ def parse_options():
     parser.add_option('--database', action='store', type='string',
                       dest='database', default='runs.json',
                       help='The database to update with the benchmark runs')
-    parser.add_option('--dry-run', action='store_true', default=False,
-                      help='Do not update the database, run dry')
+    parser.add_option('--update', dest='update',
+                      action='store_true', default=False,
+                      help='Update the database with the new information')
+    parser.add_option('--tag', dest='tag',
+                      action='store', default='untagged',
+                      help='Tag the benchmark run with a specific name')
 
     return parser.parse_args()
 
