@@ -82,13 +82,13 @@ val allEq : ('a * 'b -> bool) -> 'a list * 'b list -> bool
    elements of xs and ys until p evaluates to false or one or both
    lists is exhausted; returns true if p is true of all such pairs;
    otherwise false.  Hence all p (xs, ys) has the same result and
-   effect as Lisp.all p (zip (xs, ys)). The allEq variant raises
+   effect as List.all p (zip (xs, ys)). The allEq variant raises
    UnequalLenghts if the lenght of xs and ys are not the same.
 
    [exists p (xs, ys)] applies predicate p to the pairs of corresponding
    elements of xs and ys until p evaluates to true or one or both
    lists is exhausted; returns true if p is true of any such pair;
    otherwise false.  Hence exists p (xs, ys) has the same result and
-   effect as Lisp.exists p (zip (xs, ys)).
+   effect as List.exists p (zip (xs, ys)).
 
 *)
