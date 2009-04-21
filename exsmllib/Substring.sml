@@ -126,8 +126,6 @@ fun explode (s, i, n) =
 		      else h (j-1) (sub_ s j :: res)
     in h (i+n-1) [] end;
 
-(* fun app f ss = foldl (fn (x, _) => f x) () ss *)
-
 fun app f (s,i,n) = 
     let val stop = i+n
         fun h j = if j>=stop then ()
