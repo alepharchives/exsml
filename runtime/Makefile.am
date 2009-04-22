@@ -4,9 +4,9 @@ AM_CFLAGS = -I$(top_srcdir)
 
 # Flags not enabled -Wfloat-equal -Wconversion -Wbad-function-cast
 
-bin_PROGRAMS = camlrunm
-camlrunm_SOURCES = $(GEN_SOURCES) $(GEN_HS) $(C_SOURCES)
-camlrunm_LDADD = -ldl
+bin_PROGRAMS = exsmlrunm
+exsmlrunm_SOURCES = $(GEN_SOURCES) $(GEN_HS) $(C_SOURCES)
+exsmlrunm_LDADD = -ldl
 
 C_SOURCES = interp.c misc.c stacks.c fix_code.c main.c \
 	fail.c signals.c freelist.c major_gc.c minor_gc.c memory.c alloc.c \

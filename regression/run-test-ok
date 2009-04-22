@@ -15,7 +15,7 @@ fi
 . $srcdir/defs
 
 # Run test
-${MOSMLC} ${srcdir}/${program}
+${MOSMLC} -toplevel ${srcdir}/${program}
 ${MOSMLLNK} -exec a.out ${srcdir}/${program}
 ${CAMLRUNM} a.out 2>&1 | tee -i out
 

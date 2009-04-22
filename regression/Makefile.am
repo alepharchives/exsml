@@ -3,9 +3,12 @@
 EXTRA_DIST = defs $(TESTS)
 MAINTAINERCLEANFILES = Makefile.in
 testsubdir = testSubDir
-CLEANFILES = tests/*.ui tests/*.uo
+CLEANFILES = tests/*.ui tests/*.uo benchmark benchmark.sml benchmark.lnk \
+	*.ui *.uo
 TESTS_ENVIRONMENT = ${srcdir}/run-test-ok
-TESTS =	tests/3.sml \
+TESTS = tests/1.sml \
+	tests/2.sml \
+	tests/3.sml \
 	tests/4.sml \
 	tests/6.sml \
 	tests/7.sml \
@@ -14,6 +17,7 @@ TESTS =	tests/3.sml \
 	tests/10.sml \
 	tests/11.sml \
 	tests/12.sml \
+	tests/13.sml \
 	tests/14.sml \
 	tests/15.sml \
 	tests/21.sml \
@@ -27,11 +31,14 @@ TESTS =	tests/3.sml \
 	tests/binio.sml \
 	tests/bool-triple.sml \
 	tests/cases.sml \
+	tests/cobol.sml \
 	tests/char0.sml \
 	tests/check_arrays.sml \
 	tests/circular.sml \
 	tests/comment-end.sml \
+	tests/constraint.sml \
 	tests/datatype-with-free-tyvars.sml \
+	tests/date.sml \
 	tests/default-overloads.sml \
 	tests/deep-flatten.sml \
 	tests/down.sml \
@@ -48,7 +55,9 @@ TESTS =	tests/3.sml \
 	tests/flat-array.2.sml \
 	tests/flat-array.sml \
 	tests/flat-vector.sml \
+	tests/format.sml \
 	tests/FuhMishra.sml \
+	tests/functor.sml \
 	tests/hello-world.sml \
 	tests/int.sml \
 	tests/jump.sml \
@@ -76,20 +85,24 @@ TESTS =	tests/3.sml \
 	tests/life.sml \
 	tests/listpair.sml \
 	tests/list.sml \
+	tests/llv.sml \
 	tests/local-ref.sml \
 	tests/msort.sml \
 	tests/nested-loop.sml \
 	tests/nonexhaustive.sml \
 	tests/os-exit.sml \
+	tests/open.sml \
 	tests/pat.sml \
 	tests/poly-equal.sml \
 	tests/polymorphic-recursion.sml \
 	tests/print-self.sml \
+	tests/pseudokit.sml \
 	tests/ref-flatten.3.sml \
 	tests/ref-flatten.5.sml \
 	tests/ref-flatten.6.sml \
 	tests/ref-flatten.sml \
 	tests/rem-unused.1.sml \
+	tests/ring.sml \
 	tests/semicolon.sml \
 	tests/string.sml \
 	tests/string2.sml \
@@ -100,7 +113,6 @@ TESTS =	tests/3.sml \
 	tests/testdyn1.sml \
 	tests/textio.sml \
 	tests/textio.2.sml \
-	tests/time2.sml \
 	tests/time3.sml \
 	tests/type-check.sml \
 	tests/tststrcmp.sml \
@@ -112,17 +124,23 @@ TESTS =	tests/3.sml \
 	tests/vector3.sml \
 	tests/vector4.sml \
 	tests/vector-loop.sml \
+	tests/where.sml \
 	tests/withtype.sml \
 	tests/word.sml
 
+#	tests/time2.sml \ <- needs intinf first.
+
+
 
 ## All these fails on mosml. Some have explanations added
+#	tests/5.sml \
+#	tests/20.sml \
+#	tests/abstype.sml \
 #	tests/suspend.sml \
 #	tests/generate/all-overloads.sml \
 #	tests/time.sml \
 #	tests/string.fromString.sml \
 #	tests/general.sml \
-#	tests/3.sml \
 #	tests/weak.sml \
 #	tests/sigs.sml \
 #	tests/rlimit.sml \
@@ -132,7 +150,6 @@ TESTS =	tests/3.sml \
 #	tests/array6.sml \
 #	tests/where-and.sml \
 #	tests/word8vector.sml \
-#	tests/ring.sml \
 #	tests/type-check.sml \
 #	tests/slow2.sml \
 #	tests/same-fringe.sml \
@@ -146,6 +163,8 @@ TESTS =	tests/3.sml \
 #	tests/only-one-exception.sml \ -- nonterminating on purpose
 #	tests/dead.sml \ -- nonterminating
 #	tests/cycle.sml \
+#	tests/17.sml \
+#	tests/19.sml \
 #	tests/int-inf.log2.sml \
 #	tests/7.sml \
 #	tests/fixed-integer.sml \
@@ -155,12 +174,10 @@ TESTS =	tests/3.sml \
 #	tests/warn/undetermined.sml
 #	tests/warn/warning.sml
 # tests/basis-sharing.sml \
-# tests/constraint.sml \
 # tests/modules.sml \
 # tests/array.sml \
 # tests/unixpath.sml \
 # tests/callcc.sml \
-# tests/13.sml \
 # tests/signals2.sml \
 # tests/int-inf.2.sml \
 # tests/sharing.sml \
@@ -176,26 +193,19 @@ TESTS =	tests/3.sml \
 # tests/filesys.sml \
 # tests/size2.sml \
 # tests/scon.sml \
-# tests/2.sml \
-# tests/19.sml \
 # tests/prodcons.sml \
-# tests/finalize.sml \
 # tests/int-inf.compare.sml \
 # tests/int-inf.3.sml \
-# tests/1.sml \
 # tests/pack-real.2.sml \
 # tests/11.sml \
 # tests/eq.sml \
 # tests/overloading.sml \
-# tests/finalize.5.sml \
 # tests/exn2.sml \
 # tests/int-inf.4.sml \
 # tests/thread0.sml \
 # tests/abcde.sml \
 # tests/asterisk.sml \
 # tests/flexrecord.sml \
-# tests/finalize.3.sml \
-# tests/17.sml \
 # tests/undetermined.sml \
 # tests/slower.sml \
 # tests/ref-flatten.2.sml \
@@ -211,7 +221,6 @@ TESTS =	tests/3.sml \
 # tests/9.sml \
 # tests/posix-exit.sml \
 # tests/slow.sml \
-# tests/open.sml \
 # tests/opaque.sml \
 # tests/real.sml \
 # tests/ref-flatten.4.sml \
@@ -220,16 +229,12 @@ TESTS =	tests/3.sml \
 # tests/real-algsimp.sml \
 # tests/char.scan.sml \
 # tests/all-overloads.sml \
-# tests/format.sml \
 # tests/ieee-real.sml \
 # tests/functor.sml \
 # tests/opaque2.sml
 # tests/int-inf.1.sml \
-# tests/20.sml \
 # tests/callcc3.sml \
-# tests/4.sml \
 # tests/string.sml \
-# tests/char0.sml \
 # tests/lib.sml \
 # tests/nextAfter.sml \
 # tests/harmonic.sml \
@@ -240,51 +245,34 @@ TESTS =	tests/3.sml \
 # tests/wordn-array.sml \
 # tests/signals.sml \
 # tests/int-inf.0.sml \
-# tests/finalize.2.sml \
 # tests/expansive-valbind.sml \
 # tests/thread2.sml \
 # tests/cmdline.sml \
 # tests/mlton.overload.sml \
 # tests/time4.sml \
-# tests/where.sml \
 # tests/substring-overflow.sml \
 # tests/conv2.sml \
-# tests/finalize.4.sml \
 # tests/ftruncate.sml
 # tests/thread1.sml \
 # tests/default-overloads.sml \
 # tests/eqtype.sml \
-# tests/date.sml \
-# tests/5.sml \
 # tests/ex.sml \
 # tests/widechar.sml \
 # tests/flat-array.3.sml \
 # tests/serialize.sml \
-# tests/llv.sml \
 # tests/14.sml
 #tests/thread-switch-size.sml \
-#tests/cobol.sml \
 #tests/exnHistory.sml \
 #tests/vector.sml \
 #tests/word8array.sml \
 #tests/socket.sml \
-#tests/finalize.6.sml \
-#tests/pseudokit.sml
 # tests/nonterminate/8.sml \
 # tests/int-inf.bitops.sml \
-# tests/substring.sml \
 # tests/real-str.sml \
 # tests/grow-raise.sml \
 # tests/pack-word.sml \
 # tests/poly-equal.2.sml \
-# tests/6.sml \
-# tests/16.sml \
-# tests/8.sml \
-# tests/taut.sml \
-# tests/msort.sml
-
-
-
+# tests/16.sml
 
 ### These are the tests that has not been added to the suite yet
 ## BENCHMARKS

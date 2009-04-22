@@ -14,6 +14,8 @@ structure LLV =
 
 datatype 'a pgm = PGM of string * 'a tr 
 
+exception Impossible
+
   type mulexp = place exp
    and multrip = place tr
   type mulexp_llv = (place*int) exp
@@ -25,6 +27,7 @@ datatype 'a pgm = PGM of string * 'a tr
       in
           TR(e',Info2)
       end
+      | llv _ = raise Impossible
 
     and llvExp(e: mulexp) : mulexp_llv =
       let 

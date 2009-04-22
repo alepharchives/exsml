@@ -206,7 +206,7 @@ value gc_full_major (value v)
 void init_gc (long minor_size, long major_incr, int percent_fr, int verb)
 {
 #ifdef DEBUG
-	gc_message ("*** camlrunm: debug mode ***\n", 0);
+	gc_message ("*** exsmlrunm: debug mode ***\n", 0);
 #endif
 	verb_gc = verb;
 	/* Added 2008-03-05 to prevent malloc from using mmap() */

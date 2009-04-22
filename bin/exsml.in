@@ -1,0 +1,48 @@
+#!/bin/sh
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@exsmllibdir@
+libexecdir=@exsmllibexecdir@
+bindir=@bindir@
+
+includes=""
+options="-conservative"
+
+while : ; do
+  case $1 in
+    "")
+      exec $bindir/exsmlrunm $libexecdir/mosmltop -stdlib $libdir $includes $options;;
+    -I|-include)
+      includes="$includes -I $2"
+      shift;;
+    -P|-perv)
+      options="$options -P $2"
+      shift;;
+    -imptypes)
+      options="$options -imptypes"
+      ;;
+    -m|-msgstyle)
+      options="$options -msgstyle $2"
+      shift;;
+    -quietdec)
+      options="$options -quietdec"
+      ;;
+    -valuepoly)
+      options="$options -valuepoly"
+      ;;
+    -orthodox|-conservative|-liberal)
+      options="$options $1"
+      ;;
+    -stdlib)
+      stdlib=$2
+      shift;;
+    -*)
+      echo "Unknown option \"$1\", ignored" >&2;;
+    *)
+      exec $bindir/exsmlrunm $libdir/mosmltop -stdlib $libdir $includes $options $* ;;
+  esac
+  shift
+done
+
+

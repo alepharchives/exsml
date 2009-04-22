@@ -45,8 +45,8 @@ val pervasiveOpenedUnits = ["General"];
 
 val fulllib = ["Architecture", "Option", "List", "ListPair",
 	       "Strbase", "Char", "String", "StringCvt", "TextIO",
-	       "BasicIO", "Vector", "Array", "Misc", "Substring",
-	       "Bool", "Int", "Real", "Math", "Word", "Word8",
+	       "BasicIO", "Vector", "Int", "Array", "Misc", "Substring",
+	       "Bool", "Real", "Math", "Word", "Word8",
 	       "Word8Vector", "Word8Array", "Byte", "BinIO",
 	       "CharVector", "CharArray", "Time", "Timer", "Date",
 	       "Path", "FileSys", "Process", "OS", "Mosml", "PP",
@@ -55,14 +55,14 @@ val fulllib = ["Architecture", "Option", "List", "ListPair",
 val preloadedUnitSets = [
   ("default",  ["Architecture", "Option", "List", "Strbase", "Char", "String",
 		"StringCvt", "TextIO", "BasicIO", "Vector",
-		"Array", "Misc"]),
+		"Int", "Array", "Misc"]),
   ("full",     fulllib),
   ("sml90",    ["Architecture", "Option", "List", "Strbase", "Char", "String",
                 "StringCvt", "TextIO", "BasicIO", "Vector",
-		"Array", "Misc", "SML90"]),
+		"Int", "Array", "Misc", "SML90"]),
   ("nj93",     ["Architecture", "Option", "List", "Strbase", "Char", "String",
 		"StringCvt", "TextIO", "BasicIO", "NJ93", "Vector",
-		"Array", "Misc"])
+		"Int", "Array", "Misc"])
 ];
 
 val preopenedPreloadedUnitSets = [

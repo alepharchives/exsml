@@ -227,7 +227,7 @@ fun link unit_list exec_name =
 	  end
   in
      ((* Prepend the runtime system? *)
-      if !stand_alone then copy "camlrunm" else ();
+      if !stand_alone then copy "exsmlrunm" else ();
       (* Prepend the header? *)
       if !no_header orelse !stand_alone then () else copy "header";
       missing_globals := (* for gc -- 04Sep95 e *)

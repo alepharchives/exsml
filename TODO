@@ -1,5 +1,81 @@
 TODO List for Mosml-llvm
 
+* Setup a toolset for benchmark runs.
+   Has to be thought out, but I would like to be able to:
+
+   ; Benchmark multiple SML compilers
+   ; Benchmark their performance movement over time
+   ; Keep track of old benchmark results in a simple format.
+   ; Be able to plot results over time
+   ; Use geometric mean for a final number.
+
+- Store the run-type in the database as well.
+- Only store runs if we are running in fast or slow mode.
+
+o [jlouis] Change the buildsystem to use -toplevel builds all the way through.
+   Many things w.r.t clean code depends on this being done.
+
+* Consider making -toplevel the default buildmode.
+
+* 2003 Basis implementation:
+
+   These things still needs to be done. Done in this case means that
+   you can sometimes check that the current library is correct w.r.t
+   2003 and then you can remove it from this list. Sometimes you can
+   implement missing functionality to get it to 2003. A few cases
+   requires some deep deep runtime/compiler fu to get right as it is
+   deep inside the system. Most notably I/O.
+
+   ArraySlice :> ARRAY_SLICE
+     Needs vectorslices for copyVec
+
+   BinIO :> BIN_IO
+   BinPrimIO :> PRIM_IO
+
+   Byte :> BYTE
+     Byte needs Word8ArraySlices
+
+   CharArray :> MONO_ARRAY
+   CharArraySlice :> MONO_ARRAY_SLICE
+     Seriously needs -toplevel
+
+   Char :> CHAR
+     Needs an implementation of scan
+
+   CharVector :> MONO_VECTOR
+   CharVectorSlice :> MONO_VECTOR_SLICE
+   CommandLine :> COMMAND_LINE
+   Date :> DATE
+   General :> GENERAL
+   IEEEReal :> IEEE_REAL
+   Int :> INTEGER
+   IO :> IO
+   LargeInt :> INTEGER
+   LargeReal :> REAL
+   LargeWord :> WORD
+   List :> LIST
+   Math :> MATH
+   Option :> OPTION
+   OS :> OS
+   Position :> INTEGER
+   Real :> REAL
+   StringCvt :> STRING_CVT
+   String :> STRING
+   Substring :> SUBSTRING
+   TextIO :> TEXT_IO
+   TextPrimIO :> PRIM_IO
+   Text :> TEXT
+   Timer :> TIMER
+   Time :> TIME
+   VectorSlice :> VECTOR_SLICE
+   Vector :> VECTOR
+   Word8Array :> MONO_ARRAY
+   Word8ArraySlice :> MONO_ARRAY_SLICE
+   Word8Vector :> MONO_VECTOR
+   Word8VectorSlice :> MONO_VECTOR_SLICE
+   Word8 :> WORD
+   Word :> WORD
+
 o [jlouis] Make some tests of the Array/ArraySlice 2003 basis
    The current tests are quite incomplete and does not test that Array
    and ArraySlice have correctly implemented functions. Hence we will
@@ -24,9 +100,6 @@ o [jlouis] Make some tests of the Array/ArraySlice 2003 basis
    code. Some buildsystems does exactly that, so supporting it is
    important.
 
-* Make failwith() not return!
-   By marking it as notreturn we have a better encoding.
-
 * Make the IntInf work
    First, hoist it out of dynlib. Since we are MUST have
    LargeInt == IntInf if IntInf is present, and LargeInt is
@@ -50,19 +123,10 @@ o [jlouis] Make some tests of the Array/ArraySlice 2003 basis
    Since the tests are ooold, there are no tests for the -Eq
    functions. This ought to be remedied.
 
-o [jlouis] Implement ARRAY and ARRAY_SLICE poperly
-   The current implementation is a conglomerate of Array and
-   ArraySlice and could be split into the correct implementation of
-   those. Should be pretty straightforward.
-
-   Also, remember to update the next library in alphabetical order
-   that is not 2003 compliant here, so we can keep track of when we
-   have 2003 basis support properly.
-
 o [jlouis] Make String 2003 Basis
    Update String to 2003 Basis
 
-- Implement and write test cases for isSubstring
+- Write test cases for isSubstring
 
 - Implement and write test cases for String.scan
 
@@ -150,14 +214,6 @@ o [jlouis] Mail John H. Reppy
 * Eradicate the Not_Implemented in LLVM.sml
    This means a full implementation of LLVM.
 
-* Setup a toolset for benchmark runs.
-   Has to be thought out, but I would like to be able to:
-
-   ; Benchmark multiple SML compilers
-   ; Benchmark their performance movement over time
-   ; Keep track of old benchmark results in a simple format.
-   ; Be able to plot results over time
-   ; Use geometric mean for a final number.
 
 * Set up buildbot
 

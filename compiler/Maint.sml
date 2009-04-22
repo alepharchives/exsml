@@ -128,9 +128,7 @@ fun main () =
     if !Exec_phr.quietdec then ()
     else
 	(msgIBlock 0;
-	 msgString ("Ex-SML version "^Config.version);
-	 msgEOL();
-	 msgString ("  git commit "^Config.git_head);
+	 msgString ("Ex-SML version " ^ Config.version ^ " (Git: " ^ Config.git_head ^ ")");
 	 msgEOL();
 	 msgString "Enter `quit();' to quit.";
 	 msgEOL();

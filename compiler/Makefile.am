@@ -89,9 +89,9 @@ mosmltop: $(COMP_OBJS) $(T_OBJS)
 
 #regress:
 #	echo "building current lib"
-#	cd ../mosmllib; make -s current
+#	cd ../exsmllib; make -s current
 #	echo "testing current lib"
-#	cd ../mosmllib/test; make -s current  || echo "results differ"
+#	cd ../exsmllib/test; make -s current  || echo "results differ"
 #	echo "testing current test"
 #	cd ../test; make -s current || echo "results differ"
 #	echo "testing current compiler test"

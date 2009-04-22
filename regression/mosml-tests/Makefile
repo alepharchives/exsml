@@ -18,7 +18,7 @@ diff:
 
 current:
 	rm -f result
-	make all MOSML=../camlrunm\ ../compiler/mosmltop\ -stdlib\ ../mosmllib
+	make all MOSML=../exsmlrunm\ ../compiler/mosmltop\ -stdlib\ ../mosmllib
 
 clean:
 	rm -f result

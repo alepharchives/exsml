@@ -12,17 +12,17 @@ AC_SUBST([VERSION_MINOR])
 AC_SUBST([VERSION_FULL])
 AC_SUBST([VERSION])
 
-AM_INIT_AUTOMAKE(mosml-llvm, [$VERSION_FULL])
+AM_INIT_AUTOMAKE(ex-sml, [$VERSION_FULL])
 
 AC_CONFIG_SRCDIR([runtime/interp.c])
 AC_CONFIG_MACRO_DIR([m4])
 AC_LANG([C])
 
 ## Default installation areas; can be overridden.
-AC_ARG_VAR([mosmllibdir],[location of the mosml standard library [$libdir/mosml]])
-mosmllibdir=$libdir/mosml
-AC_ARG_VAR([mosmllibexecdir],[location of the mosml byte executables [$libexecdir/mosml]])
-mosmllibexecdir=$libexecdir/mosml
+AC_ARG_VAR([exsmllibdir],[location of the exsml standard library [$datarootdir/exsml]])
+exsmllibdir=$datarootdir/exsml/exsmllib/
+AC_ARG_VAR([exsmllibexecdir],[location of the exsml byte executables [$libexecdir/exsml]])
+exsmllibexecdir=$libexecdir/exsml
 
 ## Libtool
 AC_PROG_LIBTOOL
@@ -34,6 +34,18 @@ AC_PROG_MKDIR_P
 AC_PROG_SED
 AC_PROG_INSTALL
 AM_CONFIG_HEADER(config.h)
+
+AC_DEFUN([AC_PROG_PDFLATEX],[
+AC_CHECK_PROGS(pdflatex,[pdflatex],no)
+export pdflatex;
+if test $pdflatex = "no" ;
+then
+	AC_MSG_ERROR([Unable to find a PDFLaTeX application]);
+fi
+AC_SUBST(pdflatex)
+])
+
+AC_PROG_PDFLATEX
 
 ## Checks for libs
 AC_CHECK_LIB(m, cos)
@@ -48,7 +60,7 @@ AC_CHECK_FUNCS([getgroups])
 AC_FUNC_CHOWN
 AC_FUNC_GETGROUPS
 
-## Check for various platform specific stuff needed in the mosml runtime
+## Check for various platform specific stuff needed in the exsml runtime
 # Endianness, define WORDS_BIGENDIAN on Big endian bastards
 AC_C_BIGENDIAN
 
@@ -218,17 +230,17 @@ CHECK_CFLAG([-ftree-vrp])
 AC_MSG_RESULT([${cflags_message}])
 
 AC_OUTPUT(
-      Makefile
-      compiler/Makefile
-      mosmllib/Makefile
-      mosmllib/Architecture.sml
-      runtime/Makefile
-      mosmlyac/Makefile
-      regression/Makefile
-      libsml_crypt/Makefile
-      libsml_unix/Makefile
-      libsml_socket/Makefile
-      scripts/mosml
-      scripts/mosmlc
-      tools/Makefile
+    Makefile
+    bin/Makefile
+    bin/exsml
+    bin/exsmlc
+    compiler/Makefile
+    doc/Makefile
+    doc/moscow-ml-manual/Makefile 
+    exsmllib/Architecture.sml
+    exsmllib/Makefile
+    mosmlyac/Makefile
+    regression/Makefile
+    runtime/Makefile
+    tools/Makefile
 )

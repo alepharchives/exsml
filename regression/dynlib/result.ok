@@ -65,14 +65,14 @@ Moscow ML version 2.00 (June 2000)
 Enter `quit();' to quit.
 [opening file "testintinf.sml"]
 > val it = () : unit
-[opening file "../../mosmllib/test/auxil.sml"]
+[opening file "../../exsmllib/test/auxil.sml"]
 > infix 1 seq
   val ('a, 'b) seq = fn : 'a * 'b -> 'b
 > val check = fn : bool -> string
 > val check' = fn : (unit -> bool) -> string
 > val range = fn : int * int -> (int -> bool) -> bool
 > val checkrange = fn : int * int -> (int -> bool) -> string
-[closing file "../../mosmllib/test/auxil.sml"]
+[closing file "../../exsmllib/test/auxil.sml"]
 > val it = () : unit
 > val test1a = "OK" : string
   val test1b = "OK" : string
@@ -176,14 +176,14 @@ Enter `quit();' to quit.
   exn Closed = Closed : exn
   val hasKey = fn : table -> string -> bool
   val remove = fn : table -> string -> unit
-[opening file "../../mosmllib/test/auxil.sml"]
+[opening file "../../exsmllib/test/auxil.sml"]
 > infix 1 seq
   val ('a, 'b) seq = fn : 'a * 'b -> 'b
 > val check = fn : bool -> string
 > val check' = fn : (unit -> bool) -> string
 > val range = fn : int * int -> (int -> bool) -> bool
 > val checkrange = fn : int * int -> (int -> bool) -> string
-[closing file "../../mosmllib/test/auxil.sml"]
+[closing file "../../exsmllib/test/auxil.sml"]
 > val it = () : unit
 > val test1a = "OK" : string
 > val test1b = "OK" : string
@@ -238,14 +238,14 @@ Moscow ML version 2.00 (June 2000)
 Enter `quit();' to quit.
 [opening file "testmysql.sml"]
 > val it = () : unit
-[opening file "../../mosmllib/test/auxil.sml"]
+[opening file "../../exsmllib/test/auxil.sml"]
 > infix 1 seq
   val ('a, 'b) seq = fn : 'a * 'b -> 'b
 > val check = fn : bool -> string
 > val check' = fn : (unit -> bool) -> string
 > val range = fn : int * int -> (int -> bool) -> bool
 > val checkrange = fn : int * int -> (int -> bool) -> string
-[closing file "../../mosmllib/test/auxil.sml"]
+[closing file "../../exsmllib/test/auxil.sml"]
 > val it = () : unit
 > datatype dyntype =
   (dyntype,
@@ -420,14 +420,14 @@ Moscow ML version 2.00 (June 2000)
 Enter `quit();' to quit.
 [opening file "testpsql.sml"]
 > val it = () : unit
-[opening file "../../mosmllib/test/auxil.sml"]
+[opening file "../../exsmllib/test/auxil.sml"]
 > infix 1 seq
   val ('a, 'b) seq = fn : 'a * 'b -> 'b
 > val check = fn : bool -> string
 > val check' = fn : (unit -> bool) -> string
 > val range = fn : int * int -> (int -> bool) -> bool
 > val checkrange = fn : int * int -> (int -> bool) -> string
-[closing file "../../mosmllib/test/auxil.sml"]
+[closing file "../../exsmllib/test/auxil.sml"]
 > val it = () : unit
 > datatype dyntype =
   (dyntype,
@@ -596,14 +596,14 @@ Moscow ML version 2.00 (June 2000)
 Enter `quit();' to quit.
 [opening file "testregex.sml"]
 > val it = () : unit
-[opening file "../../mosmllib/test/auxil.sml"]
+[opening file "../../exsmllib/test/auxil.sml"]
 > infix 1 seq
   val ('a, 'b) seq = fn : 'a * 'b -> 'b
 > val check = fn : bool -> string
 > val check' = fn : (unit -> bool) -> string
 > val range = fn : int * int -> (int -> bool) -> bool
 > val checkrange = fn : int * int -> (int -> bool) -> string
-[closing file "../../mosmllib/test/auxil.sml"]
+[closing file "../../exsmllib/test/auxil.sml"]
 > val it = () : unit
 > datatype eflag = (eflag,{con Notbol : eflag, con Noteol : eflag})
   type regex = regex

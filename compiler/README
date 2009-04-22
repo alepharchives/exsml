@@ -1,7 +1,7 @@
 The Unix Makefile defines the following targets, which may be useful to hackers:
 
-make regress  - builds the libraries in ../mosmllib and runs the test-suites
-		in test/ ../mosmllib/test/ ../test/ (by calling make current) 
+make regress  - builds the libraries in ../exsmllib and runs the test-suites
+		in test/ ../exsmllib/test/ ../test/ (by calling make current) 
                 using the current compiler (the one in this directory).
 	        Useful for testing prior to boostrapping.
 
