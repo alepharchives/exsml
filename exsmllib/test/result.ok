@@ -110,6 +110,10 @@ Enter `quit();' to quit.
   val test16e = "OK" : string
   val test16f = "OK" : string
   val test16g = "OK" : string
+  val test17 = "OK" : string
+  val test18 = "OK" : string
+  val test19 = "OK" : string
+  val test20 = "OK" : string
 [closing file "array.sml"]
 [opening file "array2.sml"]
 [opening file "auxil.sml"]

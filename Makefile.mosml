@@ -5,7 +5,7 @@ CAMLRUNM=$(top_srcdir)/runtime/exsmlrunm
 MOSMLC=$(CAMLRUNM) $(top_srcdir)/bootstrap/mosmlcmp \
 	-stdlib $(top_srcdir)/exsmllib -P none
 MOSMLLEX=mosmllex
-MOSMLYAC=mosmlyac
+MOSMLYAC=$(top_builddir)/mosmlyac/mosmlyac
 MOSMLL=$(CAMLRUNM) $(top_srcdir)/bootstrap/mosmllnk -stdlib $(top_srcdir)/exsmllib -P none
 MOSMLDEP=$(CAMLRUNM) $(top_srcdir)/bootstrap/mosmldep
 

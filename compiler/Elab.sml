@@ -374,16 +374,16 @@ and unguardedTy (_, ty') =
 and unguardedModBind (MODBINDmodbind(modid,modexp)) =
       unguardedModExp modexp
   | unguardedModBind (ASmodbind(modid,sigexp,exp)) =
-      (unguardedSigExp sigexp;
+      (unguardedSigExp sigexp U
        unguardedExp exp)
 and unguardedSigBind (SIGBINDsigbind(sigid,sigexp)) =
       unguardedSigExp sigexp
 and unguardedFunBind (FUNBINDfunbind(funid,modexp)) =
      unguardedModExp modexp
   | unguardedFunBind (ASfunbind(funid,sigexp,exp)) =
-      (unguardedSigExp sigexp;
+      (unguardedSigExp sigexp U
        unguardedExp exp)
-and unguardedModExp (_,(modexp,_)) =
+and unguardedModExp (_,(modexp,_)) = 
     case modexp of
       DECmodexp dec =>
 	  unguardedDec dec
@@ -2973,12 +2973,11 @@ and elabSigExp (ME:ModEnv) (FE:FunEnv) (GE:SigEnv) (UE:UEnv) (VE:VarEnv) (TE:TyE
 		       errPrompt "but its constraint is not a datatype";msgEOL();
 		       msgEBlock();
 		       raise Toplevel));
-		 LAMBDAsig(remove tn T,STRmod RS)
+		 LAMBDAsig(remove tn T,STRmod RS) 
 	      end)
-
    | RECsigexp ((_,modid),sigexp as (locforward,_),sigexp' as (locbody,_)) =>
           let val LAMBDAsig(T,M) = elabSigExp ME FE GE UE VE TE  sigexp
-	      val (ME',RS) =
+	      val (ME',RS) = 
 		  case M of STRmod RS =>
 		      (bindInEnv ME modid {qualid=mkLocalName modid,
 					   info = normRecStr RS},
@@ -3012,19 +3011,14 @@ and elabSigExp (ME:ModEnv) (FE:FunEnv) (GE:SigEnv) (UE:UEnv) (VE:VarEnv) (TE:TyE
 			   msgEBlock();
 			   errMatchReason "body" "forward specification" matchReason;
 			   raise Toplevel)
-	      val T2T' = map (fn tn as {info = ref {tnSort =
-						    REAts (APPtyfun tyapp),
-						    ...},
-					...} => (tn,tyapp)
-			      | _ => fatalError "elabRecSigExp")
-		              T
 	  in
             (decrBindingLevel();
-	     LAMBDAsig(T',copyMod T2T' [] (STRmod (RECrec(RS,RS')))))
+	     LAMBDAsig(T',STRmod (RECrec(RS,RS'))))
 	  end)
+
 and elabModDesc (ME:ModEnv) (FE:FunEnv) (GE:SigEnv) (UE:UEnv) (VE:VarEnv) (TE : TyEnv) (MODDESCmoddesc (locmodid as (loc,modid), sigexp as (loc',_)) : ModDesc)=
   let val LAMBDAsig(T,M) = elabSigExp ME FE GE UE VE TE sigexp
-      val S = case M of
+      val S = case M of 
 	           STRmod S => S
 		 | FUNmod _ =>
 		       errorMsg loc'

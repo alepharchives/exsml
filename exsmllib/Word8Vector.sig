@@ -11,7 +11,12 @@ val tabulate : int * (int -> elem) -> vector
 val length   : vector -> int
 val sub      : vector * int -> elem
 val extract  : vector * int * int option -> vector
+val update   : vector * int * elem -> vector
 val concat   : vector list -> vector
+
+val find     : (elem -> bool) -> vector -> elem option
+val exists   : (elem -> bool) -> vector -> bool
+val all      : (elem -> bool) -> vector -> bool
 
 val app      : (elem -> unit) -> vector -> unit
 val map      : (elem -> elem) -> vector -> vector
@@ -23,7 +28,9 @@ val mapi     : (int * elem -> elem) -> vector * int * int option -> vector
 val foldli   : (int * elem * 'b -> 'b) -> 'b -> vector*int*int option -> 'b
 val foldri   : (int * elem * 'b -> 'b) -> 'b -> vector*int*int option -> 'b
 
-(*
+val collate  : (elem * elem -> order) -> vector * vector -> order
+
+(* 
    [vector] is the type of one-dimensional, immutable, zero-based
    constant-time-access vectors with elements of type Word8.word, that
    is, 8-bit words.  Type vector admits equality, and vectors v1 and

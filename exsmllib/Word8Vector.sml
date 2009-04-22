@@ -7,12 +7,12 @@ local
     prim_val vector_ : int -> vector                 = 1 "create_string";
     prim_val sub_    : vector -> int -> elem         = 2 "get_nth_char";
     prim_val update_ : vector -> int -> elem -> unit = 3 "set_nth_char";
-    prim_val blit_   : vector -> int -> vector -> int -> int -> unit
+    prim_val blit_   : vector -> int -> vector -> int -> int -> unit 
                                                      = 5 "blit_string";
-in
+    prim_val magic : 'a -> 'b = 1 "identity";
+in 
 
 prim_val length : vector -> int = 1 "string_length";
-
 val maxLen = Architecture.max_string_len;
 
 fun fromList (vs : elem list) =
@@ -40,6 +40,14 @@ fun extract (vec, i, slicelen) =
 			 vector_ n
     in blit_ vec i newvec 0 n; newvec end;
 
+fun update (v : vector, i : int, x : elem) : vector = 
+    let val _ = if i < 0 orelse i >= length v then raise Subscript else ()
+	val stop = length v
+	val newvec = vector_ stop
+	fun lr j = if j < stop then (update_ newvec j (sub_ v j); lr (j+1))
+		   else ()
+    in lr 0; update_ newvec i x; newvec end
+
 fun concat vecs =
     let fun acc [] len       = len
 	  | acc (v1::vr) len = acc vr (length v1 + len)
@@ -51,7 +59,25 @@ fun concat vecs =
 	    in blit_ v1 0 newvec to len1; copyall (to+len1) vr end
     in copyall 0 vecs; newvec end;
 
-fun foldl f e a =
+fun find (p : elem -> bool) (a : vector) : elem option = 
+    let val stop = length a
+	fun lr j = 
+	    if j < stop then 
+		if p (sub_ a j) then SOME (sub_ a j) else lr (j+1)
+	    else NONE
+    in lr 0 end
+
+fun exists (p : elem -> bool) (a : vector) : bool = 
+    let val stop = length a
+	fun lr j = j < stop andalso (p (sub_ a j) orelse lr (j+1))
+    in lr 0 end
+
+fun all (p : elem -> bool) (a : vector) : bool = 
+    let val stop = length a
+	fun lr j = j >= stop orelse (p (sub_ a j) andalso lr (j+1))
+    in lr 0 end
+
+fun foldl f e a = 
     let	val stop = length a
 	fun lr j res = if j < stop then lr (j+1) (f(sub_ a j, res))
 		       else res
@@ -118,5 +144,8 @@ fun mapi (f : int * elem -> elem) (slice as (a : vector, i, _)) : vector =
 		    else ()
 	    in lr i end
     in loop stop; newvec end;
+
+val collate  : (elem * elem -> order) -> vector * vector -> order 
+                                                = magic String.collate
 end
 

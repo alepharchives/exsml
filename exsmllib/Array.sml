@@ -255,32 +255,22 @@ fun all p arr =
       loop 0
     end
 
-exception CollateStop of order
 
-fun collate (f : 'a_ * 'a_ -> order) (a1, a2) =
-    let
-      val a1_sz = length a1
-      val a2_sz = length a2
-      val stop_criterion = Int.max(a1_sz, a2_sz)
-      fun loop i =
-            (* First, we check the stop criterion so if the arrays are equal size
-	     * we have hit EQUAL all the way through the array, so the arrays must be
-	     * equal *)
-	    if i = stop_criterion then EQUAL
+fun collate cmp (a1, a2) =
+    let val a1 = from_array a1
+	and a2 = from_array a2
+	val n1 = length_ a1 
+	and n2 = length_ a2
+	val stop = if n1 < n2 then n1 else n2
+	fun h j = (* At this point a1[0..j-1] = a2[0..j-1] *)
+	    if j = stop then if      n1 < n2 then LESS
+                             else if n1 > n2 then GREATER
+                             else                 EQUAL
 	    else
-	      let
-                (* Handle Subscript to fix that the arrays are different sizes *)
-		val e1 = sub(a1, i) handle Subscript => raise CollateStop LESS
-		val e2 = sub(a2, i) handle Subscript => raise CollateStop GREATER
-	      in
-		case f (e1, e2) of
-		  LESS => LESS
-		| GREATER => GREATER
-		| EQUAL => loop (i + 1)
-	      end
-    in
-      loop 0 handle CollateStop x => x
-    end
+		case cmp(sub_ a1 j, sub_ a2 j) of
+		    EQUAL => h (j+1)
+		  | res   => res
+    in h 0 end;
 
 end
 
