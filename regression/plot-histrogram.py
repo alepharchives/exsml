@@ -63,8 +63,8 @@ def main(options, args):
     entries = initialize_entries(args[0], args[1])
 
     for benchmark in run_a.keys():
-        runtime_a = run_a[benchmark]['runtime']
-        runtime_b = run_b[benchmark]['runtime']
+        runtime_a = run_a[benchmark]['run_time']
+        runtime_b = run_b[benchmark]['run_time']
 
         update_histogram(entries, runtime_a, runtime_b, benchmark)
 
