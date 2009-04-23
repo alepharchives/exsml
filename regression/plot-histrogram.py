@@ -52,7 +52,7 @@ def write_histogram(entries, out):
     """Write histogram to a file"""
     with open(out, 'w') as f:
         for (b, r_a, r_b) in entries:
-            f.write("%s\t%s\t%s\n", (b, r_a, r_b))
+            f.write("%s\t%s\t%s\n" % (b, r_a, r_b))
 
 def main(options, args):
     """Main runner, run benchmarks"""
@@ -63,8 +63,8 @@ def main(options, args):
     entries = initialize_entries(args[0], args[1])
 
     for benchmark in run_a.keys():
-        runtime_a = run_a[benchmark]['runtime']
-        runtime_b = run_b[benchmark]['runtime']
+        runtime_a = run_a[benchmark]['run_time']
+        runtime_b = run_b[benchmark]['run_time']
 
         update_histogram(entries, runtime_a, runtime_b, benchmark)
 

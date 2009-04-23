@@ -26,7 +26,7 @@ all: Array.uo ArraySlice.uo Array2.uo Arraysort.uo \
      Signal.uo SML90.uo Socket.uo Splaymap.uo Splayset.uo Splaytree.uo \
      Strbase.uo String.uo StringCvt.uo Substring.uo Susp.uo \
      TextIO.uo Time.uo Timer.uo \
-     Unix.uo Vector.uo \
+     Unix.uo Vector.uo VectorSlice.uo \
      Weak.uo Word.uo Word8.uo Word8Array.uo Word8Vector.uo Architecture.uo
 
 # mosmldep does not see that OS depends on FileSys, Path, Process:
