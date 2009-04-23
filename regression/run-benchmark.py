@@ -274,8 +274,8 @@ def main(options, args):
         compile_time = compiler(options, benchmark)
         print "Running benchmark %s" % benchmark
         run_time = run_benchmark('benchmark')
-        benchmark_results[benchmark] = [{ 'compile_time' : compile_time,
-                                          'run_time'     : run_time }]
+        benchmark_results[benchmark] = { 'compile_time' : compile_time,
+                                         'run_time'     : run_time }
 
     if options.update:
         db = read_database(options.database)
