@@ -67,11 +67,19 @@ fun update(a, i, v) =
 	else update_ a i v
     end
 
-fun vector arr =
-    Vector.tabulate (length arr, fn i => sub(arr, i))
+fun vector (a : 'a array) =
+    let val a = from_array a : 'a array_ 
+	val n = length_ a
+	val newvec = vector_ n () : 'a vector
+	fun copy j = 
+	    if j<n then
+		(updatev newvec j (sub_ a j); copy (j+1))
+	    else
+		()
+    in copy 0; newvec end;
 
 fun extract (a : 'a array, i, slicelen) =
-    let val a = from_array a : 'a array_
+    let val a = from_array a : 'a array_ 
 	val n = case slicelen of NONE => length_ a - i | SOME n => n
 	val newvec = if i<0 orelse n<0 orelse i+n > length_ a
 			 then raise Subscript
