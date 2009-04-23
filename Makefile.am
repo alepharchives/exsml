@@ -11,3 +11,10 @@ runtop: all
 	$(top_builddir)/compiler/mosmltop \
 	-stdlib $(top_builddir)/exsmllib \
 	-conservative
+
+.phony: bump-compiler
+bump-compiler:
+	cp $(top_builddir)/compiler/mosmlcmp $(top_srcdir)/bootstrap
+	cp $(top_builddir)/compiler/mosmllnk $(top_srcdir)/bootstrap
+	cp $(top_builddir)/tools/mosmldep    $(top_srcdir)/bootstrap
+# TODO: Lexer
