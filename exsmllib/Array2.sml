@@ -37,13 +37,13 @@ fun tabulate RowMajor (m, n, f) =
 	let val f00 = f(0, 0)
 	    val arr = Vector.tabulate(m, fn i => Array.array(n, f00))
 	    (* Column 0: do not apply f to (0,0) again: *)
-	    val _ = Vector.appi (fn (r, a) => Array.update(a, 0, f(r, 0)))
-		                (arr, 1, NONE);
+	    val _ = VectorSlice.appi (fn (r, a) => Array.update(a, 0, f(r, 0))) 
+		                (VectorSlice.slice(arr, 1, NONE));
 	    (* Remaining columns: loop, updating all rows: *)
-	    fun loop c =
-		if c < n then
-		    (Vector.appi (fn (r, a) => Array.update(a, c, f(r, c)))
-		                 (arr, 0, NONE);
+	    fun loop c = 
+		if c < n then  
+		    (Vector.appi (fn (r, a) => Array.update(a, c, f(r, c))) 
+		                 arr;
 		     loop (c+1))
 		else ()
 	in loop 1; ref (arr, m, n) end
@@ -61,7 +61,7 @@ fun sub(ref (a,m,n), i, j) = Array.sub(Vector.sub(a, i), j);
 fun update(ref (a,m,n), i, j, x) = Array.update(Vector.sub(a, i), j, x);
 
 fun row (ref (a, _, _), i) =
-    Array.extract(Vector.sub(a, i), 0, NONE);
+    Array.vector(Vector.sub(a, i));
 
 fun column (ref (a, m, n), j) =
     if j<0 orelse j>=n then raise Subscript
@@ -86,13 +86,11 @@ fun stop len i NONE =
     else i+n;
 
 fun foldi RowMajor f b { base = ref (a, m, n), row, col, nrows, ncols } =
-    Vector.foldli
-           (fn (i, xs, res) =>
+    VectorSlice.foldli
+            (fn (i, xs, res) =>
 	       ArraySlice.foldli
-		 (fn (j,x,res) => f(i,j,x,res))
-		 res
-		 (ArraySlice.slice(xs,col,ncols)))
-	   b (a, row, nrows)
+	       (fn (j,x,res) => f(i,j,x,res)) res (ArraySlice.slice(xs,col,ncols)))
+	   b (VectorSlice.slice(a, row, nrows))
   | foldi ColMajor f b { base = ref (a, m, n), row, col, nrows, ncols } =
     let val stoprow = stop m row nrows
 	val stopcol = stop n col ncols
@@ -110,11 +108,10 @@ fun app RowMajor f (ref (a, _, _)) =
     fold ColMajor (fn (a, _) => f a) () arr
 
 fun appi RowMajor f { base = ref (a, _, _), row, col, nrows, ncols } =
-    Vector.appi
-          (fn (i, xs) => ArraySlice.appi
-			   (fn (j, x) => f(i, j, x))
-			   (ArraySlice.slice(xs, col, ncols)))
-	  (a, row, nrows)
+    VectorSlice.appi 
+          (fn (i, xs) => ArraySlice.appi 
+	   (fn (j, x) => f(i, j, x)) (ArraySlice.slice(xs, col, ncols)))
+	  (VectorSlice.slice(a, row, nrows))
   | appi ColMajor f reg =
     foldi ColMajor (fn (i, j, a, _) => f (i, j, a)) () reg
 
@@ -126,10 +123,10 @@ fun modify RowMajor f (ref (a, _, _)) =
           {base=arr, row=0, col=0, nrows=NONE, ncols=NONE}
 
 fun modifyi RowMajor f { base = ref (a, _, _), row, col, nrows, ncols } =
-    Vector.appi
-          (fn (i, xs) => ArraySlice.modifyi (fn (j, x) => f(i, j, x))
-					    (ArraySlice.slice (xs, col, ncols)))
-	  (a, row, nrows)
+    VectorSlice.appi 
+          (fn (i, xs) => ArraySlice.modifyi (fn (j, x) => f(i, j, x)) 
+	                               (ArraySlice.slice(xs, col, ncols)))
+	  (VectorSlice.slice(a, row, nrows))
   | modifyi ColMajor f (reg as {base, ...}) =
     foldi ColMajor (fn (i, j, a, _) => update(base, i, j, f (i, j, a))) () reg
 

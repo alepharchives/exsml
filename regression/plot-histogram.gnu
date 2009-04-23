@@ -10,3 +10,4 @@ set xtic rotate by -45
 #set bmargin 10 
 plot 'benchmark.dat' using 2:xtic(1) ti col, '' u 3 ti col
 #
+pause -1

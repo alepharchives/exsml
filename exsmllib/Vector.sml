@@ -30,17 +30,6 @@ fun sub(v, i) =
     if i < 0 orelse i >= length v then raise Subscript
     else sub_ v i;
 
-fun extract (vec : 'a vector, i, sliceend) =
-    let val n = case sliceend of NONE => length vec - i | SOME n => n
-	val newvec = if i<0 orelse n<0 orelse i+n > length vec then
-	                 raise Subscript
-		     else
-			 vector_ n () : 'a vector
-	fun copy j = if j<n then (update_ newvec j (sub_ vec (i+j));
-				  copy (j+1))
-		     else ()
-    in copy 0; newvec end;
-
 fun update (v : 'a vector, i : int, x : 'a) : 'a vector = 
     let val _ = if i < 0 orelse i >= length v then raise Subscript else ()
 	val stop = length v
@@ -108,48 +97,50 @@ fun map (f : 'a -> 'b) (a : 'a vector) : 'b vector =
 		   else ()
     in lr 0; newvec end
 
-fun sliceend (a, i, NONE) =
+fun findi (p : int * 'a -> bool) (a : 'a vector) : (int * 'a) option = 
+    let val stop = length a
+	fun lr j = 
+	    if j < stop then 
+		if p (j, sub_ a j) then SOME (j, sub_ a j) else lr (j+1)
+	    else NONE
+    in lr 0 end
+
+fun sliceend (a, i, NONE) = 
         if i<0 orelse i>length a then raise Subscript
 	else length a
   | sliceend (a, i, SOME n) =
 	if i<0 orelse n<0 orelse i+n>length a then raise Subscript
 	else i+n;
 
-fun foldli f e (slice as (a, i, _)) =
-    let fun loop stop =
-	    let fun lr j res =
-		if j < stop then lr (j+1) (f(j, sub_ a j, res))
-		else res
-	    in lr i e end
-    in loop (sliceend slice) end;
+fun foldli f e a = 
+    let val stop = length a
+	fun lr j res = 
+	    if j < stop then lr (j+1) (f(j, sub_ a j, res))
+	    else res
+    in lr 0 e end;
 
-fun foldri f e (slice as (a, i, _)) =
-    let fun loop start =
-	    let fun rl j res =
-		    if j >= i then rl (j-1) (f(j, sub_ a j, res))
-		    else res
-	    in rl start e end;
-    in loop (sliceend slice - 1) end
+fun foldri f e a = 
+    let fun rl j res = 
+	    if j >= 0 then rl (j-1) (f(j, sub_ a j, res))
+	    else res
+    in rl (length a - 1) e end;
 
-fun appi f (slice as (a, i, _)) =
-    let fun loop stop =
-	    let	fun lr j =
-		    if j < stop then (f(j, sub_ a j); lr (j+1))
-		    else ()
-	    in lr i end
-    in loop (sliceend slice) end;
+fun appi f a = 
+    let val stop = length a
+	fun lr j = 
+	    if j < stop then (f(j, sub_ a j); lr (j+1)) 
+	    else ()
+    in lr 0 end;
 
-fun mapi (f : int * 'a -> 'b) (slice as (a : 'a vector, i, _)) : 'b vector =
-    let val stop = sliceend slice
-	val newvec = vector_ (stop - i) ()
-	fun loop stop =
-	    let	fun lr j =
-		    if j < stop then
-			(update_ newvec (j-i) (f(j, sub_ a j));
-			 lr (j+1))
-		    else ()
-	    in lr i end
-    in loop stop; newvec end;
+fun mapi (f : int * 'a -> 'b) (a : 'a vector) : 'b vector = 
+    let val stop = length a
+	val newvec = vector_ stop () 
+	fun lr j = 
+	    if j < stop then 
+		(update_ newvec j (f(j, sub_ a j)); 
+		 lr (j+1)) 
+	    else ()
+    in lr 0; newvec end;
 
 fun collate cmp (v1, v2) =
     let val n1 = length v1 
