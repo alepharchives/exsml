@@ -52,7 +52,7 @@ def write_histogram(entries, out):
     """Write histogram to a file"""
     with open(out, 'w') as f:
         for (b, r_a, r_b) in entries:
-            f.write("%s\t%s\t%s\n", (b, r_a, r_b))
+            f.write("%s\t%s\t%s\n" % (b, r_a, r_b))
 
 def main(options, args):
     """Main runner, run benchmarks"""
