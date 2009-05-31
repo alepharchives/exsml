@@ -23,11 +23,15 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 /* Knuth-Morris-Pratt algorithm */
 static int *kmp_table(const char *W, mlsize_t W_len)
 {
     int *T = calloc(W_len, sizeof(int));
+
+    assert(NULL != T);
+
     mlsize_t p = 2, c = 0;
 
     T[0] = -1;
