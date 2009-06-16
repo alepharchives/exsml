@@ -11,6 +11,7 @@ Enter `quit();' to quit.
 > val checkrange = fn : int * int -> (int -> bool) -> string
 [closing file "auxil.sml"]
 > val it = () : unit
+> val it = () : unit
 > val a = <array> : int array
   val b = <array> : int array
   val c = <array> : int array
@@ -47,73 +48,35 @@ Enter `quit();' to quit.
   val test9 = "OK" : string
   val test9a = "OK" : string
   val test9b = "OK" : string
-  val test9c = "OK" : string
-  val test9d = "OK" : string
-  val test9e = "OK" : string
-  val test9f = "OK" : string
-  val test9g = "OK" : string
-  val test9h = "OK" : string
-  val test9i = "OK" : string
-  val test9j = "OK" : string
   val g = <array> : int array
   val test10a = "OK" : string
   val test10b = "OK" : string
   val test10c = "OK" : string
   val test10d = "OK" : string
   val test10e = "OK" : string
-  val test10f = "OK" : string
-  val test10g = "OK" : string
-  val test10h = "OK" : string
-  val test10i = "OK" : string
   val test11a = "OK" : string
   val test11b = "OK" : string
   val test11c = "OK" : string
   val test11d = "OK" : string
   val test11e = "OK" : string
-  val test11f = "OK" : string
-  val test11g = "OK" : string
-  val test11h = "OK" : string
-  val test11i = "OK" : string
-  val test11j = "OK" : string
-  val test11k = "OK" : string
   val array0 = <array> : int array
   val test12a = "OK" : string
   val test12b = "OK" : string
+  val test12c = "OK" : string
   val test12d = "OK" : string
   val test12e = "OK" : string
+  val test12f = "OK" : string
+  val test12g = "OK" : string
+  val test12h = "OK" : string
+  val test12i = "OK" : string
   val test13a = "OK" : string
   val test13b = "OK" : string
-  val test13c = "OK" : string
-  val test13d = "OK" : string
-  val test13e = "OK" : string
-  val test13f = "OK" : string
-  val test13g = "OK" : string
-  val test13h = "OK" : string
-  val test13i = "OK" : string
-  val test13j = "OK" : string
-  val test13k = "OK" : string
-  val test13l = "OK" : string
-  val test13m = "OK" : string
-  val test13n = "OK" : string
+  val test14a = "OK" : string
+  val test14b = "OK" : string
+  val test14c = "OK" : string
   val test15a = "OK" : string
-  val test15b = "OK" : string
-  val test15c = "OK" : string
-  val test15d = "OK" : string
-  val test15e = "OK" : string
-  val test15f = "OK" : string
-  val test15g = "OK" : string
-  val test15h = "OK" : string
   val test16a = "OK" : string
-  val test16b = "OK" : string
-  val test16c = "OK" : string
-  val test16d = "OK" : string
-  val test16e = "OK" : string
-  val test16f = "OK" : string
-  val test16g = "OK" : string
   val test17 = "OK" : string
-  val test18 = "OK" : string
-  val test19 = "OK" : string
-  val test20 = "OK" : string
 [closing file "array.sml"]
 [opening file "array2.sml"]
 [opening file "auxil.sml"]
@@ -273,6 +236,103 @@ Enter `quit();' to quit.
   val test12k = "OK" : string
   val test12l = "OK" : string
 [closing file "array2.sml"]
+[opening file "arrayslice.sml"]
+[opening file "auxil.sml"]
+> infix 1 seq
+  val ('a, 'b) seq = fn : 'a * 'b -> 'b
+> val check = fn : bool -> string
+> val check' = fn : (unit -> bool) -> string
+> val range = fn : int * int -> (int -> bool) -> bool
+> val checkrange = fn : int * int -> (int -> bool) -> string
+[closing file "auxil.sml"]
+> val it = () : unit
+> val a = <array> : int array
+  val b = <array> : int array
+  val c = <array> : int array
+  val slice00 = <slice> : int slice
+  val slice01 = <slice> : int slice
+  val slice02 = <slice> : int slice
+  val slice03 = <slice> : int slice
+  val slice04 = <slice> : int slice
+  val slice05 = <slice> : int slice
+  val slicea07 = <slice> : int slice
+  val slicea02 = <slice> : int slice
+  val slicea23 = <slice> : int slice
+  val slicea25 = <slice> : int slice
+  val slice06 = <slice> : int slice
+  val slice07 = <slice> : int slice
+  val slice08 = <slice> : int slice
+  val slice09 = <slice> : int slice
+  val slice0s =
+    [<slice>, <slice>, <slice>, <slice>, <slice>, <slice>, <slice>, <slice>,
+     <slice>, <slice>] : int slice list
+  val sliceas = [<slice>, <slice>, <slice>, <slice>] : int slice list
+  val test1a = "OK" : string
+  val test1b = "OK" : string
+  val test2a = "OK" : string
+  val test2b = "OK" : string
+  val test2c = "OK" : string
+  val test2d = "OK" : string
+  val test2e = "OK" : string
+  val test3a = "OK" : string
+  val test4a = "OK" : string
+  val test4b = "OK" : string
+  val test4c = "OK" : string
+  val test4d = "OK" : string
+  val test4e = "OK" : string
+  val test4f = "OK" : string
+  val test4g = "OK" : string
+  val test5 = "OK" : string
+  val test6a = "OK" : string
+  val test6b = "OK" : string
+  val test6c = "OK" : string
+  val sliced = <slice> : int slice
+  val sliceb = <slice> : int slice
+  val e = <array> : int array
+  val ev =
+    #[1, 11, 21, 31, 41, 51, 61, 1, 11, 21, 31, 41, 51, 61, 1, 11, 21, 31, 41,
+      51, 61, 1, 11, 21, 31, 41, 51, 61, 1, 11, 21, 31, 41, 51, 61, 1, 11, 21,
+      31, 41, 51, 61, 1, 11, 21, 31, 41, 51, 61, 1, 11, 21, 31, 41, 51, 61, 1,
+      11, 21, 31, 41, 51, 61, 1, 11, 21, 31, 41, 51, 61, 1, 11, 21, 31, 41, 51,
+      61, 1, 11, 21, 31, 41, 51, 61, 1, 11, 21, 31, 41, 51, 61, 1, 11, 21, 31,
+      41, 51, 61, 1, 11, 441, 551, 661, 1, 11, 21, 31, 41, 51, 61, 1, 11, 21,
+      31, 41, 51, 61, 1, 11, 21, 31, 41, 51, 61, 1, 11, 21, 31, 41, 51, 61, 1,
+      11, 21, 31, 41, 51, 61, 1, 11, 21, 31, 41, 51, 61, 1, 11, 21, 31, 41, 51,
+      61, 1, 11, 21, 31, 41, 51, 61, 1, 11, 21, 31, 41, 51, 61, 1, 11, 21, 31,
+      41, 51, 61, 1, 11, 21, 31, 41, 51, 61, 1, 11, 21, 31, 41, 51, 61, 1, 11,
+      21, 31, 41, 51, 61, 1, 11, 21, 31, 41, 51, ...] : int vector
+  val slicee = <slice> : int slice
+  val test9a = "OK" : string
+  val test9b = "OK" : string
+  val g = <array> : int array
+  val sliceg = <slice> : int slice
+  val test10a = "OK" : string
+  val sliceg0 = <slice> : int slice
+  val test10b = "OK" : string
+  val sliceg1 = <slice> : int slice
+  val test10c = "OK" : string
+  val sliceg202 = <slice> : int slice
+  val test10d = "OK" : string
+  val test11a = "OK" : string
+  val test11b = "OK" : string
+  val test11c = "OK" : string
+  val test12a = "OK" : string
+  val test12b = "OK" : string
+  val test12c = "OK" : string
+  val test12d = "OK" : string
+  val test12e = "OK" : string
+  val test12f = "OK" : string
+  val test12g = "OK" : string
+  val test12h = "OK" : string
+  val test12i = "OK" : string
+  val test13 = "OK" : string
+  val test14a = "OK" : string
+  val test14b = "OK" : string
+  val test15 = "OK" : string
+  val test16 = "OK" : string
+  val test17a = "OK" : string
+  val test17b = "OK" : string
+[closing file "arrayslice.sml"]
 [opening file "arraysort.sml"]
 > val it = () : unit
 > val it = () : unit

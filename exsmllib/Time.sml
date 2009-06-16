@@ -30,13 +30,13 @@
 
     (* Should replace with a more efficient real truncation: *)
 
-    fun fromReal r =
+
+    fun fromReal r = 
 	let val sec = trunc r
-	    val usec = trunc(1000000.0 * (r - real sec) + 0.0001)
+	    val usec = trunc(1000000.0 * (r - real sec))
 	in 1000000.0 * real sec + real usec end;
 
     fun toReal r = r / 1000000.0;
-
     fun timeToUnits (t, p) = floor(toReal t * negpow10 p + 0.5);
 
     fun fmt p usec =

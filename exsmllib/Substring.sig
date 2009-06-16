@@ -49,13 +49,15 @@ val app       : (char -> unit) -> substring -> unit
    representation of a piece of a string.
    A substring (s,i,n) is valid if 0 <= i <= i+n <= size s,
                   or equivalently, 0 <= i and 0 <= n and i+n <= size s.
-   A valid substring (s, i, n) represents the string s[i...i+n-1].
+   A valid substring (s, i, n) represents the string s[i...i+n-1].  
    Invariant in the implementation: Any value of type substring is valid.
+
+   A substring is the same as a CharVectorSlice.slice, so substrings
+   may be processed using the functions declared in CharVectorSlice.
 
    [substring(s, i, n)] creates the substring (s, i, n), consisting of
    the substring of s with length n starting at i.  Raises Subscript
    if i<0 or n<0 or i+n > size s.  Equivalent to extract(s, i, SOME n).
-
    [extract(s, i, NONE)] creates the substring (s, i, size s-i)
    consisting of the tail of s starting at i.
    Raises Subscript if i<0 or i > size s.
@@ -218,5 +220,4 @@ val app       : (char -> unit) -> substring -> unit
 
    [app f sus] applies f to all characters of sus, from left to right.
    Equivalent to List.app f (explode sus).
-
 *)
