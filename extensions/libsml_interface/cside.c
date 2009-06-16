@@ -181,10 +181,9 @@ long treesum(value v)
 
 
 /* SML type: (int -> string) -> int -> string */
-
 value cffun(value vf, value vi)
 {
-  int count = Val_long(vi);
+  int count = Long_val(vi);
   int ok = 1;
   value res;
   int i;
