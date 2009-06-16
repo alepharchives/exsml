@@ -1,5 +1,5 @@
 (* Msp.sml -- prelude for ML Server Pages
-   sestoft@dina.kvl.dk 2000-02-24 version 0.7
+   sestoft@dina.kvl.dk 2000-11-06 version 0.8
  *)
 
 (* Efficiently concatenable word sequences *)

@@ -56,7 +56,8 @@ char* globalexn[] = {
        "Overflow",
        "Bind",
        "Match",
-       "Io" };
+       "Io",
+       "Option" };
 
 
 void sys_error(char *err_msg)

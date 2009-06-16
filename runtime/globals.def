@@ -38,11 +38,12 @@ exn SYS__EXN_OVERFLOW       	31   sys	exn_overflow
 exn SYS__EXN_BIND           	32   sys	exn_bind
 exn SYS__EXN_MATCH          	33   sys	exn_match
 exn SYS__EXN_IO             	34   sys	exn_io
+exn SYS__EXN_OPTION		35   sys	exn_option
 ## Frequently used exception values (NOT exn indexes); allocated by sys_init()
-exn_val EXN_INTERRUPT	      	35   sys    val_exn_interrupt
-exn_val EXN_DIV             	36   sys    val_exn_div
-exn_val EXN_OVERFLOW        	37   sys    val_exn_overflow
+exn_val EXN_INTERRUPT	      	36   sys    val_exn_interrupt
+exn_val EXN_DIV             	37   sys    val_exn_div
+exn_val EXN_OVERFLOW        	38   sys    val_exn_overflow
 ## First and last exception, these ought to be computed via awk
 first_exception 19
-last_exception  34
+last_exception  35
 
