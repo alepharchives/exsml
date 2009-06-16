@@ -13,13 +13,15 @@ fun isSuccess s = s = success
 local
     prim_val getenv_ : string -> string = 1 "sys_getenv";
 in
-    fun getEnv s =
-	(SOME (getenv_ s)) handle _ => NONE
+    fun getEnv s = (SOME (getenv_ s)) handle _ => NONE
+    prim_val sleep  : Time.time -> unit = 1 "sml_sleep";
 end
+
+fun isSuccess sv = (sv = success);
 
 val terminate = BasicIO.exit;
 
-local
+local 
     val exittasks = (ref []) : (unit -> unit) list ref
 in
     fun atExit newtask =

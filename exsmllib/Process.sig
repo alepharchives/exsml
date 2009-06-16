@@ -4,6 +4,7 @@ type status
 
 val success   : status
 val failure   : status
+
 val isSuccess : status -> bool
 
 val system    : string -> status
@@ -11,6 +12,7 @@ val system    : string -> status
 val atExit    : (unit -> unit) -> unit
 val exit      : status -> 'a
 val terminate : status -> 'a
+val sleep     : Time.time -> unit
 
 val getEnv    : string -> string option
 

@@ -120,9 +120,9 @@ fun run cmd args inp =
 	    (* This works for bash, csh and tcsh: *)
 	    (* catenate (cmd :: List.@(args, ["<", infile, "&>", outfile])) *)
 	val status = Process.system cmdline
-	val result = if Process.isSuccess status then
+	val result = if status = Process.success then 
 			 Success (Byte.bytesToString (read outfile))
-		     else
+		     else 
 			 ((Failure (Byte.bytesToString (read outfile)))
 			  handle Io _ => Failure (cmd ^ ": command failed"))
     in

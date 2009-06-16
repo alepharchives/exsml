@@ -177,7 +177,14 @@ value sml_not_equal(value v1, value v2)
 
 value sml_system(value cmd)
 {
-  return INT_TO_VAL(system(String_val(cmd)));
+	value res;
+	errno = 0;
+	rest = system(VAL_TO_STRING(cmd));
+	if (errno = ENOENT) {
+		return -1;
+	} else {
+		return INT_TO_VAL(res);
+	}
 }
 
 value sml_abs_int(value x)
@@ -1382,6 +1389,23 @@ char* exnmessage_aux(value exn)
 	return buf;
 #undef BUFSIZE
 }
+
+
+/* Sleep for the number of usec indicated the Double val vtime */
+
+value sml_sleep(value vtime)
+{
+	double time = Double_val(vtime);
+	unsigned long sec = (long)(time/1000000.0);
+	unsigned long usec = (long)(time - 1000000.0 * sec);
+	if (time > 0) {
+		sleep(sec);
+		usleep(usec);
+	}
+
+	return Val_unit;
+}
+
 
 
 /* Return a string representation of SML exception exn, if possible */
