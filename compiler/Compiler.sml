@@ -290,13 +290,15 @@ fun compileSigExp sigexp =
       val sigexp = resolveToplevelSigExp sigexp
       val LAMBDA(T, RS) = elabToplevelSigExp sigexp
   in
-    updateCurrentStaticT T;
+    incrBindingLevel(); 
+    refreshTyNameSet PARAMETERts T;
+    updateCurrentStaticT T;  
     (strOptOfSig (!currentSig)) := SOME RS;
     let val S' = normStr (SofRecStr RS)  (* cvr: we norm S so that calculated (sub)fields
-			       are correct *)
+					  are correct *)
     in
-	extendCurrentStaticME (MEofStr S');
-	extendCurrentStaticFE (FEofStr S');
+	extendCurrentStaticME (MEofStr S');  
+	extendCurrentStaticFE (FEofStr S');  
 	extendCurrentStaticGE (GEofStr S');  (* should actually be empty ... *)
 	extendCurrentStaticVE (VEofStr S');
 	extendCurrentStaticTE (TEofStr S')
@@ -313,7 +315,9 @@ fun compileSpecPhrase elab spec =
       val (iBas,spec) = resolveToplevelSpec spec
       val LAMBDA(T, S) = elab spec
   in
-    updateCurrentStaticT T;
+    incrBindingLevel(); 
+    refreshTyNameSet PARAMETERts T;
+    updateCurrentStaticT T;  
     extendCurrentStaticIBas iBas;
     extendCurrentStaticS S;
     let val S' = normStr S  (* cvr: we norm S so that calculated (sub)fields
@@ -339,10 +343,9 @@ fun compileSignature context uname umode filename =
       (* val () = (msgIBlock 0;
                    msgString "[compiling file \""; msgString source_name;
                    msgString "\"]"; msgEOL(); msgEBlock();) *)
-      val restorePrState = savePrState()
       val () = startCompilingUnit uname "" umode
       val () = initInitialEnvironments context
-      val () = resetTypePrinter()
+      val () = resetTypes ();
       val is = open_in_bin source_name
       val () = remove_file target_name;
       val lexbuf = createLexerStream is
@@ -378,9 +381,8 @@ fun compileSignature context uname umode filename =
        (compileSig (parseSigFile umode lexbuf);
         ignore (rectifySignature ());
         ignore (writeCompiledSignature target_name);
-        close_in is;
-        restorePrState())
-       handle x => (close_in is;restorePrState();raise x)
+        close_in is)
+       handle x => (close_in is;raise x)
   end
 ;
 
@@ -390,8 +392,7 @@ fun compileSignature context uname umode filename =
 (* that the intermediate results will be discarded. *)
 
 fun updateCurrentCompState ((iBas, ExEnv as EXISTS(T,(ME,FE,GE,VE, TE))), RE) =
-(
-  updateCurrentInfixBasis iBas;
+( updateCurrentInfixBasis iBas;
   updateCurrentStaticT T;
   updateCurrentStaticME ME;
   updateCurrentStaticFE FE;
@@ -440,13 +441,12 @@ fun compileAndEmit context uname uident umode filename specSig_opt elab decs =
     (* val () = (msgIBlock 0;
                  msgString "[compiling file \""; msgString filename_sml;
                  msgString "\"]"; msgEOL(); msgEBlock()) *)
-    val restorePrState = savePrState(); (* cvr: *)
     val () = startCompilingUnit uname uident umode
     val () = initInitialEnvironments context
     val () = extendInitialSigEnv specSig_opt
              (* if in STRmode and the optional sig is there
                 then we add the signature to the environment of the body *)
-    val () = resetTypePrinter();
+    val () = resetTypes();
     val os = open_out_bin filename_uo
   in
     ( start_emit_phrase os;
@@ -476,11 +476,10 @@ fun compileAndEmit context uname uident umode filename specSig_opt elab decs =
                      (getOption (!uStamp)) (#uMentions (!currentSig))
                      os
                  end);
-          close_out os;
-          restorePrState()
+          close_out os
         end
     )
-    handle x => (close_out os; remove_file filename_uo;restorePrState();raise x)
+    handle x => (close_out os; remove_file filename_uo;raise x)
   end;
 
 (* cvr: TODO
@@ -527,5 +526,11 @@ fun compileUnitBody context uname umode filename =
       input_stream := is;
       input_lexbuf := lexbuf;
       (compileStruct (parseStructFile umode lexbuf))
-       handle x => (close_in is; raise x)
+       handle x => (close_in is; raise x)	  
   end;
+
+
+
+
+
+

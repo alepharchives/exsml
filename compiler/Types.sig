@@ -64,9 +64,7 @@ val normStr : Str -> Str;
 val normMod : Mod -> Mod;
 val normExMod : ExMod -> ExMod;
 
-val savePrState : unit -> (unit -> unit);
 val under_binder : ('a -> 'b) -> 'a -> 'b;
-
 val checkpoint_free_typevar_names: unit -> unit;
 val rollback_free_typevar_names: unit -> unit;
 val commit_free_typevar_names: unit -> unit;
@@ -88,7 +86,6 @@ val prTyInfo : string -> (TyFun * ConEnv) -> unit;
 (* val prGenFun : GenFun -> unit; *)
 val prTyFun : TyFun -> unit;
 
-val resetTypePrinter: unit -> unit;
 val collectExplicitVars: Type -> unit;
 val collectTopVars: ExEnvironment -> unit;
 val printNextType: Type -> unit;
@@ -140,7 +137,6 @@ val scheme_1u_imp: (Type -> Type) -> TypeScheme;
 val scheme_2u: (Type -> Type -> Type) -> TypeScheme;
 val scheme_3u: (Type -> Type -> Type -> Type) -> TypeScheme;
 
-val resetBindingLevel: unit -> unit;
 val incrBindingLevel: unit -> unit;
 val decrBindingLevel: unit -> unit;
 val currentBindingLevel: unit -> int;
@@ -204,12 +200,15 @@ val conEnvOfTyApp: TyApp -> ConEnv option;
 
 (* destructively change the kind and update the binding level of type names
 *)
-val refreshTyName: TnSort -> TyName ->  unit;
+val refreshTyName: TnSort -> TyName ->  unit; 
 val refreshTyNameSet: TnSort -> TyNameSet  -> unit;
 
+(* lower the level of free unification vars in obj to the current-binding level, returning obj *)
+val refreshExEnv: ExEnvironment -> ExEnvironment;
+
 val realizeLongTyCon : QualifiedIdent -> TyStr ->  TyStr -> unit;
-val matchMod : Mod -> Mod -> unit;
-val matchCSig : CSig -> CSig -> unit;
+val matchMod : Mod -> Mod -> unit; 
+val matchCSig : CSig -> CSig -> unit; 
 val errMatchReason : string -> string -> matchReason -> unit;
 val checkCSig : CSig -> CSig -> unit;
 
@@ -224,16 +223,15 @@ val lookupVEofStr : Str -> string -> (int*(TypeScheme * ConStatusDesc) global);
 
 val lookupMEofEnv : Environment -> string -> (int * (RecStr global))
 val lookupFEofEnv : Environment -> string -> (int * (GenFun global))
-val lookupVEofEnv : Environment -> string -> (int*  (TypeScheme *
+val lookupVEofEnv : Environment -> string -> (int*  (TypeScheme * 
 						     ConStatusDesc) global);
 
+
+
+(* First protect, then restore the current type state (current binding level + printer state)  after applying f *)
+val protectCurrentTypes: (unit -> 'a) -> unit;
+val resetTypes: unit -> unit;
+
 end;
-
-
-
-
-
-
-
 
 
