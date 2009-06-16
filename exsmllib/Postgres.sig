@@ -2,7 +2,7 @@
 
 type dbconn                                   (* Connection to server *)
 type dbresult                                 (* Result of a query    *)
-type oid                                      (* Internal object id   *)
+eqtype oid                                    (* Internal object id   *)
 
 exception Closed                              (* Connection is closed *)
 exception Null                                (* Field value is NULL  *)
