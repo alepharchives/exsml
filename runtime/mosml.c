@@ -76,6 +76,7 @@ value sml_modtime(value);
 value sml_settime(value, value);
 value sml_access(value, value);
 value sml_tmpnam(value v);
+value sml_sleep(value);
 value sml_errormsg(value);
 value sml_asin(value);
 value sml_acos(value);
@@ -179,8 +180,8 @@ value sml_system(value cmd)
 {
 	value res;
 	errno = 0;
-	rest = system(VAL_TO_STRING(cmd));
-	if (errno = ENOENT) {
+	res = system(String_val(cmd));
+	if (errno == ENOENT) {
 		return -1;
 	} else {
 		return INT_TO_VAL(res);
@@ -1395,10 +1396,10 @@ char* exnmessage_aux(value exn)
 
 value sml_sleep(value vtime)
 {
-	double time = Double_val(vtime);
-	unsigned long sec = (long)(time/1000000.0);
-	unsigned long usec = (long)(time - 1000000.0 * sec);
-	if (time > 0) {
+	double t = Double_val(vtime);
+	unsigned long sec = (long)(t/1000000.0);
+	unsigned long usec = (long)(t - 1000000.0 * sec);
+	if (t > 0) {
 		sleep(sec);
 		usleep(usec);
 	}
