@@ -431,7 +431,7 @@ value msocket_recvfrom(value sock, value buff, value offset,
 		PUSH_ROOTS(roots, 1);
 		roots[0] = from_saddr(&addr, len);
 		res = alloc_tuple(2);
-		modify(&Field(res, 0), INT_TO_VAL(len));
+		modify(&Field(res, 0), INT_TO_VAL(ret));
 		modify(&Field(res, 1), roots[0]);
 		POP_ROOTS();
 	}
