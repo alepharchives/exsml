@@ -189,15 +189,14 @@ val checkClosedExEnvironment : ExEnvironment -> unit;
 
 val copySig : (TyName * TyApp) list -> (TypeVar * Type) list -> Sig -> Sig;
 val copyMod : (TyName * TyApp) list -> (TypeVar * Type) list -> Mod -> Mod;
-val copyRecStr : (TyName * TyApp) list -> (TypeVar * Type) list -> RecStr -> RecStr;
-val copyStr : (TyName * TyApp) list -> (TypeVar * Type) list -> Str -> Str;
-val copyGenFun : (TyName * TyApp) list -> (TypeVar * Type) list -> GenFun -> GenFun;
-
+val copyRecStr : (TyName * TyApp) list -> (TypeVar * Type) list -> RecStr -> RecStr; 
+val copyStr : (TyName * TyApp) list -> (TypeVar * Type) list -> Str -> Str; 
+val copyGenFun : (TyName * TyApp) list -> (TypeVar * Type) list -> GenFun -> GenFun; 
+val copyTypeScheme : (TyName * TyApp) list -> (TypeVar * Type) list 
+                     -> TypeScheme -> TypeScheme
 val parameteriseTyNameSet: TyNameSet -> TyNameSet -> (TyNameSet * (TyName * TyApp) list);
 
 val conEnvOfTyApp: TyApp -> ConEnv option;
-
-
 (* destructively change the kind and update the binding level of type names
 *)
 val refreshTyName: TnSort -> TyName ->  unit; 
@@ -233,5 +232,3 @@ val protectCurrentTypes: (unit -> 'a) -> unit;
 val resetTypes: unit -> unit;
 
 end;
-
-
