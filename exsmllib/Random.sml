@@ -7,11 +7,11 @@ type generator = {seedref : real ref}
 val a = 16807.0
 val m = 2147483647.0
 fun nextrand seed =
-    let val t = a*seed
+    let val t = a*seed 
     in t - m * real(floor(t/m)) end
 
-fun newgenseed seed =
-    {seedref = ref (nextrand seed)};
+fun newgenseed 0.0  = raise Fail "Random.newgenseed: bad seed 0.0"
+  | newgenseed seed = {seedref = ref (nextrand seed)};
 
 fun newgen () =
     let prim_val getrealtime_ : unit -> real = 1 "sml_getrealtime"
