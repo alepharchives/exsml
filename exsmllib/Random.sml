@@ -1,23 +1,29 @@
-(* Random -- Moscow ML library 1995-04-23, 1999-02-24, 2000-10-24 *)
+(* Random -- Moscow ML library 1995-04-23, 1999-02-24, 2000-10-24, 
+   2004-01-12 *)
 
 type generator = {seedref : real ref}
 
 (* Generating random numbers.  Paulson, page 96 *)
 
-val a = 16807.0
-val m = 2147483647.0
-fun nextrand seed =
+
+val a = 16807.0 
+val m = 2147483647.0 
+
+(* The seed must be integral but is represented in a real to get a
+   wider range *)
+
+fun nextrand seed = 
     let val t = a*seed 
     in t - m * real(floor(t/m)) end
-
 fun newgenseed 0.0  = raise Fail "Random.newgenseed: bad seed 0.0"
   | newgenseed seed = {seedref = ref (nextrand seed)};
 
 fun newgen () =
     let prim_val getrealtime_ : unit -> real = 1 "sml_getrealtime"
 	val r    = getrealtime_ ()
-	val sec  = real (trunc(r/1000000.0))
-	val usec = trunc(r - 1000000.0 * sec);
+        (* Changed divisor from 10^6 to 10^7 to avoid trunc Overflow *)
+	val sec  = real (trunc(r/10000000.0))
+	val usec = trunc(r - 10000000.0 * sec);
     in newgenseed (sec + real usec) end;
 
 fun random {seedref as ref seed} = 
