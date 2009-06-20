@@ -30,6 +30,7 @@ gc_minor
 gc_major
 gc_full_major
 hash_univ_param
+hash_univ_safe_param
 intern_val
 int_of_string
 format_int
@@ -144,6 +145,7 @@ doubletow8vec
 sml_localoffset
 sml_exnname
 sml_exnmessage
+sml_sleep
 sml_realpath
 sml_uname
 sml_islink
