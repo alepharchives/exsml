@@ -49,26 +49,26 @@ sp is a local copy of the global variable extern_sp. */
 typedef unsigned char opcode_t;
 
 /* byte_raise_break_exn raises the Interrupt exception
-   (GETGLOBAL takes a short arg)
+   (GETGLOBAL takes a long (4B) arg) 
 
    byte_callback[123]_code do callbacks from C to ML code:
-   POP, 1, 0 means pop(1)
+   POP, 1, 0 means pop(1) 
 */
 
 #if defined(WORDS_BIGENDIAN) && !defined(HAVE_ALIGNED_ACCESS_REQUIRED)
 static opcode_t byte_raise_break_exn[] =
-       { GETGLOBAL, 0, EXN_INTERRUPT, RAISE };
+  { GETGLOBAL, 0, 0, 0, EXN_INTERRUPT, RAISE };
 static opcode_t byte_callback1_code[] = { ACC1, APPLY1, POP, 0, 1, STOP };
 static opcode_t byte_callback2_code[] = { ACC2, APPLY2, POP, 0, 1, STOP };
 static opcode_t byte_callback3_code[] = { ACC3, APPLY3, POP, 0, 1, STOP };
 #else
 static opcode_t byte_raise_break_exn[] =
-       { GETGLOBAL, EXN_INTERRUPT, 0, RAISE };
+  { GETGLOBAL, EXN_INTERRUPT, 0, 0, 0, RAISE };
 static opcode_t byte_callback1_code[] = { ACC1, APPLY1, POP, 1, 0, STOP };
 static opcode_t byte_callback2_code[] = { ACC2, APPLY2, POP, 1, 0, STOP };
 static opcode_t byte_callback3_code[] = { ACC3, APPLY3, POP, 1, 0, STOP };
 #endif
-#define RAISE_CODE_LEN 4
+#define RAISE_CODE_LEN 6
 #define CALLBACK_CODE_LEN 6
 
 bytecode_t callback1_code;		/* Set by interprete on initialization */
@@ -691,16 +691,16 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			*--sp = accu;
 			/* Fallthrough */
 		case GETGLOBAL:
-			accu = Field(global_data, u16(pc));
-			pc += sizeof(short);
+			accu = Field(global_data, u32(pc));
+			pc += sizeof(long);
 			break;
 
 		case PUSH_GETGLOBAL_APPLY1:
 		{
 			sp -= 4;
 			sp[0] = accu;
-			accu = Field(global_data, u16(pc));
-			pc += sizeof(short);
+			accu = Field(global_data, u32(pc));
+			pc += sizeof(long);
 			sp[1] = (value)pc;
 			sp[2] = env;
 			sp[3] = LONG_TO_VAL(extra_args);
@@ -731,8 +731,8 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			sp -= 4;
 			sp[0] = accu;
 			sp[1] = arg2;
-			accu = Field(global_data, u16(pc));
-			pc += sizeof(short);
+			accu = Field(global_data, u32(pc));
+			pc += sizeof(long);
 			sp[2] = (value)pc;
 			sp[3] = env;
 			sp[4] = LONG_TO_VAL(extra_args);
@@ -750,8 +750,8 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			sp[0] = accu;
 			sp[1] = arg2;
 			sp[2] = arg3;
-			accu = Field(global_data, u16(pc));
-			pc += sizeof(short);
+			accu = Field(global_data, u32(pc));
+			pc += sizeof(long);
 			sp[3] = (value)pc;
 			sp[4] = env;
 			sp[5] = LONG_TO_VAL(extra_args);
@@ -771,8 +771,8 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			sp[1] = arg2;
 			sp[2] = arg3;
 			sp[3] = arg4;
-			accu = Field(global_data, u16(pc));
-			pc += sizeof(short);
+			accu = Field(global_data, u32(pc));
+			pc += sizeof(long);
 			sp[4] = (value)pc;
 			sp[5] = env;
 			sp[6] = LONG_TO_VAL(extra_args);
@@ -787,7 +787,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			sp = sp + u16(pc) - 2; pc += sizeof(short);
 			sp[0] = accu;
 		getglobal_appterm:
-			accu = Field(global_data, u16(pc));
+			accu = Field(global_data, u32(pc));
 			pc = Code_val(accu);
 			env = accu;
 			goto check_signals;
@@ -829,9 +829,9 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 		}
 
 		case SETGLOBAL:
-			modify(&Field(global_data, u16(pc)), accu);
+			modify(&Field(global_data, u32(pc)), accu);
 			accu = Val_unit; /* ? */
-			pc += sizeof(short);
+			pc += sizeof(long);
 			break;
 
 /* Allocation of blocks */

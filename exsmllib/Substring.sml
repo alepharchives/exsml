@@ -132,10 +132,10 @@ fun app f (s,i,n) =
                       else (f (sub_ s j); h (j+1))
     in h i end;
 
-exception Span
+exception Span = Span
 
-fun span ((s, i, n), (s', i', n')) =
-    if i > i'+n' orelse s<>s' then
+fun span ((s, i, n), (s', i', n')) = 
+    if i > i'+n' orelse s<>s' then 
 	raise Span
     else
 	(s, i, i'+n'-i)
