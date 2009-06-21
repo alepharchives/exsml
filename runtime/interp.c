@@ -692,7 +692,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			/* Fallthrough */
 		case GETGLOBAL:
 			accu = Field(global_data, u32(pc));
-			pc += sizeof(long);
+			pc += sizeof(uint32_t);
 			break;
 
 		case PUSH_GETGLOBAL_APPLY1:
@@ -700,7 +700,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			sp -= 4;
 			sp[0] = accu;
 			accu = Field(global_data, u32(pc));
-			pc += sizeof(long);
+			pc += sizeof(uint32_t);
 			sp[1] = (value)pc;
 			sp[2] = env;
 			sp[3] = LONG_TO_VAL(extra_args);
@@ -732,7 +732,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			sp[0] = accu;
 			sp[1] = arg2;
 			accu = Field(global_data, u32(pc));
-			pc += sizeof(long);
+			pc += sizeof(uint32_t);
 			sp[2] = (value)pc;
 			sp[3] = env;
 			sp[4] = LONG_TO_VAL(extra_args);
@@ -751,7 +751,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			sp[1] = arg2;
 			sp[2] = arg3;
 			accu = Field(global_data, u32(pc));
-			pc += sizeof(long);
+			pc += sizeof(uint32_t);
 			sp[3] = (value)pc;
 			sp[4] = env;
 			sp[5] = LONG_TO_VAL(extra_args);
@@ -772,7 +772,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			sp[2] = arg3;
 			sp[3] = arg4;
 			accu = Field(global_data, u32(pc));
-			pc += sizeof(long);
+			pc += sizeof(uint32_t);
 			sp[4] = (value)pc;
 			sp[5] = env;
 			sp[6] = LONG_TO_VAL(extra_args);
@@ -831,7 +831,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 		case SETGLOBAL:
 			modify(&Field(global_data, u32(pc)), accu);
 			accu = Val_unit; /* ? */
-			pc += sizeof(long);
+			pc += sizeof(uint32_t);
 			break;
 
 /* Allocation of blocks */
