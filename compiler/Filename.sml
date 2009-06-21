@@ -2,6 +2,8 @@
 
 open CharVector;
 
+fun extract arg = Substring.string(Substring.extract arg)
+
 fun check_suffix name suff =
   let val name_len = size name
       val suff_len = size suff
