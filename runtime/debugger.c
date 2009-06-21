@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #include "debugger.h"
 #include "instruct.h"
@@ -127,8 +128,8 @@ bytecode_t disasm_instr(int cur_instr, bytecode_t pc, value accu, value sp[])
 		print_value(sp[0]);
 		break;
 	case GETGLOBAL:
-		accu_l = Field(global_data, u16(pc));
-		printf("  Global %i : ", u16(pc));
+		accu_l = Field(global_data, u32(pc));
+		printf("  Global %i : ", u32(pc));
 		print_value(accu_l);
 		break;
 	case GETFIELD0:
@@ -153,7 +154,7 @@ bytecode_t disasm_instr(int cur_instr, bytecode_t pc, value accu, value sp[])
 		print_value(Field(accu, u16(pc)));
 		break;
 	case SETGLOBAL:
-		printf("  Global %i : ", u16(pc));
+		printf("  Global %i : ", u32(pc));
 		print_value(accu);
 		break;
 	case LTINT:
