@@ -216,7 +216,7 @@ in
 	in ((hour, min, sec), src3) end
 
     fun pq_getdatetime dbres fno tupno : Date.date =
-	let val src = Substring.all (pq_getstring dbres fno tupno) 
+	let val src = Substring.full (pq_getstring dbres fno tupno) 
 	    val ((yr,mo,da), src1) = scandate src
 	    val src2 = drop (fn c => c = #" ") src1
 	    val ((hr,mi,se), _   ) = scantime src2
@@ -231,11 +231,11 @@ in
         handle Option.Option => raise Fail "Postgres.db_getdatetime 2"
 
     fun pq_gettime dbres fno tupno : int * int * int =
-	#1(scantime(Substring.all(pq_getstring dbres fno tupno)))
+	#1(scantime(Substring.full(pq_getstring dbres fno tupno)))
 	handle Option.Option => raise Fail "Postgres.db_gettime"
 
     fun pq_getdate dbres fno tupno : int * int * int =
-	#1(scandate (Substring.all (pq_getstring dbres fno tupno)))
+	#1(scandate (Substring.full (pq_getstring dbres fno tupno)))
 	handle Option.Option => raise Fail "Postgres.db_getdate"
 end
 
