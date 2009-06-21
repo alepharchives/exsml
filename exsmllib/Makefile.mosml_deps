@@ -70,7 +70,7 @@ Polygdbm.uo: Polygdbm.ui List.ui Gdbm.ui
 Mosmlcookie.uo: Mosmlcookie.ui String.ui List.ui Date.ui Option.ui \
     Process.ui Substring.ui Bool.ui 
 Word8Array.ui: Word8.ui Word8Vector.ui 
-Word8VectorSlice.uo: Word8VectorSlice.ui Vector.ui Word8.ui Word8Vector.ui 
+Word8VectorSlice.uo: Word8VectorSlice.ui Word8.ui Word8Vector.ui 
 Timer.ui: Time.ui 
 Binaryset.uo: Binaryset.ui List.ui 
 TextIO.uo: TextIO.ui String.ui Char.ui 

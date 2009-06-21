@@ -87,6 +87,10 @@ mosmltop: $(COMP_OBJS) $(T_OBJS)
 	$(MOSMLL) $(LINKFLAGS) -o mosmltop Maint.uo 
 
 
+## Manual dependency tracking
+Lexer.uo: Lexer.ui
+
+
 #regress:
 #	echo "building current lib"
 #	cd ../exsmllib; make -s current

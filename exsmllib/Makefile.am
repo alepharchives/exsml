@@ -13,8 +13,8 @@ installexsmllib_DATA = *.ui *.uo *.sig *.sml
 
 all: Array.uo ArraySlice.uo Array2.uo Arraysort.uo \
      BasicIO.uo Binaryset.uo Binarymap.uo BinIO.uo Bool.uo Byte.uo \
-     Callback.uo Char.uo CharArray.uo CharVector.uo CommandLine.uo \
-     Date.uo Dynarray.uo Dynlib.uo \
+     Callback.uo Char.uo CharArray.uo CharVector.uo CharVectorSlice.uo \
+     CharArraySlice.uo CommandLine.uo Date.uo Dynarray.uo Dynlib.uo \
      FileSys.uo Gdbm.uo Gdimage.uo Help.uo \
      Int.uo Intmap.uo Intset.uo IO.uo \
      Lexing.uo List.uo ListPair.uo Listsort.uo Location.uo \
