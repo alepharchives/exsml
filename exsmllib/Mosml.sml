@@ -25,37 +25,6 @@ fun vecFloat (v : Word8Vector.vector) =
     else
 	raise Fail "Mosml.vecFloat: wrong argument length"
 
-(* The old, hopelessly complicated implementation:
-
-fun floatVec (r : real) =
-    let infix 5 << >> ~>>
-	val dv = doubleVec r
-	val eoffset = (150-23) - (1075-52)
-	open Word8 Word8Vector
-	val s = andb(sub(dv, 0), 0wx80)
-	val e =
-	    if dv = fromList [0w0, 0w0, 0w0, 0w0, 0w0, 0w0, 0w0, 0w0] then
-		0
-	    else
-		Int.+(Int.+(Int.*(toInt(andb(sub(dv, 0), 0wx7F)), 0x10),
-			    toInt(sub(dv, 1) >> 0w4)),
-		      eoffset)
-	val e = if Int.<(e, 0) orelse Int.>(e, 255) then
-	            raise Fail "Mosml.floatVec: float range error"
-		else fromInt e
-	val m1 = andb(sub(dv, 1), 0wxF)
-	val m2 = sub(dv, 2)
-	val m3 = sub(dv, 3)
-	val m4 = sub(dv, 4)
-	val w0 = orb(s, e >> 0w1)
-	val w1 = orb(e << 0w7, orb(m1 << 0w3, m2 >> 0w5))
-	val w2 = orb(m2 << 0w3, m3 >> 0w5)
-	val w3 = orb(m3 << 0w3, m4 >> 0w5)
-    in
-	fromList[w0,w1,w2,w3]
-    end
-*)
-
 prim_val md5sum : string -> string = 1 "md5sum";
 
 fun argv () =
@@ -70,13 +39,13 @@ fun time f arg =
     let open Timer
 	val cputimer  = startCPUTimer ()
 	val realtimer = startRealTimer ()
-	fun report () = 
+	fun report () =
 	    let val {usr, sys} = checkCPUTimer cputimer;
 		val gc = checkGCTime cputimer;
 		val rea = checkRealTimer realtimer;
 		fun format t = Time.toString t
 	    in TextIO.print("User: "     ^ format usr ^
-			    "  System: " ^ format sys ^ 
+			    "  System: " ^ format sys ^
 			    "  GC: "     ^ format gc  ^
 			    "  Real: "   ^ format rea ^ "\n")
 	    end
@@ -120,9 +89,9 @@ fun run cmd args inp =
 	    (* This works for bash, csh and tcsh: *)
 	    (* catenate (cmd :: List.@(args, ["<", infile, "&>", outfile])) *)
 	val status = Process.system cmdline
-	val result = if status = Process.success then 
+	val result = if status = Process.success then
 			 Success (Byte.bytesToString (read outfile))
-		     else 
+		     else
 			 ((Failure (Byte.bytesToString (read outfile)))
 			  handle Io _ => Failure (cmd ^ ": command failed"))
     in
