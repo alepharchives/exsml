@@ -23,14 +23,14 @@ char * stat_alloc (size_t);	         /* Size in bytes. */
 void stat_free (char *);
 char * stat_resize (char *, size_t);     /* Size in bytes. */
 
-
+/* Allocation interface */
 #define ALLOC_SMALL(result, wosize, tag) {				      \
   char *_res_ = young_ptr;						      \
   young_ptr += Bhsize_wosize (wosize);					      \
   if (young_ptr > young_end){						      \
-    Setup_for_gc;							      \
+    SETUP_FOR_GC;							      \
     minor_collection ();						      \
-    Restore_after_gc;							      \
+    RESTORE_AFTER_GC;							      \
     _res_ = young_ptr;							      \
     young_ptr += Bhsize_wosize (wosize);				      \
   }									      \

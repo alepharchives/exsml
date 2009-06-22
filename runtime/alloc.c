@@ -13,8 +13,8 @@
 #include "mlvalues.h"
 #include "stacks.h"
 
-#define Setup_for_gc
-#define Restore_after_gc
+#define SETUP_FOR_GC
+#define RESTORE_AFTER_GC
 
 value alloc (mlsize_t wosize, tag_t tag)
 {

@@ -44,6 +44,19 @@ sp is a local copy of the global variable extern_sp. */
 
 #define null_env Atom(0)
 
+/* These operations help us read some bytes immediately after the pc, as that is
+   the place for extra arguments to opcodes */
+#define u8pc  (unsigned char)(*pc)
+#define u8pci (unsigned char)(*pc++)
+#define JUMPTGT(offset) (bytecode_t)(pc + offset)
+#define JUMPSWITCHINDEX(pc, accu) (bytecode_t)(pc + s32(pc + 4 * VAL_TO_LONG(accu)))
+
+/* GC interface */
+#define SETUP_FOR_GC { sp -= 2; sp[0] = accu; sp[1] = env; extern_sp = sp; }
+#define RESTORE_AFTER_GC { accu = sp[0]; env = sp[1]; sp += 2; }
+#define SETUP_FOR_C_CALL { *--sp = env; extern_sp = sp; }
+#define RESTORE_AFTER_C_CALL { sp = extern_sp; env = *sp++; }
+
 /* The type of bytecode instructions */
 
 typedef unsigned char opcode_t;
@@ -75,12 +88,6 @@ bytecode_t callback1_code;		/* Set by interprete on initialization */
 bytecode_t callback2_code;
 bytecode_t callback3_code;
 
-/* GC interface */
-
-#define Setup_for_gc { sp -= 2; sp[0] = accu; sp[1] = env; extern_sp = sp; }
-#define Restore_after_gc { accu = sp[0]; env = sp[1]; sp += 2; }
-#define SETUP_FOR_C_CALL { *--sp = env; extern_sp = sp; }
-#define RESTORE_AFTER_C_CALL { sp = extern_sp; env = *sp++; }
 
 /* The interpreter itself */
 
@@ -131,15 +138,6 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 	}
 
 /* To read immediate operands, read some bytes after pc: */
-
-#define u8pc  (unsigned char)(*pc)
-#define u8pci (unsigned char)(*pc++)
-#define s16pc s16(pc)
-#define s32pc s32(pc)
-#define u32pc u32(pc)
-#define JUMPTGT(offset) (bytecode_t)(pc + offset)
-#define JUMPSWITCHINDEX(pc, accu) (bytecode_t)(pc + s32(pc + 4 * VAL_TO_LONG(accu)))
-
 	sp = extern_sp;
 	extra_args = 0;
 	env = null_env;
@@ -426,7 +424,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 
 		case PUSH_RETADDR: {
 			sp -= 3;
-			sp[0] = (value) (JUMPTGT(s32pc));
+			sp[0] = (value) (JUMPTGT(s32(pc)));
 			sp[1] = env;
 			sp[2] = LONG_TO_VAL(extra_args);
 			pc += sizeof(int32_t);
@@ -633,8 +631,8 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			}
 
 			ALLOC_SMALL(accu, 1 + nvars, Closure_tag);
-			//      printf("pc = %d, s32pc = %d\n", pc, s32pc);
-			Code_val(accu) = JUMPTGT(s32pc);
+			//      printf("pc = %d, s32(pc) = %d\n", pc, s32(pc));
+			Code_val(accu) = JUMPTGT(s32(pc));
 			//      printf("CLOSURE Code_val(%d) = %d\n", accu, Code_val(accu));
 			for (i = 0; i < nvars; i++) {
 				Field(accu, i + 1) = sp[i];
@@ -650,7 +648,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			int i;
 			if (nvars > 0) *--sp = accu;
 			ALLOC_SMALL(accu, 2 + nvars, Closure_tag);
-			Code_val(accu) = JUMPTGT(s32pc);
+			Code_val(accu) = JUMPTGT(s32(pc));
 			//      printf("CLOSREC Code_val(%d) = %d\n", accu, Code_val(accu));
 			Field(accu, 1) = INT_TO_VAL(0);
 			for (i = 0; i < nvars; i++) Field(accu, i + 2) = sp[i];
@@ -883,7 +881,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			tag_t tag;
 			int i;
 
-			hdr = u32pc;
+			hdr = u32(pc);
 			pc += sizeof(int32_t);
 			size = Wosize_hd(hdr);
 			tag = Tag_hd(hdr);
@@ -893,9 +891,9 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 				for (i = size-2; i >= 0; i--) Field(tmp, i) = *sp++;
 				accu = tmp;
 			} else {
-				Setup_for_gc;
+				SETUP_FOR_GC;
 				tmp = alloc_shr (size, tag);
-				Restore_after_gc;
+				RESTORE_AFTER_GC;
 				initialize (&Field(tmp, size-1), accu);
 				for (i = size-2; i >= 0; i--) initialize (&Field(tmp, i), *sp++);
 				accu = tmp;
@@ -1042,19 +1040,19 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 /* Branches and conditional branches */
 
 		case BRANCH:
-//      printf("BRANCH to %d\n", (void**)(s32pc)-realcode);
-			pc = JUMPTGT(s32pc);
+//      printf("BRANCH to %d\n", (void**)(s32(pc))-realcode);
+			pc = JUMPTGT(s32(pc));
 			break;
 		case BRANCHIF:
 			if (Tag_val(accu) != 0) {
-				pc = JUMPTGT(s32pc);
+				pc = JUMPTGT(s32(pc));
 			} else {
 				pc += sizeof(int32_t);
 			}
 			break;
 		case BRANCHIFNOT:
 			if (Tag_val(accu) == 0) {
-				pc = JUMPTGT(s32pc);
+				pc = JUMPTGT(s32(pc));
 			} else {
 				pc += sizeof(int32_t);
 			}
@@ -1063,14 +1061,14 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			tmp = accu;
 			accu = *sp++;
 			if (Tag_val(tmp) == 0) {
-				pc = JUMPTGT(s32pc);
+				pc = JUMPTGT(s32(pc));
 			} else {
 				pc += sizeof(int32_t);
 			}
 			break;
 		case BRANCHIFNEQTAG:
 			if (Tag_val(accu) != u8pci) {
-				pc = JUMPTGT(s32pc);
+				pc = JUMPTGT(s32(pc));
 			} else {
 				pc += sizeof(int32_t);
 			}
@@ -1088,7 +1086,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 
 		case PUSHTRAP:
 			sp -= 4;
-			Trap_pc(sp) = JUMPTGT(s32pc);
+			Trap_pc(sp) = JUMPTGT(s32(pc));
 			Trap_link(sp) = trapsp;
 			sp[2] = env;
 			sp[3] = LONG_TO_VAL(extra_args);
@@ -1128,9 +1126,9 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			something_to_do = 0;
 			if (force_minor_flag){
 				force_minor_flag = 0;
-				Setup_for_gc;
+				SETUP_FOR_GC;
 				minor_collection ();
-				Restore_after_gc;
+				RESTORE_AFTER_GC;
 			}
 
 			/* If a signal arrives between the following two instructions,
@@ -1221,7 +1219,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			break;
 
 		case CONSTSHORT:
-			accu = s16pc;
+			accu = s16(pc);
 			pc += sizeof(short);
 			break;
 
@@ -1254,7 +1252,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 		case PUSHCONSTINT:
 			*--sp = accu; /* Fallthrough */
 		case CONSTINT:
-			accu = INT_TO_VAL(s32pc);
+			accu = INT_TO_VAL(s32(pc));
 			pc += sizeof(int32_t);
 			break;
 
@@ -1317,7 +1315,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			break;
 		case BRANCHIFEQ:
 			if (*sp++ == accu) {
-				pc = JUMPTGT(s32pc);
+				pc = JUMPTGT(s32(pc));
 			} else {
 				pc += sizeof(int32_t);
 			}
@@ -1327,7 +1325,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			break;
 		case BRANCHIFNEQ:
 			if (*sp++ != accu) {
-				pc = JUMPTGT(s32pc);
+				pc = JUMPTGT(s32(pc));
 			} else {
 				pc += sizeof(int32_t);
 			}
@@ -1337,7 +1335,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			break;
 		case BRANCHIFLT:
 			if (*sp++ < accu) {
-				pc = JUMPTGT(s32pc);
+				pc = JUMPTGT(s32(pc));
 			} else {
 				pc += sizeof(int32_t);
 			}
@@ -1347,7 +1345,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			break;
 		case BRANCHIFGT:
 			if (*sp++ > accu) {
-				pc = JUMPTGT(s32pc);
+				pc = JUMPTGT(s32(pc));
 			} else {
 				pc += sizeof(int32_t);
 			}
@@ -1357,7 +1355,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			break;
 		case BRANCHIFLE:
 			if (*sp++ <= accu) {
-				pc = JUMPTGT(s32pc);
+				pc = JUMPTGT(s32(pc));
 			} else {
 				pc += sizeof(int32_t);
 			}
@@ -1367,7 +1365,7 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			break;
 		case BRANCHIFGE:
 			if (*sp++ >= accu) {
-				pc = JUMPTGT(s32pc);
+				pc = JUMPTGT(s32(pc));
 			} else {
 				pc += sizeof(int32_t);
 			}
@@ -1400,12 +1398,12 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 			low_bound = *sp++;
 			accu = *sp++;
 			if (accu < low_bound) {
-				pc = JUMPTGT(s32pc);
+				pc = JUMPTGT(s32(pc));
 				break;
 			}
 			pc += sizeof(int32_t);
 			if (accu > high_bound) {
-				pc = JUMPTGT(s32pc);
+				pc = JUMPTGT(s32(pc));
 				break;
 			}
 			pc += sizeof(int32_t);
@@ -1514,18 +1512,18 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 				ALLOC_SMALL (accu, size, 0);
 				do {size--; Field (accu, size) = *sp;} while (size != 0);
 			} else if (IS_BLOCK(*sp) && Is_young (*sp)) {
-				Setup_for_gc;
+				SETUP_FOR_GC;
 				minor_collection ();
 				tmp = alloc_shr (size, 0);
-				Restore_after_gc;
+				RESTORE_AFTER_GC;
 				accu = tmp;
 				do {
 					size--; Field (accu, size) = *sp;
 				} while (size != 0);
 			} else {
-				Setup_for_gc;
+				SETUP_FOR_GC;
 				tmp = alloc_shr (size, 0);
-				Restore_after_gc;
+				RESTORE_AFTER_GC;
 				accu = tmp;
 				do {
 					size--; initialize(&Field(accu, size), *sp);
@@ -1690,19 +1688,19 @@ extern value interprete(int mode, bytecode_t bprog, bytecode_t* rprog)
 				ALLOC_SMALL (accu, size, Reference_tag);
 				do {size--; Field (accu, size) = *sp;} while (size != 0);
 			} else if (IS_BLOCK (*sp) && Is_young (*sp)) {
-				Setup_for_gc;
+				SETUP_FOR_GC;
 				minor_collection ();
 				tmp = alloc_shr (size, Reference_tag);
-				Restore_after_gc;
+				RESTORE_AFTER_GC;
 				accu = tmp;
 				do {
 					size--;
 					Field (accu, size) = *sp;
 				} while (size != 0);
 			} else {
-				Setup_for_gc;
+				SETUP_FOR_GC;
 				tmp = alloc_shr (size, Reference_tag);
-				Restore_after_gc;
+				RESTORE_AFTER_GC;
 				accu = tmp;
 				do {
 					size--;
