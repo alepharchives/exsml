@@ -147,22 +147,14 @@ static int sml_equal_aux(value v1, value v2)
   {
 	  // Fast string comparison
 	  size_t len = string_length(v1);
-	  unsigned char *c1, *c2;
 	  if  (len != string_length(v2)) {
 		  return 0;
 	  }
 
-	  for (c1 = (unsigned char *) String_val(v1), c2 = (unsigned char *) String_val(v2);
-	       len > 0;
-	       len--, c1++, c2++) {
-		  if (*c1 != *c2) {
-			  return 0;
-		  }
-	  }
-
-	  return 1;
+	  return (strncmp((char *) String_val(v1),
+			  (char *) String_val(v2),
+			  len) == 0) ? 1 : 0;
   }
-    return (compare_strings(v1, v2) == LONG_TO_VAL(0));
   case Double_tag:
     return (Double_val(v1) == Double_val(v2));
   case Reference_tag:  /* Different reference cells are not equal! */
