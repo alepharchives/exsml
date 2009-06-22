@@ -62,10 +62,10 @@ sp is a local copy of the global variable extern_sp. */
 typedef unsigned char opcode_t;
 
 /* byte_raise_break_exn raises the Interrupt exception
-   (GETGLOBAL takes a long (4B) arg) 
+   (GETGLOBAL takes a long (4B) arg)
 
    byte_callback[123]_code do callbacks from C to ML code:
-   POP, 1, 0 means pop(1) 
+   POP, 1, 0 means pop(1)
 */
 
 #if defined(WORDS_BIGENDIAN) && !defined(HAVE_ALIGNED_ACCESS_REQUIRED)
