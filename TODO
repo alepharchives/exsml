@@ -36,6 +36,9 @@ o [jlouis] Change the buildsystem to use -toplevel builds all the way through.
    Char :> CHAR
      Needs an implementation of scan
 
+   String :> STRING
+     Needs an implementation of scan
+
    CharVector :> MONO_VECTOR
    CharVectorSlice :> MONO_VECTOR_SLICE
    CommandLine :> COMMAND_LINE

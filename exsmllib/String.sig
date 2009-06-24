@@ -13,7 +13,6 @@
     val str       : char -> string
     val implode   : char list -> string
     val explode   : string -> char list
-
     val map       : (char -> char) -> string -> string
     val translate : (char -> string) -> string -> string
     val tokens    : (char -> bool) -> string -> string list
@@ -21,7 +20,6 @@
     val isPrefix  : string -> string -> bool
     val isSubstring : string -> string -> bool
     val isSuffix    : string -> string -> bool
-
     val compare   : string * string -> order
     val collate   : (char * char -> order) -> string * string -> order
 
