@@ -59,6 +59,7 @@ o [jlouis] Change the buildsystem to use -toplevel builds all the way through.
    TextIO :> TEXT_IO
    TextPrimIO :> PRIM_IO
    Text :> TEXT
+     This is not even in the mosml repository.
    Timer :> TIMER
    Time :> TIME
    VectorSlice :> VECTOR_SLICE
