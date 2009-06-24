@@ -27,20 +27,22 @@ val minute     : date -> int
 val second     : date -> int
 val weekDay    : date -> weekday
 val yearDay    : date -> int
-val isDst      : date -> bool option
 val offset     : date -> Time.time option
+val isDst      : date -> bool option
+
+val localOffset   : unit -> Time.time
+
+val fromTimeLocal : Time.time -> date
+val fromTimeUniv  : Time.time -> date
+val toTime        : date -> Time.time
 
 val compare    : date * date -> order
 
 val toString   : date -> string
 val fmt        : string -> date -> string
-val fromString : string -> date option
 val scan       : (char, 'a) StringCvt.reader -> (date, 'a) StringCvt.reader
 
-val fromTimeLocal : Time.time -> date
-val fromTimeUniv  : Time.time -> date
-val toTime        : date -> Time.time
-val localOffset   : unit -> Time.time
+val fromString : string -> date option
 
 (*
    These functions convert times to dates and vice versa, and format

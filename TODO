@@ -39,7 +39,6 @@ o [jlouis] Change the buildsystem to use -toplevel builds all the way through.
    CharVector :> MONO_VECTOR
    CharVectorSlice :> MONO_VECTOR_SLICE
    CommandLine :> COMMAND_LINE
-   Date :> DATE
    General :> GENERAL
    IEEEReal :> IEEE_REAL
    Int :> INTEGER
