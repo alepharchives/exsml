@@ -2,40 +2,40 @@
 
 type int = int
 
+val toLarge   : int -> int
+val fromLarge : int -> int
+val toInt     : int -> int
+val fromInt   : int -> int
+
 val precision : int option
 val minInt    : int option
 val maxInt    : int option
 
-val ~         : int -> int              (* Overflow      *)
+val +         : int * int -> int        (* Overflow      *)
+val -         : int * int -> int        (* Overflow      *)
 val *         : int * int -> int        (* Overflow      *)
 val div       : int * int -> int        (* Div, Overflow *)
 val mod       : int * int -> int        (* Div           *)
 val quot      : int * int -> int        (* Div, Overflow *)
 val rem       : int * int -> int        (* Div           *)
-val +         : int * int -> int        (* Overflow      *)
-val -         : int * int -> int        (* Overflow      *)
+
+val compare   : int * int -> order
 val >         : int * int -> bool
 val >=        : int * int -> bool
 val <         : int * int -> bool
 val <=        : int * int -> bool
+
+val ~         : int -> int              (* Overflow      *)
 val abs       : int -> int              (* Overflow      *)
 val min       : int * int -> int
 val max       : int * int -> int
-
 val sign      : int -> int
 val sameSign  : int * int -> bool
-val compare   : int * int -> order
 
-val toInt     : int -> int
-val fromInt   : int -> int
-val toLarge   : int -> int
-val fromLarge : int -> int
-
+val fmt       : StringCvt.radix -> int -> string
+val toString  : int -> string
 val scan      : StringCvt.radix
                 -> (char, 'a) StringCvt.reader -> (int, 'a) StringCvt.reader
-val fmt       : StringCvt.radix -> int -> string
-
-val toString  : int -> string
 val fromString : string -> int option   (* Overflow      *)
 
 (*

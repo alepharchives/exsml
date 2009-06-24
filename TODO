@@ -47,6 +47,7 @@ o [jlouis] Change the buildsystem to use -toplevel builds all the way through.
 
    IEEEReal :> IEEE_REAL
    Int :> INTEGER
+
    IO :> IO
    LargeInt :> INTEGER
    LargeReal :> REAL
@@ -57,12 +58,14 @@ o [jlouis] Change the buildsystem to use -toplevel builds all the way through.
    Position :> INTEGER
    Real :> REAL
    StringCvt :> STRING_CVT
-   String :> STRING
+
    Substring :> SUBSTRING
    TextIO :> TEXT_IO
    TextPrimIO :> PRIM_IO
+
    Text :> TEXT
      This is not even in the mosml repository.
+
    Timer :> TIMER
    Time :> TIME
    VectorSlice :> VECTOR_SLICE
