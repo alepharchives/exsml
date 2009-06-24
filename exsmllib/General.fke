@@ -2,8 +2,9 @@
 
 (* SML Basis Library types *)
 
-type     exn
 eqtype   unit
+type     exn = exn
+
 datatype order = LESS | EQUAL | GREATER
 
 (* Additional Moscow ML top-level types *)
@@ -21,7 +22,7 @@ type 'a vector
 eqtype word
 eqtype word8
 datatype 'a list = nil | op :: of 'a * 'a list
-datatype 'a ref  = ref of 'a 
+datatype 'a ref  = ref of 'a
 datatype 'a frag = QUOTE of string | ANTIQUOTE of 'a
 
 (* SML Basis Library exceptions *)
@@ -88,14 +89,14 @@ val makestring : numtxt -> string
 
 val ~   : realint -> realint            (* raises Overflow              *)
 val abs : realint -> realint            (* raises Overflow              *)
-                                                                        
+
 (* Below, num is int, Word.word, Word8.word, or real:                   *)
 
 val +   : num * num -> num              (* raises Overflow              *)
 val -   : num * num -> num              (* raises Overflow              *)
 val *   : num * num -> num              (* raises Overflow              *)
 val /   : real * real -> real           (* raises Div, Overflow         *)
-                                                                        
+
 (* Below, wordint is int, Word.word or Word8.word:                      *)
 
 val div : wordint * wordint -> wordint  (* raises Div, Overflow         *)
@@ -103,8 +104,8 @@ val mod : wordint * wordint -> wordint  (* raises Div                   *)
 
 (*
    [exn] is the type of exceptions.
- 
-   [unit] is the type containing the empty tuple () which equals the 
+
+   [unit] is the type containing the empty tuple () which equals the
    empty record { }.
 
    [order] is used as the return type of comparison functions.
@@ -117,8 +118,8 @@ val mod : wordint * wordint -> wordint  (* raises Div                   *)
 
    [option] is the type of optional values.  Equals Option.option.
 
-   [ppstream] is the type of pretty-printing streams, see structure PP.  
-   Pretty-printers may be installed in the top-level by function 
+   [ppstream] is the type of pretty-printing streams, see structure PP.
+   Pretty-printers may be installed in the top-level by function
    Meta.installPP; see the Moscow ML Owner's Manual.
 
    [real] is the type of floating-point numbers.  Equals Real.real.
@@ -127,16 +128,16 @@ val mod : wordint * wordint -> wordint  (* raises Div                   *)
 
    [substring] is the type of substrings.  Equals Substring.substring.
 
-   [syserror] is the abstract type of system error codes.  
-   Equals OS.syserror. 
+   [syserror] is the abstract type of system error codes.
+   Equals OS.syserror.
 
    [vector] is the type of immutable vectors.  Equals Vector.vector.
-   
+
    [word] is the type of unsigned words.  Equals Word.word.
 
    [word8] is the type of unsigned bytes.  Equals Word8.word.
 
-   ['a list] is the type of lists of elements of type 'a.  
+   ['a list] is the type of lists of elements of type 'a.
    Equals List.list.
 
    ['a ref] is the type of mutable references to values of type 'a.
@@ -151,7 +152,7 @@ val mod : wordint * wordint -> wordint  (* raises Div                   *)
    [Chr] signals an attempt to produce an unrepresentable character.
 
    [Div] signals an attempt to divide by zero.
-   
+
    [Domain] signals an attempt to apply a function outside its domain
    of definition; such as computing Math.sqrt(~1).
 
@@ -175,8 +176,8 @@ val mod : wordint * wordint -> wordint  (* raises Div                   *)
 
    [Interrupt] signals user interrupt of the computation.
 
-   [Invalid_argument] signals the failure of a function in the runtime 
-   system. 
+   [Invalid_argument] signals the failure of a function in the runtime
+   system.
 
    [Io { function, name, cause }] signals the failure of an
    input/output operation (function) when operating on a file (name).
@@ -189,9 +190,9 @@ val mod : wordint * wordint -> wordint  (* raises Div                   *)
    [SysErr (msg, err)] signals a system error, described by msg.  A
    system error code may be given by err.  If so, it will usually hold
    that msg = OS.errorMsg err.
-  
 
-   SML Basis Library values 
+
+   SML Basis Library values
 
    [! rf] returns the value pointed to by reference rf.
 
@@ -209,14 +210,14 @@ val mod : wordint * wordint -> wordint  (* raises Div                   *)
    value of e1.  Since  before  has infix status, this is usually written
         e1 before e2
 
-   [exnName exn] returns a name for the exception constructor in exn.  
+   [exnName exn] returns a name for the exception constructor in exn.
    Never raises an exception itself.  The name returned may be that of
    any exception constructor aliasing with exn.  For instance,
         let exception E1; exception E2 = E1 in exnName E2 end
    may evaluate to "E1" or "E2".
 
    [exnMessage exn] formats and returns a message corresponding to
-   exception exn.  For the exceptions defined in the SML Basis Library, 
+   exception exn.  For the exceptions defined in the SML Basis Library,
    the message will include the argument carried by the exception.
 
 
@@ -247,7 +248,7 @@ val mod : wordint * wordint -> wordint  (* raises Div                   *)
 
    [vector [x1, ..., xn]] returns the vector #[x1, ..., xn].
 
-   [< (x1, x2)] 
+   [< (x1, x2)]
    [<=(x1, x2)]
    [> (x1, x2)]
    [>=(x1, x2)]
@@ -263,7 +264,7 @@ val mod : wordint * wordint -> wordint  (* raises Div                   *)
 
    [abs x] is the absolute value of x (which can be real or int).  May
    raise Overflow.
-                                                                        
+
    [+ (e1, e2)]
    [- (e1, e2)]
    [* (e1, e2)]
@@ -274,7 +275,7 @@ val mod : wordint * wordint -> wordint  (* raises Div                   *)
 
    [/ (e1, e2)] is the floating-point result of dividing e1 by e2.
    May raise Div and Overflow.
-                                                                        
+
    [div(e1, e2)] is the integral quotient of dividing e1 by e2 for
    arguments of type int, Word.word, and Word8.word.  See Int.div and
    Word.div for more details.  May raise Div, Overflow.

@@ -40,6 +40,8 @@ o [jlouis] Change the buildsystem to use -toplevel builds all the way through.
    CharVectorSlice :> MONO_VECTOR_SLICE
    CommandLine :> COMMAND_LINE
    General :> GENERAL
+     Why is this called General.fke?
+
    IEEEReal :> IEEE_REAL
    Int :> INTEGER
    IO :> IO
@@ -48,7 +50,6 @@ o [jlouis] Change the buildsystem to use -toplevel builds all the way through.
    LargeWord :> WORD
    List :> LIST
    Math :> MATH
-   Option :> OPTION
    OS :> OS
    Position :> INTEGER
    Real :> REAL
