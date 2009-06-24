@@ -26,9 +26,6 @@ o [jlouis] Change the buildsystem to use -toplevel builds all the way through.
    requires some deep deep runtime/compiler fu to get right as it is
    deep inside the system. Most notably I/O.
 
-   ArraySlice :> ARRAY_SLICE
-     Needs vectorslices for copyVec
-
    BinIO :> BIN_IO
    BinPrimIO :> PRIM_IO
 

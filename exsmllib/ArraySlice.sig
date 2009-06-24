@@ -11,8 +11,8 @@ val subslice : 'a slice * int * int option -> 'a slice
 val base     : 'a slice -> 'a Array.array * int * int
 val vector   : 'a slice -> 'a Vector.vector
 val copy     : {src: 'a slice, dst: 'a Array.array, di: int} -> unit
-val copyVec  : {src: 'a VectorSlice.slice, dst: 'a Array.array, di: int} 
-               -> unit 
+val copyVec  : {src: 'a VectorSlice.slice, dst: 'a Array.array, di: int}
+               -> unit
 val isEmpty  : 'a slice -> bool
 val getItem  : 'a slice -> ('a * 'a slice) option
 
@@ -33,10 +33,10 @@ val modifyi  : (int * 'a -> 'a) -> 'a slice -> unit
 
 val collate  : ('a * 'a -> order) -> 'a slice * 'a slice -> order
 
-(* 
-   ['ty slice] is the type of array slices, that is, sub-arrays.  
-   The slice (a,i,n) is valid if 0 <= i <= i+n <= size s, 
-                or equivalently, 0 <= i and 0 <= n and i+n <= size s.  
+(*
+   ['ty slice] is the type of array slices, that is, sub-arrays.
+   The slice (a,i,n) is valid if 0 <= i <= i+n <= size s,
+                or equivalently, 0 <= i and 0 <= n and i+n <= size s.
    A valid slice sli = (a,i,n) represents the sub-array a[i...i+n-1],
    so the elements of sli are a[i], a[i+1], ..., a[i+n-1], and n is
    the length of the slice.  Only valid slices can be constructed by
@@ -52,22 +52,22 @@ val collate  : ('a * 'a -> order) -> 'a slice * 'a slice -> order
    Subscript if i<0 or i>=n.
 
    [slice (a, i, NONE)] creates the slice (a, i, length a-i),
-   consisting of the tail of a starting at i.  
-   Raises Subscript if i<0 or i > Array.length a.  
+   consisting of the tail of a starting at i.
+   Raises Subscript if i<0 or i > Array.length a.
    Equivalent to slice (a, i, SOME(Array.length a - i)).
 
    [slice (a, i, SOME n)] creates the slice (a, i, n), consisting of
    the sub-array of a with length n starting at i.  Raises Subscript
-   if i<0 or n<0 or i+n > Array.length a.  
+   if i<0 or n<0 or i+n > Array.length a.
 
-       slice             meaning 
+       slice             meaning
        ----------------------------------------------------------
-       (a, 0, NONE)      the whole array              a[0..len-1]   
+       (a, 0, NONE)      the whole array              a[0..len-1]
        (a, 0, SOME n)    a left sub-array (prefix)    a[0..n-1]
        (a, i, NONE)      a right sub-array (suffix)   a[i..len-1]
-       (a, i, SOME n)    a general slice              a[i..i+n-1] 
+       (a, i, SOME n)    a general slice              a[i..i+n-1]
 
-   [full a] creates the slice (a, 0, length a).  
+   [full a] creates the slice (a, 0, length a).
    Equivalent to slice(a,0,NONE)
 
    [subslice (sli, i', NONE)] returns the slice (a, i+i', n-i') when
@@ -89,14 +89,14 @@ val collate  : ('a * 'a -> order) -> 'a slice * 'a slice -> order
 
    [copyVec {src, dst, di}] copies the elements of the vector slice
    src = (v,i,n), that is, v[i..i+n-1], to dst[di..di+n-1].  Raises
-   Subscript if di<0, or if len=NONE and di + n > length dst.  
+   Subscript if di<0, or if len=NONE and di + n > length dst.
 
    [isEmpty sli] returns true if the slice sli = (a,i,n) is empty,
    that is, if n=0.
 
    [getItem sli] returns SOME(x, rst) where x is the first element and
    rst the remainder of sli, if sli is non-empty; otherwise returns
-   NONE.  
+   NONE.
 
    [find p sli] applies p to each element x of sli, from left to
    right, until p(x) evaluates to true; returns SOME x if such an x
@@ -113,10 +113,10 @@ val collate  : ('a * 'a -> order) -> 'a slice * 'a slice -> order
    [app f sli] applies f to all elements of sli = (a,i,n), from
    left to right.  That is, applies f to a[j+i] for j=0,1,...,n.
 
-   [foldl f e sli] folds function f over sli = (a,i,n) from left to right.  
+   [foldl f e sli] folds function f over sli = (a,i,n) from left to right.
    That is, computes f(a[i+n-1], f(a[i+n-2],..., f(a[i+1], f(a[i], e))...)).
 
-   [foldr f e sli] folds function f over sli = (a,i,n) from right to left.  
+   [foldr f e sli] folds function f over sli = (a,i,n) from right to left.
    That is, computes f(a[i], f(a[i+1],..., f(a[i+n-2], f(a[i+n-1], e))...)).
 
    [modify f sli] modifies the elements of the slice sli = (a,i,n) by
@@ -138,8 +138,8 @@ val collate  : ('a * 'a -> order) -> 'a slice * 'a slice -> order
    (j, a[j]) for j=i,i+1,...,i+n-1.
 
    [foldli f e sli] folds function f over the slice sli = (a,i,n) and
-   the underlying array indices from left to right.  That is, computes 
-   f(i+n-1, a[i+n-1], f(..., f(i+1, a[i+1], f(i, a[i], e)) ...)).  
+   the underlying array indices from left to right.  That is, computes
+   f(i+n-1, a[i+n-1], f(..., f(i+1, a[i+1], f(i, a[i], e)) ...)).
 
    [foldri f e sli] folds function f over the slice sli = (a,i,n) and
    the underlying array indices from right to left.  That is, computes
@@ -148,8 +148,8 @@ val collate  : ('a * 'a -> order) -> 'a slice * 'a slice -> order
    [modifyi f sli] modifies the elements of the slice sli = (a,i,n) by
    applying function f to the slice elements and the underlying array
    indices.  That is, applies f to (j, a[j]) and updates a[j] with the
-   result f(j, a[j]) for j=i,i+1,...,i+n-1.  
-   
+   result f(j, a[j]) for j=i,i+1,...,i+n-1.
+
    [collate cmp (sli1, sli2)] returns LESS, EQUAL or GREATER according
    as sli1 precedes, equals or follows sli2 in the lexicographic
    ordering on slices induced by the ordering cmp on elements.
