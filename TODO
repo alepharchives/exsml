@@ -29,9 +29,6 @@ o [jlouis] Change the buildsystem to use -toplevel builds all the way through.
    BinIO :> BIN_IO
    BinPrimIO :> PRIM_IO
 
-   Byte :> BYTE
-     Byte needs Word8ArraySlices
-
    CharArray :> MONO_ARRAY
    CharArraySlice :> MONO_ARRAY_SLICE
      Seriously needs -toplevel

@@ -9,8 +9,8 @@ val unpackStringVec : Word8VectorSlice.slice -> string
 val unpackString    : Word8ArraySlice.slice -> string
 val packString      : Word8Array.array * int * Substring.substring -> unit
 
-(* 
-   Conversions between bytes and characters, and between byte vectors 
+(*
+   Conversions between bytes and characters, and between byte vectors
    and strings (character vectors).
 
    [byteToChar w] is the character corresponding to the byte w.
@@ -32,6 +32,6 @@ val packString      : Word8Array.array * int * Substring.substring -> unit
    from the array slice a.
 
    [packString (a, i, ss)] copies the character codes of substring ss into
-   the subarray a[i..i+n-1] where n = Substring.size ss.  Raises Subscript 
+   the subarray a[i..i+n-1] where n = Substring.size ss.  Raises Subscript
    if i<0 or i+n > length a.
 *)
