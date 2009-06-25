@@ -41,12 +41,10 @@ o [jlouis] Change the buildsystem to use -toplevel builds all the way through.
 
    CharVector :> MONO_VECTOR
    CharVectorSlice :> MONO_VECTOR_SLICE
-   CommandLine :> COMMAND_LINE
    General :> GENERAL
      Why is this called General.fke?
 
    IEEEReal :> IEEE_REAL
-   Int :> INTEGER
 
    IO :> IO
    LargeInt :> INTEGER
