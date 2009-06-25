@@ -4,12 +4,23 @@ type word = word
 
 val wordSize   : int
 
+val toLarge    : word -> word
+val toLargeX   : word -> word        (* with sign extension *)
+val toLargeWord   : word -> word
+val toLargeWordX  : word -> word        (* with sign extension *)
+val fromLarge  : word -> word
+val fromLargeWord : word -> word
+val toLargeInt    : word -> int
+val toLargeIntX   : word -> int         (* with sign extension *)
+val fromLargeInt  : int -> word
+val toInt      : word -> int
+val toIntX     : word -> int            (* with sign extension *)
+val fromInt    : int -> word
+
 val orb        : word * word -> word
 val andb       : word * word -> word
 val xorb       : word * word -> word
 val notb       : word -> word
-val ~          : word -> word
-
 val <<         : word * word -> word
 val >>         : word * word -> word
 val ~>>        : word * word -> word
@@ -20,36 +31,22 @@ val *          : word * word -> word
 val div        : word * word -> word
 val mod        : word * word -> word
 
+val compare    : word * word -> order
 val >          : word * word -> bool
 val <          : word * word -> bool
 val >=         : word * word -> bool
 val <=         : word * word -> bool
-val compare    : word * word -> order
 
+val ~          : word -> word
 val min        : word * word -> word
 val max        : word * word -> word
 
+val fmt        : StringCvt.radix -> word -> string
 val toString   : word -> string
-val fromString : string -> word option
 val scan       : StringCvt.radix
                 -> (char, 'a) StringCvt.reader -> (word, 'a) StringCvt.reader
-val fmt        : StringCvt.radix -> word -> string
+val fromString : string -> word option
 
-val toInt      : word -> int
-val toIntX     : word -> int            (* with sign extension *)
-val fromInt    : int -> word
-
-val toLarge    : word -> word
-val toLargeX   : word -> word        (* with sign extension *)
-val fromLarge  : word -> word
-
-val toLargeWord   : word -> word
-val toLargeWordX  : word -> word        (* with sign extension *)
-val fromLargeWord : word -> word
-
-val toLargeInt    : word -> int
-val toLargeIntX   : word -> int         (* with sign extension *)
-val fromLargeInt  : int -> word
 
 (*
    [word] is the type of n-bit words, or n-bit unsigned integers.

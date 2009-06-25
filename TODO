@@ -43,7 +43,11 @@ o [jlouis] Change the buildsystem to use -toplevel builds all the way through.
      Needs an implementation of scan
 
    CharVector :> MONO_VECTOR
+     Seriously needs -toplevel
+
    CharVectorSlice :> MONO_VECTOR_SLICE
+     Seriously needs -toplevel
+
    General :> GENERAL
      Why is this called General.fke?
 
@@ -75,11 +79,19 @@ o [jlouis] Change the buildsystem to use -toplevel builds all the way through.
    Time :> TIME
    VectorSlice :> VECTOR_SLICE
    Word8Array :> MONO_ARRAY
+     Seriously needs -toplevel
+
    Word8ArraySlice :> MONO_ARRAY_SLICE
+     Seriously needs -toplevel
+
    Word8Vector :> MONO_VECTOR
+     Seriously needs -toplevel
+
    Word8VectorSlice :> MONO_VECTOR_SLICE
+     Seriously needs -toplevel
+
    Word8 :> WORD
-   Word :> WORD
+     Word8 has its own Signature, sigh
 
 o [jlouis] Make some tests of the Array/ArraySlice 2003 basis
    The current tests are quite incomplete and does not test that Array
