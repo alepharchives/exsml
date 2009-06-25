@@ -74,7 +74,6 @@ o [jlouis] Change the buildsystem to use -toplevel builds all the way through.
    Timer :> TIMER
    Time :> TIME
    VectorSlice :> VECTOR_SLICE
-   Vector :> VECTOR
    Word8Array :> MONO_ARRAY
    Word8ArraySlice :> MONO_ARRAY_SLICE
    Word8Vector :> MONO_VECTOR
