@@ -26,6 +26,9 @@ o [jlouis] Change the buildsystem to use -toplevel builds all the way through.
    requires some deep deep runtime/compiler fu to get right as it is
    deep inside the system. Most notably I/O.
 
+   Also note that this is only the set of *required* structures. There
+   are several extra optional structures we could support later on.
+
    BinIO :> BIN_IO
    BinPrimIO :> PRIM_IO
 
@@ -54,7 +57,11 @@ o [jlouis] Change the buildsystem to use -toplevel builds all the way through.
    Math :> MATH
    OS :> OS
    Position :> INTEGER
+     Position is not even there
+
    Real :> REAL
+     This guy is missing GAZZILIONS of things.
+
    StringCvt :> STRING_CVT
 
    Substring :> SUBSTRING
