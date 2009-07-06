@@ -28,7 +28,7 @@ fun read_file name =
 
 exception WrongStamp and NotYet
 
-fun check_file name stampOpt pending processed =
+fun check_file' name stampOpt pending processed =
   let val simplename = Filename.chop_suffix name ".uo"
       val uname = normalizedUnitName(Filename.basename simplename)
       val () =
@@ -44,8 +44,8 @@ fun check_file name stampOpt pending processed =
 	            handle Subscript => NONE
 
       fun needs subuname substamp processed =
-	  (check_file (subuname ^ ".uo") (SOME substamp)
-	              (uname :: pending) processed)
+	  (check_file' (subuname ^ ".uo") (SOME substamp)
+	               (uname :: pending) processed)
 	  handle WrongStamp =>
 	              raise Fail ("Compiled body of unit " ^ uname
 				    ^ " is incompatible with unit "^ subuname)
@@ -67,62 +67,55 @@ fun check_file name stampOpt pending processed =
 			msgEOL();
 			msgEBlock();
 			processed))
-	| NONE => let val (truename, tables) = 
-		          case stampOpt of 
+	| NONE => let val (truename, tables) =
+		          case stampOpt of
 			      NONE       => read_file name
-			    | SOME stamp => 
-				  if !autolink then 
-				      let val res as (_, tables) = 
+			    | SOME stamp =>
+				  if !autolink then
+				      let val res as (_, tables) =
 					  read_file name
-				      in 
+				      in
 					  if stamp = #cu_sig_stamp tables then
 					      res
 					  else
-					      raise WrongStamp 
+					      raise WrongStamp
 				      end
 				  else
-				      raise NotYet 
-		      val precedingUnits = 
+				      raise NotYet
+		      val precedingUnits =
 			  Hasht.fold needs processed (#cu_mentions tables)
-		   in 
+		   in
 		      Hasht.insert (!watchDog) uname (#cu_sig_stamp tables);
 		      (uname, truename, tables) :: precedingUnits
 		  end
   end
 
-val check_file = fn name => fn processed => check_file name NONE [] processed
+fun check_file name processed = check_file' name NONE [] processed
 
 
 (* Second pass: determine which phrases are required *)
 
 val missing_globals =
     ref (Hasht.new 1 : (QualifiedIdent * int, unit) Hasht.t)
-;
 
 fun is_in_missing g =
   (Hasht.find (!missing_globals) g; true)
   handle Subscript => false
-;
 
 fun remove_from_missing g =
   Hasht.remove (!missing_globals) g
-;
 
 fun add_to_missing g =
   Hasht.insert (!missing_globals) g ()
-;
 
 fun is_required (Reloc_setglobal g, _) = is_in_missing g
   | is_required _ = false
-;
 
 fun remove_required (Reloc_setglobal g, _) = remove_from_missing g
   | remove_required _ = ()
-;
 
 fun add_required (Reloc_getglobal g, _) = add_to_missing g
   | add_required _ = ()
-;
 
 fun scan_val uname (id, stamp) tolink =
   let val q = {qual=uname, id=[id]} in
@@ -132,7 +125,7 @@ fun scan_val uname (id, stamp) tolink =
        (id, stamp) :: tolink)
     else
       tolink
-  end;
+  end
 
 fun scan_phrase (phr : compiled_phrase) tolink =
     let val (_, otherlist) = #cph_reloc phr
@@ -143,7 +136,7 @@ fun scan_phrase (phr : compiled_phrase) tolink =
 	     phr :: tolink)
 	else
 	    tolink
-    end;
+    end
 
 fun scan_file (uname, truename, (tables : compiled_unit_tables)) tolink =
   let val exportedE = #cu_exc_ren_list tables
@@ -270,7 +263,7 @@ fun link unit_list exec_name =
        (close_out os;
         remove_file exec_name;
         raise x)
-  end;
+  end
 
 
 
