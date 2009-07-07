@@ -33,11 +33,11 @@ val foldri   : (int * elem * 'b -> 'b) -> 'b -> slice -> 'b
 
 val collate  : (elem * elem -> order) -> slice * slice -> order
 
-(* 
+(*
    [slice] is the type of Word8Vector slices, that is, sub-vectors of
    Word8Vector.vector values.
-   The slice (a,i,n) is valid if 0 <= i <= i+n <= size s, 
-                or equivalently, 0 <= i and 0 <= n and i+n <= size s.  
+   The slice (a,i,n) is valid if 0 <= i <= i+n <= size s,
+                or equivalently, 0 <= i and 0 <= n and i+n <= size s.
    A valid slice sli = (a,i,n) represents the sub-vector a[i...i+n-1],
    so the elements of sli are a[i], a[i+1], ..., a[i+n-1], and n is
    the length of the slice.  Only valid slices can be constructed by

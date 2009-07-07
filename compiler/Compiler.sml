@@ -290,15 +290,15 @@ fun compileSigExp sigexp =
       val sigexp = resolveToplevelSigExp sigexp
       val LAMBDA(T, RS) = elabToplevelSigExp sigexp
   in
-    incrBindingLevel(); 
+    incrBindingLevel();
     refreshTyNameSet PARAMETERts T;
-    updateCurrentStaticT T;  
+    updateCurrentStaticT T;
     (strOptOfSig (!currentSig)) := SOME RS;
     let val S' = normStr (SofRecStr RS)  (* cvr: we norm S so that calculated (sub)fields
 					  are correct *)
     in
-	extendCurrentStaticME (MEofStr S');  
-	extendCurrentStaticFE (FEofStr S');  
+	extendCurrentStaticME (MEofStr S');
+	extendCurrentStaticFE (FEofStr S');
 	extendCurrentStaticGE (GEofStr S');  (* should actually be empty ... *)
 	extendCurrentStaticVE (VEofStr S');
 	extendCurrentStaticTE (TEofStr S')
@@ -315,9 +315,9 @@ fun compileSpecPhrase elab spec =
       val (iBas,spec) = resolveToplevelSpec spec
       val LAMBDA(T, S) = elab spec
   in
-    incrBindingLevel(); 
+    incrBindingLevel();
     refreshTyNameSet PARAMETERts T;
-    updateCurrentStaticT T;  
+    updateCurrentStaticT T;
     extendCurrentStaticIBas iBas;
     extendCurrentStaticS S;
     let val S' = normStr S  (* cvr: we norm S so that calculated (sub)fields
@@ -393,7 +393,7 @@ fun compileSignature context uname umode filename =
 
 fun updateCurrentCompState ((iBas, ExEnv as EXISTS(T,(ME,FE,GE,VE, TE))), RE) =
 ( updateCurrentInfixBasis iBas;
-  incrBindingLevel(); 
+  incrBindingLevel();
   refreshTyNameSet PARAMETERts T;
   updateCurrentStaticT T;
   updateCurrentStaticME ME;
@@ -528,7 +528,7 @@ fun compileUnitBody context uname umode filename =
       input_stream := is;
       input_lexbuf := lexbuf;
       (compileStruct (parseStructFile umode lexbuf))
-       handle x => (close_in is; raise x)	  
+       handle x => (close_in is; raise x)
   end;
 
 

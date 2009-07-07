@@ -97,7 +97,7 @@ fun collate cmp (xs, ys) =
     let fun h []       []       = EQUAL
 	  | h []       (y1::yr) = LESS
 	  | h (x1::xr) []       = GREATER
-	  | h (x1::xr) (y1::yr) = 
+	  | h (x1::xr) (y1::yr) =
 	    case cmp(x1, y1) of
 		EQUAL => h xr yr
 	      | res   => res

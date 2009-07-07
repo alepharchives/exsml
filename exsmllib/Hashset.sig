@@ -6,7 +6,7 @@ type 'item set
 exception NotFound
 
 val empty        : ('_item -> word) * ('_item * '_item -> bool) -> '_item set
-val singleton    : ('_item -> word) * ('_item * '_item -> bool) -> '_item 
+val singleton    : ('_item -> word) * ('_item * '_item -> bool) -> '_item
                    -> '_item set
 
 val member       : '_item set * '_item -> bool
@@ -35,7 +35,7 @@ val polyHash     : 'a -> word
 
 end
 
-(* 
+(*
    ['item set] is the type of sets of elements of type 'item, with a
    given hash function and equality predicate.
 
@@ -52,7 +52,7 @@ end
 
    [peek(s, i)] returns SOME i if i is in s; returns NONE otherwise.
 
-   [add(s, i)] adds item i to set s.  
+   [add(s, i)] adds item i to set s.
 
    [addList(s, xs)] adds all items from the list xs to the set s.
 
@@ -61,10 +61,10 @@ end
    [isEmpty s] returns true if the set is empty; false otherwise.
 
    [equal(s1, s2)] returns true if and only if the two sets have the
-   same elements.  
+   same elements.
 
    [isSubset(s1, s2)] returns true if and only if s1 is a subset of s2.
-   
+
    [numItems s] returns the number of items in set s.
 
    [listItems s] returns a list of the items in set s, in some order.
@@ -75,15 +75,15 @@ end
    set in some order.
 
    [find p s] returns SOME i, where i is an item in s which satisfies
-   p, if one exists; otherwise returns NONE.  
+   p, if one exists; otherwise returns NONE.
 
    [hash s] returns the hashcode of the set, which is the sum of the
    hashcodes of its elements, as computed by the hash function given
-   when the set was created.  
+   when the set was created.
 
    [polyHash v] returns a system-defined hashcode for the value v.
    This pseudo-polymorphic hash function can be used together with the
-   standard equality function (=) to create a Hashset for any type that 
+   standard equality function (=) to create a Hashset for any type that
    admits equality, as follows:
 
        val set = Hashset.empty (Hashset.hash, op =);

@@ -51,12 +51,12 @@ fun sub(ref a, i) =
   else sub_ a i;
 
 fun update(ref a, i, v) =
-  if i < 0 orelse i >= length_ a then raise Subscript 
+  if i < 0 orelse i >= length_ a then raise Subscript
   else update_ a i v;
 
 fun vector (ref a) =
     let val n = length_ a
-	val newvec = vector_ n 
+	val newvec = vector_ n
     in blitav_ a 0 newvec 0 n; newvec end;
 
 fun copy {src = ref a1: array, dst = ref a2: array, di=i2} =
@@ -73,25 +73,25 @@ fun copyVec {src = a1: vector, dst = ref a2: array, di=i2} =
 	else blitva_ a1 0 a2 i2 n
     end
 
-fun find (p : elem -> bool) (ref a) : elem option = 
+fun find (p : elem -> bool) (ref a) : elem option =
     let val stop = length_ a
-	fun lr j = 
-	    if j < stop then 
+	fun lr j =
+	    if j < stop then
 		if p (sub_ a j) then SOME (sub_ a j) else lr (j+1)
 	    else NONE
     in lr 0 end
 
-fun exists (p : elem -> bool) (ref a) : bool = 
+fun exists (p : elem -> bool) (ref a) : bool =
     let val stop = length_ a
 	fun lr j = j < stop andalso (p (sub_ a j) orelse lr (j+1))
     in lr 0 end
 
-fun all (p : elem -> bool) (ref a) : bool = 
+fun all (p : elem -> bool) (ref a) : bool =
     let val stop = length_ a
 	fun lr j = j >= stop orelse (p (sub_ a j) andalso lr (j+1))
     in lr 0 end
 
-fun foldl f e (ref a) = 
+fun foldl f e (ref a) =
     let val stop = length_ a
 	fun lr j res = if j < stop then lr (j+1) (f(sub_ a j, res))
 		       else res
@@ -114,43 +114,43 @@ fun app f (ref a) =
 		   else ()
     in lr 0 end
 
-fun findi (p : int * elem -> bool) (ref a) : (int * elem) option = 
+fun findi (p : int * elem -> bool) (ref a) : (int * elem) option =
     let val stop = length_ a
-	fun lr j = 
-	    if j < stop then 
+	fun lr j =
+	    if j < stop then
 		if p (j, sub_ a j) then SOME (j, sub_ a j) else lr (j+1)
 	    else NONE
     in lr 0 end
 
-fun foldli f e (ref a) = 
-    let val stop = length_ a 
-	fun lr j res = 
+fun foldli f e (ref a) =
+    let val stop = length_ a
+	fun lr j res =
 	    if j < stop then lr (j+1) (f(j, sub_ a j, res))
 	    else res
     in lr 0 e end;
 
-fun foldri f e (ref a) = 
-    let fun rl j res = 
+fun foldri f e (ref a) =
+    let fun rl j res =
 	    if j >= 0 then rl (j-1) (f(j, sub_ a j, res))
 	    else res
     in rl (length_ a - 1) e end;
 
-fun modifyi f (ref a) = 
+fun modifyi f (ref a) =
     let val stop = length_ a
-	fun lr j = 
+	fun lr j =
 	    if j < stop then (update_ a j (f(j, sub_ a j)); lr (j+1))
 	    else ()
     in lr 0 end;
 
-fun appi f (ref a) = 
+fun appi f (ref a) =
     let val stop = length_ a
-	fun lr j = 
-	    if j < stop then (f(j, sub_ a j); lr (j+1)) 
+	fun lr j =
+	    if j < stop then (f(j, sub_ a j); lr (j+1))
 	    else ()
     in lr 0 end;
 
 fun collate cmp (ref a1, ref a2) =
-    let val n1 = length_ a1 
+    let val n1 = length_ a1
 	and n2 = length_ a2
 	val stop = if n1 < n2 then n1 else n2
 	fun h j = (* At this point a1[0..j-1] = a2[0..j-1] *)

@@ -90,13 +90,13 @@ val _ =
        ("e", s2r "2.5", "2", "2.5", "2.50", "2.500000"),
        ("f", s2r "1.6", "2", "1.6", "1.60", "1.600000"),
        ("h", s2r "3.141592653589", "3", "3.1", "3.14", "3.141593"),
-       ("j", s2r "91827365478400.0", "91827365478400", "91827365478400.0", 
+       ("j", s2r "91827365478400.0", "91827365478400", "91827365478400.0",
         "91827365478400.00", "91827365478400.000000")]
    end
 
 val _ =
    let
-      fun chkSCI (r, s0, s1, s2, s6) = 
+      fun chkSCI (r, s0, s1, s2, s6) =
          fmt (StringCvt.SCI (SOME 0)) r = s0
          andalso fmt (StringCvt.SCI (SOME 1)) r = s1
          andalso fmt (StringCvt.SCI (SOME 2)) r = s2
@@ -105,7 +105,7 @@ val _ =
    in
       List.app
       (fn (r, s0, s1, s2, s6) =>
-       if chkSCI(r, s0, s1, s2, s6) 
+       if chkSCI(r, s0, s1, s2, s6)
           andalso (r == zero orelse chkSCI(~r, "~"^s0, "~"^s1, "~"^s2, "~"^s6))
           then ()
        else raise Fail (concat ["fmt SCI bug: ", exact r]))
@@ -121,7 +121,7 @@ val _ =
 
 val _ =
    let
-      fun chkGEN (r, s1, s2, s6, s12) = 
+      fun chkGEN (r, s1, s2, s6, s12) =
          fmt (StringCvt.GEN (SOME 1)) r = s1
          andalso fmt (StringCvt.GEN (SOME 2)) r = s2
          andalso fmt (StringCvt.GEN (SOME 6)) r = s6
@@ -131,15 +131,15 @@ val _ =
    in
       List.app
       (fn (r, s1, s2, s6, s12) =>
-       if chkGEN(r, s1, s2, s6, s12) 
-          andalso (r == zero orelse 
+       if chkGEN(r, s1, s2, s6, s12)
+          andalso (r == zero orelse
                    chkGEN(~r, "~"^s1, "~"^s2, "~"^s6, "~"^s12))
           then ()
        else raise Fail (concat ["fmt GEN bug: ", exact r]))
       [(s2r "0.0",               "0", "0",     "0", "0"),
        (s2r "1.0",              "1", "1",  "1", "1"),
        (s2r "1.5",              "2", "1.5",  "1.5", "1.5"),
-       (s2r "91827365478400.0", "9E13", "9.2E13",  "9.18274E13", 
+       (s2r "91827365478400.0", "9E13", "9.2E13",  "9.18274E13",
         "91827365478400")]
    end
 
@@ -171,7 +171,7 @@ val _ =
    for'
    (fn r =>
     let
-       val c = 
+       val c =
           case class r of
              INF => "inf"
            | NAN => "nan"
@@ -268,12 +268,12 @@ val _ =
     ("12E-", "12.0"),
     ("0", "0.0"),
     ("156", "156.0"),
-    ("+156", "156.0"), 
-    ("~156", "~156.0"), 
-    ("-156", "~156.0"), 
-    ("156.25", "156.25"), 
-    ("+156.25", "156.25"), 
-    ("~156.25", "~156.25"), 
+    ("+156", "156.0"),
+    ("~156", "~156.0"),
+    ("-156", "~156.0"),
+    ("156.25", "156.25"),
+    ("+156.25", "156.25"),
+    ("~156.25", "~156.25"),
     ("-156.25", "~156.25"),
     (".25", "0.25"),
     ("+.25", "0.25"),
@@ -656,7 +656,7 @@ val _ =
     for
     (fn r2 =>
      let
-        val _ = 
+        val _ =
            List.app
            (fn (f, name) =>
             print (concat [(* name, " (", exact r1, ", ", exact r2, ") = ", *)
@@ -675,7 +675,7 @@ val _ =
                             andalso false = (r1 > r2)
                             andalso false = (r1 == r2)
                             andalso if isNan r1 andalso isNan r2
-                                       then true = ?= (r1, r2) 
+                                       then true = ?= (r1, r2)
                                     else true)
                    else ((r1 < r2) = not (r1 >= r2)
                          andalso (r1 > r2) = not (r1 <= r2))

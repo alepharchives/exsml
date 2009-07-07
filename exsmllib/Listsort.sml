@@ -12,10 +12,10 @@ fun sort ordr []          = []
        | _       => xs)
   | sort ordr xs =
     let fun merge []       ys = ys
-	  | merge (x1::xr) ys = 
+	  | merge (x1::xr) ys =
 	    let fun take x1 xr []       = x1 :: xr
-		  | take x1 xr (y1::yr) = 
-	            (case ordr(x1, y1) of 
+		  | take x1 xr (y1::yr) =
+	            (case ordr(x1, y1) of
 			 LESS    => x1 :: take y1 yr xr
 		       | _       => y1 :: take x1 xr yr)
 	    in take x1 xr ys end
@@ -36,7 +36,7 @@ fun sort ordr []          = []
 (* Check sortedness *)
 
 fun sorted ordr []         = true
-  | sorted ordr (y1 :: yr) = 
+  | sorted ordr (y1 :: yr) =
     let fun h x0 []       = true
 	  | h x0 (x1::xr) = ordr(x0, x1) <> GREATER andalso h x1 xr
     in h y1 yr end;
@@ -44,10 +44,10 @@ fun sorted ordr []         = true
 (* Merge without duplicates *)
 
 fun mergeUniq ordr ([],     ys) = ys
-  | mergeUniq ordr (x1::xr, ys) = 
+  | mergeUniq ordr (x1::xr, ys) =
     let fun take x1 xr []       = x1 :: xr
-	  | take x1 xr (y1::yr) = 
-	    (case ordr(x1, y1) of 
+	  | take x1 xr (y1::yr) =
+	    (case ordr(x1, y1) of
 		 LESS    => x1 :: take y1 yr xr
 	       | GREATER => y1 :: take x1 xr yr
 	       | EQUAL   => take x1 xr yr)
@@ -56,10 +56,10 @@ fun mergeUniq ordr ([],     ys) = ys
 (* Merge with duplicates *)
 
 fun merge ordr ([],     ys) = ys
-  | merge ordr (x1::xr, ys) = 
+  | merge ordr (x1::xr, ys) =
     let fun take x1 xr []       = x1 :: xr
-	  | take x1 xr (y1::yr) = 
-	    (case ordr(x1, y1) of 
+	  | take x1 xr (y1::yr) =
+	    (case ordr(x1, y1) of
 		 LESS    => x1 :: take y1 yr xr
 	       | _       => y1 :: take x1 xr yr)
     in take x1 xr ys end
@@ -69,15 +69,15 @@ fun merge ordr ([],     ys) = ys
 fun eqclasses ordr xs =
     let val xs = List.rev (sort ordr xs)
 	fun group last rest cs1 css =
-	    case rest of 
+	    case rest of
 		[]     => cs1 :: css
-	      | r1::rr => 
-		    if ordr(r1, last) = EQUAL then 
+	      | r1::rr =>
+		    if ordr(r1, last) = EQUAL then
 			group r1 rr (r1 :: cs1) css
 		    else
 			group r1 rr [r1] (cs1 :: css)
-    in 
-	case xs of 
+    in
+	case xs of
 	    []     => []
 	  | x1::xr => group x1 xr [x1] []
     end

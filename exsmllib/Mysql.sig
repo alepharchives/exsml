@@ -85,11 +85,11 @@ val copytablefrom : dbconn * string * ((string -> unit) -> unit) -> unit
 
 (* Some standard ML and MySQL types: *)
 
-datatype dyntype = 
+datatype dyntype =
     BoolTy              (* ML bool              (not used by Mysql)     *)
   | IntTy               (* ML int               Mysql int4              *)
   | RealTy              (* ML real              Mysql float8, float4    *)
-  | StringTy            (* ML string            Mysql text, varchar     *) 
+  | StringTy            (* ML string            Mysql text, varchar     *)
   | DateTy              (* ML (yyyy, mth, day)  Mysql date              *)
   | TimeTy              (* ML (hh, mm, ss)      Mysql time              *)
   | DateTimeTy          (* ML Date.date         Mysql datetime, abstime *)

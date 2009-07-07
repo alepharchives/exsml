@@ -1,6 +1,6 @@
 /* File mosml/src/dynlibs/interface/cside.c -- foreign function interface
-   How to access SML values from C, and how to create SML values to be 
-   returned to SML. The C side of things. 
+   How to access SML values from C, and how to create SML values to be
+   returned to SML. The C side of things.
  */
 
 #include <ctype.h>		/* For toupper */
@@ -61,13 +61,13 @@ value cfs(value v)
   int len;
   oldp = String_val(v);		/* Null-terminated heap-allocated string */
   len = string_length(v);	/* Much faster than strlen */
-  
+
   q = newp = malloc(len+1);	/* malloc a C string */
   strcpy(newp, oldp);		/* and copy the given ML string to it */
 
   while (*q)			/* Modify the C string */
     { *q = toupper(*q); q++; }
-  
+
   return copy_string(newp);	/* Copy modified string to the ML heap */
 }
 
@@ -101,7 +101,7 @@ value cfcur(value vi, value vc, value vr, value vs, value vb)
 
 value cftup(value v)
 {
-  long i   = Long_val(Field(v, 0)); 
+  long i   = Long_val(Field(v, 0));
   char c   = (char)Long_val(Field(v, 1));
   double d = Double_val(Field(v, 2));
 
@@ -115,8 +115,8 @@ value cftup(value v)
 value cfrec(value v)
 {
   long age       = Long_val(Field(v, 0));
-  char *givennam = String_val(Field(v, 1)); 
-  char *surnam   = String_val(Field(v, 2)); 
+  char *givennam = String_val(Field(v, 1));
+  char *surnam   = String_val(Field(v, 2));
 
   return Val_bool(age > 30 || strcmp(surnam, givennam) >= 0);
 }
@@ -124,7 +124,7 @@ value cfrec(value v)
 
 long treesum(value v);		/* Forwards C declaration */
 
-/* SML type: t -> int where 
+/* SML type: t -> int where
    datatype t = Br of int * t * t | Brs of t list | Lf */
 
 value cfdat(value v)
@@ -137,7 +137,7 @@ value cfdat(value v)
 
 long listsum(value lst)
 {
-#define isCons(x) (Tag_val(x) != 0)  
+#define isCons(x) (Tag_val(x) != 0)
 
   long sum = 0;
   while (isCons(lst))		    /* While non-Nil */

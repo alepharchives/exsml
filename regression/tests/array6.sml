@@ -22,7 +22,7 @@ local
    val copy = fn {src, si, len, dst, di} =>
       ArraySlice.copy {src = ArraySlice.slice (src, si, len),
                        dst = dst, di = di}
-   fun appi f (arr, s, l) = 
+   fun appi f (arr, s, l) =
       ArraySlice.appi (fn (i,x) => f (i+s,x)) (ArraySlice.slice (arr, s, l))
 
    val a0 = array (0,())

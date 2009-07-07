@@ -329,11 +329,11 @@ datatype dynval =
   | Bytea of Word8Array.array           (* (not used by Mysql)   *)
   | NullVal                             (* Mysql NULL value      *)
 
-datatype dyntype = 
+datatype dyntype =
     BoolTy              (* ML bool              (not used by Mysql)     *)
   | IntTy               (* ML int               Mysql int4              *)
   | RealTy              (* ML real              Mysql float8, float4    *)
-  | StringTy            (* ML string            Mysql text, varchar     *) 
+  | StringTy            (* ML string            Mysql text, varchar     *)
   | DateTy              (* ML (yyyy, mth, day)  Mysql date              *)
   | TimeTy              (* ML (hh, mm, ss)      Mysql time              *)
   | DateTimeTy          (* ML Date.date         Mysql datetime, abstime *)
@@ -342,7 +342,7 @@ datatype dyntype =
   | UnknownTy of oid
 
 (* A translation from Mysql types to Moscow ML types.
-   
+
    NB!: The numbers below need to correspond to the
         numbers in mmysql.c *)
 
@@ -354,22 +354,22 @@ fun totag 0      = SOME IntTy		(* FIELD_TYPE_DECIMAL *)
   | totag 5      = SOME RealTy		(* FIELD_TYPE_DOUBLE *)
   | totag 6      = SOME (UnknownTy ())  (* FIELD_TYPE_NULL *)
   | totag 7      = SOME DateTimeTy	(* FIELD_TYPE_TIMESTAMP *)
-  | totag 8      = SOME IntTy		(* FIELD_TYPE_LONGLONG *)  
-  | totag 9      = SOME IntTy		(* FIELD_TYPE_INT24 *)     
-  | totag 10     = SOME DateTy		(* FIELD_TYPE_DATE *)      
-  | totag 11     = SOME TimeTy		(* FIELD_TYPE_TIME *)      
-  | totag 12     = SOME DateTimeTy	(* FIELD_TYPE_DATETIME *)  
-  | totag 13     = SOME DateTy		(* FIELD_TYPE_YEAR *)      
-  | totag 14     = SOME DateTy		(* FIELD_TYPE_NEWDATE *)   
-  | totag 15     = SOME (UnknownTy ())	(* FIELD_TYPE_ENUM *)      
-  | totag 16     = SOME (UnknownTy ())  (* FIELD_TYPE_SET *)       
-  | totag 17     = SOME StringTy	(* FIELD_TYPE_TINY_BLOB *) 
+  | totag 8      = SOME IntTy		(* FIELD_TYPE_LONGLONG *)
+  | totag 9      = SOME IntTy		(* FIELD_TYPE_INT24 *)
+  | totag 10     = SOME DateTy		(* FIELD_TYPE_DATE *)
+  | totag 11     = SOME TimeTy		(* FIELD_TYPE_TIME *)
+  | totag 12     = SOME DateTimeTy	(* FIELD_TYPE_DATETIME *)
+  | totag 13     = SOME DateTy		(* FIELD_TYPE_YEAR *)
+  | totag 14     = SOME DateTy		(* FIELD_TYPE_NEWDATE *)
+  | totag 15     = SOME (UnknownTy ())	(* FIELD_TYPE_ENUM *)
+  | totag 16     = SOME (UnknownTy ())  (* FIELD_TYPE_SET *)
+  | totag 17     = SOME StringTy	(* FIELD_TYPE_TINY_BLOB *)
   | totag 18     = SOME StringTy	(* FIELD_TYPE_MEDIUM_BLOB *)
-  | totag 19     = SOME StringTy	(* FIELD_TYPE_LONG_BLOB *) 
-  | totag 20     = SOME StringTy	(* FIELD_TYPE_BLOB *)      
+  | totag 19     = SOME StringTy	(* FIELD_TYPE_LONG_BLOB *)
+  | totag 20     = SOME StringTy	(* FIELD_TYPE_BLOB *)
   | totag 21     = SOME StringTy	(* FIELD_TYPE_VAR_STRING *)
-  | totag 22     = SOME StringTy	(* FIELD_TYPE_STRING *)    
-  | totag _      = NONE			(* NB. Unknown Type *)    
+  | totag 22     = SOME StringTy	(* FIELD_TYPE_STRING *)
+  | totag _      = NONE			(* NB. Unknown Type *)
 
 (* Translation from Moscow ML types to Mysql types: *)
 
@@ -384,12 +384,12 @@ fun fromtag BoolTy        = raise Fail "fromtag: no Mysql type for BoolTy"
   | fromtag ByteArrTy     = raise Fail "fromtag: no Mysql type for ByteArrTy"
   | fromtag (UnknownTy _) = raise Fail "Mysql.fromtag";
 
-fun typeof tyname = 
+fun typeof tyname =
     case totag tyname of
 	NONE     => UnknownTy ()
       | SOME tag => tag
-		
-fun ftype (_, dbres) fno = 
+
+fun ftype (_, dbres) fno =
     if fno >= 0 then
 	typeof (db_ftype dbres fno)
     else
@@ -415,10 +415,10 @@ fun getdynfield (dbres as (_, dbres_)) fno : int -> dynval =
       | DateTy     => (fn tupno =>
 		       if db_isnull dbres_ tupno fno then NullVal
 		       else Date (db_getdate dbres_ tupno fno))
-      | DateTimeTy => (fn tupno => 
+      | DateTimeTy => (fn tupno =>
 		       if db_isnull dbres_ tupno fno then NullVal
 		       else DateTime (db_getdatetime dbres_ tupno fno))
-      | UnknownTy () => raise Fail ("Mysql.getdynfield: unknown type") 
+      | UnknownTy () => raise Fail ("Mysql.getdynfield: unknown type")
       | _ => raise Fail "Mysql.getdynfield: unknown type";
 
 fun applyto x f = f x

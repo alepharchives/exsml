@@ -26,7 +26,7 @@ end
    the number of characters that are expected to be stored in the
    buffer (for instance, 80 for a buffer that holds one output line).
    Nothing bad will happen if the buffer grows beyond that limit,
-   however.  In doubt, take hint = 16 for instance. 
+   however.  In doubt, take hint = 16 for instance.
 
    [contents buf] returns the contents of buf.
 

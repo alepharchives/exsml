@@ -1,12 +1,12 @@
 app load ["IntInf", "PP", "Mosml"];
 
-local 
+local
     open IntInf;
 in
-    fun ppintinf pps (i : IntInf.int) = 
-	let open PP 
+    fun ppintinf pps (i : IntInf.int) =
+	let open PP
 	in
-	    begin_block pps INCONSISTENT 0; 
+	    begin_block pps INCONSISTENT 0;
 	    add_string pps (toString i);
 	    end_block pps
 	end

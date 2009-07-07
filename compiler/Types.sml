@@ -208,7 +208,7 @@ fun protectCurrentBindingLevel fct =
 	 binding_level := savedLevel)
          handle x => (binding_level := savedLevel;
 		      raise x)
-    end 
+    end
 ;
 
 
@@ -826,9 +826,9 @@ in
 	#4 (copyMod bns bvs M)
     val copyExMod = fn bns => fn bvs => fn X =>
 	#4 (copyExMod bns bvs X)
-    val copySig = fn bns => fn bvs => fn G => 
+    val copySig = fn bns => fn bvs => fn G =>
 	#4 (copySig bns bvs G)
-    val copyTypeScheme = fn bns => fn bvs => fn scheme => 
+    val copyTypeScheme = fn bns => fn bvs => fn scheme =>
 	#4 (copyTypeScheme bns bvs scheme)
 end;
 
@@ -1193,8 +1193,8 @@ fun prune_level max_level (fns,fvs,frvs) =
 ;
 
 (* refresh the levels of free unification vars in Obj after a decrease in current binding level *)
-local     
-  fun refreshVars freeVarsObj Obj = 
+local
+  fun refreshVars freeVarsObj Obj =
    let val (_,fvs,frvs) = freeVarsObj [] [] ([],[],[]) Obj
        val max_level = !binding_level
    in
@@ -1208,14 +1208,14 @@ local
           setRvLevel rv max_level
         else ()) frvs
    end
-in 
+in
     fun refreshExEnv E = (refreshVars freeVarsExEnv E;E)
 end
 ;
 
 
 fun assumingEqualityTypeVars tvs f a =
-    let val tvRecords = 
+    let val tvRecords =
  	  map (fn tv as (ref tvRecord) => (setTvEqu tv true;tvRecord)) tvs
 	val res = f a
     in
@@ -1557,8 +1557,8 @@ val equalsTyFunTyName = fn tyfun => fn tn =>
 
 fun generalization isExpansive tau =
   let val (_,fvs,_)= freeVarsType [] [] ([],[],[]) tau
-      val parameters = 
-	  foldL (fn var => fn parameters => 
+      val parameters =
+	  foldL (fn var => fn parameters =>
 		 let val {tvImp, tvOvl, tvLevel, tvKind, ...} = !var in
 		     if member var parameters then parameters
 		     else if tvLevel <= !binding_level then
@@ -1568,17 +1568,17 @@ fun generalization isExpansive tau =
 			  parameters)
 		     else if tvImp andalso isExpansive then
 			 (setTvLevel var (!binding_level);
-			  (case tvKind of 
+			  (case tvKind of
  			     Explicit _ => setTvKind var NoLink
 			                   (* cvr: TODO review
 					      although this deviates from the Definition,
-					      we choose to replace non-generalizable 
+					      we choose to replace non-generalizable
 					      (and hence meaningless)
-					      explicit type variables by fresh 
-					      unification variables *)		 
+					      explicit type variables by fresh
+					      unification variables *)
                            | _ => ());
 			  parameters)
-		     else var :: parameters 
+		     else var :: parameters
 		 end)
 	  []
 	  fvs
@@ -2058,35 +2058,35 @@ fun realizeTyStr path id (infTyStr : TyFun * ConEnv) (specTyStr : TyFun * ConEnv
     (infTyFun, specTyFun) =>
  ((case (kindTyFun infTyFun, kindTyFun specTyFun) of
       (ARITYkind infArity, ARITYkind specArity) =>
-      if specArity  <> infArity then 
+      if specArity  <> infArity then
 	   raise MatchError (ArityMismatch (path,id,infTyStr,specTyStr,infArity,specArity))
       else ()
     | (_,_) => fatalError "realizeTyStr:1");
   ((case patternOfTyFun specTyFun of
 	   (tn,tns) =>
-	       let val _ = 
-                     (* cvr: its important that we match equality *only* 
+	       let val _ =
+                     (* cvr: its important that we match equality *only*
     		             when specTyFun is a pattern (ie. opaque), since
 			     specTyFun may otherwise contain unification variables
 			     whose equality status is determined only *after*
 			     unification. *)
-		     (case EqualityOfTyFun specTyFun of 
+		     (case EqualityOfTyFun specTyFun of
 			REFequ =>
-			    if (EqualityOfTyFun infTyFun) <> REFequ then 
+			    if (EqualityOfTyFun infTyFun) <> REFequ then
 				raise MatchError (RefEqualityMismatch (path,id,infTyStr,specTyStr))
 			    else ()
 		      | TRUEequ =>
-			    if (EqualityOfTyFun infTyFun) = FALSEequ then 
+			    if (EqualityOfTyFun infTyFun) = FALSEequ then
 				raise MatchError (EqualityMismatch (path,id,infTyStr,specTyStr))
 			    else ()
 		      | FALSEequ =>
 				()
-		      | _ => fatalError "realizeTyStr:2") 
+		      | _ => fatalError "realizeTyStr:2")
 		   val tnLevel = #tnLevel(!(#info tn))
-		   val (fns,fvs,frvs) = freeVarsTyFun tns [] ([],[],[]) infTyFun 
+		   val (fns,fvs,frvs) = freeVarsTyFun tns [] ([],[],[]) infTyFun
 		   val _ = (* occur check, required for recursive modules *)
-		       app (fn tn' => 
-			    if tn = tn' 
+		       app (fn tn' =>
+			    if tn = tn'
 			    then raise MatchError (CircularMismatch(path,
 								    id,
 								    infTyStr,
@@ -2112,13 +2112,13 @@ fun checkRealization (* (inferredSig : CSig) (specSig : CSig)*)
                 path id (infTyStr : TyFun * ConEnv) (specTyStr : TyFun * ConEnv) =
     case (normTyFun (#1 specTyStr),(#2 specTyStr)) of
       (specTyFun, ConEnv []) =>
-          let  val infTyFun = normTyFun (#1 infTyStr) 
+          let  val infTyFun = normTyFun (#1 infTyStr)
           in
 	      unifyTyFun infTyFun specTyFun (* cvr: CHECK THIS *)
 	      handle Unify _ => (* cvr: TODO improve error message *)
 		  raise MatchError (TransparentMismatch (path,id,infTyStr,specTyStr))
 	  end
-    | (specTyFun, specCE) => 
+    | (specTyFun, specCE) =>
          case (normTyFun (#1 infTyStr),(#2 infTyStr)) of
              (infTyfun, ConEnv []) =>
 		 raise MatchError (DatatypeMismatch (path,id,infTyStr,specTyStr))
@@ -2322,12 +2322,12 @@ val free_variable_names = ref ([] : (TypeVar * string) list);
 val free_variable_counter = ref 0;
 
 
-fun under_binder f a = 
+fun under_binder f a =
     (let val temp_freetyname_names = !free_tyname_names
          val temp_freetyname_counter = !free_tyname_counter
 	 val temp_free_variable_names = !free_variable_names
 	 val temp_free_variable_counter = !free_variable_counter
-         val r = f a 
+         val r = f a
      in  free_tyname_names := temp_freetyname_names;
 	 free_tyname_counter := temp_freetyname_counter;
 	 free_variable_names := temp_free_variable_names;
@@ -2405,12 +2405,12 @@ end
 
 (* reset the current printer state *)
 fun resetPrinter () =
-( free_tyname_names := []; 
+( free_tyname_names := [];
   free_tyname_counter := 0;
   free_variable_names := [];
   free_variable_counter := 0;
   app (fn tn as {qualid,...} =>
-       if isGlobalName qualid andalso 
+       if isGlobalName qualid andalso
 	  not (member (#qual qualid) (!preopenedPreloadedUnits)) andalso
 	  not (member (#qual qualid) (pervasiveOpenedUnits))
 	   then free_tyname_names := (tn,(showQualId qualid,0)) :: !free_tyname_names  (* cvr: TODO revise *)
@@ -2446,13 +2446,13 @@ fun protectCurrentPrinter fct =
 		      free_variable_names := saved_free_variable_names;
 		      free_variable_counter := saved_free_variable_counter;
 		      raise x)
-    end 
+    end
 ;
 
 
 (* cvr: TODO  rationalise *)
 fun collectExplicitVarsInObj freeVarsObj obj =
-  let val (fns,fvs,_) = 
+  let val (fns,fvs,_) =
       freeVarsObj (map #1 (!free_tyname_names))
                    (map #1 (!free_variable_names))
                    ([],[],[])
@@ -2932,7 +2932,7 @@ val prTyFun = prTyFun 0;
 val prType = prType 0;
 
 
-local val checkpointed_free_variable_names = ref [] 
+local val checkpointed_free_variable_names = ref []
 in
 val checkpoint_free_typevar_names = fn () =>
     (checkpointed_free_variable_names := map (fn (tv,string) => ((tv,!tv))) (!free_variable_names))
@@ -3447,12 +3447,12 @@ in
 	     prSpec path;msgEOL();
 	     errPrompt "  ";prTyInfo id specTyStr;msgEOL();
 	     errPrompt "but declared as a different abbreviation in the ";
-	     prInf path;msgEOL();              
+	     prInf path;msgEOL();
  	     errPrompt "  ";prTyInfo id infTyStr;msgEOL();
 	     errPrompt "The abbreviations should be equivalent (or unifiable) ";msgEOL();
 	     msgEBlock()))
             ()
-  | PatternMismatch (path,id,infTyStr, specTyStr, tn,sv) => 
+  | PatternMismatch (path,id,infTyStr, specTyStr, tn,sv) =>
 	    under_binder
 	    (fn () =>
 	     (collectExplicitVarsInObj freeVarsTyStr specTyStr;

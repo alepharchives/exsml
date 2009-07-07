@@ -9,17 +9,17 @@ app load ["Dynlib", "FileSys"];
       Use the absolute path because libcrypt.so is not a system DLL:     *)
 
 val dlh = Dynlib.dlopen { lib = Path.concat(FileSys.getDir (), "libcrypt.so"),
-			  flag = Dynlib.RTLD_LAZY, 
+			  flag = Dynlib.RTLD_LAZY,
 			  global = false }
 
 (* 3. Get a handle to the C function ml_crypt defined in libcrypt.so:    *)
 
 val crypthandle = Dynlib.dlsym dlh "ml_crypt";
 
-(* 4. Define an SML function using this handle and a fixed salt.  
+(* 4. Define an SML function using this handle and a fixed salt.
       The type ascription is necessary for SML type safety:              *)
 
-fun crypt (key : string) : string = 
+fun crypt (key : string) : string =
     Dynlib.app2 crypthandle key "AB";
 
 val _ = print "\nNow invoke the SML crypt function: crypt \"blah\" ...\n\n";

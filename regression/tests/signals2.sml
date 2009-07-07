@@ -35,7 +35,7 @@ structure Main =
             val () = setItimer (Time.fromMilliseconds 10)
 
             fun loop i =
-               if i > n 
+               if i > n
                   then OS.Process.exit OS.Process.success
                   else let
                           val i' = (Int.toString i) ^ "\n"

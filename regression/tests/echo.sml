@@ -16,7 +16,7 @@ val (port, listener) =
 
 fun server () =
     let val (_, _, ins, outs) = MLton.Socket.accept listener
-        fun s b = 
+        fun s b =
             case TextIO.inputLine ins of
                 NONE => let in
                           Posix.Process.wait ();
@@ -25,7 +25,7 @@ fun server () =
                                          " bytes\n"])
                       end
               | SOME i =>
-                   let in 
+                   let in
                       TextIO.output(outs, i);
                       TextIO.flushOut outs;
                       s (b + 19)

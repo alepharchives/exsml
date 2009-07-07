@@ -192,42 +192,42 @@ fun base s = #base (splitBaseExt s);
 
 exception InvalidArc
 
-fun fromUnixString p = 
+fun fromUnixString p =
     case splitabsvolrest p of
         (false, v,   "") => {isAbs=false, vol = v, arcs = []}
-      | (isAbs, v, rest) => {isAbs=isAbs, vol = v, 
+      | (isAbs, v, rest) => {isAbs=isAbs, vol = v,
                              arcs = String.fields isslash rest}
 
 fun toUnixString (path as {isAbs, vol, arcs}) =
-    let fun h []        res = res 
+    let fun h []        res = res
           | h (a :: ar) res = h ar (a :: slash :: res)
-    in  
-        if validVolume{isAbs=isAbs, vol=vol} then 
+    in
+        if validVolume{isAbs=isAbs, vol=vol} then
             case (isAbs, arcs) of
                 (false, []         ) => vol
               | (false, "" :: _    ) => raise Path
-              | (false, a1 :: arest) => 
+              | (false, a1 :: arest) =>
                     String.concat (vol :: List.rev (h arest [a1]))
               | (true,  []         ) => vol ^ volslash
-              | (true, a1 :: arest ) => 
-                    String.concat (List.rev (h arest [a1, volslash, vol])) 
+              | (true, a1 :: arest ) =>
+                    String.concat (List.rev (h arest [a1, volslash, vol]))
         else
             raise Path
     end
 
 val isInvalidArc = CharVector.exists isslash
 val isInvalidUnixArc = CharVector.exists isslash
-fun invalidArc isInvalid arc = 
-    if isInvalid arc then () 
-    else raise InvalidArc 
+fun invalidArc isInvalid arc =
+    if isInvalid arc then ()
+    else raise InvalidArc
 
-fun fromUnixPath s = 
+fun fromUnixPath s =
     let val p as {arcs, ...} = fromUnixString s
     in  List.app (invalidArc isInvalidArc) arcs
       ; toString p
     end
 
-fun toUnixPath s = 
+fun toUnixPath s =
     let val p as {arcs, ...} = fromString s
     in  List.app (invalidArc isInvalidUnixArc) arcs
       ; toUnixString p

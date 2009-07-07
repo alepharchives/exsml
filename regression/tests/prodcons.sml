@@ -37,7 +37,7 @@ structure Queue:
                               [] => raise Fail "deque"
                             | x :: l => (back := []; front := l; SOME x)
                            end)
-          | x :: l => (front := l; SOME x) 
+          | x :: l => (front := l; SOME x)
    end
 
 structure Thread:
@@ -227,7 +227,7 @@ fun main (name, args) =
       val _ = Thread.run ()
       val _ = Posix.Process.sleep (Time.fromSeconds 1)
       val _ = printl [Int.toString (!produced),
-                      " ",  
+                      " ",
                       Int.toString (!consumed)]
    in
       ()

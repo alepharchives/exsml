@@ -20,15 +20,15 @@ local
 	let fun h 0 res = res
 	      | h n res = h (n div radix) (prhex (n mod radix) :: res)
 	    fun tostr n = h (n div radix) [prhex (n mod radix)]
-	in 
+	in
 	    if i < 0 then
 		let val last  = ~(i mod (~radix))
 		    val first = i div (~radix)
-		in 
+		in
 		    String.implode(#"~" :: h first [prhex last])
 		end
 	    else
-		String.implode (tostr i) 
+		String.implode (tostr i)
 	end
 in
     fun scan radix getc source =
@@ -40,20 +40,20 @@ in
 		  | DEC => (Char.isDigit,                          10)
 		  | HEX => (Char.isHexDigit,                       16)
 	    fun dig1 sgn NONE             = NONE
-	      | dig1 sgn (SOME (c, rest)) = 
+	      | dig1 sgn (SOME (c, rest)) =
 		let val next_val =
 		        if sgn = 1 then fn (res, hv) => factor * res + hv
 		        else            fn (res, hv) => factor * res - hv
-		    fun digr res src = 
+		    fun digr res src =
 		        case getc src of
 			    NONE           => SOME (res, src)
-			  | SOME (c, rest) => 
-				if isDigit c then 
+			  | SOME (c, rest) =>
+				if isDigit c then
 				    digr (next_val(res, hexval c)) rest
-				else 
+				else
 				    SOME (res, src)
 		in if isDigit c then digr (sgn * hexval c) rest else NONE end
-	    fun getdigs sgn after0 inp = 
+	    fun getdigs sgn after0 inp =
 		case dig1 sgn inp of
 		    NONE => SOME(0, after0)
 		  | res  => res

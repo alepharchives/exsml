@@ -192,11 +192,11 @@ fun getstring dbres fno tupno =
     if pq_isnull dbres tupno fno then
 	raise Null
     else
-	pq_getstring dbres tupno fno 
+	pq_getstring dbres tupno fno
 
 (* Scanning dates and times in ISO format (Postgres 7) *)
 
-local					
+local
     open Substring (* for getc, all *)
     fun getint src = Option.valOf (Int.scan StringCvt.DEC getc src)
     fun drop p     = StringCvt.dropl p getc
@@ -216,17 +216,17 @@ in
 	in ((hour, min, sec), src3) end
 
     fun pq_getdatetime dbres fno tupno : Date.date =
-	let val src = Substring.full (pq_getstring dbres fno tupno) 
+	let val src = Substring.full (pq_getstring dbres fno tupno)
 	    val ((yr,mo,da), src1) = scandate src
 	    val src2 = drop (fn c => c = #" ") src1
 	    val ((hr,mi,se), _   ) = scantime src2
 	    open Date
-	    val tomonth = 
+	    val tomonth =
 		fn 1 => Jan | 2 => Feb |  3 => Mar |  4 => Apr
 		 | 5 => May | 6 => Jun |  7 => Jul |  8 => Aug
 		 | 9 => Sep | 10 => Oct | 11 => Nov | 12 => Dec
 		 | _ => raise Fail "Postgres.db_getdatetime 1";
-	in date {year=yr, month=tomonth mo, day=da, 
+	in date {year=yr, month=tomonth mo, day=da,
 		 hour=hr, minute=mi, second=se, offset=NONE} end
         handle Option.Option => raise Fail "Postgres.db_getdatetime 2"
 
@@ -254,7 +254,7 @@ fun getdatetime dbres fno tupno =
 
 (*
 fun pq_gettime dbres fno tupno : int * int * int =
-    let val s = pq_getstring dbres fno tupno 
+    let val s = pq_getstring dbres fno tupno
 	open Substring (* for getc, all *)
 	fun getint src = Option.valOf (Int.scan StringCvt.DEC getc src)
 	fun drop p     = StringCvt.dropl p getc
@@ -276,7 +276,7 @@ fun gettime dbres fno tupno =
 
 (*
 fun pq_getdate dbres fno tupno : int * int * int =
-    let val s = pq_getstring dbres fno tupno 
+    let val s = pq_getstring dbres fno tupno
 	open Substring (* for getc, all *)
 	fun getint src = Option.valOf (Int.scan StringCvt.DEC getc src)
 	fun drop p     = StringCvt.dropl p getc
@@ -342,7 +342,7 @@ fun totag "bool"      = SOME BoolTy
   | totag "oid"       = SOME OidTy
   | totag "bytea"     = SOME ByteArrTy
   | totag _           = NONE
-    
+
 (* Translation from Moscow ML types to Postgres types: *)
 
 fun fromtag BoolTy     = "bool"

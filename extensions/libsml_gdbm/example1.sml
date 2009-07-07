@@ -9,16 +9,16 @@ open Gdbm;
 
 val _ = print "\nCreating a new database in file \"monthnames\".\n";
 
-local 
-val monthnames = 
-    [("January", "janvier"), ("february", "fevrier"), ("March", "mars"), 
+local
+val monthnames =
+    [("January", "janvier"), ("february", "fevrier"), ("March", "mars"),
      ("April", "avril"), ("May", "mai"), ("June", "juin"),
      ("July", "juillet"), ("August", "aout"), ("September", "septembre"),
      ("October", "octobre"), ("November", "novembre"), ("December", "decembre")
      ];
-in 					     
+in
 
-    val _ = withtable ("monthnames", NEWDB) 
+    val _ = withtable ("monthnames", NEWDB)
 	              (fn db => List.app (add db) monthnames);
 end
 
@@ -29,6 +29,6 @@ val _ = withtable ("monthnames", READER)
 
 val _ = print "\nNow try e.g.   lookup \"July\";\n\n";
 
-fun lookup mn = 
+fun lookup mn =
     withtable ("monthnames", READER) (fn db => peek db mn);
 

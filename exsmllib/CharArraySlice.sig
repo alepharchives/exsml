@@ -16,7 +16,7 @@ val subslice : slice * int * int option -> slice
 val base     : slice -> array * int * int
 val vector   : slice -> vector
 val copy     : {src: slice, dst: array, di: int} -> unit
-val copyVec  : {src: vector_slice, dst: array, di: int} -> unit 
+val copyVec  : {src: vector_slice, dst: array, di: int} -> unit
 val isEmpty  : slice -> bool
 val getItem  : slice -> (elem * slice) option
 
@@ -37,11 +37,11 @@ val modifyi  : (int * elem -> elem) -> slice -> unit
 
 val collate  : (elem * elem -> order) -> slice * slice -> order
 
-(* 
+(*
    [slice] is the type of CharArray slices, that is, sub-arrays of
    CharArray.array values.
-   The slice (a,i,n) is valid if 0 <= i <= i+n <= size s, 
-                or equivalently, 0 <= i and 0 <= n and i+n <= size s.  
+   The slice (a,i,n) is valid if 0 <= i <= i+n <= size s,
+                or equivalently, 0 <= i and 0 <= n and i+n <= size s.
    A valid slice sli = (a,i,n) represents the sub-array a[i...i+n-1],
    so the elements of sli are a[i], a[i+1], ..., a[i+n-1], and n is
    the length of the slice.  Only valid slices can be constructed by

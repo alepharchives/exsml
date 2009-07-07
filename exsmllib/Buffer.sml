@@ -7,12 +7,12 @@ datatype buf = BUF of {elts    : string ref,
 		       size    : int ref,
                        initial : int}
 
-local 
+local
     prim_val create_ : int -> string                 = 1 "create_string";
     prim_val update_ : string -> int -> char -> unit = 3 "set_nth_char";
-    prim_val blit_   : string -> int -> string -> int -> int -> unit 
+    prim_val blit_   : string -> int -> string -> int -> int -> unit
                                                      = 5 "blit_string";
-in 
+in
 fun new bufSize =
     if bufSize > 0 andalso bufSize <= String.maxSize
     then BUF{elts    = ref (create_ bufSize),
@@ -29,13 +29,13 @@ fun reset (BUF{initial, elts, size, ...}) =
     ; size := 0 )
 
 fun contents (BUF{elts as ref arr, size as ref s, ...}) =
-    let val newstr = create_ s 
+    let val newstr = create_ s
     in blit_ arr 0 newstr 0 s; newstr end
 
 fun resize (BUF{elts as ref arr, size as ref s, ...}) more =
     let val newSize = s + more
         val ()      = if newSize > String.maxSize then raise Size else ()
-        fun roundUp new = if new < newSize then roundUp(2*new) 
+        fun roundUp new = if new < newSize then roundUp(2*new)
                           else if new > String.maxSize then String.maxSize
                           else new
         val len     = String.size arr
@@ -59,9 +59,9 @@ fun addSubString (buf as BUF{elts as ref arr, size as ref s, ...}) x =
       ; blit_ ss off (!elts) s len
       ; size := newSize end
 
-fun addString (buf as BUF{elts as ref arr, size as ref s, ...}) x = 
+fun addString (buf as BUF{elts as ref arr, size as ref s, ...}) x =
     let val len = String.size x
-        val newSize = s+len  
+        val newSize = s+len
     in  if newSize >= String.size arr then resize buf len else ()
       ; blit_ x 0 (!elts) s len
       ; size := newSize end
@@ -82,7 +82,7 @@ struct
 		          size    : int ref,
                           initial : int}
 
-   fun contents (BUF{elts as ref arr, size as ref s, ...}) = 
+   fun contents (BUF{elts as ref arr, size as ref s, ...}) =
        CAS.vector(CAS.slice(arr, 0, SOME s))
 
    fun clear (BUF{size, ...}) = size := 0
@@ -105,7 +105,7 @@ struct
            val ()      = if newSize > CA.maxLen then raise Size else ()
            fun roundUp new = if new < newSize then roundUp(2*new) else new
            val len     = CA.length arr
-           val newLen  = roundUp(2*len) 
+           val newLen  = roundUp(2*len)
                          handle Overflow => CA.maxLen
            val arr'    = CA.array (newLen, #"\000")
                          handle Size => CA.array (CA.maxLen, #"\000")
@@ -120,14 +120,14 @@ struct
 
    fun addSubString (buf as BUF{elts as ref arr, size as ref s, ...}) x =
        let val len = CVS.length x
-           val newSize = s+len  
+           val newSize = s+len
        in  if newSize >= CA.length arr then resize buf len else ()
          ; CAS.copyVec{src = x, dst = !elts, di = s}
          ; size := newSize end
 
-   fun addString (buf as BUF{elts as ref arr, size as ref s, ...}) x = 
+   fun addString (buf as BUF{elts as ref arr, size as ref s, ...}) x =
        let val len = String.size x
-           val newSize = s+len  
+           val newSize = s+len
        in  if newSize >= CA.length arr then resize buf len else ()
          ; CA.copyVec{src = x, dst = !elts, di = s}
          ; size := newSize end

@@ -22,7 +22,7 @@ val _ =
                        end)
                       v
                    val _ = print "\n"
-                in 
+                in
                    Real.== (r, PackReal.fromBytes v)
                 end)
       tests
@@ -46,7 +46,7 @@ val real32Tests =
        1.0,
        2.0,
        123E6,
-       maxFinite, 
+       maxFinite,
        posInf]
    end
 
@@ -65,7 +65,7 @@ val real64Tests =
        1.0,
        2.0,
        123E6,
-       maxFinite, 
+       maxFinite,
        posInf]
    end
 

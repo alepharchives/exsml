@@ -35,7 +35,7 @@ val _ =
          in
             ()
          end
-    | SOME pid => 
+    | SOME pid =>
          let
             val socket' = INetSock.TCP.socket ()
             val _ = Socket.connect (socket', addr)

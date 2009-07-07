@@ -153,7 +153,7 @@ val fromLargeWord : Word.word -> word
    [toLargeIntX w] returns the signed integer (in the range ~128..127)
    represented by bit-pattern w.
 
-   
+
    [fromLargeInt i] returns the word holding the 8 least significant bits of i.
 
    [toLarge w] returns the Word.word value corresponding to w.
@@ -165,7 +165,7 @@ val fromLargeWord : Word.word -> word
 
    [fromLarge w] returns w modulo 256.
 
-   [toLargeWord w] 
+   [toLargeWord w]
    [toLargeWordX w]
    [fromLargeWord w] synonyms for toLarge, toLargeX and fromLarge, (deprecated)
 *)

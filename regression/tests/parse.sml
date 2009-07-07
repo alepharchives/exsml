@@ -193,7 +193,7 @@ functor FFunctionalIO(type vec
                 (vecConcat (rev (v::acc)), (0, next))
               else
                 let
-                  val data = vecExtract (v, pos, SOME(n)) 
+                  val data = vecExtract (v, pos, SOME(n))
                 in
                   (vecConcat (rev (data::acc)), (0, next))
                 end
@@ -278,16 +278,16 @@ functor FFunctionalIO(type vec
                   (impOpenIn fileName)))
   end
 
-structure Word8Vector = 
+structure Word8Vector =
   struct
      open Word8Vector
-     fun extract (arr, s, l) = 
+     fun extract (arr, s, l) =
        Word8VectorSlice.vector (Word8VectorSlice.slice (arr, s, l))
   end
-structure CharVector = 
+structure CharVector =
   struct
      open CharVector
-     fun extract (arr, s, l) = 
+     fun extract (arr, s, l) =
        CharVectorSlice.vector (CharVectorSlice.slice (arr, s, l))
   end
 
@@ -514,7 +514,7 @@ functor FParserCombinators(structure FIO : FUNCTIONAL_IO
 
     fun (pf1 || pf2) stream =
           pf1 stream handle
-            exn1 as (SyntaxError (_, stream1)) => 
+            exn1 as (SyntaxError (_, stream1)) =>
               (pf2 stream handle
                  exn2 as (SyntaxError (_, stream2)) =>
                    raise exn1
@@ -524,22 +524,22 @@ functor FParserCombinators(structure FIO : FUNCTIONAL_IO
                    else
                      raise exn2 *) )
 
-    fun (pf1 -- pf2) stream = 
+    fun (pf1 -- pf2) stream =
           let
             val (res1, stream1) = pf1 stream
             val (res2, stream2) = pf2 stream1
           in
             ((res1, res2), stream2)
-          end 
+          end
 
-    fun (pf1 $-- pf2) stream = 
+    fun (pf1 $-- pf2) stream =
           let
             val (_, stream1) = pf1 stream
           in
             pf2 stream1
-          end 
+          end
 
-    fun (pf1 --$ pf2) stream = 
+    fun (pf1 --$ pf2) stream =
           let
             val (res1, stream1) = pf1 stream
             val (_, stream2) = pf2 stream1
@@ -554,7 +554,7 @@ functor FParserCombinators(structure FIO : FUNCTIONAL_IO
             (f res, stream') handle
               ValidityError msg =>
                 raise SyntaxError (msg, stream')
-          end 
+          end
 
     fun $$ s stream =
           let
@@ -573,7 +573,7 @@ functor FParserCombinators(structure FIO : FUNCTIONAL_IO
        out of memory on test.rib. I assume it is because of the
        stack of exceptions. *)
     (*
-    fun repeat pf stream = 
+    fun repeat pf stream =
           (pf -- repeat pf >> op:: || empty) stream *)
 
     (* Working implementation of repeat - takes 1.45 sec for parsing

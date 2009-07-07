@@ -15,12 +15,12 @@ type CSig =
   uTyEnv:      (string, TyInfo) Hasht.t,
   uModEnv:     (string, ModInfo) Hasht.t,
   uFunEnv:     (string, FunInfo) Hasht.t,
-  uSigEnv:     (string, SigInfo) Hasht.t,    
-  (* uTyNameSet is the set of names introduced in the unit's implementation, 
+  uSigEnv:     (string, SigInfo) Hasht.t,
+  (* uTyNameSet is the set of names introduced in the unit's implementation,
      or the set of names bound in the unit's interface (if any).
-     All type name levels should be 0 (this is ensured in rectifySignature before writing.) 
+     All type name levels should be 0 (this is ensured in rectifySignature before writing.)
   *)
-  uTyNameSet:    TyNameSet ref,  
+  uTyNameSet:    TyNameSet ref,
   (* The optional Str uStrOpt comes from the unit's optional interface.
      It is the body of the signature to be matched against.
    *)
@@ -575,11 +575,11 @@ fun updateCurrentInfixBasis iBas =
   traverseEnv add_InfixBasis (revEnv iBas)
 ;
 
-fun updateCurrentStaticT T = 
+fun updateCurrentStaticT T =
     (tyNameSetOfSig (!currentSig) := (!(tyNameSetOfSig (!currentSig))) @ T)
 
-fun extendCurrentStaticS S = 
-    let val strOpt = strOptOfSig (!currentSig) 
+fun extendCurrentStaticS S =
+    let val strOpt = strOptOfSig (!currentSig)
     in (* cvr: TODO check for duplicate specs? *)
     strOpt := (case !strOpt of
                  NONE => SOME (NONrec S)

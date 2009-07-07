@@ -29,7 +29,7 @@ val find         : ('item -> bool) -> 'item set -> 'item option
 
 end
 
-(* 
+(*
    ['item set] is the type of sets of ordered elements of type 'item.
    The ordering relation on the elements is used in the representation
    of the set.  The result of combining two sets with different
@@ -37,7 +37,7 @@ end
    uses Okasaki-style Red-Black trees.
 
    [empty ordr] creates a new empty set with the given ordering
-   relation.  
+   relation.
    [singleton ordr i] creates the singleton set containing i, with the
    given ordering relation.
 
@@ -63,7 +63,7 @@ end
    [numItems s] returns the number of items in set s.
 
 
-   [union(s1, s2)] returns the union of s1 and s2.  
+   [union(s1, s2)] returns the union of s1 and s2.
 
    [intersection(s1, s2)] returns the intersection of s1 and s2.
 
@@ -82,7 +82,7 @@ end
    set in increasing order.
 
    [foldr f e s] applies the folding function f to the entries of the
-   set in decreasing order. 
+   set in decreasing order.
 
    [find p s] returns SOME i, where i is an item in s which satisfies
    p, if one exists; otherwise returns NONE.  Traverses the entries of

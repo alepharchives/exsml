@@ -126,7 +126,7 @@ fun explode (s, i, n) =
 		      else h (j-1) (sub_ s j :: res)
     in h (i+n-1) [] end;
 
-fun app f (s,i,n) = 
+fun app f (s,i,n) =
     let val stop = i+n
         fun h j = if j>=stop then ()
                       else (f (sub_ s j); h (j+1))
@@ -134,8 +134,8 @@ fun app f (s,i,n) =
 
 exception Span
 
-fun span ((s, i, n), (s', i', n')) = 
-    if i > i'+n' orelse s<>s' then 
+fun span ((s, i, n), (s', i', n')) =
+    if i > i'+n' orelse s<>s' then
 	raise Span
     else
 	(s, i, i'+n'-i)

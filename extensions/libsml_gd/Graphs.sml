@@ -1,4 +1,4 @@
-(* Graphs.sml --- drawing bar charts, pie charts, cumulative graphs, ... 
+(* Graphs.sml --- drawing bar charts, pie charts, cumulative graphs, ...
    using Gdimage. For examples of use, see file testgdimage.sml.
    sestoft@dina.kvl.dk 1998-05-13
  *)
@@ -35,12 +35,12 @@ fun makecolors im =
     let val {black, white, silver, gray, maroon, red, purple, fuchsia,
 	     green, lime, olive, yellow, navy, blue, teal, aqua} =
 	     htmlcolors im
-	val colors = Array.fromList [red, navy, olive, aqua, black, purple, 
-				     lime, blue, maroon, silver, green, 
+	val colors = Array.fromList [red, navy, olive, aqua, black, purple,
+				     lime, blue, maroon, silver, green,
 				     yellow, teal]
-	val firstcolor = 
+	val firstcolor =
 	    Random.range (0, Array.length colors) (Random.newgen())
-	fun color i = 
+	fun color i =
 	    Color (Array.sub(colors, (i + firstcolor) mod Array.length colors))
     in color end
 
@@ -81,28 +81,28 @@ fun piechart _ [] _ = raise Fail "piechart: no data"
 	(* The pie-chart itself, to the left *)
 	val sum = if List.all (fn x => x > 0.0) obs then foldl op+ 0.0 obs
 		  else raise Fail "piechart: all slices must be positive"
-	val radscale = 2.0 * Math.pi / sum 
+	val radscale = 2.0 * Math.pi / sum
 	val piew = w - legendw
 	val pieh = h
 	val pied = Int.min(piew, pieh) - 20
 	val center = (piew div 2, h div 2)
 	val angleoffset = (Math.pi + obs1 * radscale) / 2.0
-	fun polar r a = (#1 center + round (r * Math.cos (a - angleoffset)), 
+	fun polar r a = (#1 center + round (r * Math.cos (a - angleoffset)),
 			 #2 center + round (r * Math.sin (a - angleoffset)))
-	fun drawradius angle = 
+	fun drawradius angle =
 	    drawLine im (Color black) (center, polar (real pied / 2.0) angle)
 	fun fillslice i angle =
 	    fill im (color i) (polar (real pied / 4.0) angle)
 	fun loop i lastsum []        = ()
-	  | loop i lastsum (x :: xr) = 
+	  | loop i lastsum (x :: xr) =
 	    (drawradius ((lastsum + x) * radscale);
-	     fillslice i ((lastsum + x / 2.0) * radscale); 
+	     fillslice i ((lastsum + x / 2.0) * radscale);
 	     loop (i+1) (lastsum + x) xr)
 
-    in 
-	drawArc im (Color black) { c = center, wh = (pied, pied), 
+    in
+	drawArc im (Color black) { c = center, wh = (pied, pied),
 				   from = 0, to = 360 };
-	(case obsr of 
+	(case obsr of
 	     [] => fillslice 0 0.0
 	   | _  => (drawradius (obs1 * radscale);
 		    loop 1 obs1 obsr;
@@ -120,7 +120,7 @@ fun piechart _ [] _ = raise Fail "piechart: no data"
  *)
 
 fun accugraph (w, h) [] _ = raise Fail "accugraph: no data series"
-  | accugraph (w, h) (obss as obs1 :: obsr) itemnames = 
+  | accugraph (w, h) (obss as obs1 :: obsr) itemnames =
     let val noobs = length obs1
 	val _ = if noobs >= 2 then ()
 		else raise Fail "accugraph: series must have at least two obs"
@@ -134,9 +134,9 @@ fun accugraph (w, h) [] _ = raise Fail "accugraph: no data series"
 
 	(* Compute accumulated observations *)
 	fun loop []          sum = [sum]
-	  | loop (xs :: xss) sum = 
+	  | loop (xs :: xss) sum =
 	    sum :: loop xss (ListPair.map op+ (xs, sum))
-	val accumrows = loop obsr obs1 
+	val accumrows = loop obsr obs1
 
 	val legendw = addlegend im itemnames black color + 20
 
@@ -148,10 +148,10 @@ fun accugraph (w, h) [] _ = raise Fail "accugraph: no data series"
 	val grfh = Int.min(h - 2 * xoffset, grfw * 2 div 3)
 	val yoffset = (h + grfh) div 2	(* from top  *)
 	val xscale = real grfw / real (noobs - 1)
-	val yscale = real grfh / (maxsum + 2.0) 
+	val yscale = real grfh / (maxsum + 2.0)
 
-	fun pos i y = (round (real i * xscale) + xoffset, 
-		       yoffset - round (y * yscale)) 
+	fun pos i y = (round (real i * xscale) + xoffset,
+		       yoffset - round (y * yscale))
 
 	fun drawobs i last [] = ()
 	  | drawobs i last (obs1 :: obsr) =
@@ -165,26 +165,26 @@ fun accugraph (w, h) [] _ = raise Fail "accugraph: no data series"
 	    (fill im (color ser) (pos 1 ((last+obs12) / 2.0));
 	     fillsection (ser-1) obs12 obsr)
 
-	fun uparrowhead (xy as (x, y)) = 
+	fun uparrowhead (xy as (x, y)) =
 	    (drawLine im (Color black) (xy, (x-3, y+4));
 	     drawLine im (Color black) (xy, (x+3, y+4)))
-	fun rightarrowhead (xy as (x, y)) = 
+	fun rightarrowhead (xy as (x, y)) =
 	    (drawLine im (Color black) (xy, (x-4, y-3));
 	     drawLine im (Color black) (xy, (x-4, y+3)))
     in
 	(* Y axis, left *)
-	drawLine im (Color black) ((xoffset, yoffset-grfh-5), 
+	drawLine im (Color black) ((xoffset, yoffset-grfh-5),
 				   (xoffset, yoffset+5));
 	uparrowhead (xoffset, yoffset-grfh-5);
 	(* Y axis, left *)
-	drawLine im (Color black) ((xoffset+grfw, 
-				    yoffset - round (lastsum * yscale)), 
+	drawLine im (Color black) ((xoffset+grfw,
+				    yoffset - round (lastsum * yscale)),
 				   (xoffset+grfw, yoffset));
         (* X axis *)
-	drawLine im (Color black) ((xoffset-5, yoffset), 
+	drawLine im (Color black) ((xoffset-5, yoffset),
 				   (xoffset+grfw+10, yoffset));
 	rightarrowhead (xoffset+grfw+10, yoffset);
- 
+
 	List.app drawseries accumrows;
 	fillsection (length obss - 1) 0.0 accumrows;
 	im

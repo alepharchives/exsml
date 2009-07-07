@@ -1,5 +1,5 @@
 /* mmysql.c -- Moscow ML interface interface to the mysql library.
-   thomassi@dina.kvl.dk 1999-07-06  
+   thomassi@dina.kvl.dk 1999-07-06
    sestoft@dina.kvl.dk 1999-08-07, 2000-05-30, 2002-07-25 */
 
 #include <stdlib.h>
@@ -36,13 +36,13 @@
 
    whose component 0 is a pointer to the finalizing function
    dbresult_finalize, whose component 1 is a pointer to a MYSQL_RES
-   value, and whose component 2 is a pointer to an array of 
-   MYSQL_ROW_OFFSETs, used for fast indexing into the result set.  The 
+   value, and whose component 2 is a pointer to an array of
+   MYSQL_ROW_OFFSETs, used for fast indexing into the result set.  The
    length of the array equals the number of tuples in the result set.
-   The array is needed because we use mysql_row_seek, which seems to 
-   take time O(1), for indexing into the resultset.  Using 
+   The array is needed because we use mysql_row_seek, which seems to
+   take time O(1), for indexing into the resultset.  Using
    mysql_data_seek was a bad idea, that appeared to take time O(n).
-   The finalization function will apply mysql_free_result to component 
+   The finalization function will apply mysql_free_result to component
    1 and free the component 2 array.
 */
 
@@ -52,14 +52,14 @@
 #define DBresultindex_val(x) ((MYSQL_ROW_OFFSET*)(Field(x, 2)))
 
 value dbconn_alloc(MYSQL* conn)
-{ 
+{
   value res = alloc(1, Abstract_tag);
   initialize(&Field(res, 0), (value)conn);
   return res;
 }
 
 void dbresult_finalize(value dbresval)
-{ 
+{
   MYSQL_RES* dbres = DBresult_val(dbresval);
   MYSQL_ROW_OFFSET* index = DBresultindex_val(dbresval);
   if (dbres != NULL) {
@@ -74,7 +74,7 @@ void dbresult_finalize(value dbresval)
    it will be garbage-collected, and dbresult_finalize() will be
    called on the pointer to the MYSQL_RES struct to deallocate it.  */
 
-value dbresult_alloc(MYSQL_RES* dbres) { 
+value dbresult_alloc(MYSQL_RES* dbres) {
   value res = alloc_final(3, &dbresult_finalize, 1, 10000);
   MYSQL_ROW_OFFSET* index = NULL;
   initialize(&Field(res, 1), (value)dbres);
@@ -97,7 +97,7 @@ value dbresult_alloc(MYSQL_RES* dbres) {
 
 /* Return NONE if s==NULL, return SOME(s) otherwise: */
 
-value Val_stringornull(char* s) 
+value Val_stringornull(char* s)
 {
   if (s == NULL)
     return NONE;
@@ -105,7 +105,7 @@ value Val_stringornull(char* s)
     value res;
     Push_roots(r, 1);
     r[0] = copy_string(s);
-    res = alloc(1, SOMEtag); 
+    res = alloc(1, SOMEtag);
     Field(res, 0) = r[0];
     Pop_roots();
     return res;
@@ -122,25 +122,25 @@ char* StringOrNull_val(value v)
 }
 
 /* ML type : dbconn_ -> string */
-value db_db(value conn) 
+value db_db(value conn)
 {
   return copy_string((DBconn_val(conn))->db);
 }
 
 /* ML type : dbconn_ -> string */
-value db_host(value conn) 
+value db_host(value conn)
 {
   return Val_stringornull((DBconn_val(conn))->host);
 }
 
 /* ML type : dbconn_ -> string */
-value db_options(value conn) 
+value db_options(value conn)
 {
   return copy_string(""); // FOR NOW
 }
 
 /* ML type : dbconn_ -> string */
-value db_port(value conn) 
+value db_port(value conn)
 {
   char strport[5];
   sprintf(strport,"%i",(DBconn_val(conn))->port);
@@ -149,13 +149,13 @@ value db_port(value conn)
 }
 
 /* ML type : dbconn_ -> string */
-value db_tty(value conn) 
+value db_tty(value conn)
 {
   return copy_string(""); // FIXME: FOR NOW
 }
 
 /* ML type : dbconn_ -> string option */
-value db_errormessage(value conn) 
+value db_errormessage(value conn)
 {
   char* msg = mysql_error(DBconn_val(conn));
   if (msg == NULL || msg[0] == '\0')
@@ -164,7 +164,7 @@ value db_errormessage(value conn)
 }
 
 /* ML type : dbconn_ -> unit */
-value db_finish(value conn) 
+value db_finish(value conn)
 {
   mysql_close(DBconn_val(conn));
   return Val_unit;
@@ -178,14 +178,14 @@ int mysql_ping(MYSQL* dummy)
 #endif
 
 /* ML type : dbconn_ -> unit */
-value db_reset(value conn) 
+value db_reset(value conn)
 {
   mysql_ping(DBconn_val(conn));
   return Val_unit;
 }
 
 /* ML type : dbconn_ -> unit */
-value db_status(value conn) 
+value db_status(value conn)
 {
   mysql_ping(DBconn_val(conn));
   return Val_bool(mysql_ping(DBconn_val(conn)));
@@ -193,7 +193,7 @@ value db_status(value conn)
 
 
 /* ML type : dbresult_ -> int */
-value db_ntuples(value dbresval) 
+value db_ntuples(value dbresval)
 {
   MYSQL_RES* dbres = DBresult_val(dbresval);
   long ntuples;
@@ -205,15 +205,15 @@ value db_ntuples(value dbresval)
 }
 
 /* ML type : dbresult_ -> int */
-value db_cmdtuples(value conn) 
+value db_cmdtuples(value conn)
 {
   /* NB: Cast from long long int to long int: */
-  long cmdtuples = (long)(mysql_affected_rows(DBconn_val(conn))); 
+  long cmdtuples = (long)(mysql_affected_rows(DBconn_val(conn)));
   return Val_long(cmdtuples);
 }
 
 /* ML type : dbresult_ -> int */
-value db_nfields(value dbresval) 
+value db_nfields(value dbresval)
 {
   MYSQL_RES* dbres = DBresult_val(dbresval);
   if (dbres == NULL)
@@ -226,20 +226,20 @@ value db_nfields(value dbresval)
    non-negative, and although it appears to check the upper bounds, it
    frequently crashes anyway.  So we have to do it the hard way: */
 
-void checkfbound(MYSQL_RES* dbres, int f, char* fcn) 
+void checkfbound(MYSQL_RES* dbres, int f, char* fcn)
 {
   if (dbres == NULL)
     failwith("Mysql: non-select dbresult");
-  if (f < 0 || f >= (int)mysql_num_fields(dbres)) { 
+  if (f < 0 || f >= (int)mysql_num_fields(dbres)) {
     char buf[128];
-    sprintf(buf, 
-            "Mysql.%s: illegal field number %d; must be in [0..%d]", 
+    sprintf(buf,
+            "Mysql.%s: illegal field number %d; must be in [0..%d]",
             fcn, f, mysql_num_fields(dbres)-1);
     failwith(buf);
-  } 
+  }
 }
 
-void checkbounds(value dbresval, value tupno, value fieldno, char* fcn) 
+void checkbounds(value dbresval, value tupno, value fieldno, char* fcn)
 {
   MYSQL_RES* dbres = DBresult_val(dbresval);
   int t = Long_val(tupno);
@@ -247,15 +247,15 @@ void checkbounds(value dbresval, value tupno, value fieldno, char* fcn)
   checkfbound(dbres, f, fcn);
   if (t < 0 || t >= ((int)mysql_num_rows(dbres))) {
     char buf[128];
-    sprintf(buf, 
-            "Mysql.%s: illegal tuple number %d; must be in [0..%d]", 
+    sprintf(buf,
+            "Mysql.%s: illegal tuple number %d; must be in [0..%d]",
             fcn, t, mysql_num_rows(dbres)-1);
     failwith(buf);
   }
 }
 
 /* ML type : dbresult_ -> int -> string */
-value db_fname(value dbresval, value fieldno) 
+value db_fname(value dbresval, value fieldno)
 {
   MYSQL_FIELD *fields;
   checkfbound(DBresult_val(dbresval), Long_val(fieldno), "db_fname");
@@ -264,18 +264,18 @@ value db_fname(value dbresval, value fieldno)
 }
 
 /* ML type : dbresult_ -> string -> int */
-value db_fnumber(value dbresval, value fieldnameval) 
+value db_fnumber(value dbresval, value fieldnameval)
 {
   char* fieldname = String_val(fieldnameval);
   MYSQL_RES* dbres = DBresult_val(dbresval);
-  if (dbres == NULL) 
+  if (dbres == NULL)
     return Val_long(-1);        /* No such field name */
   {
     unsigned int num_fields = mysql_num_fields(dbres);
     MYSQL_FIELD *fields = mysql_fetch_fields(dbres);
     unsigned int i;
     for(i = 0; i < num_fields; i++) {
-      if(strcmp(fields[i].name, fieldname)==0) 
+      if(strcmp(fields[i].name, fieldname)==0)
         return Val_long(i);
     }
   }
@@ -283,7 +283,7 @@ value db_fnumber(value dbresval, value fieldnameval)
 }
 
 /* ML type : dbresult_ -> int -> int */
-value db_ftype(value dbresval, value fieldno) 
+value db_ftype(value dbresval, value fieldno)
 {
   /* Fetch field information */
   // NB.   fetch_field direct doesn't work. (mysql is broken)
@@ -357,24 +357,24 @@ value db_ftype(value dbresval, value fieldno)
 
 MYSQL_ROW seekandgetrow(value dbresval, int n) {
   /* mysql_row_seek seems to take time O(1), mysql_data_seek takes O(n) */
-  mysql_row_seek(DBresult_val(dbresval), 
+  mysql_row_seek(DBresult_val(dbresval),
 		 DBresultindex_val(dbresval)[n]);
   return mysql_fetch_row(DBresult_val(dbresval));
 }
 
 /* ML type : dbresult_ -> int -> int -> int */
-value db_getint(value dbresval, value tupno, value fieldno) 
+value db_getint(value dbresval, value tupno, value fieldno)
 {
   MYSQL_ROW row;
   checkbounds(dbresval, tupno, fieldno, "db_getint");
   row = seekandgetrow(dbresval, Long_val(tupno));
   if (row == NULL)
     failwith("db_getint 2");
-  return Val_long(atoi(row[Long_val(fieldno)])); 
+  return Val_long(atoi(row[Long_val(fieldno)]));
 }
 
 /* ML type : dbresult_ -> int -> int -> real */
-value db_getreal(value dbresval, value tupno, value fieldno) 
+value db_getreal(value dbresval, value tupno, value fieldno)
 {
   MYSQL_ROW row;
   checkbounds(dbresval, tupno, fieldno, "db_getreal");
@@ -385,7 +385,7 @@ value db_getreal(value dbresval, value tupno, value fieldno)
 }
 
 /* ML type : dbresult_ -> int -> int -> string */
-value db_getstring(value dbresval, value tupno, value fieldno) 
+value db_getstring(value dbresval, value tupno, value fieldno)
 {
   MYSQL_ROW row;
   checkbounds(dbresval, tupno, fieldno, "db_getstring");
@@ -396,7 +396,7 @@ value db_getstring(value dbresval, value tupno, value fieldno)
 }
 
 /* ML type : dbresult_ -> int -> int -> bool */
-value db_getbool(value dbresval, value tupno, value fieldno) 
+value db_getbool(value dbresval, value tupno, value fieldno)
 {
   MYSQL_ROW row;
   checkbounds(dbresval, tupno, fieldno, "db_getbool");
@@ -407,18 +407,18 @@ value db_getbool(value dbresval, value tupno, value fieldno)
 }
 
 /* ML type : dbresult_ -> int -> int -> bool */
-value db_getisnull(value dbresval, value tupno, value fieldno) 
+value db_getisnull(value dbresval, value tupno, value fieldno)
 {
   MYSQL_ROW row;
   checkbounds(dbresval, tupno, fieldno, "db_getisnull");
   row = seekandgetrow(dbresval, Long_val(tupno));
   if (row == NULL)
     failwith("db_getisnull");
-  return Val_bool(row[Long_val(fieldno)]==NULL); 
+  return Val_bool(row[Long_val(fieldno)]==NULL);
 }
 
 /* ML type : 6-element record -> dbconn_ */
-value mysql_setdb(value args) 
+value mysql_setdb(value args)
 {
   char* dbhost    = StringOrNull_val(Field(args, 0));
   char* dbname    = StringOrNull_val(Field(args, 1));
@@ -427,8 +427,8 @@ value mysql_setdb(value args)
   char* dbpwd     = StringOrNull_val(Field(args, 4));
   char* dbtty     = StringOrNull_val(Field(args, 5));
   char* dbuser    = StringOrNull_val(Field(args, 6));
-  
-#if MYSQL_VERSION_ID >= 32200  
+
+#if MYSQL_VERSION_ID >= 32200
   MYSQL *mysql = mysql_init(NULL);
   if (mysql==NULL) {
     failwith("mysql_init failed - out of memory");
@@ -455,33 +455,33 @@ value mysql_setdb(value args)
 }
 
 /* ML type : dbconn_ -> string -> dbresult_ */
-value db_exec(value conn, value query) 
+value db_exec(value conn, value query)
 {
   if (mysql_real_query(DBconn_val(conn), String_val(query), string_length(query)))
-    failwith("db_exec query failed"); 
+    failwith("db_exec query failed");
   else {
     MYSQL_RES *dbres = mysql_store_result(DBconn_val(conn));
-    return dbresult_alloc(dbres); 
+    return dbresult_alloc(dbres);
   }
 }
 
 /* The function below must agree with the order of the constructors in
    the ML datatype Mysql.dbresultstatus: */
 
-#define Bad_response    0 
-#define Command_ok      1 	
-#define Copy_in         2 
-#define Copy_out        3 
-#define Empty_query	4 
-#define Fatal_error     5 
-#define Nonfatal_error  6 
-#define Tuples_ok       7 
+#define Bad_response    0
+#define Command_ok      1
+#define Copy_in         2
+#define Copy_out        3
+#define Empty_query	4
+#define Fatal_error     5
+#define Nonfatal_error  6
+#define Tuples_ok       7
 
 /* ML type : dbconn_ -> dbresultstatus */
 value db_resultstatus(value conn) {
   MYSQL *mysql = DBconn_val(conn);
   switch (mysql_errno(mysql)) {
-  case ER_EMPTY_QUERY:  
+  case ER_EMPTY_QUERY:
     return Atom(Empty_query);
   case 0:                       /* No error */
     {
@@ -492,7 +492,7 @@ value db_resultstatus(value conn) {
       else
         return Atom(Tuples_ok);
     }
-  default: 
+  default:
     return Atom(Nonfatal_error);
   }
 }

@@ -24,7 +24,7 @@ val rec build: int -> int t =
     | n => L (R (build (n - 1)))
 
 val _ = f 13
-  *) 
+  *)
 (*
 
 val rec f =
@@ -74,7 +74,7 @@ datatype t_0 = B_0 of t_1 | A_0 of int
 It figures out exactly your observation that every use of B must be
 followed by A.
 
-[z0 = int t] 
+[z0 = int t]
 datatype z0 = A of int | B of z1
 
 [z1 = (z0 * z0) t]

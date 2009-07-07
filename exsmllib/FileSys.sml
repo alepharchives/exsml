@@ -89,13 +89,13 @@ in
 	    and followlink (a, p) =
 		let val file = concat(p, a)
 		in
-		    if islink_ file then 
-			(incrlink(); 
+		    if islink_ file then
+			(incrlink();
 			 expand(mkAbsolute{path=readlink_ file, relativeTo=p}))
 		    else
 			file
 		end
-	in 
+	in
 	    (expand(mkAbsolute{path=p, relativeTo=getDir()}))
 	    handle Fail s => raiseSys "fullPath" (SOME p) s
 	end;
@@ -137,7 +137,7 @@ in
 	if Path.isAbsolute p then fullPath p
 	else Path.mkRelative{path=fullPath p, relativeTo=getDir()};
 
-    fun rmDir p = 
+    fun rmDir p =
 	(rmdir_ p) handle Fail s => raiseSys "rmDir" (SOME p) s;
     fun tmpName () =
 	(tmpnam_ ())

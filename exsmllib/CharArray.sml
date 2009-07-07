@@ -15,9 +15,9 @@ in
     val sub      : array * int -> elem          = magic Word8Array.sub
     val update   : array * int * elem -> unit   = magic Word8Array.update
     val vector   : array -> vector		= magic Word8Array.vector
-    val copy     : {src: array,  dst: array, di: int} -> unit 
+    val copy     : {src: array,  dst: array, di: int} -> unit
 						= magic Word8Array.copy
-    val copyVec  : {src: vector, dst: array, di: int} -> unit 
+    val copyVec  : {src: vector, dst: array, di: int} -> unit
 						= magic Word8Array.copyVec
     val app      : (elem -> unit) -> array -> unit
 						= magic Word8Array.app
@@ -47,7 +47,7 @@ in
     fun foldli (f : int * elem * 'b -> 'b) (e : 'b) (a : array) : 'b
 	= Word8Array.foldli (magic f) e (magic a)
 
-    fun foldri (f : int * elem * 'b -> 'b) (e : 'b) (a : array) : 'b 
+    fun foldri (f : int * elem * 'b -> 'b) (e : 'b) (a : array) : 'b
 	= Word8Array.foldri (magic f) e (magic a)
 
     fun modifyi (f : int * elem -> elem) (a : array) : unit

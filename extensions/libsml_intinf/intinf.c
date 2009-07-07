@@ -134,7 +134,7 @@ static void *mosml_gmp_allocate( size_t size )
   return stat_alloc( size );
 }
 
-static void *mosml_gmp_reallocate( void *oldptr, size_t old_size, 
+static void *mosml_gmp_reallocate( void *oldptr, size_t old_size,
 				   size_t new_size )
 {
   #pragma unused (old_size)
@@ -160,8 +160,8 @@ value largeint_alloc()
   return res;
 }
 
-value largeint_clear(value obj)			
-{ 
+value largeint_clear(value obj)
+{
   largeint_finalize(obj);
   /* Change the tag from Final_tag to Abstract_tag so that the GC will not
      attempt to deallocate the limbs again: */
@@ -169,35 +169,35 @@ value largeint_clear(value obj)
   return Val_unit;
 }
 
-value largeint_make(value null)			
-{ 
+value largeint_make(value null)
+{
   value li = largeint_alloc();
   mpz_init(Large_val(li));
   return li;
 }
 
-value largeint_make_si(value src)			
-{ 
+value largeint_make_si(value src)
+{
   value li = largeint_alloc();
   mpz_init_set_si(Large_val(li), Long_val(src));
   return li;
 }
 
 value largeint_set(value dest, value src)
-{ 
-  mpz_set(Large_val(dest), Large_val(src)); 
+{
+  mpz_set(Large_val(dest), Large_val(src));
   return Val_unit;
 }
 
 value largeint_set_si(value dest, value src)
-{ 
-  mpz_set_si(Large_val(dest), Long_val(src)); 
+{
+  mpz_set_si(Large_val(dest), Long_val(src));
   return Val_unit;
 }
 
 value largeint_to_si(value src)
-{ 
-  signed long int tmp = mpz_get_si(Large_val(src)); 
+{
+  signed long int tmp = mpz_get_si(Large_val(src));
   value res = Val_long(tmp);
   if (Long_val(res) != tmp)
     { raiseprimitive0(SYS__EXN_OVERFLOW); }
@@ -205,92 +205,92 @@ value largeint_to_si(value src)
 }
 
 value largeint_neg(value dest, value src)
-{ 
-  mpz_neg(Large_val(dest), Large_val(src)); 
+{
+  mpz_neg(Large_val(dest), Large_val(src));
   return Val_unit;
 }
 
 value largeint_add(value dest, value li1, value li2)
-{ 
-  mpz_add(Large_val(dest), Large_val(li1), Large_val(li2)); 
+{
+  mpz_add(Large_val(dest), Large_val(li1), Large_val(li2));
   return Val_unit;
 }
 
 value largeint_sub(value dest, value li1, value li2)
-{ 
-  mpz_sub(Large_val(dest), Large_val(li1), Large_val(li2)); 
+{
+  mpz_sub(Large_val(dest), Large_val(li1), Large_val(li2));
   return Val_unit;
 }
 
 value largeint_mul(value dest, value li1, value li2)
-{ 
-  mpz_mul(Large_val(dest), Large_val(li1), Large_val(li2)); 
+{
+  mpz_mul(Large_val(dest), Large_val(li1), Large_val(li2));
   return Val_unit;
 }
 
 /* Division truncating towards 0: */
 value largeint_tdiv(value dest, value li1, value li2)
-{ 
-  mpz_tdiv_q(Large_val(dest), Large_val(li1), Large_val(li2)); 
+{
+  mpz_tdiv_q(Large_val(dest), Large_val(li1), Large_val(li2));
   return Val_unit;
 }
 
-value largeint_tmod(value dest, value li1, value li2)		
-{ 
-  mpz_tdiv_r(Large_val(dest), Large_val(li1), Large_val(li2)); 
+value largeint_tmod(value dest, value li1, value li2)
+{
+  mpz_tdiv_r(Large_val(dest), Large_val(li1), Large_val(li2));
   return Val_unit;
 }
 
 value largeint_tdivmod(value quotdest, value remdest, value li1, value li2)
-{ 
-  mpz_tdiv_qr(Large_val(quotdest), Large_val(remdest), 
-	      Large_val(li1), Large_val(li2)); 
+{
+  mpz_tdiv_qr(Large_val(quotdest), Large_val(remdest),
+	      Large_val(li1), Large_val(li2));
   return Val_unit;
 }
 
 /* Division rounding towards minus infinity: */
 value largeint_fdiv(value dest, value li1, value li2)
-{ 
-  mpz_fdiv_q(Large_val(dest), Large_val(li1), Large_val(li2)); 
+{
+  mpz_fdiv_q(Large_val(dest), Large_val(li1), Large_val(li2));
   return Val_unit;
 }
 
 value largeint_fmod(value dest, value li1, value li2)
-{ 
-  mpz_fdiv_r(Large_val(dest), Large_val(li1), Large_val(li2)); 
+{
+  mpz_fdiv_r(Large_val(dest), Large_val(li1), Large_val(li2));
   return Val_unit;
 }
 
 value largeint_fdivmod(value quotdest, value remdest, value li1, value li2)
-{ 
-  mpz_fdiv_qr(Large_val(quotdest), Large_val(remdest), 
-	     Large_val(li1), Large_val(li2)); 
+{
+  mpz_fdiv_qr(Large_val(quotdest), Large_val(remdest),
+	     Large_val(li1), Large_val(li2));
   return Val_unit;
 }
 
-value largeint_cmp(value li1, value li2)			
-{ 
+value largeint_cmp(value li1, value li2)
+{
   long res = mpz_cmp(Large_val(li1), Large_val(li2));
-  if (res < 0) 
-    return Val_long(-1); 
-  else if (res > 0) 
-    return Val_long(1); 
-  else 
-    return Val_long(0);
-}
-
-value largeint_cmp_si(value li, value si)		
-{ 
-  long res = mpz_cmp_si(Large_val(li), Long_val(si));
-  if (res < 0)      
+  if (res < 0)
     return Val_long(-1);
-  else if (res > 0) 
-    return Val_long(1); 
-  else 
+  else if (res > 0)
+    return Val_long(1);
+  else
     return Val_long(0);
 }
 
-value largeint_sizeinbase(value li, value base)		
+value largeint_cmp_si(value li, value si)
+{
+  long res = mpz_cmp_si(Large_val(li), Long_val(si));
+  if (res < 0)
+    return Val_long(-1);
+  else if (res > 0)
+    return Val_long(1);
+  else
+    return Val_long(0);
+}
+
+value largeint_sizeinbase(value li, value base)
 { return (Val_long(mpz_sizeinbase(Large_val(li), Long_val(base)))); }
 
 /* The mpz_set_str function below is pretty absurd:
@@ -300,8 +300,8 @@ value largeint_sizeinbase(value li, value base)
  * "+123"    fails
  */
 
-value largeint_set_str(value dest, value str, value base)	
-{ 
+value largeint_set_str(value dest, value str, value base)
+{
   long changesign = (Byte(str, 0) == '~');
   long res;
   if (changesign) { Byte(str, 0) = '-'; }
@@ -313,25 +313,25 @@ value largeint_set_str(value dest, value str, value base)
     { failwith("Ill-formed number string"); }
 }
 
-value largeint_get_str(value src, value base)		
-{ 
+value largeint_get_str(value src, value base)
+{
   long len = 3 + mpz_sizeinbase(Large_val(src), Long_val(base));
   char *buffer = (char*)(malloc(len));
   value res;
-  mpz_get_str(buffer, Long_val(base), Large_val(src));  
+  mpz_get_str(buffer, Long_val(base), Large_val(src));
   res = copy_string(buffer);
   free(buffer);
 
   /* Use the SML sign character: */
   if (Byte(res, 0) == '-')
     { Byte(res, 0) = '~'; }
-  
+
   return res;
 }
 
-value largeint_pow_ui(value dest, value li, value ui)		
-{ 
-  mpz_pow_ui(Large_val(dest), Large_val(li), Long_val(ui)); 
+value largeint_pow_ui(value dest, value li, value ui)
+{
+  mpz_pow_ui(Large_val(dest), Large_val(li), Long_val(ui));
   return Val_unit;
 }
 

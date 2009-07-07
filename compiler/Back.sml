@@ -715,8 +715,8 @@ fun compileExp env staticfail =
 
     and compTest2 sz dp cond ifso ifnot C =
       let val (sflbl,sftsz) = staticfail
-          val Cc = 
-	      
+          val Cc =
+
 	 (* This optimization is rather ill-considered.  It works if
 	    the result () of the switch is disregarded, but otherwise
 	    it fails.  sestoft 2000-04-26

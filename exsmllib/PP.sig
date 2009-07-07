@@ -102,7 +102,7 @@ val pp_to_string   : int -> (ppstream -> 'a -> unit) -> 'a -> string
    ppstrm whose consumer accumulates the output in a string s.  Then
    it evaluates (printit ppstrm x) and finally returns the string s.
 
-   
+
    Example 1: A simple prettyprinter for Booleans:
        load "PP";
        fun ppbool pps d =

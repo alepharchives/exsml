@@ -12,13 +12,13 @@ fun inetclient ipno port s =
 	val vec  = Byte.stringToBytes s
     in
 	Socket.connect(sock, addr);
-	Socket.sendVec (sock, buff vec); 
+	Socket.sendVec (sock, buff vec);
 	Byte.bytesToString (Socket.recvVec (sock, size s)) before
 	Socket.close sock
     end
 
-val _ = 
-    print 
+val _ =
+    print
     "\nSimple client/server example with sockets\n\
      \-----------------------------------------\n\
      \Loaded inetclient function\n\n\

@@ -29,5 +29,5 @@ val rangelist  : int * int -> int * generator -> int list
    range [min, max).  Raises Fail if min >= max.
 
    [rangelist (min, max) (n, gen)] returns a list of n integral random
-   numbers in the range [min, max).  Raises Fail if min >= max.  
+   numbers in the range [min, max).  Raises Fail if min >= max.
 *)

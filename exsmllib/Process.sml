@@ -21,7 +21,7 @@ fun isSuccess sv = (sv = success);
 
 val terminate = BasicIO.exit;
 
-local 
+local
     val exittasks = (ref []) : (unit -> unit) list ref
 in
     fun atExit newtask =

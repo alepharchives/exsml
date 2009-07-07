@@ -30,14 +30,14 @@ val file         : string -> string
 
 val splitBaseExt : string -> {base : string, ext : string option}
 val joinBaseExt  : {base : string, ext: string option} -> string
-val base         : string -> string    
+val base         : string -> string
 val ext          : string -> string option
 
 exception InvalidArc
 val fromUnixPath : string -> string
 val toUnixPath   : string -> string
 
-(* 
+(*
    This module provides OS-independent functions for manipulating
    strings that represent file names and paths in a directory
    structure.  None of these functions accesses the actual filesystem.
@@ -70,8 +70,8 @@ val toUnixPath   : string -> string
    * There are three groups of functions, corresponding to three ways
    to look at paths, exemplified by the following paths:
 
-        Unix:    d/e/f/a.b.c       and     /d/e/f/a.b.c 
-        DOS:     A:d\e\f\a.b.c     and     A:\d\e\f\a.b.c     
+        Unix:    d/e/f/a.b.c       and     /d/e/f/a.b.c
+        DOS:     A:d\e\f\a.b.c     and     A:\d\e\f\a.b.c
 
    (1) A path consists of a sequence of arcs, possibly preceded by a
        volume and a root:
@@ -105,7 +105,7 @@ val toUnixPath   : string -> string
 
    [isRelative p] returns true if p is a relative path.
 
-   [isAbsolute p] returns true if p is an absolute path.  
+   [isAbsolute p] returns true if p is an absolute path.
    Equals not (isRelative p).
 
    [isRoot p] returns true if p is a canonical specification of a root
@@ -204,7 +204,7 @@ val toUnixPath   : string -> string
 
    [base s] equals #base (splitBaseExt s).
 
-   
+
    GROUP 4: Convenience functions for manipulating Unix-style paths.
 
    [fromUnixPath s] returns a path in the style of the host OS from

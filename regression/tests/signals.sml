@@ -5,7 +5,7 @@ structure List =
       fun foreach (l, f) = app f l
    end
 structure Process = Posix.Process
-open Process Posix.Signal MLton.Signal 
+open Process Posix.Signal MLton.Signal
 
 fun print s = let open TextIO
               in output (stdErr, s)
@@ -28,10 +28,10 @@ val _ =
             fun loop' () = (sleep 1; loop' ())
          in loop' ()
          end
-    | SOME pid => 
+    | SOME pid =>
          let
             fun signal s = Process.kill (K_PROC pid, s)
-         in 
+         in
             sleep 1
             ; print "sending 1"
             ; List.foreach ([hup, int, term], signal)

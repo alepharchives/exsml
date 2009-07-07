@@ -11,11 +11,11 @@ open Dynlib;
 (* Obtain a handle pointing to the library defining the C functions: *)
 
 val dlh = dlopen { lib = "libdside.so",
-                   flag = RTLD_LAZY, 
+                   flag = RTLD_LAZY,
                    global = false }
 
 (* Define SML functions using this handle.  The type ascriptions are
-   necessary for SML type safety: 
+   necessary for SML type safety:
  *)
 
 (* Passing and returning base types: unit, int, char, real, string, bool: *)
@@ -29,12 +29,12 @@ val fb : bool   -> bool   = app1 (dlsym dlh "cfb")
 
 (* Passing several curried arguments: *)
 
-val fcur : int -> char -> real -> string -> bool -> int = 
+val fcur : int -> char -> real -> string -> bool -> int =
     app5 (dlsym dlh "cfcur")
 
 (* Passing a tuple: *)
 
-val ftup : int * char * real -> int = 
+val ftup : int * char * real -> int =
     app1 (dlsym dlh "cftup")
 
 (* Passing a record: *)
@@ -42,38 +42,38 @@ val ftup : int * char * real -> int =
 val frec : { surname : string, givenname : string, age : int } -> bool =
     app1 (dlsym dlh "cfrec")
 
-(* Passing a constructed value belonging to a datatype:                 
-   It is advisable to declare the constructors in alphabetical order 
-   since Moscow ML 2.00 and later sorts them anyway, and the C side 
+(* Passing a constructed value belonging to a datatype:
+   It is advisable to declare the constructors in alphabetical order
+   since Moscow ML 2.00 and later sorts them anyway, and the C side
    must use the tags (0, 1, ...) of the sorted constructors.
 *)
 
-datatype t = 
+datatype t =
     Br of int * t * t
   | Brs of t list
-  | Lf 
+  | Lf
 
-val fdat : t -> int = 
+val fdat : t -> int =
     app1 (dlsym dlh "cfdat")
 
 (* Passing an ML function (a closure): *)
 
-val ffun : (int -> real) -> int -> string = 
+val ffun : (int -> real) -> int -> string =
     app2 (dlsym dlh "cffun");
 
 (* Returning a tuple *)
 
-val frtup : int -> int * bool = 
+val frtup : int -> int * bool =
     app1 (dlsym dlh "cfrtup");
 
 (* Returning a record *)
 
-val frrec : int -> { half : int, odd : bool } = 
+val frrec : int -> { half : int, odd : bool } =
     app1 (dlsym dlh "cfrrec");
 
 (* Illustration of heap allocation trickiness *)
 
-val fconcat : string -> string -> string = 
+val fconcat : string -> string -> string =
     app2 (dlsym dlh "cfconcat");
 
 (* Exercising the C functions: *)
@@ -90,18 +90,18 @@ val test5 = "TEST NUMBER +1" = fs "Test number +1";
 
 val test6 = fb false;
 
-val test7 = 85 = fcur 5 #"A" 10.0 "blah" true; 
+val test7 = 85 = fcur 5 #"A" 10.0 "blah" true;
 
 val test8 = 80 = ftup(5, #"A", 10.0);
 
 val test9 = not (frec {surname = "Jensen", givenname = "Karin", age = 28 });
 
-local 
-    val tree = Brs[Lf, 
+local
+    val tree = Brs[Lf,
                    Br(12, Br(10, Lf, Lf), Br(20, Lf, Lf)),
                    Brs[Br(15, Lf, Lf)]]
 in
-    
+
     val test10 = 57 = fdat tree
 end
 

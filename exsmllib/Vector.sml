@@ -30,10 +30,10 @@ fun sub(v, i) =
     if i < 0 orelse i >= length v then raise Subscript
     else sub_ v i;
 
-fun update (v : 'a vector, i : int, x : 'a) : 'a vector = 
+fun update (v : 'a vector, i : int, x : 'a) : 'a vector =
     let val _ = if i < 0 orelse i >= length v then raise Subscript else ()
 	val stop = length v
-	val newvec = vector_ stop () 
+	val newvec = vector_ stop ()
 	fun lr j = if j < stop then (update_ newvec j (sub_ v j); lr (j+1))
 		   else ()
     in lr 0; update_ newvec i x; newvec end
@@ -54,25 +54,25 @@ fun concat vecs =
 	    in copy 0; copyall (to+len1) vr end
     in copyall 0 vecs; newvec end;
 
-fun find (p : 'a -> bool) (a : 'a vector) : 'a option = 
+fun find (p : 'a -> bool) (a : 'a vector) : 'a option =
     let val stop = length a
-	fun lr j = 
-	    if j < stop then 
+	fun lr j =
+	    if j < stop then
 		if p (sub_ a j) then SOME (sub_ a j) else lr (j+1)
 	    else NONE
     in lr 0 end
 
-fun exists (p : 'a -> bool) (a : 'a vector) : bool = 
+fun exists (p : 'a -> bool) (a : 'a vector) : bool =
     let val stop = length a
 	fun lr j = j < stop andalso (p (sub_ a j) orelse lr (j+1))
     in lr 0 end
 
-fun all (p : 'a -> bool) (a : 'a vector) : bool = 
+fun all (p : 'a -> bool) (a : 'a vector) : bool =
     let val stop = length a
 	fun lr j = j >= stop orelse (p (sub_ a j) andalso lr (j+1))
     in lr 0 end
 
-fun foldl f e a = 
+fun foldl f e a =
     let	val stop = length a
 	fun lr j res = if j < stop then lr (j+1) (f(sub_ a j, res))
 		       else res
@@ -97,53 +97,53 @@ fun map (f : 'a -> 'b) (a : 'a vector) : 'b vector =
 		   else ()
     in lr 0; newvec end
 
-fun findi (p : int * 'a -> bool) (a : 'a vector) : (int * 'a) option = 
+fun findi (p : int * 'a -> bool) (a : 'a vector) : (int * 'a) option =
     let val stop = length a
-	fun lr j = 
-	    if j < stop then 
+	fun lr j =
+	    if j < stop then
 		if p (j, sub_ a j) then SOME (j, sub_ a j) else lr (j+1)
 	    else NONE
     in lr 0 end
 
-fun sliceend (a, i, NONE) = 
+fun sliceend (a, i, NONE) =
         if i<0 orelse i>length a then raise Subscript
 	else length a
   | sliceend (a, i, SOME n) =
 	if i<0 orelse n<0 orelse i+n>length a then raise Subscript
 	else i+n;
 
-fun foldli f e a = 
+fun foldli f e a =
     let val stop = length a
-	fun lr j res = 
+	fun lr j res =
 	    if j < stop then lr (j+1) (f(j, sub_ a j, res))
 	    else res
     in lr 0 e end;
 
-fun foldri f e a = 
-    let fun rl j res = 
+fun foldri f e a =
+    let fun rl j res =
 	    if j >= 0 then rl (j-1) (f(j, sub_ a j, res))
 	    else res
     in rl (length a - 1) e end;
 
-fun appi f a = 
+fun appi f a =
     let val stop = length a
-	fun lr j = 
-	    if j < stop then (f(j, sub_ a j); lr (j+1)) 
+	fun lr j =
+	    if j < stop then (f(j, sub_ a j); lr (j+1))
 	    else ()
     in lr 0 end;
 
-fun mapi (f : int * 'a -> 'b) (a : 'a vector) : 'b vector = 
+fun mapi (f : int * 'a -> 'b) (a : 'a vector) : 'b vector =
     let val stop = length a
-	val newvec = vector_ stop () 
-	fun lr j = 
-	    if j < stop then 
-		(update_ newvec j (f(j, sub_ a j)); 
-		 lr (j+1)) 
+	val newvec = vector_ stop ()
+	fun lr j =
+	    if j < stop then
+		(update_ newvec j (f(j, sub_ a j));
+		 lr (j+1))
 	    else ()
     in lr 0; newvec end;
 
 fun collate cmp (v1, v2) =
-    let val n1 = length v1 
+    let val n1 = length v1
 	and n2 = length v2
 	val stop = if n1 < n2 then n1 else n2
 	fun h j = (* At this point v1[0..j-1] = v2[0..j-1] *)

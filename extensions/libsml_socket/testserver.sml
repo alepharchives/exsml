@@ -31,18 +31,18 @@ fun inetserver ipno port =
 	    end)
 	    handle Interrupt => print "Server terminated by user.\n\n");
 	Socket.close sock
-    end 
+    end
 
-val _ = 
-    print 
+val _ =
+    print
     ("\nSimple client/server example with sockets\n\
        \-----------------------------------------\n\
-     \Starting example inetserver on IP address " 
-     ^ inetaddr ^ " port " ^ Int.toString portno 
+     \Starting example inetserver on IP address "
+     ^ inetaddr ^ " port " ^ Int.toString portno
      ^ "\n\nIn another terminal, start a mosml session by typing\n\
      \    mosml testclient.sml\n\
      \and in that session, execute e.g.\n\
-     \    val f = inetclient \"" ^ inetaddr ^ "\" " ^ Int.toString portno 
+     \    val f = inetclient \"" ^ inetaddr ^ "\" " ^ Int.toString portno
      ^ ";\n\
      \    f \"Test\";\n\
      \    f \"madam, I'm adam\";\n\n\

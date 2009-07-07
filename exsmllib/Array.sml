@@ -68,10 +68,10 @@ fun update(a, i, v) =
     end
 
 fun vector (a : 'a array) =
-    let val a = from_array a : 'a array_ 
+    let val a = from_array a : 'a array_
 	val n = length_ a
 	val newvec = vector_ n () : 'a vector
-	fun copy j = 
+	fun copy j =
 	    if j<n then
 		(updatev newvec j (sub_ a j); copy (j+1))
 	    else
@@ -84,10 +84,10 @@ fun copy {src=a1: 'a array, dst=a2: 'a array, di=i2} =
  	and a2 = from_array a2
 	val n = length_ a1
      in
-	if i2<0 orelse i2+n > length_ a2 then 
+	if i2<0 orelse i2+n > length_ a2 then
  	    raise Subscript
 	else		(* copy from high to low *)
-	    let fun hi2lo j = 
+	    let fun hi2lo j =
 		    if j >= 0 then
 			(update_ a2 (i2+j) (sub_ a1 j); hi2lo (j-1))
 		    else ()
@@ -99,7 +99,7 @@ fun copyVec {src=a1: 'a vector, dst=a2: 'a array, di=i2} =
      let val a2 = from_array a2
 	val n = lengthv_ a1
      in
-	if i2<0 orelse i2+n > length_ a2 then 
+	if i2<0 orelse i2+n > length_ a2 then
 	    raise Subscript
  	else
 	    let fun lo2hi j =
@@ -111,7 +111,7 @@ fun copyVec {src=a1: 'a vector, dst=a2: 'a array, di=i2} =
 
 
 fun extract (a : 'a array, i, slicelen) =
-    let val a = from_array a : 'a array_ 
+    let val a = from_array a : 'a array_
 	val n = case slicelen of NONE => length_ a - i | SOME n => n
 	val newvec = if i<0 orelse n<0 orelse i+n > length_ a
 			 then raise Subscript
@@ -193,43 +193,43 @@ fun app f a =
 		   else ()
     in lr 0 end
 
-fun findi (p : int * 'a -> bool) (a : 'a array) : (int * 'a) option = 
+fun findi (p : int * 'a -> bool) (a : 'a array) : (int * 'a) option =
     let val a = from_array a
 	val stop = length_ a
-	fun lr j = 
-	    if j < stop then 
+	fun lr j =
+	    if j < stop then
 		if p (j, sub_ a j) then SOME (j, sub_ a j) else lr (j+1)
 	    else NONE
     in lr 0 end
 
-fun foldli f e a = 
+fun foldli f e a =
      let val a = from_array a
 	val stop = length_ a
-	fun lr j res = 
+	fun lr j res =
 	    if j < stop then lr (j+1) (f(j, sub_ a j, res))
 	    else res
     in lr 0 e end;
 
-fun foldri f e a = 
+fun foldri f e a =
      let val a = from_array a
-	fun rl j res = 
+	fun rl j res =
 	    if j >= 0 then rl (j-1) (f(j, sub_ a j, res))
 	    else res
     in rl (length_ a - 1) e end;
 
-fun modifyi f a = 
+fun modifyi f a =
      let val a = from_array a
 	val stop = length_ a
-	fun lr j = 
+	fun lr j =
 	    if j < stop then (update_ a j (f(j, sub_ a j)); lr (j+1))
 	    else ()
     in lr 0 end;
 
-fun appi f a = 
+fun appi f a =
      let val a = from_array a
 	val stop = length_ a
-	fun lr j = 
-	    if j < stop then (f(j, sub_ a j); lr (j+1)) 
+	fun lr j =
+	    if j < stop then (f(j, sub_ a j); lr (j+1))
 	    else ()
     in lr 0 end;
 
@@ -272,7 +272,7 @@ fun all p arr =
 fun collate cmp (a1, a2) =
     let val a1 = from_array a1
 	and a2 = from_array a2
-	val n1 = length_ a1 
+	val n1 = length_ a1
 	and n2 = length_ a2
 	val stop = if n1 < n2 then n1 else n2
 	fun h j = (* At this point a1[0..j-1] = a2[0..j-1] *)

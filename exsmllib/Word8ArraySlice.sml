@@ -1,4 +1,4 @@
-(* Word8ArraySlice -- SML Basis Library 
+(* Word8ArraySlice -- SML Basis Library
    sestoft@dina.kvl.dk 2000-10-24
 *)
 
@@ -24,8 +24,8 @@ in
 type slice = array * int * int
 
 (* Invariant on values (a, i, n) of type slice:
- *                  0 <= i <= i+n <= Word8Array.length a, 
- * or equivalently, 0 <= i and 0 <= n and i+n <= Word8Array.length a.  
+ *                  0 <= i <= i+n <= Word8Array.length a,
+ * or equivalently, 0 <= i and 0 <= n and i+n <= Word8Array.length a.
  *)
 
 fun length (a, i, n) = n;
@@ -39,8 +39,8 @@ fun update ((a', i', n'), i, v)  =
 
 fun slice (a, i, len) =
     let val alen = Word8Array.length a
-    in 
-	case len of 
+    in
+	case len of
 	    NONE   => if 0<=i andalso i<=alen then (a, i, alen - i)
 		      else raise Subscript
 	  | SOME n => if 0<=i andalso 0<=n andalso n<=alen-i then (a, i, n)
@@ -56,13 +56,13 @@ fun subslice ((a, i, n), i', NONE) =
     if 0<=i' andalso 0<=n' andalso n'<=n-i' then (a, i+i', n')
     else raise Subscript;
 
-		      
+
 fun base sli = sli;
 
-fun vector (a : array, i, n) = 
-    let val a = from_array a : array_ 
+fun vector (a : array, i, n) =
+    let val a = from_array a : array_
 	val newvec = vector_ n : vector
-	fun copy j = 
+	fun copy j =
 	    if j<n then
 		(updatev newvec j (sub_ a (i+j)); copy (j+1))
 	    else
@@ -105,22 +105,22 @@ fun isEmpty (_, _, n) = n=0;
 fun getItem (a, i, 0) = NONE
   | getItem (a, i, n) = SOME(sub_ (from_array a) i, (a, i+1, n-1));
 
-fun find (p : elem -> bool) ((a,i,n) : slice) : elem option = 
+fun find (p : elem -> bool) ((a,i,n) : slice) : elem option =
     let val a = from_array a
 	val stop = i+n
-	fun lr j = 
+	fun lr j =
 	    if j < stop then
 		if p (sub_ a j) then SOME (sub_ a j) else lr (j+1)
 	    else NONE
     in lr i end;
 
-fun exists (p : elem -> bool) ((a,i,n) : slice) : bool = 
+fun exists (p : elem -> bool) ((a,i,n) : slice) : bool =
     let val a = from_array a
 	val stop = i+n
 	fun lr j = j < stop andalso (p (sub_ a j) orelse lr (j+1))
     in lr i end;
 
-fun all (p : elem -> bool) ((a,i,n) : slice) : bool = 
+fun all (p : elem -> bool) ((a,i,n) : slice) : bool =
     let val a = from_array a
 	val stop = i+n
 	fun lr j = j >= stop orelse (p (sub_ a j) andalso lr (j+1))
@@ -153,10 +153,10 @@ fun modify f (a, i, n) =
 		   else ()
     in lr i end;
 
-fun findi (p : int * elem -> bool) ((a,i,n) : slice) : (int * elem) option = 
+fun findi (p : int * elem -> bool) ((a,i,n) : slice) : (int * elem) option =
     let val a = from_array a
 	val stop = i+n
-	fun lr j = 
+	fun lr j =
 	    if j < stop then
 		if p (j, sub_ a j) then SOME (j, sub_ a j) else lr (j+1)
 	    else NONE

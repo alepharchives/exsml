@@ -11,7 +11,7 @@ fun msg () =
                   print (concat [Int.toString i, " => ",
                                  case z of
                                     NONE => "NONE"
-                                  | SOME (a, b) => 
+                                  | SOME (a, b) =>
                                        concat ["(", Int.toString a, ", ",
                                                Int.toString b, ")"],
                                  "\n"])) a)
@@ -32,7 +32,7 @@ fun msg () =
                   print (concat [Int.toString i, " => ",
                                  case z of
                                     NONE => "NONE"
-                                  | SOME (a, b) => 
+                                  | SOME (a, b) =>
                                        concat ["(", Int.toString a, ", ",
                                                Int.toString b, ")"],
                                        "\n"])) a)
@@ -51,7 +51,7 @@ fun msg () =
                   print (concat [Int.toString i, " => ",
                                  case !z of
                                     NONE => "NONE"
-                                  | SOME (a, b) => 
+                                  | SOME (a, b) =>
                                        concat ["(", Int.toString a, ", ",
                                                Int.toString b, ")"],
                                  "\n"])) a)
@@ -71,7 +71,7 @@ fun msg () =
    print (concat ["size of a is ", Int.toString (MLton.size a), "\n",
                   case Array.sub (a, 1) of
                      NONE => "NONE"
-                   | SOME (a, b) => 
+                   | SOME (a, b) =>
                         concat ["(", Int.toString a, ", ", Int.toString b, ")"],
                         "\n"])
 

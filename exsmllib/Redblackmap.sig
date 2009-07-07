@@ -20,7 +20,7 @@ val map       : ('key * 'a -> 'b) -> ('key,'a) dict -> ('key, 'b) dict
 val transform : ('a -> 'b) -> ('key,'a) dict -> ('key, 'b) dict
 end
 
-(* 
+(*
    [('key, 'a) dict] is the type of applicative maps from domain type
    'key to range type 'a, or equivalently, applicative dictionaries
    with keys of type 'key and values of type 'a.  They are implemented

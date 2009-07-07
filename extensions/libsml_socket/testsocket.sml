@@ -9,7 +9,7 @@ fun fileclient name s =
     let val sock = Socket.fileStream ()
 	val addr = Socket.fileAddr name
 	val vec  = Byte.stringToBytes s
-	
+
 	val _    = Socket.connect(sock, addr)
     in
 	Socket.sendVec (sock, vec);
@@ -37,17 +37,17 @@ fun fileclient ipno s =
     let val sock = Socket.fileStream () before print "gif1\n"
 	val addr = Socket.fileAddr ipno before print "gif2\n"
 	val vec  = Byte.stringToBytes s
-	
+
 	val _    = Socket.connect(sock, addr) before print "gif3\n"
     in
-	Socket.sendVec (sock, buff vec); 
+	Socket.sendVec (sock, buff vec);
 	print "gif4\n";
 	print(Byte.bytesToString(Socket.recvVec (sock, size s)));
 	print "gif5\n";
-	Socket.close sock; 
+	Socket.close sock;
 	print "gif6\n"
     end
- 
+
 
 fun fileserver ipno =
     let val sock = Socket.fileStream ()
@@ -76,11 +76,11 @@ fun inetclient ipno port s =
 	val vec  = Byte.stringToBytes s
     in
 	Socket.connect(sock, addr);
-	Socket.sendVec (sock, buff vec); 
+	Socket.sendVec (sock, buff vec);
 	Byte.bytesToString (Socket.recvVec (sock, size s)) before
 	Socket.close sock
     end
- 
+
 
 fun inetserver ipno port =
     let val sock = Socket.inetStream ()
@@ -129,24 +129,24 @@ fun selinet ipno port1 port2 =
 	val socks = [sock1, sock2]
 	val rls   = map Socket.sockDesc socks
 	fun getrdys [] _ = []
-	  | getrdys (sck1::sckr) (rdys as (rdy1::rdyr)) = 
-	    if Socket.sameDesc(Socket.sockDesc sck1, rdy1) then 
+	  | getrdys (sck1::sckr) (rdys as (rdy1::rdyr)) =
+	    if Socket.sameDesc(Socket.sockDesc sck1, rdy1) then
 		sck1 :: getrdys sckr rdyr
-	    else 
+	    else
 		getrdys sckr rdys
-    in 
+    in
 	((while true do
-	    let val {rds, ...} = 
+	    let val {rds, ...} =
 		Socket.select { rds=rls, wrs=nil, exs=nil, timeout=NONE }
-	    in  
+	    in
 		app revmsg (getrdys socks rds)
 	    end) handle _ => ());
 	Socket.close sock1;
 	Socket.close sock2
     end;
 
-val _ = 
-    print 
+val _ =
+    print
     "\nSimple client/server example with sockets\n\
      \-----------------------------------------\n\
      \Assume that the IP address of your machine is 130.225.40.253.\n\

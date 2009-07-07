@@ -13,17 +13,17 @@ in
 
     val length   : vector -> int  		= magic Word8Vector.length
     val sub      : vector * int -> elem         = magic Word8Vector.sub
-    val update   : vector * int * elem -> vector 
+    val update   : vector * int * elem -> vector
 						= magic Word8Vector.update
     val concat   : vector list -> vector        = magic Word8Vector.concat
-    val find     : (elem -> bool) -> vector -> elem option 
+    val find     : (elem -> bool) -> vector -> elem option
 	                                        =  magic Word8Vector.find
     val exists   : (elem -> bool) -> vector -> bool
 	                                        =  magic Word8Vector.exists
     val all      : (elem -> bool) -> vector -> bool
 	                                        =  magic Word8Vector.all
 
-    val collate  : (elem * elem -> order) -> vector * vector -> order 
+    val collate  : (elem * elem -> order) -> vector * vector -> order
                                                 = magic String.collate
 
     val app      : (elem -> unit) -> vector -> unit
@@ -38,7 +38,7 @@ in
 
     fun foldr (f : elem * 'b -> 'b) (e : 'b) (v : vector) : 'b
 	= Word8Vector.foldr (magic f) e (magic v)
-	
+
     fun appi (f : int * elem -> unit) (v : vector) : unit
 	= Word8Vector.appi (magic f) (magic v)
 

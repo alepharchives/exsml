@@ -30,7 +30,7 @@ int mosml_regexec();
 #define len_susval(x) (Long_val(Field(x, 2)))
 
 /* Representation of a compiled regular expression (ML type regex):
-  
+
    A finalized 4-tuple:
 
               header with Final_tag
@@ -48,10 +48,10 @@ int mosml_regexec();
 #define regex_val(x) ((regex_t*)(Field(x, 1)))
 #define nmatch_val(x) ((int)(Field(x, 2)))
 #define pmatch_val(x) ((regmatch_t*)(Field(x, 3)))
- 
+
 /* Finalize and deallocate a regex value */
 
-void regex_finalize(value regexval) { 
+void regex_finalize(value regexval) {
   regfree(regex_val(regexval));
   free(regex_val(regexval));
   free(pmatch_val(regexval));
@@ -60,7 +60,7 @@ void regex_finalize(value regexval) {
 /* Allocate a regex value */
 /* Finalized objects are abstract, so can store nmatch as C int */
 
-value regex_alloc(regex_t* preg, int nmatch) { 
+value regex_alloc(regex_t* preg, int nmatch) {
   value res = alloc_final(4, &regex_finalize, 1, 10000);
   Field(res, 1) = (value)preg;
   Field(res, 2) = (value)nmatch;
@@ -85,7 +85,7 @@ int maxnmatch(value patval) {
   char* pat = String_val(patval);
   int patlen = string_length(patval);
   int nmatch = 1;
-  int i;		
+  int i;
   for (i=0; i<patlen; i++)
     if (pat[i] == '(')
       nmatch++;
@@ -117,7 +117,7 @@ value mregex_regcomp(value patval, value cflagsval) {
     char* errmsg = regerrorstring(comperror, preg);
     free(preg);
     failwith(errmsg);		/* Should free errmsg too, but never mind */
-  } else 
+  } else
     return regex_alloc(preg, maxnmatch(patval));
   /* Unreachable */
   return NONE;
@@ -126,7 +126,7 @@ value mregex_regcomp(value patval, value cflagsval) {
 /* Do the actual regex matching, returning substrings. */
 /* The given substring must be a suffix of a null-terminated string. */
 
-value regmatch_sus(regex_t* preg, int nmatch, regmatch_t pmatch[], 
+value regmatch_sus(regex_t* preg, int nmatch, regmatch_t pmatch[],
 		   int eflags, value susval) {
   char* str = susaddr_susval(susval);
   int len = len_susval(susval);
@@ -144,14 +144,14 @@ value regmatch_sus(regex_t* preg, int nmatch, regmatch_t pmatch[],
        substrings.  In other cases (e.g. when pmatch has room for
        excess substrings, various kinds of garbage is stored instead.
        Hence we need to explicitly check for wellformedness of
-       substrings.  
+       substrings.
     */
-    while (i < nmatch 
+    while (i < nmatch
 	   && (pmatch[i].rm_so == -1 ||
 	       (last <= pmatch[i].rm_so
 		&& pmatch[i].rm_so <= pmatch[i].rm_eo
 		&& pmatch[i].rm_eo <= strlen))) {
-      if (pmatch[i].rm_so != -1) 
+      if (pmatch[i].rm_so != -1)
 	last = pmatch[i].rm_so;
       i++;
       // printf("pmatch[%d].rm_so = %d\n", i, pmatch[i].rm_so);
@@ -160,23 +160,23 @@ value regmatch_sus(regex_t* preg, int nmatch, regmatch_t pmatch[],
     /* Create the ML return value: SOME(vector of nmatch substrings) */
     {
       Push_roots(r, 2);
-      r[0] = base_susval(susval); 
+      r[0] = base_susval(susval);
       /* Allocate and initialize vector in ML heap */
-      r[1] = alloc_tuple(nmatch); 
-      for (i=0; i<nmatch; i++) 
+      r[1] = alloc_tuple(nmatch);
+      for (i=0; i<nmatch; i++)
 	modify(&Field(r[1], i), Atom(0));
       /* Fill in substrings in vector */
       for (i=0; i<nmatch; i++) {
 	/* Allocate a value of type substring = string * int * int */
 	value substr = alloc_tuple(3);
 	/* Component 0: the base string pointer = base(susval) */
-	modify(&Field(substr, 0), r[0]); 
+	modify(&Field(substr, 0), r[0]);
 	if (pmatch[i].rm_so != -1) { /* Substring took part in the match */
 	  /* Component 1: the substring start byte offset  */
-	  modify(&Field(substr, 1), 
+	  modify(&Field(substr, 1),
 		 Val_long(start_susval(susval) + pmatch[i].rm_so));
 	  /* Component 2: the substring length in bytes    */
-	  modify(&Field(substr, 2), 
+	  modify(&Field(substr, 2),
 		 Val_long(pmatch[i].rm_eo - pmatch[i].rm_so));
 	} else {		/* Substring did not take part in the match */
 	  /* Make an empty substring at the beginning of the base string */
@@ -189,7 +189,7 @@ value regmatch_sus(regex_t* preg, int nmatch, regmatch_t pmatch[],
 	modify(&Field(r[1], i), substr);
       }
       /* Return SOME(vec) */
-      res = alloc(1, SOMEtag); 
+      res = alloc(1, SOMEtag);
       modify(&Field(res, 0), r[1]);
       Pop_roots();
     }
@@ -219,7 +219,7 @@ value mregex_regexec_sus(value regex, value eflagsval, value susval) {
 
 /* ML type: regex -> word -> substring -> bool */
 
-value mregex_regexec_bool(value regex, value eflagsval, 
+value mregex_regexec_bool(value regex, value eflagsval,
 				   value susval) {
   regex_t* preg = regex_val(regex);
   int eflags = Long_val(eflagsval);
@@ -235,7 +235,7 @@ value mregex_regmatch_sus(value patval, value cflagsval, value eflagsval, value 
   char* pat = String_val(patval);
   int cflags = Long_val(cflagsval);
   int comperror = regcomp(&patbuf, pat, cflags);
-  if (comperror != 0) 
+  if (comperror != 0)
     failwith(regerrorstring(comperror, &patbuf));
   else {
     int nmatch = maxnmatch(patval);
@@ -259,7 +259,7 @@ value mregex_regmatch_bool(value patval, value cflagsval, value eflagsval, value
   char* pat = String_val(patval);
   int cflags = Long_val(cflagsval);
   int comperror = regcomp(&patbuf, pat, cflags);
-  if (comperror != 0) 
+  if (comperror != 0)
     failwith(regerrorstring(comperror, &patbuf));
   else {
     int eflags = Long_val(eflagsval);
@@ -283,8 +283,8 @@ value mregex_regmatch_bool(value patval, value cflagsval, value eflagsval, value
    not accommodating searches in substrings of long strings.  More
    fundamentally, C's notion of null-terminated string is lame: taking
    time O(n) to determine the length of a string is damn poor.
-   
-   sestoft@dina.kvl.dk 
+
+   sestoft@dina.kvl.dk
 */
 
 typedef char boolean;
@@ -295,10 +295,10 @@ typedef char boolean;
 int
 mosml_regexec (preg, string, len /* NEW */, nmatch, pmatch, eflags)
     const regex_t *preg;
-    const char *string; 
+    const char *string;
     int len;			/* NEW */
-    size_t nmatch; 
-    regmatch_t pmatch[]; 
+    size_t nmatch;
+    regmatch_t pmatch[];
     int eflags;
 {
   int ret;
@@ -307,15 +307,15 @@ mosml_regexec (preg, string, len /* NEW */, nmatch, pmatch, eflags)
   boolean want_reg_info = !preg->no_sub && nmatch > 0;
 
   private_preg = *preg;
-  
+
   private_preg.not_bol = !!(eflags & REG_NOTBOL);
   private_preg.not_eol = !!(eflags & REG_NOTEOL);
-  
+
   /* The user has told us exactly how many registers to return
      information about, via `nmatch'.  We have to pass that on to the
      matching routines.  */
   private_preg.regs_allocated = REGS_FIXED;
-  
+
   if (want_reg_info)
     {
       regs.num_regs = nmatch;
@@ -329,7 +329,7 @@ mosml_regexec (preg, string, len /* NEW */, nmatch, pmatch, eflags)
   ret = re_search (&private_preg, string, len,
                    /* start: */ 0, /* range: */ len,
                    want_reg_info ? &regs : (struct re_registers *) 0);
-  
+
   /* Copy the register information to the POSIX structure.  */
   if (want_reg_info)
     {

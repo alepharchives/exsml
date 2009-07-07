@@ -22,7 +22,7 @@ structure Queue:
                               [] => raise Fail "deque"
                             | x :: l => (back := []; front := l; SOME x)
                            end)
-          | x :: l => (front := l; SOME x) 
+          | x :: l => (front := l; SOME x)
    end
 
 structure Thread:
@@ -41,7 +41,7 @@ structure Thread:
       local
          val threads: Thread.Runnable.t Queue.t = Queue.new()
       in
-         fun ready (t: Thread.Runnable.t) : unit = 
+         fun ready (t: Thread.Runnable.t) : unit =
             Queue.enque(threads, t)
          fun next () : Thread.Runnable.t =
             case Queue.deque threads of

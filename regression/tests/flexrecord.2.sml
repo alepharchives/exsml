@@ -16,9 +16,9 @@ fun ZZZ_fixTooBig (array, record) =
    let
       val left = array (S Z)
       val right = array (S (S Z))
-      val small = 
-         case ZZZ_f (left, right) of 
-            TRUE => left 
+      val small =
+         case ZZZ_f (left, right) of
+            TRUE => left
           | FALSE => right
    in
       case ZZZ_f (record, small) of

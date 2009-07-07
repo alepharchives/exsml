@@ -1,5 +1,5 @@
-/* File mosml/src/dynlibs/mgd/mgd.c -- interface to Thomas Boutell's 
-   gd graphics package.  
+/* File mosml/src/dynlibs/mgd/mgd.c -- interface to Thomas Boutell's
+   gd graphics package.
    sestoft@dina.kvl.dk 1998-05-07 for gd 1.3, 2000-02-04 for gd 1.7.3
  */
 
@@ -18,22 +18,22 @@
 #include <alloc.h>		/* For alloc_tuple, ...      */
 #include <mlvalues.h>		/* For Val_unit, Long_val, String_val, ... */
 
-/* Representation of images.  
+/* Representation of images.
 
-   An image should be a finalized object: a pair, 
+   An image should be a finalized object: a pair,
 
               header with Final_tag
 	      0: finalization function image_destroy
 	      1: a gdImagePtr pointer to C data outside the ML heap
 
    The finalization function should apply gdImageDestroy to the second
-   component of the pair: 
+   component of the pair:
 */
 
 #define Image_val(x) (gdImagePtr)(Field(x, 1))
- 
+
 void image_destroy(value obj)
-{ 
+{
   gdImagePtr im = Image_val(obj);
   gdImageDestroy(im);
 }
@@ -42,14 +42,14 @@ void image_destroy(value obj)
    garbage-collected, and image_destroy will be called on the
    gdImagePtr to destroy the image, thus freeing the C memory occupied
    by it.  The camlrunm gc then frees the finalized pair representing
-   the image. 
+   the image.
 */
 
 value finalize_image(gdImagePtr imgptr)
-{ 
+{
   int w = gdImageSX(imgptr);
   int h = gdImageSY(imgptr);
-  /* Wrap a finalizer around the image data structure.  
+  /* Wrap a finalizer around the image data structure.
 
      Also, adjust the speed of the garbage collector so that at most
      10 MB unreachable images are lying around.  In practice this
@@ -57,7 +57,7 @@ value finalize_image(gdImagePtr imgptr)
      (lists, arrays, ...) in the ML heap: */
   value res = alloc_final(2, &image_destroy, w * h, 10000000);
   Field(res, 1) = (long)imgptr;
-  
+
   return res;
 }
 
@@ -113,7 +113,7 @@ value mgd_topng(value im, value filename)
 
 value mgd_tostdoutpng(value im)
 {
-  fprintf(stdout, "Content-type: image/png\n\n");   
+  fprintf(stdout, "Content-type: image/png\n\n");
   gdImagePng(Image_val(im), stdout);
 #ifdef WIN32
   fflush(stdout);
@@ -202,7 +202,7 @@ value mgd_gettiled(value v)
 value mgd_setstyle(value im, value stylevec)
 {
   int len = Wosize_val(stylevec);
-  int *styles = (int*)malloc(sizeof(int) * len); 
+  int *styles = (int*)malloc(sizeof(int) * len);
   int i;
   for (i=0; i<len; i++)
     styles[i] = Long_val(Field(stylevec, i));
@@ -412,7 +412,7 @@ value mgd_char(value im, value fontcode, value xy, value ch, value color)
 
 /* SML type: image -> fontcode -> xy -> char -> color -> unit */
 
-value mgd_charup(value im, value fontcode, value xy, value ch, 
+value mgd_charup(value im, value fontcode, value xy, value ch,
 		 value color)
 {
   int x = Long_val(Field(xy, 0));
@@ -424,7 +424,7 @@ value mgd_charup(value im, value fontcode, value xy, value ch,
 
 /* SML type: image -> fontcode -> xy -> string -> color -> unit */
 
-value mgd_string(value im, value fontcode, value xy, value str, 
+value mgd_string(value im, value fontcode, value xy, value str,
 		 value color)
 {
   int x = Long_val(Field(xy, 0));
@@ -436,7 +436,7 @@ value mgd_string(value im, value fontcode, value xy, value str,
 
 /* SML type: image -> fontcode -> xy -> string -> color -> unit */
 
-value mgd_stringup(value im, value fontcode, value xy, value str, 
+value mgd_stringup(value im, value fontcode, value xy, value str,
 		   value color)
 {
   int x = Long_val(Field(xy, 0));

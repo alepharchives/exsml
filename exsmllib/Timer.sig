@@ -16,7 +16,7 @@ val startRealTimer : unit -> real_timer
 val totalRealTimer : unit -> real_timer
 val checkRealTimer : real_timer -> Time.time
 
-(* 
+(*
    [cpu_timer] is the type of timers for measuring CPU time consumption
    (user time, garbage collection time, and system time).
 
@@ -26,7 +26,7 @@ val checkRealTimer : real_timer -> Time.time
    [startCPUTimer ()] returns a cpu_timer started at the moment of
    the call.
 
-   [totalCPUTimer ()] returns a cpu_timer started at the moment the 
+   [totalCPUTimer ()] returns a cpu_timer started at the moment the
    library was loaded.
 
    [checkCPUTimer tmr] returns {usr, sys} where usr is the amount of
@@ -48,10 +48,10 @@ val checkRealTimer : real_timer -> Time.time
    all the system CPU time to the program (nongc).  That is,
    #sys(#gc(checkCPUTimes tmr)) is always 0.
 
-   [startRealTimer ()] returns a real_timer started at the moment of 
+   [startRealTimer ()] returns a real_timer started at the moment of
    the call.
 
-   [totalRealTimer ()] returns a real_timer started at the moment the 
+   [totalRealTimer ()] returns a real_timer started at the moment the
    library was loaded.
 
    [checkRealTimer tmr] returns the amount of real time that has passed

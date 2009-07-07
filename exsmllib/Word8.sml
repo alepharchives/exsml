@@ -43,7 +43,7 @@ in
 		     else		       (* msbit = 1 *)
 			 toLarge (orb_ w (fromInt_ ~256))
     fun fromLarge w = norm(largeWordToWord_ w);
-    
+
     val toLargeWordX = toLargeX
     val fromLargeWord = fromLarge
 

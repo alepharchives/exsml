@@ -1,4 +1,4 @@
-(* Timer -- new basis 1995-03-20, 1995-09-14, 1995-11-06, 1997-03-07 
+(* Timer -- new basis 1995-03-20, 1995-09-14, 1995-11-06, 1997-03-07
        kfl: 2003-05-26, 2008-05-05
 *)
 
@@ -21,11 +21,11 @@ in
 	    gc  = fromSeconds gcSec  + fromMicroseconds gcUsec}
 	end
 
-    fun checkCPUTimes {usr, sys, gc} = 
-	let val {gcSec, gcUsec, sysSec, sysUsec, usrSec, usrUsec} 
+    fun checkCPUTimes {usr, sys, gc} =
+	let val {gcSec, gcUsec, sysSec, sysUsec, usrSec, usrUsec}
 	        = getrutime_ ()
             val gcUsr = fromSeconds gcSec  + fromMicroseconds gcUsec - gc
-	in {nongc = {usr = fromSeconds usrSec + fromMicroseconds usrUsec 
+	in {nongc = {usr = fromSeconds usrSec + fromMicroseconds usrUsec
                            - usr - gcUsr,
 	             sys = fromSeconds sysSec + fromMicroseconds sysUsec - sys}
            ,gc = {usr = gcUsr,
@@ -33,13 +33,13 @@ in
            }
 	end
 
-    fun checkCPUTimer {usr, sys, gc} = 
-        let val {gcSec, gcUsec, sysSec, sysUsec, usrSec, usrUsec} 
+    fun checkCPUTimer {usr, sys, gc} =
+        let val {gcSec, gcUsec, sysSec, sysUsec, usrSec, usrUsec}
 	        = getrutime_ ()
 	in {usr = fromSeconds usrSec + fromMicroseconds usrUsec - usr,
 	    sys = fromSeconds sysSec + fromMicroseconds sysUsec - sys}
 	end
-	  
+
     fun checkGCTime timer = #usr(#gc(checkCPUTimes timer))
 
     fun startRealTimer () = now ();

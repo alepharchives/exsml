@@ -13,5 +13,5 @@ val _ = withtable ("monthnames", READER)
 
 val _ = print "\nNow try e.g.   lookup \"July\";\n\n";
 
-fun lookup mn = 
+fun lookup mn =
     withtable ("monthnames", READER) (fn db => peek db mn);

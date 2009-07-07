@@ -30,7 +30,7 @@ val foldri   : (int * elem * 'b -> 'b) -> 'b -> vector -> 'b
 
 val collate  : (elem * elem -> order) -> vector * vector -> order
 
-(* 
+(*
    [vector] is the type of one-dimensional, immutable, zero-based
    constant-time-access vectors with elements of type Word8.word, that
    is, 8-bit words.  Type vector admits equality, and vectors v1 and

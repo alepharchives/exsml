@@ -35,7 +35,7 @@ val modifyi  : (int * elem -> elem) -> array -> unit
 
 val collate  : (elem * elem -> order) -> array * array -> order
 
-(* 
+(*
    [array] is the type of one-dimensional, mutable, zero-based
    constant-time-access arrays with elements of type Word8.word, that
    is, 8-bit words.  Arrays a1 and a2 are equal if both were created

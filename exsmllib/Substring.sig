@@ -49,7 +49,7 @@ val app       : (char -> unit) -> substring -> unit
    representation of a piece of a string.
    A substring (s,i,n) is valid if 0 <= i <= i+n <= size s,
                   or equivalently, 0 <= i and 0 <= n and i+n <= size s.
-   A valid substring (s, i, n) represents the string s[i...i+n-1].  
+   A valid substring (s, i, n) represents the string s[i...i+n-1].
    Invariant in the implementation: Any value of type substring is valid.
 
    A substring is the same as a CharVectorSlice.slice, so substrings
@@ -104,7 +104,7 @@ val app       : (char -> unit) -> substring -> unit
    sus = (s, i, n).  Raises Subscript if i' < 0 or n' < 0 or i'+n' > n.
 
    [concat suss] returns a string consisting of the concatenation of
-   the substrings.  Equivalent to String.concat (List.map string suss).  
+   the substrings.  Equivalent to String.concat (List.map string suss).
    [explode sus] returns the list of characters of sus, that is,
         [s(i), s(i+1), ..., s(i+n-1)]
    where sus = (s, i, n).  Equivalent to String.explode(string ss).

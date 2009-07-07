@@ -157,14 +157,14 @@ fun charCodeOfDecimal lexbuf i =
 
 
 fun charCodeOfHexadecimal lexbuf i =
-    let fun hexval c = 
+    let fun hexval c =
 	    if #"0" <= c andalso c <= #"9" then Char.ord c - 48
 	    else (Char.ord c - 55) mod 32;
-    in 
+    in
        4096 * hexval(getLexemeChar lexbuf (i+1)) +
         256 * hexval(getLexemeChar lexbuf (i+2)) +
          16 * hexval(getLexemeChar lexbuf (i+3)) +
-              hexval(getLexemeChar lexbuf (i+4)) 
+              hexval(getLexemeChar lexbuf (i+4))
     end
 
 fun lexError msg lexbuf =
@@ -375,7 +375,7 @@ and String = parse
           store_string_char(Char.chr code);
           String lexbuf
         end }
-  | "\\u" [`0`-`9``a`-`f``A`-`F`] [`0`-`9``a`-`f``A`-`F`] 
+  | "\\u" [`0`-`9``a`-`f``A`-`F`] [`0`-`9``a`-`f``A`-`F`]
           [`0`-`9``a`-`f``A`-`F`] [`0`-`9``a`-`f``A`-`F`]
       { let val code = charCodeOfHexadecimal lexbuf 1 in
           if code >= 256 then
@@ -458,7 +458,7 @@ and AntiQuotation = parse
         notTerminated "antiquotation" lexbuf
       }
   | _
-      { 
+      {
         skipString "ill-formed antiquotation" SkipQuotation lexbuf
       }
 ;

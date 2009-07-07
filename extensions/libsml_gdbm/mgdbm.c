@@ -18,8 +18,8 @@
 
 /* Interface to GNU DBM; see also Gdbm.{sig,sml}
 
-   The type Gdbm.database_ of gdbm databases is an abstract block 
-   whose only field is a GDBM_FILE (a pointer) as defined in <gdbm.h>.  
+   The type Gdbm.database_ of gdbm databases is an abstract block
+   whose only field is a GDBM_FILE (a pointer) as defined in <gdbm.h>.
 
    The strings returned by calls to gdbm_fetch, gdbm_firstkey and
    gdbm_nextkey are kept in memory malloc'ed by gdbm.  This memory
@@ -55,7 +55,7 @@ value string_datum(datum val)
   bcopy(val.dptr, String_val(str), val.dsize);
   free(val.dptr);
   return str;
-} 
+}
 
 #define Gdbm_val(x) (GDBM_FILE)(Field(x, 0))
 
@@ -73,7 +73,7 @@ value mgdbm_open(value nam, value flags, value perm) /* ML */
   GDBM_FILE dbf;
   value res;
   /* Block size = 0 means default file system block size: */
-  dbf = gdbm_open(String_val(nam), 0, Long_val(flags), Long_val(perm), 
+  dbf = gdbm_open(String_val(nam), 0, Long_val(flags), Long_val(perm),
 		  &mgdbm_fatal);
   if (!dbf)
     failwith("gdbm_open");
@@ -90,7 +90,7 @@ value mgdbm_close(value db)	/* ML */
 
 value mgdbm_store(value db, value k, value v, value flag) /* ML */
 {
-  return Val_long(gdbm_store(Gdbm_val(db), datum_string(k), 
+  return Val_long(gdbm_store(Gdbm_val(db), datum_string(k),
 			     datum_string(v), Long_val(flag)));
 }
 

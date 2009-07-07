@@ -2,7 +2,7 @@
 
 (* The initial implementation was financed by the PROSPER project. *)
 
-(* Beautification and documentation by sestoft@dina.kvl.dk 
+(* Beautification and documentation by sestoft@dina.kvl.dk
    1999-02-01, 2000-05-16, 2000-10-24 *)
 
 structure Socket :> Socket =
@@ -92,7 +92,7 @@ struct
 
 	prim_val vector_ : int -> Word8Vector.vector = 1 "create_string"
 
-	fun extract vec len = 
+	fun extract vec len =
 	    Word8VectorSlice.vector(Word8VectorSlice.slice(vec, 0, SOME len))
     in
 	fun getinetaddr (ADDR a : pf_inet sock_addr) = getinetaddr_ a
@@ -268,11 +268,11 @@ struct
         prim_val fromtime : Time.time -> real = 1 "identity"
 
  	fun select { rds, wrs, exs, timeout } =
- 	    let val (tsec, tusec) = 
+ 	    let val (tsec, tusec) =
  		    case timeout of
  			NONE   => (~1,0)
-		      | SOME t => 
-			    let val r    = fromtime t 
+		      | SOME t =>
+			    let val r    = fromtime t
 				val sec  = trunc(r/1000000.0)
 				val usec = trunc(r - 1000000.0 * real sec)
 			    in (sec, usec) end

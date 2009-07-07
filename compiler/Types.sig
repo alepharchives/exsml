@@ -189,25 +189,25 @@ val checkClosedExEnvironment : ExEnvironment -> unit;
 
 val copySig : (TyName * TyApp) list -> (TypeVar * Type) list -> Sig -> Sig;
 val copyMod : (TyName * TyApp) list -> (TypeVar * Type) list -> Mod -> Mod;
-val copyRecStr : (TyName * TyApp) list -> (TypeVar * Type) list -> RecStr -> RecStr; 
-val copyStr : (TyName * TyApp) list -> (TypeVar * Type) list -> Str -> Str; 
-val copyGenFun : (TyName * TyApp) list -> (TypeVar * Type) list -> GenFun -> GenFun; 
-val copyTypeScheme : (TyName * TyApp) list -> (TypeVar * Type) list 
+val copyRecStr : (TyName * TyApp) list -> (TypeVar * Type) list -> RecStr -> RecStr;
+val copyStr : (TyName * TyApp) list -> (TypeVar * Type) list -> Str -> Str;
+val copyGenFun : (TyName * TyApp) list -> (TypeVar * Type) list -> GenFun -> GenFun;
+val copyTypeScheme : (TyName * TyApp) list -> (TypeVar * Type) list
                      -> TypeScheme -> TypeScheme
 val parameteriseTyNameSet: TyNameSet -> TyNameSet -> (TyNameSet * (TyName * TyApp) list);
 
 val conEnvOfTyApp: TyApp -> ConEnv option;
 (* destructively change the kind and update the binding level of type names
 *)
-val refreshTyName: TnSort -> TyName ->  unit; 
+val refreshTyName: TnSort -> TyName ->  unit;
 val refreshTyNameSet: TnSort -> TyNameSet  -> unit;
 
 (* lower the level of free unification vars in obj to the current-binding level, returning obj *)
 val refreshExEnv: ExEnvironment -> ExEnvironment;
 
 val realizeLongTyCon : QualifiedIdent -> TyStr ->  TyStr -> unit;
-val matchMod : Mod -> Mod -> unit; 
-val matchCSig : CSig -> CSig -> unit; 
+val matchMod : Mod -> Mod -> unit;
+val matchCSig : CSig -> CSig -> unit;
 val errMatchReason : string -> string -> matchReason -> unit;
 val checkCSig : CSig -> CSig -> unit;
 
@@ -222,7 +222,7 @@ val lookupVEofStr : Str -> string -> (int*(TypeScheme * ConStatusDesc) global);
 
 val lookupMEofEnv : Environment -> string -> (int * (RecStr global))
 val lookupFEofEnv : Environment -> string -> (int * (GenFun global))
-val lookupVEofEnv : Environment -> string -> (int*  (TypeScheme * 
+val lookupVEofEnv : Environment -> string -> (int*  (TypeScheme *
 						     ConStatusDesc) global);
 
 

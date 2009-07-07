@@ -160,7 +160,7 @@ fun main () =
     load_path := !load_path @ [!path_library]
   else ();
   initPervasiveEnvironments();
-  resetTypes(); 
+  resetTypes();
   Miscsys.catch_interrupt true;
   if null (!initialFiles) then show_version() else ();
   app compileFile (!initialFiles);

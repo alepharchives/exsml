@@ -49,7 +49,7 @@ signature S1 =
 
 signature S2 =
    sig
-      datatype u = U 
+      datatype u = U
       structure S: S1 where type t = u
    end;
 

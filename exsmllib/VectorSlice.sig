@@ -30,10 +30,10 @@ val foldri   : (int * 'a * 'b -> 'b) -> 'b -> 'a slice -> 'b
 
 val collate  : ('a * 'a -> order) -> 'a slice * 'a slice -> order
 
-(* 
-   ['ty slice] is the type of vector slices, that is, sub-vectors.  
-   The slice (a,i,n) is valid if 0 <= i <= i+n <= size s, 
-                or equivalently, 0 <= i and 0 <= n and i+n <= size s.  
+(*
+   ['ty slice] is the type of vector slices, that is, sub-vectors.
+   The slice (a,i,n) is valid if 0 <= i <= i+n <= size s,
+                or equivalently, 0 <= i and 0 <= n and i+n <= size s.
    A valid slice sli = (a,i,n) represents the sub-vector a[i...i+n-1],
    so the elements of sli are a[i], a[i+1], ..., a[i+n-1], and n is
    the length of the slice.  Only valid slices can be constructed by
@@ -45,22 +45,22 @@ val collate  : ('a * 'a -> order) -> 'a slice * 'a slice -> order
    a(i+k) where sli = (a,i,n).  Raises Subscript if k<0 or k>=n.
 
    [slice (a, i, NONE)] creates the slice (a, i, length a-i),
-   consisting of the tail of a starting at i.  
-   Raises Subscript if i<0 or i > Vector.length a.  
+   consisting of the tail of a starting at i.
+   Raises Subscript if i<0 or i > Vector.length a.
    Equivalent to slice (a, i, SOME(Vector.length a - i)).
 
    [slice (a, i, SOME n)] creates the slice (a, i, n), consisting of
    the sub-vector of a with length n starting at i.  Raises Subscript
-   if i<0 or n<0 or i+n > Vector.length a.  
+   if i<0 or n<0 or i+n > Vector.length a.
 
-       slice             meaning 
+       slice             meaning
        -----------------------------------------------------------
-       (a, 0, NONE)      the whole vector              a[0..len-1]   
+       (a, 0, NONE)      the whole vector              a[0..len-1]
        (a, 0, SOME n)    a left sub-vector (prefix)    a[0..n-1]
        (a, i, NONE)      a right sub-vector (suffix)   a[i..len-1]
-       (a, i, SOME n)    a general slice               a[i..i+n-1] 
+       (a, i, SOME n)    a general slice               a[i..i+n-1]
 
-   [full a] creates the slice (a, 0, Vector.length a).  
+   [full a] creates the slice (a, 0, Vector.length a).
    Equivalent to slice(a,0,NONE)
 
    [subslice (sli, i', NONE)] returns the slice (a, i+i', n-i') when
@@ -82,7 +82,7 @@ val collate  : ('a * 'a -> order) -> 'a slice * 'a slice -> order
 
    [getItem sli] returns SOME(x, rst) where x is the first element and
    rst the remainder of sli, if sli is non-empty; otherwise returns
-   NONE.  
+   NONE.
 
    [find p sli] applies p to each element x of sli, from left to
    right, until p(x) evaluates to true; returns SOME x if such an x
@@ -102,10 +102,10 @@ val collate  : ('a * 'a -> order) -> 'a slice * 'a slice -> order
    [map f sli] applies f to all elements of sli = (a,i,n), from left
    to right, and returns a vector of the results.
 
-   [foldl f e sli] folds function f over sli = (a,i,n) from left to right.  
+   [foldl f e sli] folds function f over sli = (a,i,n) from left to right.
    That is, computes f(a[i+n-1], f(a[i+n-2],..., f(a[i+1], f(a[i], e))...)).
 
-   [foldr f e sli] folds function f over sli = (a,i,n) from right to left.  
+   [foldr f e sli] folds function f over sli = (a,i,n) from right to left.
    That is, computes f(a[i], f(a[i+1],..., f(a[i+n-2], f(a[i+n-1], e))...)).
 
    The following iterators generalize the above ones by also passing
@@ -128,13 +128,13 @@ val collate  : ('a * 'a -> order) -> 'a slice * 'a slice -> order
    j=i,i+1,...,i+n-1, and returns #[f(i,a[i]), ..., f(i+n-1,a[i+n-1])].
 
    [foldli f e sli] folds function f over the slice sli = (a,i,n) and
-   the underlying vector indices from left to right.  That is, computes 
-   f(i+n-1, a[i+n-1], f(..., f(i+1, a[i+1], f(i, a[i], e)) ...)).  
+   the underlying vector indices from left to right.  That is, computes
+   f(i+n-1, a[i+n-1], f(..., f(i+1, a[i+1], f(i, a[i], e)) ...)).
 
    [foldri f e sli] folds function f over the slice sli = (a,i,n) and
    the underlying vector indices from right to left.  That is, computes
    f(i, a[i], f(i+1, a[i+1], ..., f(i+n-1, a[i+n-1], e) ...)).
-  
+
    [collate cmp (sli1, sli2)] returns LESS, EQUAL or GREATER according
    as sli1 precedes, equals or follows sli2 in the lexicographic
    ordering on slices induced by the ordering cmp on elements.

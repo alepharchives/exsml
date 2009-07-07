@@ -5,7 +5,7 @@
 app load ["Gdimage", "Graphs"];
 
 
-val _ = let 
+val _ = let
 
 open Gdimage
 
@@ -18,19 +18,19 @@ val triangle1 = #[(10, 100), (30, 100), (20, 110)];
 
 val triangle2 = #[(10, 120), (30, 120), (20, 110)];
 
-fun drawCircle im mo center radius = 
-    drawArc im mo { c = center, wh = (2*radius, 2*radius), 
+fun drawCircle im mo center radius =
+    drawArc im mo { c = center, wh = (2*radius, 2*radius),
 		   from = 0, to = 360 };
 
-fun fillCircle im color center radius = 
+fun fillCircle im color center radius =
     (drawCircle im (Color color) center radius;
      fillBorder im (Color color) center color);
 
-val redwhitedash = 
+val redwhitedash =
     Vector.map ColorS #[red, red, red, white, white, white];
 
-val usualdash = 
-    #[TransparentS, TransparentS, TransparentS, 
+val usualdash =
+    #[TransparentS, TransparentS, TransparentS,
       ColorS white, ColorS white, ColorS white];
 
 val crayon = image (2, 6) (0, 200, 200);
@@ -41,7 +41,7 @@ val _ = fillRect tile (Color (color tile (255, 0, 0))) ((0, 0), (3, 3));
 val _ = fillRect tile (Color (color tile (255, 255, 255))) ((4, 4), (7, 7));
 
 
-in 
+in
 drawLine im (Color white) ((10, 0), (40, 50));
 
 drawRect im (Color aqua) ((40, 50), (100, 150));
@@ -91,26 +91,26 @@ toPng im "try.png"
 
 end;
 
-val _ = let 
+val _ = let
 
-fun dice n = 
+fun dice n =
     let val gen = Random.newgen()
 	val freq = Array.array(6, 0)
 	fun loop 0 = ()
 	  | loop i = let val x = Random.range (0, 6) gen;
-		     in 
+		     in
 			 Array.update(freq, x, Array.sub(freq, x) + 1);
 			 loop (i-1)
 		     end
-    in 
+    in
 	loop n;
 	List.map real (Array.foldr op:: [] freq)
     end
 
-fun graphs () = 
+fun graphs () =
     let val gen = Random.newgen ()
 	val n   = Random.range (20, 30) gen
-	fun mkseries trend = 
+	fun mkseries trend =
 	    List.tabulate(n, fn i => trend i * (1.0 - 0.3 * Random.random gen))
 	fun trend1 i = real i / 2.0 + 2.0;
 	fun trend2 i = real (n-i) / 3.0 + 2.0;
@@ -121,16 +121,16 @@ fun graphs () =
 	val data = map mkseries trendlist
 
 	val tekster = ["Praise", "Annoyances", "Salary", "Boredom"]
-    in 
+    in
 	Gdimage.toPng (Graphs.accugraph (550, 220) data tekster) "graph.png"
     end
 
 in
-    Gdimage.toPng (Graphs.histogram (500, 100) 
-	                   (Random.rangelist (0, 100) (100, Random.newgen()))) 
+    Gdimage.toPng (Graphs.histogram (500, 100)
+	                   (Random.rangelist (0, 100) (100, Random.newgen())))
     "hist.png";
 
-    Gdimage.toPng (Graphs.piechart (500, 300) (dice 100) 
+    Gdimage.toPng (Graphs.piechart (500, 300) (dice 100)
 	   ["One", "Two", "Three", "Four", "Five", "Six"])
     "pie.png";
 

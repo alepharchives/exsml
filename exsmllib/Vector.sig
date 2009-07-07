@@ -23,9 +23,9 @@ val exists   : ('a -> bool) -> 'a vector -> bool
 val all      : ('a -> bool) -> 'a vector -> bool
 val collate  : ('a * 'a -> order) -> 'a vector * 'a vector -> order
 
-(* 
+(*
    ['ty vector] is the type of one-dimensional, immutable, zero-based
-   constant-time-access vectors with elements of type 'ty.  
+   constant-time-access vectors with elements of type 'ty.
    Type 'ty vector admits equality if 'ty does.  Vectors v1 and v2 are
    equal if they have the same length and their elements are equal.
 
@@ -80,15 +80,15 @@ val collate  : ('a * 'a -> order) -> 'a vector * 'a vector -> order
    The following iterators generalize the above ones by passing also
    the vector element index j to the function being iterated.
 
-   [findi p a] applies f to successive pairs (j, a[j]) for j=0,1,...,n-1, 
+   [findi p a] applies f to successive pairs (j, a[j]) for j=0,1,...,n-1,
    until p(j, a[j]) evaluates to true; returns SOME (j, a[j]) if such
    a pair exists, otherwise NONE.
 
    [foldli f e v] folds function f over the vector from left to right.
-   That is, computes f(n-1, v[n-1], f(..., f(1, v[1], f(0, v[0], e)) ...))  
+   That is, computes f(n-1, v[n-1], f(..., f(1, v[1], f(0, v[0], e)) ...))
    where n = length v.
 
-   [foldri f e v] folds function f over the vector from right to left.  
+   [foldri f e v] folds function f over the vector from right to left.
    That is, computes f(0, v[0], f(1, v[1], ..., f(n-1, v[n-1], e) ...))
    where n = length v.
 
@@ -97,7 +97,7 @@ val collate  : ('a * 'a -> order) -> 'a vector * 'a vector -> order
 
    [mapi f v] applies f to successive pairs (j, v[j]) for
    j=0,1,...,n-1 where n = length v and returns a new vector
-   containing the results.  
+   containing the results.
 
    [collate cmp (xs, ys)] returns LESS, EQUAL or GREATER according as
    xs precedes, equals or follows ys in the lexicographic ordering on
