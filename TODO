@@ -19,8 +19,6 @@ o [jlouis] Change the buildsystem to use -toplevel builds all the way through.
 
 * Put Filename.sml into the standard library
 
-o [jlouis] Clean up Filename.sml
-
 o [jlouis] 2003 Basis implementation:
 
    These things still needs to be done. Done in this case means that
