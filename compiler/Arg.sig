@@ -28,11 +28,8 @@ datatype spec =
   | Int     of (int -> unit)
   | Unit    of (unit -> unit)
   | Real    of (real -> unit)
-;
 
-(*
-    The concrete type describing the behavior associated with a keyword.
-*)
+(* The concrete type describing the behavior associated with a keyword. *)
 
 val parse : (string * spec) list -> (string -> unit) -> unit;
 (*
