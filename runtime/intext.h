@@ -18,7 +18,7 @@
 #define First_valid_magic_number Base_magic_number
 #define Last_valid_magic_number (Base_magic_number + 4)
 
-#ifdef SIXTYFOUR
+#if (SIZEOF_LONG_P == 8)
 # ifdef WORDS_BIGENDIAN
 #  define Extern_magic_number Big_endian_64_magic_number
 # else
@@ -73,7 +73,7 @@ extern size_t extern_table_size, extern_table_used;
 extern byteoffset_t * extern_block;
 extern size_t extern_size, extern_pos;
 
-#ifdef SIXTYFOUR
+#if (SIZEOF_LONG_P == 8)
 #define Hash(v) (((size_t) ((v) >> 3)) % extern_table_size)
 #else
 #define Hash(v) (((size_t) ((v) >> 2)) % extern_table_size)

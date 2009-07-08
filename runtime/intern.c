@@ -2,7 +2,6 @@
 
 #include <string.h>
 #include <assert.h>
-
 #include "debugger.h"
 #include "fail.h"
 #include "gc.h"
@@ -12,52 +11,46 @@
 #include "mlvalues.h"
 #include "reverse.h"
 
-typedef struct value64_struct value64;
-
-void rev_pointers(value *, mlsize_t);
-int rev_pointers_64(value64 *, mlsize_t);
-
 /* Transform offsets relative to the beginning of the block
    back into pointers. */
 
 void adjust_pointers(value * start, mlsize_t size, color_t color)
 {
-	value * p, * q;
-	mlsize_t sz;
-	header_t hd;
-	tag_t tag;
-	value v;
-	mlsize_t bosize;
+  value * p, * q;
+  mlsize_t sz;
+  header_t hd;
+  tag_t tag;
+  value v;
+  mlsize_t bosize;
 
-	p = start;
-	q = p + size;
-	bosize = Bsize_wsize(size);
-	while (p < q) {
-		hd = *p;
-		sz = Wosize_hd(hd);
-		tag = Tag_hd(hd);
-		*p++ = Make_header(sz, tag, color);
-		if (tag >= No_scan_tag) {
-			p += sz;
-		} else {
-			for( ; sz > 0; sz--, p++) {
-				v = *p;
-				switch(v & 3) {
-				case 0:                 /* 0 -> A bloc represented by its offset. */
-					assert(v >= 0 && v <= bosize && (v & 3) == 0);
-					*p = (value) ((byteoffset_t) start + v);
-					break;
-				case 2:                 /* 2 -> An atom. */
-					v = v >> 2;
-					assert(v >= 0 && v < 256);
-					*p = Atom(v);
-					break;
-				default:                /* 1 or 3 -> An integer. */
-					break;
-				}
-			}
-		}
-	}
+  p = start;
+  q = p + size;
+  bosize = Bsize_wsize(size);
+  while (p < q) {
+    hd = *p;
+    sz = Wosize_hd(hd);
+    tag = Tag_hd(hd);
+    *p++ = Make_header(sz, tag, color);
+    if (tag >= No_scan_tag)
+      p += sz;
+    else
+      for( ; sz > 0; sz--, p++) {
+        v = *p;
+        switch(v & 3) {
+        case 0:                 /* 0 -> A bloc represented by its offset. */
+          assert(v >= 0 && v <= bosize && (v & 3) == 0);
+          *p = (value) ((byteoffset_t) start + v);
+          break;
+        case 2:                 /* 2 -> An atom. */
+          v = v >> 2;
+          assert(v >= 0 && v < 256);
+          *p = Atom(v);
+          break;
+        default:                /* 1 or 3 -> An integer. */
+          break;
+        }
+      }
+  }
 }
 
 /* Reverse all words in a block, in case of endianness clash.
@@ -65,49 +58,13 @@ void adjust_pointers(value * start, mlsize_t size, color_t color)
 
 void rev_pointers(value * p, mlsize_t size)
 {
-	value * q;
-	header_t hd;
-	mlsize_t n;
-
-	q = p + size;
-	while (p < q) {
-		Reverse_word(p);
-		hd = (header_t) *p++;
-		n = Wosize_hd(hd);
-		switch(Tag_hd(hd)) {
-		case String_tag:
-			p += n;
-			break;
-		case Double_tag:
-			Reverse_double(p);
-			p += n;
-			break;
-		default:
-			for( ; n > 0; n--, p++) {
-				Reverse_word(p);
-			}
-		}
-	}
-}
-
-#ifdef SIXTYFOUR
-
-/* Routines to convert 32-bit externed objects to 64-bit memory blocks. */
-
-typedef int32_t value32;
-
-/* Reverse all words in a block, in case of endianness clash.
-   Works with 32-bit words. */
-
-void rev_pointers_32(value32 * p, mlsize_t size)
-{
-  value32 * q;
+  value * q;
   header_t hd;
   mlsize_t n;
 
   q = p + size;
   while (p < q) {
-    Reverse_int32_t(p);
+    Reverse_word(p);
     hd = (header_t) *p++;
     n = Wosize_hd(hd);
     switch(Tag_hd(hd)) {
@@ -120,7 +77,43 @@ void rev_pointers_32(value32 * p, mlsize_t size)
       break;
     default:
       for( ; n > 0; n--, p++) {
-        Reverse_int32_t(p);
+        Reverse_word(p);
+      }
+    }
+  }
+}
+
+#if (SIZEOF_LONG_P == 8)
+
+/* Routines to convert 32-bit externed objects to 64-bit memory blocks. */
+
+typedef int32 value32;
+
+/* Reverse all words in a block, in case of endianness clash.
+   Works with 32-bit words. */
+
+void rev_pointers_32(value32 * p, mlsize_t size)
+{
+  value32 * q;
+  header_t hd;
+  mlsize_t n;
+
+  q = p + size;
+  while (p < q) {
+    Reverse_int32(p);
+    hd = (header_t) *p++;
+    n = Wosize_hd(hd);
+    switch(Tag_hd(hd)) {
+    case String_tag:
+      p += n;
+      break;
+    case Double_tag:
+      Reverse_double(p);
+      p += n;
+      break;
+    default:
+      for( ; n > 0; n--, p++) {
+        Reverse_int32(p);
       }
     }
   }
@@ -167,8 +160,8 @@ static void expand_block(value32 * source, value * dest, mlsize_t source_len, ml
   header_t hd;
   mlsize_t sz;
   tag_t tag;
-  uint32_t * forward_addr;
-  uint32_t dest_ofs;
+  uint32 * forward_addr;
+  uint32 dest_ofs;
   value v;
 
   /* First pass: copy the objects and set up forwarding pointers.
@@ -178,7 +171,7 @@ static void expand_block(value32 * source, value * dest, mlsize_t source_len, ml
     hd = (header_t) *p++;
     sz = Wosize_hd(hd);
     tag = Tag_hd(hd);
-    forward_addr = (uint32_t *) p;
+    forward_addr = (uint32 *) p;
     dest_ofs = d + 1 - dest;
     switch(tag) {
     case String_tag:
@@ -188,7 +181,7 @@ static void expand_block(value32 * source, value * dest, mlsize_t source_len, ml
         new_sz = (sz * sizeof(value32) + sizeof(value) - 1) / sizeof(value);
         *d++ = Make_header(new_sz, String_tag, color);
         Field(d, new_sz - 1) = 0;
-        memmove((char *)d, (char *)p, len);
+        bcopy((char *)p, (char *)d, len);
         ofs_last_byte = new_sz * sizeof(value) - 1;
         Byte(d, ofs_last_byte) = ofs_last_byte - len;
         p += sz;
@@ -209,9 +202,9 @@ static void expand_block(value32 * source, value * dest, mlsize_t source_len, ml
       *d++ = Make_header(sz, tag, color);
       for (/*nothing*/; sz > 0; sz--, p++, d++) {
         if ((*p & 1) == 0) {
-          *d = *((uint32_t *) p);         /* copy, zero expansion */
+          *d = *((uint32 *) p);         /* copy, zero expansion */
         } else {
-          *d = *((int32_t *) p);          /* copy, sign expansion */
+          *d = *((int32 *) p);          /* copy, sign expansion */
         }
       }
       break;
@@ -235,7 +228,7 @@ static void expand_block(value32 * source, value * dest, mlsize_t source_len, ml
         switch(v & 3) {
         case 0:                 /* 0: a block represented by its offset */
           assert(v >= 0 && v < source_len * sizeof(value32) && (v & 3) == 0);
-          *d = (value) (dest + *((uint32_t *)((char *) source + v)));
+          *d = (value) (dest + *((uint32 *)((char *) source + v)));
           break;
         case 2:                 /* 2: an atom */
           v = v >> 2;
@@ -250,7 +243,7 @@ static void expand_block(value32 * source, value * dest, mlsize_t source_len, ml
   }
 }
 
-#else /* !SIXTYFOUR */
+#else
 
 /* Routines to convert 64-bit externed objects to 32-bit memory blocks. */
 
@@ -261,12 +254,13 @@ struct value64_struct {
   value lsw, msw;
 #endif
 };
+typedef struct value64_struct value64;
 
 /* Reverse all words in a block, in case of endianness clash.
    Works with 64-bit words.
    Returns (-1) if a header too large is encountered, 0 otherwise. */
 
-int rev_pointers_64(value64 *p, mlsize_t size)
+int rev_pointers_64(value64 * p, mlsize_t size)
      /* size is the size in 64-bit words */
 {
   value64 * q;
@@ -304,35 +298,36 @@ int rev_pointers_64(value64 *p, mlsize_t size)
 static mlsize_t size_after_shrinkage(value64 * p, mlsize_t len)
      /* len is the length in 64-bit words */
 {
-	mlsize_t res;
-	value64 * q;
-	header_t hd;
-	mlsize_t n;
-	mlsize_t ofs_last_byte, len2, new_sz;
+  mlsize_t res;
+  value64 * q;
+  header_t hd;
+  mlsize_t n;
 
-	for (q = p + len, res = 0; p < q; /*nothing*/) {
-		hd = (header_t)(p->lsw);
-		if (p->msw != 0) return 0;
-		p++;
-		n = Wosize_hd(hd);
-		res++;
-		switch(Tag_hd(hd)) {
-		case String_tag:
-			ofs_last_byte = n * sizeof(value64) - 1;
-			len2 = ofs_last_byte - Byte(p, ofs_last_byte);
-			new_sz = (len2 + sizeof(value)) / sizeof(value);
-			res += new_sz;
-			break;
-		case Double_tag:
-			res += sizeof(double) / sizeof(value);
-			break;
-		default:
-			res += n;                 /* all fields will be shrunk 64 -> 32 */
-			break;
-		}
-		p += n;
-	}
-	return res;
+  for (q = p + len, res = 0; p < q; /*nothing*/) {
+    hd = (header_t)(p->lsw);
+    if (p->msw != 0) return 0;
+    p++;
+    n = Wosize_hd(hd);
+    res++;
+    switch(Tag_hd(hd)) {
+    case String_tag:
+      { mlsize_t ofs_last_byte, len, new_sz;
+        ofs_last_byte = n * sizeof(value64) - 1;
+        len = ofs_last_byte - Byte(p, ofs_last_byte);
+        new_sz = (len + sizeof(value)) / sizeof(value);
+        res += new_sz;
+        break;
+      }
+    case Double_tag:
+      res += sizeof(double) / sizeof(value);
+      break;
+    default:
+      res += n;                 /* all fields will be shrunk 64 -> 32 */
+      break;
+    }
+    p += n;
+  }
+  return res;
 }
 
 /* Convert a 64-bit externed block to a 32-bit block. The resulting block
@@ -340,8 +335,7 @@ static mlsize_t size_after_shrinkage(value64 * p, mlsize_t len)
    Return -1 if the block cannot be shrunk because some integer literals
    or relative displacements are too large, 0 otherwise. */
 
-static int shrink_block(value64 * source, value * dest,
-			mlsize_t source_len, mlsize_t dest_len, color_t color)
+static int shrink_block(value64 * source, value * dest, mlsize_t source_len, mlsize_t dest_len, color_t color)
 {
   value64 * p, * q;
   value * d, * e;
@@ -370,7 +364,7 @@ static int shrink_block(value64 * source, value * dest,
         new_sz = (len + sizeof(value)) / sizeof(value);
         *d++ = Make_header(new_sz, String_tag, color);
         Field(d, new_sz - 1) = 0;
-        memmove(d, p, len);
+        bcopy(p, d, len);
         ofs_last_byte = new_sz * sizeof(value) - 1;
         Byte(d, ofs_last_byte) = ofs_last_byte - len;
         p += sz;
@@ -431,7 +425,7 @@ static int shrink_block(value64 * source, value * dest,
   return 0;
 }
 
-#endif /* SIXTYFOUR */
+#endif
 
 #ifdef WORDS_BIGENDIAN
 #define Wrong_endian_32_magic_number Little_endian_32_magic_number
@@ -459,7 +453,7 @@ static value intern_fast_val(struct channel * chan, unsigned long magic)
   }
   bhsize = Bsize_wsize (whsize);
   wosize = Wosize_whsize (whsize);
-#ifdef SIXTYFOUR
+#if (SIZEOF_LONG_P == 8)
   if (magic == Little_endian_32_magic_number ||
       magic == Big_endian_32_magic_number) {
     /* Expansion 32 -> 64 required */
@@ -480,7 +474,7 @@ static value intern_fast_val(struct channel * chan, unsigned long magic)
     hd = Hd_val (res);
     color = Color_hd (hd);
     assert (color == White || color == Black);
-    expand_block(block, (value *)Hp_val(res), whsize32, whsize, color);
+    expand_block(block, Hp_val(res), whsize32, whsize, color);
     stat_free((char *) block);
   } else {
     /* Block has natural word size (64) */
@@ -496,7 +490,7 @@ static value intern_fast_val(struct channel * chan, unsigned long magic)
       rev_pointers((value*)(Hp_val (res)), whsize);
     adjust_pointers((value*)(Hp_val (res)), whsize, color);
   }
-#else /* !SIXTYFOUR */
+#else
   if (magic == Little_endian_64_magic_number ||
       magic == Big_endian_64_magic_number) {
     /* Shrinkage 64 -> 32 required */
@@ -535,9 +529,7 @@ static value intern_fast_val(struct channel * chan, unsigned long magic)
     stat_free((char *) block);
   } else {
     /* Block has natural word size (32) */
-#if 0
-    printf("wosize = %d\n", wosize);
-#endif
+    // printf("wosize = %d\n", wosize);
     if (wosize > Max_wosize) {
       failwith("intern: structure too big #2");
     }
@@ -553,14 +545,13 @@ static value intern_fast_val(struct channel * chan, unsigned long magic)
       rev_pointers((value*)(Hp_val (res)), whsize);
     adjust_pointers((value*)(Hp_val (res)), whsize, color);
   }
-#endif /* !SIXTYFOUR */
+#endif
   return res;
 }
 
 value intern_val(struct channel * chan)
 {
   unsigned long magic;
-
   magic = (uint32_t) getword(chan);
   if (magic < First_valid_magic_number || magic > Last_valid_magic_number)
     failwith("intern: bad object");
