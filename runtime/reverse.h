@@ -3,7 +3,7 @@
 #ifndef _reverse_
 #define _reverse_
 
-#include "mosml_config.h"
+#include "config.h"
 
 #define Reverse_short(s) {                                                    \
   char * _p;                                                                  \
@@ -14,7 +14,7 @@
   _p[1] = _a;                                                                 \
 }
 
-#define Reverse_int32_t(w) {                                                    \
+#define Reverse_int32_t(w) {                                                  \
   char * _p;                                                                  \
   int _a;                                                                     \
   _p = (char *) (w);                                                          \
@@ -26,7 +26,7 @@
   _p[2] = _a;                                                                 \
 }
 
-#define Reverse_int64(d) {                                                    \
+#define Reverse_int64_t(d) {                                                  \
   char * _p;                                                                  \
   int _a;                                                                     \
   _p = (char *) (d);                                                          \
@@ -44,6 +44,14 @@
   _p[4] = _a;                                                                 \
 }
 
-#define Reverse_double Reverse_int64
+#define Reverse_double Reverse_int64_t
+
+#if (SIZEOF_LONG_P == 8)
+#define Reverse_word Reverse_int64_t
+#elif (SIZEOF_LONG_P == 4)
+#define Reverse_word Reverse_int32_t
+#else
+#error "Unknown architecture size"
+#endif
 
 #endif /* _reverse_ */

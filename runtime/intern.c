@@ -11,6 +11,9 @@
 #include "mlvalues.h"
 #include "reverse.h"
 
+void adjust_pointers(value *, mlsize_t, color_t);
+void rev_pointers(value *, mlsize_t);
+
 /* Transform offsets relative to the beginning of the block
    back into pointers. */
 
@@ -87,7 +90,7 @@ void rev_pointers(value * p, mlsize_t size)
 
 /* Routines to convert 32-bit externed objects to 64-bit memory blocks. */
 
-typedef int32 value32;
+typedef int32_t value32;
 
 /* Reverse all words in a block, in case of endianness clash.
    Works with 32-bit words. */
@@ -100,7 +103,7 @@ void rev_pointers_32(value32 * p, mlsize_t size)
 
   q = p + size;
   while (p < q) {
-    Reverse_int32(p);
+    Reverse_int32_t(p);
     hd = (header_t) *p++;
     n = Wosize_hd(hd);
     switch(Tag_hd(hd)) {
@@ -113,7 +116,7 @@ void rev_pointers_32(value32 * p, mlsize_t size)
       break;
     default:
       for( ; n > 0; n--, p++) {
-        Reverse_int32(p);
+        Reverse_int32_t(p);
       }
     }
   }
@@ -160,8 +163,8 @@ static void expand_block(value32 * source, value * dest, mlsize_t source_len, ml
   header_t hd;
   mlsize_t sz;
   tag_t tag;
-  uint32 * forward_addr;
-  uint32 dest_ofs;
+  uint32_t * forward_addr;
+  uint32_t dest_ofs;
   value v;
 
   /* First pass: copy the objects and set up forwarding pointers.
@@ -171,7 +174,7 @@ static void expand_block(value32 * source, value * dest, mlsize_t source_len, ml
     hd = (header_t) *p++;
     sz = Wosize_hd(hd);
     tag = Tag_hd(hd);
-    forward_addr = (uint32 *) p;
+    forward_addr = (uint32_t *) p;
     dest_ofs = d + 1 - dest;
     switch(tag) {
     case String_tag:
@@ -202,9 +205,9 @@ static void expand_block(value32 * source, value * dest, mlsize_t source_len, ml
       *d++ = Make_header(sz, tag, color);
       for (/*nothing*/; sz > 0; sz--, p++, d++) {
         if ((*p & 1) == 0) {
-          *d = *((uint32 *) p);         /* copy, zero expansion */
+          *d = *((uint32_t *) p);         /* copy, zero expansion */
         } else {
-          *d = *((int32 *) p);          /* copy, sign expansion */
+          *d = *((int32_t *) p);          /* copy, sign expansion */
         }
       }
       break;
@@ -228,7 +231,7 @@ static void expand_block(value32 * source, value * dest, mlsize_t source_len, ml
         switch(v & 3) {
         case 0:                 /* 0: a block represented by its offset */
           assert(v >= 0 && v < source_len * sizeof(value32) && (v & 3) == 0);
-          *d = (value) (dest + *((uint32 *)((char *) source + v)));
+          *d = (value) (dest + *((uint32_t *)((char *) source + v)));
           break;
         case 2:                 /* 2: an atom */
           v = v >> 2;
