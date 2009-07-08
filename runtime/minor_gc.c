@@ -146,22 +146,5 @@ void realloc_ref_table (void)
 	} else {
 		/* This will never happen. */
 		assert(0);
-		size_t sz;
-		size_t cur_ptr = ref_table_ptr - ref_table;
-		assert (force_minor_flag);
-		assert (something_to_do);
-		ref_table_reserve += 1024;
-		sz = (ref_table_size + ref_table_reserve) * sizeof (value *);
-		gc_message ("Growing ref_table to %ldk\n", (long) sz / 1024);
-#ifdef MAX_MALLOC_SIZE
-		if (sz > MAX_MALLOC_SIZE) ref_table = NULL;
-		else
-#endif
-			ref_table = (value **) realloc ((char *) ref_table, sz);
-		if (ref_table == NULL) fatal_error ("Fatal error: ref_table overflow\n");
-		ref_table_end = ref_table + ref_table_size + ref_table_reserve;
-		ref_table_threshold = ref_table + ref_table_size;
-		ref_table_ptr = ref_table + cur_ptr;
-		ref_table_limit = ref_table_end;
 	}
 }
