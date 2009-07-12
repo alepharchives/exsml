@@ -16,6 +16,9 @@ o [jlouis] Change the buildsystem to use -toplevel builds all the way through.
    Many things w.r.t clean code depends on this being done.
 
 * Consider making -toplevel the default buildmode.
+   It will probably work, but the problem here is that we need to
+   update all the dependency information manually. I can accept that
+   though.
 
 * Put Filename.sml into the standard library
 
@@ -132,12 +135,6 @@ o [jlouis] Make some tests of the Array/ArraySlice 2003 basis
    fails because the 'last' reference gets bumped one time too many,
    and I do not know why. It also manifests itself in other places, so
    it would be clever to get this bug fixed.
-
-* Implement OS.Process.sleep
-   Easy task. Add a new primitive, convert the time to something the
-   backend can process and fire it down to the lower level. Since the
-   system is not threaded at all it is not that hard to get to succeed
-   at the moment.
 
 * Implement OS.errorName and OS.syserror
    Getting these right in a portable way is pretty nasty. So please,
