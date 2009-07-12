@@ -47,12 +47,13 @@ val fulllib = ["Architecture", "Option", "List", "ListPair",
 	       "Strbase", "Char", "String", "StringCvt", "TextIO",
 	       "BasicIO", "Vector", "Int", "Array", "VectorSlice",
 	       "ArraySlice", "Misc", "Substring", "Bool", "Real",
-	       "Math", "Word", "Word8", "Word8Vector", "Word8Array",
-	       "Word8VectorSlice", "Word8ArraySlice",
-	       "CharVectorSlice", "CharArraySlice",
-	       "Byte", "BinIO", "CharVector", "CharArray", "Time",
-	       "Timer", "Date", "Path", "FileSys", "Process", "OS",
-	       "Mosml", "PP", "CommandLine"]
+	       "Math", "Word",
+	       "Word8", "Word8Vector", "Word8VectorSlice", "Word8Array", "Word8ArraySlice",
+	       "Byte", "BinIO",
+	       "CharVector", "CharVectorSlice", "CharArray", "CharArraySlice",
+	       "Time", "Timer", "Date",
+	       "Path", "FileSys", "Process", "OS", "CommandLine",
+	       "Mosml", "PP"]
 
 val preloadedUnitSets = [
   ("default",  ["Architecture", "Option", "List", "Strbase", "Char", "String",
