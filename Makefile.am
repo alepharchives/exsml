@@ -10,6 +10,7 @@ runtop: all
 	$(top_builddir)/runtime/exsmlrunm \
 	$(top_builddir)/compiler/mosmltop \
 	-stdlib $(top_builddir)/exsmllib \
+	-P full \
 	-conservative
 
 .phony: bump-compiler
