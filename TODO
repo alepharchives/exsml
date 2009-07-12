@@ -127,6 +127,12 @@ o [jlouis] Make some tests of the Array/ArraySlice 2003 basis
 
    Next, use IntInf constrained to INTEGER to provide LargeInt.
 
+* Find the off-by-one pesky bug in the word8vector.sml regression code
+   There is a bug in the word8vector code which I cannot find. It
+   fails because the 'last' reference gets bumped one time too many,
+   and I do not know why. It also manifests itself in other places, so
+   it would be clever to get this bug fixed.
+
 * Implement OS.Process.sleep
    Easy task. Add a new primitive, convert the time to something the
    backend can process and fire it down to the lower level. Since the
