@@ -14,7 +14,7 @@ exp/nat : nat -> exp.
 exp/bool : bool -> exp.
 exp/lambda : (exp -> exp) -> exp.
 exp/apply  : exp -> exp -> exp.
-%% exp/if : exp -> exp -> exp -> exp.
+exp/if : exp -> exp -> exp -> exp.
 
 %% Introduce an evaluation form
 ev : exp -> exp -> type.
@@ -25,6 +25,12 @@ ev/apply : ev (exp/apply L V) R
 	    <- ev L (exp/lambda [x] E x)
 	    <- ev V V'
 	    <- ev (E V') R.
+ev/if/t : ev (exp/if Test True False) T'
+	   <- ev Test (exp/bool true)
+	   <- ev True T'.
+ev/if/f : ev (exp/if Test True False) F'
+	   <- ev Test (exp/bool false)
+	   <- ev False F'.
 
 %% Canonical forms of lambda expressions
 canonical-form : exp -> type.
@@ -40,6 +46,11 @@ ev-has-canonical-form : ev E E' -> canonical-form E' -> type.
 - : ev-has-canonical-form ev/lambda canonical-form/lambda.
 - : ev-has-canonical-form (ev/apply D3 D2 D1) CF
      <- ev-has-canonical-form D3 CF.
+- : ev-has-canonical-form (ev/if/t TrueC Test) X
+     <- ev-has-canonical-form TrueC X.
+- : ev-has-canonical-form (ev/if/f FalseC Test) X
+     <- ev-has-canonical-form FalseC X.
+
 %worlds () (ev-has-canonical-form _ _).
 %total E (ev-has-canonical-form E _).
 
@@ -52,6 +63,10 @@ of/apply : of (exp/apply E1 E2) T2
 of/lambda : of (exp/lambda [x] E x) (ty/arrow T T')
 	     <- ({x : exp} of x T
 		   -> of (E x) T').
+of/if : of (exp/if Test True False) T
+	 <- of Test ty/bool
+	 <- of True T
+	 <- of False T.
 
 %% Type preservation
 ty_preserv : ev E E' -> of E T -> of E' T -> type.
@@ -63,6 +78,10 @@ ty_preserv : ev E E' -> of E T -> of E' T -> type.
      <- ty_preserv D1 T1 (of/lambda T1')
      <- ty_preserv D2 T2 T2'
      <- ty_preserv D3 (T1' V2 T2') T3'.
+- : ty_preserv (ev/if/t TrueC Test) (of/if DFalse DTrue DTest) T
+     <- ty_preserv TrueC DTrue T.
+- : ty_preserv (ev/if/f FalseC Test) (of/if DFalse DTrue DTest) T
+     <- ty_preserv FalseC DFalse T.
 
 %worlds () (ty_preserv _ _ _).
 %total E (ty_preserv E _ _).
