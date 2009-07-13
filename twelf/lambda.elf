@@ -3,15 +3,16 @@
 %%  up a variant of it in HOAS-style and systematically add the missing parts.
 
 %% Introduce a simple type system.
-ty : type.
+ty : type. %name ty T.
 ty/nat : ty.
 ty/arrow : ty -> ty -> ty.
 
 %% Introduce lambda expressions of natural numbers
-exp : type.
+exp : type. %name exp E.
 exp/nat : nat -> exp.
 exp/lambda : (exp -> exp) -> exp.
 exp/apply  : exp -> exp -> exp.
+%% exp/if : exp -> exp -> exp -> exp.
 
 %% Introduce an evaluation form
 ev : exp -> exp -> type.
