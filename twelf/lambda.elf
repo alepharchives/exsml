@@ -8,13 +8,48 @@ ty/nat : ty.
 ty/bool : ty.
 ty/arrow : ty -> ty -> ty.
 
+%% Special Constants
+scon : type.
+scon/nat : nat -> scon.
+scon/char : nat -> scon.
+%% ... There are more here, but we don't need it.
+
+%% Structure constants
+%% This part seriously needs some redefinition
+tag : type.
+
+structconstant : type.
+structconstant-list : type.
+
+structconstant/atom : scon -> structconstant.
+structconstant/block : tag -> structconstant-list -> structconstant.
+
+structconstant-list/nil : structconstant-list.
+structconstant-list/cons : structconstant -> structconstant-list -> structconstant-list.
+
+%% Primitives are things which are defined in the backend system as a special function.
+primitive : type.
+
 %% Introduce lambda expressions of natural numbers
 exp : type. %name exp E.
+exp-list : type. %name exp-list EL.
+
 exp/nat : nat -> exp.
 exp/bool : bool -> exp.
+exp/structconst : structconstant -> exp.
 exp/lambda : (exp -> exp) -> exp.
 exp/apply  : exp -> exp -> exp.
 exp/if : exp -> exp -> exp -> exp.
+exp/seq : exp -> exp -> exp.
+exp/andalso : exp -> exp -> exp.
+exp/orelse : exp -> exp -> exp.
+exp/unspec : exp.
+exp/while : exp -> exp -> exp.
+exp/prim : primitive -> exp-list -> exp.
+
+exp-list/nil : exp-list.
+exp-list/cons : exp -> exp-list -> exp-list.
+
 
 %% Introduce an evaluation form
 ev : exp -> exp -> type.
@@ -98,6 +133,7 @@ ty_progress : ev E E' -> of E T -> progression E -> type.
 - : ty_progress ev/nat of/nat (progression/canonical canonical-form/nat).
 - : ty_progress ev/bool of/bool (progression/canonical canonical-form/bool).
 - : ty_progress ev/lambda (of/lambda _) (progression/canonical canonical-form/lambda).
+
 %{
 - : ty_progress (ev/if/t ETrue ETest) (of/if TFalse TTrue TTest) P
      <- ty_progress ETrue TTrue P.
