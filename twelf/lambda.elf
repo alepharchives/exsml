@@ -8,14 +8,15 @@ ty/nat : ty.
 ty/bool : ty.
 ty/arrow : ty -> ty -> ty.
 
-%% Special Constants
+%% Special Constructors. These are nat, char, word, string, etc and represent these in the
+%%  backend.
 scon : type.
 scon/nat : nat -> scon.
 scon/char : nat -> scon.
 %% ... There are more here, but we don't need it.
 
 %% Structure constants
-%% This part seriously needs some redefinition
+%% Structure constants are either atoms or they are blocks, whatever that is :)
 tag : type.
 
 structconstant : type.
@@ -49,7 +50,6 @@ exp/prim : primitive -> exp-list -> exp.
 
 exp-list/nil : exp-list.
 exp-list/cons : exp -> exp-list -> exp-list.
-
 
 %% Introduce an evaluation form
 ev : exp -> exp -> type.
