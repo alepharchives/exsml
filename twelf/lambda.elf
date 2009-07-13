@@ -86,7 +86,24 @@ ty_preserv : ev E E' -> of E T -> of E' T -> type.
 %worlds () (ty_preserv _ _ _).
 %total E (ty_preserv E _ _).
 
+%% Type progression
 
+progression : exp -> type.
+progression/canonical : progression E
+			 <- canonical-form E.
+progression/step : progression E'
+		    <- ev E E'.
+
+ty_progress : ev E E' -> of E T -> progression E -> type.
+- : ty_progress ev/nat of/nat (progression/canonical canonical-form/nat).
+- : ty_progress ev/bool of/bool (progression/canonical canonical-form/bool).
+- : ty_progress ev/lambda (of/lambda _) (progression/canonical canonical-form/lambda).
+%{
+- : ty_progress (ev/if/t ETrue ETest) (of/if TFalse TTrue TTest) P
+     <- ty_progress ETrue TTrue P.
+- : ty_progress (ev/if/f EFalse ETest) (of/if TFalse TTrue TTest) P
+     <- ty_progress EFalse TFalse P.
+}%
 
 
 
