@@ -1,0 +1,5 @@
+%%*** Boolean values
+
+bool : type. %name bool B.
+true : bool.
+false : bool.

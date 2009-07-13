@@ -5,11 +5,13 @@
 %% Introduce a simple type system.
 ty : type. %name ty T.
 ty/nat : ty.
+ty/bool : ty.
 ty/arrow : ty -> ty -> ty.
 
 %% Introduce lambda expressions of natural numbers
 exp : type. %name exp E.
 exp/nat : nat -> exp.
+exp/bool : bool -> exp.
 exp/lambda : (exp -> exp) -> exp.
 exp/apply  : exp -> exp -> exp.
 %% exp/if : exp -> exp -> exp -> exp.
@@ -17,6 +19,7 @@ exp/apply  : exp -> exp -> exp.
 %% Introduce an evaluation form
 ev : exp -> exp -> type.
 ev/nat : ev (exp/nat N1) (exp/nat N1).
+ev/bool : ev (exp/bool B) (exp/bool B).
 ev/lambda : ev (exp/lambda [x] E x) (exp/lambda [x] E x).
 ev/apply : ev (exp/apply L V) R
 	    <- ev L (exp/lambda [x] E x)
@@ -26,12 +29,14 @@ ev/apply : ev (exp/apply L V) R
 %% Canonical forms of lambda expressions
 canonical-form : exp -> type.
 canonical-form/nat : canonical-form (exp/nat _).
+canonical-form/bool : canonical-form (exp/bool _).
 canonical-form/lambda : canonical-form (exp/lambda [x] E x).
 
 %% Evaluation always ends in a canonical form and its proof.
 ev-has-canonical-form : ev E E' -> canonical-form E' -> type.
 %mode ev-has-canonical-form +E -CF.
 - : ev-has-canonical-form ev/nat canonical-form/nat.
+- : ev-has-canonical-form ev/bool canonical-form/bool.
 - : ev-has-canonical-form ev/lambda canonical-form/lambda.
 - : ev-has-canonical-form (ev/apply D3 D2 D1) CF
      <- ev-has-canonical-form D3 CF.
@@ -40,6 +45,7 @@ ev-has-canonical-form : ev E E' -> canonical-form E' -> type.
 
 of : exp -> ty -> type.
 of/nat : of (exp/nat _) ty/nat.
+of/bool : of (exp/bool _) ty/bool.
 of/apply : of (exp/apply E1 E2) T2
 	    <- of E1 (ty/arrow T1 T2)
 	    <- of E2 T1.
@@ -51,6 +57,7 @@ of/lambda : of (exp/lambda [x] E x) (ty/arrow T T')
 ty_preserv : ev E E' -> of E T -> of E' T -> type.
 %mode ty_preserv +EV +TP1 -TP2.
 - : ty_preserv ev/nat of/nat of/nat.
+- : ty_preserv ev/bool of/bool of/bool.
 - : ty_preserv ev/lambda (of/lambda E) (of/lambda E).
 - : ty_preserv (ev/apply D3 D2 D1) (of/apply T2 T1) T3'
      <- ty_preserv D1 T1 (of/lambda T1')
