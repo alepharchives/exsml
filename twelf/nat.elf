@@ -1,0 +1,15 @@
+%%*** Natural numbers
+
+nat : type. %name nat N.
+nat/z : nat.
+nat/s : nat -> nat.
+
+z = nat/z.
+s = nat/s.
+
+plus : nat -> nat -> nat -> type.
+plus/z : plus z N N.
+plus/s : plus (s K1) X (s K2)
+	  <- plus K1 X K2.
+
+
