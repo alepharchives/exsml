@@ -109,10 +109,10 @@ switch[\;switch],handle[\;handle\;],shandle[\;shandle\;],sfail[\;sfail\;],if[\;i
 then[\;then\;],else[\;else\;],shared[\;shared],while[\;while\;],andalso[\;andalso\;],
 orelse[\;orelse\;]}
 \begin{align*}
-  e ::= \quad & \; n \ssplit sc \ssplit e \; [e_1, \dotsc, e_k] \ssplit \lambda
-  (e) \ssplit \<let> [e_1, \dotsc, e_k] \<in> e \<end> \ssplit \\
-  & \<letrec> [e_1, \dotsc, e_k] \<in> e \<end> \ssplit
-  \{p\}[e_1, \dotsc, e_k] \ssplit\\
+  e ::= \quad & \; n \ssplit sc \ssplit e \; (e_1 \; \dotsc \; e_k) \ssplit \lambda
+  (e) \ssplit \<let> (e_1 \; \dotsc \; e_k) \<in> e \<end> \ssplit \\
+  & \<letrec> (e_1 \; \dotsc \; e_k) \<in> e \<end> \ssplit
+  \{p\}(e_1, \dotsc, e_k) \ssplit\\
   & \<case> e \<of> sc_1 \Rightarrow e_1, \; sc_2 \Rightarrow e_2, \;
   \dotsc \ssplit\\
   & \<switch>(a)\; e \<of> bt_1 \Rightarrow e_1, \; bt_2
@@ -125,5 +125,21 @@ orelse[\;orelse\;]}
   \ssplit unspec \\
   & \<shared>(k) \; e^{*} 
 \end{align*}
+\begin{description}
+\item[$n$] A number $n$ refers to the $n$'th enclosing lambda in the
+  scope. This is the De-Bruijns indexing on the lambda calculus. That
+  is, the $n$ is a natural number referring to a lambda-binder.
+\item[$sc$] The $sc$ refers to any special constructor. Special
+  constructors are integers, strings, reals, and so on. They are
+  manipulated by using primitive calls. As an example, there is a
+  primitive call of arity two which can add integers. Similarly there
+  are primitives for string concatenation and so on. In fact all
+  operations on structconstants are done by primitives.
+\item[$e \; (e_1 \; \dotsc \; e_k) $] Function application in strict
+  order. First, $e_1$ through $e_k$ are executed (in that order) and
+  when they are reduced to canonical forms they are applied to $e$ in
+  order. It is expected that $e$ is a series of lambdas so we can
+  apply the arguments.
 
+\end{description}
 \end{document}
