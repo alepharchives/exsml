@@ -87,9 +87,9 @@ are often called Atoms. We will cover StructConstants later.
 A BlockTag is really a pair of a tag number and a span, embedded in a
 \texttt{CONtag} constructor. The tag number is used as a discriminator
 so different blocktags can be distinguished from each other. The span
-records how many different tag numbers there are. For example, the
-values ``false'' and ``true'' are encoded as $(0,2)$ and $(1,2)$
-respectively.
+records how many different tag numbers there are in the datatype. For
+example, the values ``false'' and ``true'' are encoded as $(0,2)$ and
+$(1,2)$ respectively. They are members of a special datatype, bool.
 
 This information is utilized by the pattern match compiler. It knows
 when it has outruled the possibility of a match on $span-1$ then it
