@@ -67,6 +67,8 @@ the language into an ``algorithmic functional language''. Contrast with
 a pure functional language in which there are no imperative constructs
 at all.
 
+First, we introduce some data types used in the Lambda language:
+
 \section{Special Constructors}
 
 To facilitate the inclusion of integers, reals, strings, words and
@@ -79,6 +81,25 @@ is encoded as a \texttt{value}.
 Note that the Lambda definition uses an \texttt{StructConstant} as the
 constant container rather than an SCon. This is also the reason SCons
 are often called Atoms. We will cover StructConstants later.
+
+\section{BlockTags}
+
+A BlockTag is really a pair of a tag number and a span, embedded in a
+\texttt{CONtag} constructor. The tag number is used as a discriminator
+so different blocktags can be distinguished from each other. The span
+records how many different tag numbers there are. For example, the
+values ``false'' and ``true'' are encoded as $(0,2)$ and $(1,2)$
+respectively.
+
+This information is utilized by the pattern match compiler. It knows
+when it has outruled the possibility of a match on $span-1$ then it
+\emph{must} be the final value. Note that the tag number is not unique
+over all different datatypes. We know, due to static type checking
+that different tag numbers can not possibly intermingle.
+
+\section{Syntax}
+
+
 
 
 \end{document}
