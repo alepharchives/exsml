@@ -1,0 +1,84 @@
+\documentclass[a4paper, oneside, 10pt, final]{memoir}
+\input{packages}
+\chapterstyle{culver}
+\usepackage{fixme}
+\usepackage{coqdoc}
+\usepackage[english]{babel}
+%\usepackage[utopia]{mathdesign}
+
+\usepackage[osf,sc]{mathpazo}
+\linespread{1.05}
+%\usepackage{fourier}
+
+
+\usepackage{semantic}
+\author{Jesper Louis
+  Andersen\\jesper.louis.andersen@gmail.com\\140280-2029}
+\title{Lambda}
+\date{\today}
+
+\newlength{\drop}
+\newcommand*{\titleM}{\begingroup% Misericords, T&H p 153
+  \drop = 0.08\textheight
+  \centering
+  {\Huge\bfseries Lambda}\\[\baselineskip]
+  {\scshape IR of exsml}\\[\baselineskip]
+  {\scshape by}\\[\baselineskip]
+  {\large\scshape Jesper Louis Andersen\\jesper.louis.andersen@gmail.com}\par
+  \endgroup}
+
+\bibliographystyle{plain}
+
+\begin{document}
+\newcommand{\janusz}{$\mathrm{JANUS}_0$}
+\newcommand{\januso}{$\mathrm{JANUS}_1$}
+\newcommand{\lift}[1]{\lfloor #1 \rfloor}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\titleM{}
+\begin{abstract}
+\end{abstract}
+\listoffixmes
+%\tableofcontents
+\chapter{Introduction}
+This document describes the Lambda-language which is the internal
+representation of Moscow ML and ExSML. It is based upon a similar
+language in the Ocaml system, although a number of changes has been
+made to accomodate SML-specifics.
+
+\chapter{Lambda}
+
+Lambda is an extended lambda-calculus, much like most functional
+programming languages use as a basis. By extended, we means that the
+language has the lambda-calculus as its base but has been augmented
+with additional constructs making certain operations more viable. As
+an example, you can define Peano-arithmetic in the pure lambda
+calculus -- but this construction is hardly efficient. In Lambda,
+integers are provided as a primitive, yielding fast arithmetic. Also,
+it is easier to map fast arithmetic down to the underlying machine.
+
+To circumvent problems with alpha-conversion in the traditional
+Lambda-calculus, the Lambda language uses De-Bruijn indexing all
+over. With De-Bruijn indexing, machine manipulation is easy although
+it is harder to read for a human being.
+
+Lambda also contains while-loops and sequencing effectively making
+the language into an ``algorithmic functional language''. Contrast with
+a pure functional language in which there are no imperative constructs
+at all.
+
+\section{Special Constructors}
+
+To facilitate the inclusion of integers, reals, strings, words and
+characters in the Lambda language, we use the concept of a
+\emph{Special Constructor} (SCon). An SCon is a constructor in the
+traditional sense from a datatype, but it is special in the sense it
+is used for primitive values. In the backend a Special constructor
+is encoded as a \texttt{value}.
+
+Note that the Lambda definition uses an \texttt{StructConstant} as the
+constant container rather than an SCon. This is also the reason SCons
+are often called Atoms. We will cover StructConstants later.
+
+
+\end{document}
