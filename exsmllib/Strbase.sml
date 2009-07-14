@@ -161,7 +161,7 @@ fun fromMLescape getc source =
 
     fun toMLescape c =
 	case c of
-(* *)#"\\"   => "\\\\"
+	    #"\\"   => "\\\\"
 	  | #"\""   => "\\\""
 	  | _       =>
 	    if #"\032" <= c then
@@ -177,7 +177,7 @@ fun fromMLescape getc source =
 		     end
 	    else
 		(case c of
-(* *)		     #"\007" => "\\a"			(* BEL,  7 *)
+		     #"\007" => "\\a"			(* BEL,  7 *)
 		   | #"\008" => "\\b"			(* BS,   8 *)
 		   | #"\009" => "\\t"			(* HT,   9 *)
 		   | #"\010" => "\\n"			(* LF,  10 *)
@@ -199,7 +199,7 @@ fun fromMLescape getc source =
 
     fun toCescape c =
 	case c of
-(* *)	    #"\\"   => "\\\\"
+	    #"\\"   => "\\\\"
 	  | #"?"    => "\\?"
 	  | #"'"    => "\\'"
 	  | #"\""   => "\\\""
@@ -207,7 +207,7 @@ fun fromMLescape getc source =
 	    if #"\032" <= c andalso c <= #"\126" then str c
 	    else
 		(case c of
-(* *)		     #"\010" => "\\n"			(* LF,  10 *)
+		     #"\010" => "\\n"			(* LF,  10 *)
 		   | #"\013" => "\\r"			(* CR,  13 *)
 		   | #"\009" => "\\t"			(* HT,   9 *)
 		   | #"\011" => "\\v"			(* VT,  11 *)
@@ -303,5 +303,5 @@ fun fromMLescape getc source =
 	   BadEscape => NONE (* Illegal C escape sequence or character code *)
 	 | Overflow  => NONE (* Character code far too large                *)
 	end
-end (* local *)
-end (* local *)
+end
+end
