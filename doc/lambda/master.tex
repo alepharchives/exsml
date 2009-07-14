@@ -99,7 +99,30 @@ that different tag numbers can not possibly intermingle.
 
 \section{Syntax}
 
+The syntax for the lambda language is as follows:
 
-
+\newcommand{\ssplit}{\;\vert\;}
+\reservestyle{\command}{\mathbf}
+\command{let[\;let\;],in[\;in\;],end[\;end\;],case[\;case\;],of[\;of\;],letrec[\;letrec\;],
+switch[\;switch],handle[\;handle\;],shandle[\;shandle\;],sfail[\;sfail\;],if[\;if\;],
+then[\;then\;],else[\;else\;],shared[\;shared],while[\;while\;],andalso[\;andalso\;],
+orelse[\;orelse\;]}
+\begin{align*}
+  e ::= \quad & \; n \ssplit sc \ssplit e \; [e_1, \dotsc, e_k] \ssplit \lambda
+  (e) \ssplit \<let> [e_1, \dotsc, e_k] \<in> e \<end> \ssplit \\
+  & \<letrec> [e_1, \dotsc, e_k] \<in> e \<end> \ssplit
+  \{p\}[e_1, \dotsc, e_k] \ssplit\\
+  & \<case> e \<of> sc_1 \Rightarrow e_1, \; sc_2 \Rightarrow e_2, \;
+  \dotsc \ssplit\\
+  & \<switch>(a)\; e \<of> bt_1 \Rightarrow e_1, \; bt_2
+  \Rightarrow e_2, \; \dotsc \ssplit \\
+  & \<sfail> \ssplit e_1 \<shandle> e_2 \ssplit e_1 \<handle> e_2
+  \ssplit \\
+  & \<if> e_{tst} \<then> e_{true} \<else> e_{false} \ssplit e_1; \; e_2
+  \ssplit \\
+  & \; e_t \<while> e \ssplit e \<andalso> e \ssplit e \<orelse> e
+  \ssplit unspec \\
+  & \<shared>(k) \; e^{*} 
+\end{align*}
 
 \end{document}
