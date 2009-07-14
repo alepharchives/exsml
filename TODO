@@ -1,39 +1,46 @@
 TODO List for Exsml
 
-* What is a StructConstant?
+o [jlouis] What is a StructConstant?
    and why are Consts in Lambda StructConstants? We need to figure
    this part out in the backend.
 
-* Why is Llet and Lletrec in Lambda defined as they are
+o [jlouis] Why is Llet and Lletrec in Lambda defined as they are
    They have type Lambda list * Lambda. Of course, the first list is a
    binder-list which states what should be bound in the final snd
    lambda, but how is binding carried out?.
 
-* What is the difference between Lcase and Lswitch?
+o [jlouis] What is the difference between Lcase and Lswitch?
 
-o [jlouis] Setup a toolset for benchmark runs.
+o [jlouis] Make Lambda typed.
+   Devise a type-system for the Lambda intermediate language and use
+   this type system to preserve type information in the transformation
+   from the Elaborated SML to Lambda. This paves the way for a much
+   cleaner LLVM backend in the long run. We can just throw the type
+   information away and embed it into the compiler proper.
+
+* Setup a toolset for benchmark runs.
    Has to be thought out, but I would like to be able to:
 
-   ; Benchmark multiple SML compilers
-   ; Benchmark their performance movement over time
+   ; Benchmark multiple SML compilers.
+   ; Benchmark their performance movement over time.
    ; Keep track of old benchmark results in a simple format.
-   ; Be able to plot results over time
+   ; Be able to plot results over time.
    ; Use geometric mean for a final number.
 
 - Store the run-type in the database as well.
 - Only store runs if we are running in fast or slow mode.
 
-o [jlouis] Change the buildsystem to use -toplevel builds all the way through.
+* Change the buildsystem to use -toplevel builds all the way through.
    Many things w.r.t clean code depends on this being done.
 
 * Consider making -toplevel the default buildmode.
    It will probably work, but the problem here is that we need to
    update all the dependency information manually. I can accept that
-   though.
+   though. The work we need to carry out is rather though however.
 
 * Put Filename.sml into the standard library
 
-o [jlouis] 2003 Basis implementation:
+* 2003 Basis implementation:
 
    These things still needs to be done. Done in this case means that
    you can sometimes check that the current library is correct w.r.t
@@ -109,7 +116,7 @@ o [jlouis] 2003 Basis implementation:
    Word8 :> WORD
      Word8 has its own Signature, sigh
 
-o [jlouis] Make some tests of the Array/ArraySlice 2003 basis
+* Make some tests of the Array/ArraySlice 2003 basis
    The current tests are quite incomplete and does not test that Array
    and ArraySlice have correctly implemented functions. Hence we will
    fix it by writing a large set of tests that can test the
@@ -156,7 +163,7 @@ o [jlouis] Make some tests of the Array/ArraySlice 2003 basis
    Since the tests are ooold, there are no tests for the -Eq
    functions. This ought to be remedied.
 
-o [jlouis] Make String 2003 Basis
+* Make String 2003 Basis
    Update String to 2003 Basis
 
 - Write test cases for isSubstring
@@ -252,8 +259,6 @@ o [jlouis] Mail John H. Reppy
 * Get benchmarks from MLton added
 
 * Lambda seems to be compilable down to code
-
-* Make Lambda typed.
 
 * Check the ocaml system. Code and documentation!
 
