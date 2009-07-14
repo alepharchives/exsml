@@ -53,10 +53,10 @@ val  mangle = fn
     | FunId s => "__"^s;
 
 val unmangle = fn s =>
-    case Misc.explode s of
-      ((#"_")::(#"_")::fid) => FunId (Misc.implode fid)
-    | ((#"_")::mid) => ModId (Misc.implode mid)
-    | vid => ValId (Misc.implode vid);
+    case String.explode s of
+      ((#"_")::(#"_")::fid) => FunId (String.implode fid)
+    | ((#"_")::mid) => ModId (String.implode mid)
+    | vid => ValId (String.implode vid);
 
 (* Printing structured constants for debugging purposes *)
 
