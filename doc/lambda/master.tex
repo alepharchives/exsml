@@ -112,8 +112,9 @@ switch[\;switch],handle[\;handle\;],shandle[\;shandle\;],sfail[\;sfail\;],if[\;i
 then[\;then\;],else[\;else\;],shared[\;shared],while[\;while\;],andalso[\;andalso\;],
 orelse[\;orelse\;]}
 \begin{align*}
-  e ::= \quad & \; n \ssplit sc \ssplit e \; (e_1 \; \dotsc \; e_k) \ssplit \lambda
-  (e) \ssplit \<let> (e_1 \; \dotsc \; e_k) \<in> e \<end> \ssplit \\
+  e ::= \quad & \; n \ssplit sc \ssplit e \; (e_1 \; \dotsc \; e_k)
+  \ssplit \lambda{}.e
+  \ssplit \<let> (e_1 \; \dotsc \; e_k) \<in> e \<end> \ssplit \\
   & \<letrec> (e_1 \; \dotsc \; e_k) \<in> e \<end> \ssplit
   \{p\}(e_1, \dotsc, e_k) \ssplit\\
   & \<case> e \<of> sc_1 \Rightarrow e_1, \; sc_2 \Rightarrow e_2, \;
@@ -143,6 +144,20 @@ orelse[\;orelse\;]}
   when they are reduced to canonical forms they are applied to $e$ in
   order. It is expected that $e$ is a series of lambdas so we can
   apply the arguments.
-
+\item[$\lambda{}.e$] Define a function at this point. In De-Bruijn
+  indexing, we do not bind a variable here. Rather we refer to it by
+  number.
+\item[$\<let> (e_1 \; \dotsc \; e_k) \<in> e \<end>$]
+  Let-binding. In some sense, this is redundant as $\<let> x = e_1 \<in>
+  e_2 \<end>$ can be encoded as $(\lambda x . e_2) e_1$ (in regular
+  Lambda-notation). In Lambda, we have a list of bindings, and we
+  refer to them by De-Bruijn indexing as if they had been encoded this
+  way.\fixme{Check that this is true}
+\item[$\<letrec> (e_1 \; \dotsc \; e_k) \<in> e \<end>$] This is a
+  variant of the let-binding in which we have recursion on the
+  bindings. That is, a $\<letrec>$ defined lambda abstraction is a
+  \emph{fixpoint} in the usual sense if it refers to itself. We make
+  the distinction to be able to define recursive fixpoints on
+  functions.
 \end{description}
 \end{document}
