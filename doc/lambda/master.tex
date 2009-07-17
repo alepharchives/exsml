@@ -159,5 +159,23 @@ orelse[\;orelse\;]}
   \emph{fixpoint} in the usual sense if it refers to itself. We make
   the distinction to be able to define recursive fixpoints on
   functions.
+\item[$\{p\}(e_1, \dotsc, e_k)$] This construction defines a primitive
+  $p$. Primitives does all the hard work on low-level operations:
+  integers, strings, reals and so on. Addition, string concatenation
+  and like functions are packed as a primitive. Primitives can have
+  different arities depending on the primitive being called.
+\item[$\<case> e \<of> sc_1 \Rightarrow e_1, \; sc_2 \Rightarrow
+    e_2, \; \dotsc$] This operation is the traditional case
+  operation. It evaluates the expression $e$ and looks up the
+  appropriate matching special constant. Then the corresponding
+  expression is evaluated. Example: If $e = sc_3$ then $e_3$ is
+  evaluated.
+\item[$\<switch>(a)\; e \<of> bt_1 \Rightarrow e_1, \; bt_2
+  \Rightarrow e_2, \; \dotsc$] The switch-operation works like the
+  case operation, but it acts on constructor tags rather than on the
+  value contents. The distinction is made so it can be compiled with
+  different strategies.\fixme{Describe the $(a)$ part} The expression
+  $e$ is reduced and its tag is looked up. Then the switch is made on
+  the contents of this tag.
 \end{description}
 \end{document}
