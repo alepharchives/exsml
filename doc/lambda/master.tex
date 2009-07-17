@@ -72,13 +72,13 @@ at all.
 
 First, we introduce some data types used in the Lambda language:
 
-\section{Special Constructors}
+\section{Special Constants}
 
 To facilitate the inclusion of integers, reals, strings, words and
 characters in the Lambda language, we use the concept of a
-\emph{Special Constructor} (SCon). An SCon is a constructor in the
+\emph{Special Constant} (SCon). An SCon is a constant in the
 traditional sense from a datatype, but it is special in the sense it
-is used for primitive values. In the backend a Special constructor
+is used for primitive values. In the backend a Special constant
 is encoded as a \texttt{value}.
 
 Note that the Lambda definition uses an \texttt{StructConstant} as the
@@ -133,8 +133,8 @@ orelse[\;orelse\;]}
 \item[$n$] A number $n$ refers to the $n$'th enclosing lambda in the
   scope. This is the De-Bruijns indexing on the lambda calculus. That
   is, the $n$ is a natural number referring to a lambda-binder.
-\item[$sc$] The $sc$ refers to any special constructor. Special
-  constructors are integers, strings, reals, and so on. They are
+\item[$sc$] The $sc$ refers to any special constant. Special
+  constants are integers, strings, reals, and so on. They are
   manipulated by using primitive calls. As an example, there is a
   primitive call of arity two which can add integers. Similarly there
   are primitives for string concatenation and so on. In fact all
