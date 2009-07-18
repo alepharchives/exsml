@@ -38,12 +38,16 @@ pctx/apply-1 : pctx ([x] exp/apply x E2).
 pctx/apply-2 : pctx ([x] exp/apply V x)
 		<- value V.
 
-pctx/seq1 : pctx ([x] exp/seq x E2).
+pctx/seq-1 : pctx ([x] exp/seq x E2).
 
 pctx/if-tst : pctx ([x] exp/if x T F).
+pctx/andalso-1 : pctx ([x] exp/andalso x E2).
+pctx/orelse-1  : pctx ([x] exp/orelse x E2).
 
 %% Introduce a (small-step) evaluation form
 step : exp -> exp -> type.
+%% Primitives are evaluated by this rule.
+ev-primitive : primitive -> exp-list -> exp -> type.
 
 step/ctx : step (EC E) (EC E')
 	    <- pctx EC
@@ -56,6 +60,13 @@ step/seq : step (exp/seq V E2) E2
 	    <- value V.
 step/if-t : step (exp/if v_true T _) T.
 step/if-f : step (exp/if v_false _ F) F.
+step/andalso-1 : step (exp/andalso v_true E2) E2.
+step/andalso-2 : step (exp/andalso v_false _) v_false.
+step/orelse-1  : step (exp/orelse v_true _) v_true.
+step/orelse-2  : step (exp/orelse v_false E2) E2.
+
+step/primitive : step (exp/prim P EL) R
+		  <- ev-primitive P EL R.
 
 %{
 ev/scon : ev (exp/scon SC) (exp/scon SC).
