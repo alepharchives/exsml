@@ -21,11 +21,34 @@ exp/prim : primitive -> exp-list -> exp.
 exp-list/nil : exp-list.
 exp-list/cons : exp -> exp-list -> exp-list.
 
-%{
-%% Introduce an evaluation form
-ev : exp -> exp -> type.
-%mode ev +I -O.
+%% Shortcuts for later work, should probably be moved to somewhere else.
+v_true = (exp/scon (scon/bool true)).
+v_false = (exp/scon (scon/bool false)).
 
+%% Value
+value : exp -> type.
+value/scon : value (exp/scon _).
+value/lambda : value (exp/lambda [x] E x).
+
+%% Primitive evaluation contexts. This defines a context which is static while
+%%  evaluation happens "in the hole" (which is a lambda en this game :)
+pctx : (exp -> exp) -> type.
+
+pctx/apply-1 : pctx ([x] exp/apply x E2).
+pctx/apply-2 : pctx ([x] exp/apply V x)
+		<- value V.
+
+%% Introduce a (small-step) evaluation form
+step : exp -> exp -> type.
+
+step/ctx : step (EC E) (EC E')
+	    <- pctx EC
+	    <- step E E'.
+
+step/app-lam : step (exp/apply (exp/lambda [x] E1' x) V2) (E1' V2)
+		<- value V2.
+
+%{
 ev/scon : ev (exp/scon SC) (exp/scon SC).
 ev/lambda : ev (exp/lambda [x] E x) (exp/lambda [x] E x).
 ev/apply : ev (exp/apply L V) R
@@ -33,17 +56,12 @@ ev/apply : ev (exp/apply L V) R
 	    <- ev V V'
 	    <- ev (E V') R.
 ev/if/t : ev (exp/if Test True False) T'
-	   <- ev Test (exp/bool true)
+	   <- ev Test v_true
 	   <- ev True T'.
 ev/if/f : ev (exp/if Test True False) F'
-	   <- ev Test (exp/bool false)
+	   <- ev Test v_false
 	   <- ev False F'.
 
-%% Canonical forms of lambda expressions
-canonical-form : exp -> type.
-
-canonical-form/scon : canonical-form (exp/scon _).
-canonical-form/lambda : canonical-form (exp/lambda [x] E x).
 
 %% Evaluation always ends in a canonical form and its proof.
 ev-has-canonical-form : ev E E' -> canonical-form E' -> type.
