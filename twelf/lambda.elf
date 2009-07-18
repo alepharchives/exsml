@@ -8,6 +8,7 @@ exp-list : type. %name exp-list EL.
 exp/scon : scon -> exp.
 exp/lambda : (exp -> exp) -> exp.
 exp/letrec : (exp -> exp) -> exp.
+exp/let : exp -> (exp -> exp) -> exp.
 exp/apply  : exp -> exp -> exp.
 exp/if : exp -> exp -> exp -> exp.
 exp/seq : exp -> exp -> exp.
@@ -23,6 +24,7 @@ exp-list/cons : exp -> exp-list -> exp-list.
 %% Shortcuts for later work, should probably be moved to somewhere else.
 v_true = (exp/scon (scon/bool true)).
 v_false = (exp/scon (scon/bool false)).
+v_unit = (exp/scon scon/unit).
 
 %% Value
 value : exp -> type.
@@ -32,6 +34,7 @@ value/lambda : value (exp/lambda [x] E x).
 %% Primitive evaluation contexts. This defines a context which is static while
 %%  evaluation happens "in the hole" (which is a lambda en this game :)
 %% I first saw this idea when it was presented by Andrzej Filinski in a Twelf-course.
+%% The cleverness is that we split "boring" evaluation from where the real stuff happens.
 pctx : (exp -> exp) -> type.
 
 pctx/apply-1 : pctx ([x] exp/apply x E2).
@@ -43,6 +46,7 @@ pctx/seq-1 : pctx ([x] exp/seq x E2).
 pctx/if-tst : pctx ([x] exp/if x T F).
 pctx/andalso-1 : pctx ([x] exp/andalso x E2).
 pctx/orelse-1  : pctx ([x] exp/orelse x E2).
+pctx/let       : pctx ([x] exp/let x B).
 
 %% Introduce a (small-step) evaluation form
 step : exp -> exp -> type.
@@ -56,6 +60,9 @@ step/ctx : step (EC E) (EC E')
 step/app-lam : step (exp/apply (exp/lambda [x] E1' x) V2) (E1' V2)
 		<- value V2.
 step/letrec : step (exp/letrec [x] E x) (E (exp/letrec [x] E x)).
+step/let : step (exp/let L ([x] B x)) (B L)
+	    <- value L.
+
 step/seq : step (exp/seq V E2) E2
 	    <- value V.
 step/if-t : step (exp/if v_true T _) T.
@@ -65,24 +72,28 @@ step/andalso-2 : step (exp/andalso v_false _) v_false.
 step/orelse-1  : step (exp/orelse v_true _) v_true.
 step/orelse-2  : step (exp/orelse v_false E2) E2.
 
+step/while : step (exp/while T B) (exp/if T (exp/seq B (exp/while T B)) v_unit).
+
 step/primitive : step (exp/prim P EL) R
 		  <- ev-primitive P EL R.
 
+
+%% Iterated step relation for completeness
+steps : exp -> exp -> type.
+
+steps_0 : steps E E.
+
+steps_s : steps E E'
+	   <- step E E''
+	   <- steps E'' E'.
+
+stepsto : exp -> exp -> type.
+
+sto_do : stepsto E V
+	  <- steps E V
+	  <- value V.
+
 %{
-ev/scon : ev (exp/scon SC) (exp/scon SC).
-ev/lambda : ev (exp/lambda [x] E x) (exp/lambda [x] E x).
-ev/apply : ev (exp/apply L V) R
-	    <- ev L (exp/lambda [x] E x)
-	    <- ev V V'
-	    <- ev (E V') R.
-ev/if/t : ev (exp/if Test True False) T'
-	   <- ev Test v_true
-	   <- ev True T'.
-ev/if/f : ev (exp/if Test True False) F'
-	   <- ev Test v_false
-	   <- ev False F'.
-
-
 %% Evaluation always ends in a canonical form and its proof.
 ev-has-canonical-form : ev E E' -> canonical-form E' -> type.
 %mode ev-has-canonical-form +E -CF.

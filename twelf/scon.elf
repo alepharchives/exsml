@@ -10,6 +10,7 @@ scon : type. %name scon SC.
 scon/nat : nat -> scon.
 scon/char : nat -> scon.
 scon/bool : bool -> scon.
+scon/unit : scon.
 %% ... There are more here, but we don't need it. We only need enough to show that the type
 %% system is safe and thus we can utilize a small set of Scons to show this.
 
@@ -20,6 +21,7 @@ ty-scon : type. %name ty-scon Tsc.
 ty-scon/nat : ty-scon.
 ty-scon/char : ty-scon.
 ty-scon/bool : ty-scon.
+ty-scon/unit : ty-scon.
 
 %% Type derivation for SConstants
 
@@ -28,4 +30,5 @@ of-scon : scon -> ty-scon -> type.
 of-scon/nat : of-scon (scon/nat _) ty-scon/nat.
 of-scon/char : of-scon (scon/char _) ty-scon/char.
 of-scon/bool : of-scon (scon/bool _) ty-scon/bool.
+of-scon/unit : of-scon scon/unit ty-scon/unit.
 
