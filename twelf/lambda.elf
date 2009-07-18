@@ -1,7 +1,5 @@
 %%*** The Lambda language of Moscow ML
-%% Note, that rather than introducing the full Lambda language from the bottom, we build
-%%  up a variant of it in HOAS-style and systematically add the missing parts.
-
+%%% Lambda language, main.
 
 %% Introduce lambda expressions of natural numbers
 exp : type. %name exp E.
@@ -39,6 +37,8 @@ pctx/apply-1 : pctx ([x] exp/apply x E2).
 pctx/apply-2 : pctx ([x] exp/apply V x)
 		<- value V.
 
+pctx/seq1 : pctx ([x] exp/seq x E2).
+
 %% Introduce a (small-step) evaluation form
 step : exp -> exp -> type.
 
@@ -49,6 +49,8 @@ step/ctx : step (EC E) (EC E')
 step/app-lam : step (exp/apply (exp/lambda [x] E1' x) V2) (E1' V2)
 		<- value V2.
 step/letrec : step (exp/letrec [x] E x) (E (exp/letrec [x] E x)).
+step/seq : step (exp/seq V E2) E2
+	    <- value V.
 
 %{
 ev/scon : ev (exp/scon SC) (exp/scon SC).
