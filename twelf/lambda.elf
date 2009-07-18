@@ -9,6 +9,7 @@ exp-list : type. %name exp-list EL.
 
 exp/scon : scon -> exp.
 exp/lambda : (exp -> exp) -> exp.
+exp/letrec : (exp -> exp) -> exp.
 exp/apply  : exp -> exp -> exp.
 exp/if : exp -> exp -> exp -> exp.
 exp/seq : exp -> exp -> exp.
@@ -47,6 +48,7 @@ step/ctx : step (EC E) (EC E')
 
 step/app-lam : step (exp/apply (exp/lambda [x] E1' x) V2) (E1' V2)
 		<- value V2.
+step/letrec : step (exp/letrec [x] E x) (E (exp/letrec [x] E x)).
 
 %{
 ev/scon : ev (exp/scon SC) (exp/scon SC).
