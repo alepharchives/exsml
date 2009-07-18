@@ -31,6 +31,7 @@ value/lambda : value (exp/lambda [x] E x).
 
 %% Primitive evaluation contexts. This defines a context which is static while
 %%  evaluation happens "in the hole" (which is a lambda en this game :)
+%% I first saw this idea when it was presented by Andrzej Filinski in a Twelf-course.
 pctx : (exp -> exp) -> type.
 
 pctx/apply-1 : pctx ([x] exp/apply x E2).
@@ -38,6 +39,8 @@ pctx/apply-2 : pctx ([x] exp/apply V x)
 		<- value V.
 
 pctx/seq1 : pctx ([x] exp/seq x E2).
+
+pctx/if-tst : pctx ([x] exp/if x T F).
 
 %% Introduce a (small-step) evaluation form
 step : exp -> exp -> type.
@@ -51,6 +54,8 @@ step/app-lam : step (exp/apply (exp/lambda [x] E1' x) V2) (E1' V2)
 step/letrec : step (exp/letrec [x] E x) (E (exp/letrec [x] E x)).
 step/seq : step (exp/seq V E2) E2
 	    <- value V.
+step/if-t : step (exp/if v_true T _) T.
+step/if-f : step (exp/if v_false _ F) F.
 
 %{
 ev/scon : ev (exp/scon SC) (exp/scon SC).
