@@ -1,0 +1,15 @@
+%%% Type system.
+%% This defines the type system we aim to use.
+
+%% Types of special constants.
+ty-scon : type.
+ty-scon/nat : ty-scon.
+ty-scon/char : ty-scon.
+ty-scon/bool : ty-scon.
+
+%% Introduce a simple type system.
+ty : type. %name ty T.
+%% Types of special constants.
+ty/scon : ty-scon -> ty.
+%% Arrow types.
+ty/arrow : ty -> ty -> ty.

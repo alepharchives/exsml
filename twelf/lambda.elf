@@ -2,42 +2,12 @@
 %% Note, that rather than introducing the full Lambda language from the bottom, we build
 %%  up a variant of it in HOAS-style and systematically add the missing parts.
 
-%% Introduce a simple type system.
-ty : type. %name ty T.
-ty/nat : ty.
-ty/bool : ty.
-ty/arrow : ty -> ty -> ty.
-
-%% Special Constructors. These are nat, char, word, string, etc and represent these in the
-%%  backend.
-scon : type.
-scon/nat : nat -> scon.
-scon/char : nat -> scon.
-%% ... There are more here, but we don't need it.
-
-%% Structure constants
-%% Structure constants are either atoms or they are blocks, whatever that is :)
-tag : type.
-
-structconstant : type.
-structconstant-list : type.
-
-structconstant/atom : scon -> structconstant.
-structconstant/block : tag -> structconstant-list -> structconstant.
-
-structconstant-list/nil : structconstant-list.
-structconstant-list/cons : structconstant -> structconstant-list -> structconstant-list.
-
-%% Primitives are things which are defined in the backend system as a special function.
-primitive : type.
 
 %% Introduce lambda expressions of natural numbers
 exp : type. %name exp E.
 exp-list : type. %name exp-list EL.
 
-exp/nat : nat -> exp.
-exp/bool : bool -> exp.
-exp/structconst : structconstant -> exp.
+exp/scon : scon -> exp.
 exp/lambda : (exp -> exp) -> exp.
 exp/apply  : exp -> exp -> exp.
 exp/if : exp -> exp -> exp -> exp.
@@ -51,10 +21,12 @@ exp/prim : primitive -> exp-list -> exp.
 exp-list/nil : exp-list.
 exp-list/cons : exp -> exp-list -> exp-list.
 
+%{
 %% Introduce an evaluation form
 ev : exp -> exp -> type.
-ev/nat : ev (exp/nat N1) (exp/nat N1).
-ev/bool : ev (exp/bool B) (exp/bool B).
+%mode ev +I -O.
+
+ev/scon : ev (exp/scon SC) (exp/scon SC).
 ev/lambda : ev (exp/lambda [x] E x) (exp/lambda [x] E x).
 ev/apply : ev (exp/apply L V) R
 	    <- ev L (exp/lambda [x] E x)
@@ -69,15 +41,14 @@ ev/if/f : ev (exp/if Test True False) F'
 
 %% Canonical forms of lambda expressions
 canonical-form : exp -> type.
-canonical-form/nat : canonical-form (exp/nat _).
-canonical-form/bool : canonical-form (exp/bool _).
+
+canonical-form/scon : canonical-form (exp/scon _).
 canonical-form/lambda : canonical-form (exp/lambda [x] E x).
 
 %% Evaluation always ends in a canonical form and its proof.
 ev-has-canonical-form : ev E E' -> canonical-form E' -> type.
 %mode ev-has-canonical-form +E -CF.
-- : ev-has-canonical-form ev/nat canonical-form/nat.
-- : ev-has-canonical-form ev/bool canonical-form/bool.
+- : ev-has-canonical-form (ev/scon _) canonical-form/scon.
 - : ev-has-canonical-form ev/lambda canonical-form/lambda.
 - : ev-has-canonical-form (ev/apply D3 D2 D1) CF
      <- ev-has-canonical-form D3 CF.
@@ -90,8 +61,9 @@ ev-has-canonical-form : ev E E' -> canonical-form E' -> type.
 %total E (ev-has-canonical-form E _).
 
 of : exp -> ty -> type.
-of/nat : of (exp/nat _) ty/nat.
-of/bool : of (exp/bool _) ty/bool.
+
+of/scon : of (exp/scon SC) (ty/scon TSC)
+	   <- of-scon SC TSC.
 of/apply : of (exp/apply E1 E2) T2
 	    <- of E1 (ty/arrow T1 T2)
 	    <- of E2 T1.
@@ -102,6 +74,7 @@ of/if : of (exp/if Test True False) T
 	 <- of Test ty/bool
 	 <- of True T
 	 <- of False T.
+
 
 %% Type preservation
 ty_preserv : ev E E' -> of E T -> of E' T -> type.
@@ -134,7 +107,7 @@ ty_progress : ev E E' -> of E T -> progression E -> type.
 - : ty_progress ev/bool of/bool (progression/canonical canonical-form/bool).
 - : ty_progress ev/lambda (of/lambda _) (progression/canonical canonical-form/lambda).
 
-%{
+
 - : ty_progress (ev/if/t ETrue ETest) (of/if TFalse TTrue TTest) P
      <- ty_progress ETrue TTrue P.
 - : ty_progress (ev/if/f EFalse ETest) (of/if TFalse TTrue TTest) P
