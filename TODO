@@ -1,8 +1,13 @@
 TODO List for Exsml
 
-o [jlouis] Can Lshared and Lassign be eradicated?
-   The Lshared construction in lambda seem to be unused. Can it be
-   killed? Same with Lassign.
+o [jlouis] Why is the big-array.sml test accessing the disk like mad?
+
+o [jlouis] What does Lshared and Lassign do?
+   It is clear they are used in the pattern match compiler (Lshared)
+   and in the backend (Lassign), but we should look at them and figure
+   out how they work in a more detailed way.
+
+o [jlouis] Devise a simple type system for a small small subset of Lamba.
 
 o [jlouis] Make Lambda typed.
    Devise a type-system for the Lambda intermediate language and use
