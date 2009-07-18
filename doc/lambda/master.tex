@@ -110,7 +110,7 @@ The syntax for the lambda language is as follows:
 \command{let[\;let\;],in[\;in\;],end[\;end\;],case[\;case\;],of[\;of\;],letrec[\;letrec\;],
 switch[\;switch],handle[\;handle\;],shandle[\;shandle\;],sfail[\;sfail\;],if[\;if\;],
 then[\;then\;],else[\;else\;],shared[\;shared],while[\;while\;],andalso[\;andalso\;],
-orelse[\;orelse\;]}
+orelse[\;orelse\;],do[\;do\;],assign[\;assign\;]}
 \begin{align*}
   e ::= \quad & \; n \ssplit sc \ssplit e \; (e_1 \; \dotsc \; e_k)
   \ssplit \lambda{}.e
@@ -125,9 +125,9 @@ orelse[\;orelse\;]}
   \ssplit \\
   & \<if> e_{tst} \<then> e_{true} \<else> e_{false} \ssplit e_1; \; e_2
   \ssplit \\
-  & \; e_t \<while> e \ssplit e \<andalso> e \ssplit e \<orelse> e
+  & \; \<while> e_t \<do> e \ssplit e \<andalso> e \ssplit e \<orelse> e
   \ssplit unspec \\
-  & \<shared>(k) \; e^{*} 
+  & \<shared>(k) \; e^{*} \ssplit \<assign> i \leftarrow e
 \end{align*}
 \begin{description}
 \item[$n$] A number $n$ refers to the $n$'th enclosing lambda in the
@@ -187,5 +187,24 @@ orelse[\;orelse\;]}
   is, in SML, a pattern match construction. This construction is
   pattern-match-compiled down to a switch/case tree and stuffed into
   the place of $e_2$.
+\item[$\<if> e_{tst} \<then> e_{true} \<else> e_{false}$] Mere
+  If-then-else. It executes either $e_{true}$ or $e_{false}$ depending
+  on the outcome of $e_{tst}$. Note that it is expected that $e_{tst}$
+  evaluates to a boolean type as we test on the constructor tag of
+  false and true to compute which branch to take.
+\item[$e_1; \; e_2$] Sequencing. Execute $e_1$ for side-effect only
+  before executing $e_2$.
+\item[$\<while> e_t \<do> e$] While loop. If $e_t$ evaluates to a true
+  value (in the same sense as $e_{tst}$ in the if-then-else), $e$ is
+  executed. The whole expression is executed for side-effect only.
+\item[$e \<andalso> e, e \<orelse> e$] Short-circuiting logical
+  conjunction and disjunction.
+\item[$unspec$] An unspecified value. It is used in the construction
+  \texttt{val \_ = e} for instance.
+\item[$\<shared>(k) \; e^{*}$] This shared rule defines a shared
+  lambda construction which was used by the pattern match compiler
+  earlier on but seems to be un-used now.
+\item[$\<assign> i \leftarrow e$] An assignment construction which
+  seem to be unused in the current compiler.
 \end{description}
 \end{document}

@@ -1,15 +1,8 @@
 TODO List for Exsml
 
-o [jlouis] What is a StructConstant?
-   and why are Consts in Lambda StructConstants? We need to figure
-   this part out in the backend.
-
-o [jlouis] Why is Llet and Lletrec in Lambda defined as they are
-   They have type Lambda list * Lambda. Of course, the first list is a
-   binder-list which states what should be bound in the final snd
-   lambda, but how is binding carried out?.
-
-o [jlouis] What is the difference between Lcase and Lswitch?
+o [jlouis] Can Lshared and Lassign be eradicated?
+   The Lshared construction in lambda seem to be unused. Can it be
+   killed? Same with Lassign.
 
 o [jlouis] Make Lambda typed.
    Devise a type-system for the Lambda intermediate language and use
