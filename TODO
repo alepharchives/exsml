@@ -47,6 +47,11 @@ o [jlouis] Make Lambda typed.
    requires some deep deep runtime/compiler fu to get right as it is
    deep inside the system. Most notably I/O.
 
+   Initially, we thought this would be clever to get right before
+   beginning to mangle the compiler itself. But it takes a lot of time
+   and is not beneficial to the idea of getting Mosml
+   LLVM'ized. Hence, it is put somewhat on hold as it can wait.
+
    Also note that this is only the set of *required* structures. There
    are several extra optional structures we could support later on.
 
@@ -126,11 +131,6 @@ o [jlouis] Make Lambda typed.
 - Install targets
    Provide correct install targets for everything. This is seriously
    lacking at the moment.
-- Bump bootstrap target
-   Provide a way to make the current compiler/linker/toplevel into the
-   new bootstrap compiler/linker/toplevel. It only has to be done on a
-   flag-day, but it is important to support this kind of
-   bootstrapping.
 - Support top_builddir
    We have been using top_srcdir in a lot of places where it should
    have been top_builddir. Correcting this lets you compile the code
@@ -248,15 +248,17 @@ o [jlouis] Mail John H. Reppy
 * Eradicate the Not_Implemented in LLVM.sml
    This means a full implementation of LLVM.
 
-* Set up buildbot
+* Set up buildbot.
 
-* Rewrite documentation
+* Rewrite documentation.
 
-* Begin figuring out how to fix, mix, and match Lambda with LLVM
+* Begin figuring out how to fix, mix, and match Lambda with LLVM.
+   Lambda is a language without types and a fully functional
+   language. The way to go is to add types on top of the Lambda
+   language and then closure-convert lambda and lift nested function
+   definitions to top-level.
 
-* Get benchmarks from MLton added
-
-* Lambda seems to be compilable down to code
+* Get benchmarks from MLton added.
 
 * Check the ocaml system. Code and documentation!
 
