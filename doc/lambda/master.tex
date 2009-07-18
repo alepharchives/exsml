@@ -177,5 +177,15 @@ orelse[\;orelse\;]}
   different strategies.\fixme{Describe the $(a)$ part} The expression
   $e$ is reduced and its tag is looked up. Then the switch is made on
   the contents of this tag.
+\item[$b& \<sfail>, e_1 \<shandle> e_2$] The static exception handling
+  is used when exceptions do not escape the current function. Such
+  exceptions can be compiled by a goto-statement. Thus one can use
+  exceptions locally to mangle the control flow without the costly
+  dynamic exceptions.
+\item[$e_1 \<handle> e_2$] Dynamic exception handling. Note that
+  raising an exception is a primitive function. The $e_2$ expression
+  is, in SML, a pattern match construction. This construction is
+  pattern-match-compiled down to a switch/case tree and stuffed into
+  the place of $e_2$.
 \end{description}
 \end{document}
