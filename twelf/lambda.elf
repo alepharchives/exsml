@@ -1,5 +1,8 @@
 %%*** The Lambda language of Moscow ML
-%%% Lambda language, main.
+
+%% We present the Lambda language in HOAS style rather than in De-Bruijn-indexing. I really hope
+%%  there is a rather simple way to convert the following development into a De-Bruijn indexed
+%%  variant while preserving the types.
 
 %% Introduce lambda expressions of natural numbers
 exp : type. %name exp E.
@@ -26,13 +29,13 @@ v_true = (exp/scon (scon/bool true)).
 v_false = (exp/scon (scon/bool false)).
 v_unit = (exp/scon scon/unit).
 
-%% Value
+%% Values in the language.
 value : exp -> type.
 value/scon : value (exp/scon _).
 value/lambda : value (exp/lambda [x] E x).
 
 %% Primitive evaluation contexts. This defines a context which is static while
-%%  evaluation happens "in the hole" (which is a lambda en this game :)
+%%  evaluation happens "in the hole" (which is a lambda in this game :)
 %% I first saw this idea when it was presented by Andrzej Filinski in a Twelf-course.
 %% The cleverness is that we split "boring" evaluation from where the real stuff happens.
 pctx : (exp -> exp) -> type.
@@ -76,7 +79,6 @@ step/while : step (exp/while T B) (exp/if T (exp/seq B (exp/while T B)) v_unit).
 
 step/primitive : step (exp/prim P EL) R
 		  <- ev-primitive P EL R.
-
 
 %% Iterated step relation for completeness
 steps : exp -> exp -> type.
