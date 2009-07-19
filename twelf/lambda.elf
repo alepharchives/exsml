@@ -1,28 +1,34 @@
 %%*** The Lambda language of Moscow ML
 
-%% We present the Lambda language in HOAS style rather than in De-Bruijn-indexing. I really hope
-%%  there is a rather simple way to convert the following development into a De-Bruijn indexed
-%%  variant while preserving the types.
+%% We present the Lambda language in HOAS style rather than in
+%%  De-Bruijn-indexing. I really hope there is a rather simple way to
+%%  convert the following development into a De-Bruijn indexed variant
+%%  while preserving the types.
+
+%% Introduce a very simple type system (for now)
+tp : type. %name tp T.
+tp/unit : tp.
+tp/arrow : tp -> tp -> tp.
 
 %% Introduce lambda expressions of natural numbers
-exp : type. %name exp E.
+exp : tp -> type. %name exp E.
 exp-list : type. %name exp-list EL.
 
-exp/scon : scon -> exp.
-exp/lambda : (exp -> exp) -> exp.
-exp/letrec : (exp -> exp) -> exp.
-exp/let : exp -> (exp -> exp) -> exp.
-exp/apply  : exp -> exp -> exp.
-exp/if : exp -> exp -> exp -> exp.
-exp/seq : exp -> exp -> exp.
-exp/andalso : exp -> exp -> exp.
-exp/orelse : exp -> exp -> exp.
-exp/unspec : exp.
-exp/while : exp -> exp -> exp.
-exp/prim : primitive -> exp-list -> exp.
-
 exp-list/nil : exp-list.
-exp-list/cons : exp -> exp-list -> exp-list.
+exp-list/cons : exp T -> exp-list -> exp-list.
+
+exp/scon : scon -> exp T.
+exp/lambda : (exp T -> exp T') -> exp (tp/arrow T T').
+exp/letrec : (exp T -> exp T) -> exp T.
+exp/let : exp T -> (exp T -> exp T') -> exp T'.
+exp/apply  : exp (tp/arrow T T') -> exp T -> exp T'.
+exp/if : exp T -> exp T -> exp T -> exp T.
+exp/seq : exp T -> exp T -> exp T.
+exp/andalso : exp T -> exp T -> exp T.
+exp/orelse : exp T -> exp T -> exp T.
+exp/unspec : exp T.
+exp/while : exp T -> exp T -> exp T.
+exp/prim : primitive -> exp-list -> exp T.
 
 %% Shortcuts for later work, should probably be moved to somewhere else.
 v_true = (exp/scon (scon/bool true)).
@@ -30,7 +36,7 @@ v_false = (exp/scon (scon/bool false)).
 v_unit = (exp/scon scon/unit).
 
 %% Values in the language.
-value : exp -> type.
+value : exp T -> type.
 value/scon : value (exp/scon _).
 value/lambda : value (exp/lambda [x] E x).
 
@@ -38,10 +44,10 @@ value/lambda : value (exp/lambda [x] E x).
 %%  evaluation happens "in the hole" (which is a lambda in this game :)
 %% I first saw this idea when it was presented by Andrzej Filinski in a Twelf-course.
 %% The cleverness is that we split "boring" evaluation from where the real stuff happens.
-pctx : (exp -> exp) -> type.
+pctx : (exp T -> exp T') -> type.
 
-pctx/apply-1 : pctx ([x] exp/apply x E2).
-pctx/apply-2 : pctx ([x] exp/apply V x)
+pctx/apply-1 : pctx ([x : exp (tp/arrow T1 T2)] exp/apply x E2).
+pctx/apply-2 : pctx ([x : exp (tp/arrow T1 T2)] exp/apply V x)
 		<- value V.
 
 pctx/seq-1 : pctx ([x] exp/seq x E2).
@@ -52,9 +58,9 @@ pctx/orelse-1  : pctx ([x] exp/orelse x E2).
 pctx/let       : pctx ([x] exp/let x B).
 
 %% Introduce a (small-step) evaluation form
-step : exp -> exp -> type.
+step : exp T -> exp T -> type.
 %% Primitives are evaluated by this rule.
-ev-primitive : primitive -> exp-list -> exp -> type.
+ev-primitive : primitive -> exp-list -> exp T -> type.
 
 step/ctx : step (EC E) (EC E')
 	    <- pctx EC
@@ -81,7 +87,7 @@ step/primitive : step (exp/prim P EL) R
 		  <- ev-primitive P EL R.
 
 %% Iterated step relation for completeness
-steps : exp -> exp -> type.
+steps : exp T -> exp T -> type.
 
 steps_0 : steps E E.
 
@@ -89,7 +95,7 @@ steps_s : steps E E'
 	   <- step E E''
 	   <- steps E'' E'.
 
-stepsto : exp -> exp -> type.
+stepsto : exp T -> exp T -> type.
 
 sto_do : stepsto E V
 	  <- steps E V
