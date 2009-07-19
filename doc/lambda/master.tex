@@ -177,7 +177,7 @@ orelse[\;orelse\;],do[\;do\;],assign[\;assign\;]}
   different strategies.\fixme{Describe the $(a)$ part} The expression
   $e$ is reduced and its tag is looked up. Then the switch is made on
   the contents of this tag.
-\item[$b& \<sfail>, e_1 \<shandle> e_2$] The static exception handling
+\item[$\<sfail>, e_1 \<shandle> e_2$] The static exception handling
   is used when exceptions do not escape the current function. Such
   exceptions can be compiled by a goto-statement. Thus one can use
   exceptions locally to mangle the control flow without the costly
@@ -202,9 +202,10 @@ orelse[\;orelse\;],do[\;do\;],assign[\;assign\;]}
 \item[$unspec$] An unspecified value. It is used in the construction
   \texttt{val \_ = e} for instance.
 \item[$\<shared>(k) \; e^{*}$] This shared rule defines a shared
-  lambda construction which was used by the pattern match compiler
-  earlier on but seems to be un-used now.
+  lambda construction which is used by the pattern match
+  compiler. Rather than building a decision tree, it constructs a
+  decision dag. And this shared construct is used for that.
 \item[$\<assign> i \leftarrow e$] An assignment construction which
-  seem to be unused in the current compiler.
+  is used in the backend. How is unknown.
 \end{description}
 \end{document}
