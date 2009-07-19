@@ -119,55 +119,6 @@ sto_do : stepsto E V
 	  <- value V.
 
 %{
-%% Evaluation always ends in a canonical form and its proof.
-ev-has-canonical-form : ev E E' -> canonical-form E' -> type.
-%mode ev-has-canonical-form +E -CF.
-- : ev-has-canonical-form (ev/scon _) canonical-form/scon.
-- : ev-has-canonical-form ev/lambda canonical-form/lambda.
-- : ev-has-canonical-form (ev/apply D3 D2 D1) CF
-     <- ev-has-canonical-form D3 CF.
-- : ev-has-canonical-form (ev/if/t TrueC Test) X
-     <- ev-has-canonical-form TrueC X.
-- : ev-has-canonical-form (ev/if/f FalseC Test) X
-     <- ev-has-canonical-form FalseC X.
-
-%worlds () (ev-has-canonical-form _ _).
-%total E (ev-has-canonical-form E _).
-
-of : exp -> ty -> type.
-
-of/scon : of (exp/scon SC) (ty/scon TSC)
-	   <- of-scon SC TSC.
-of/apply : of (exp/apply E1 E2) T2
-	    <- of E1 (ty/arrow T1 T2)
-	    <- of E2 T1.
-of/lambda : of (exp/lambda [x] E x) (ty/arrow T T')
-	     <- ({x : exp} of x T
-		   -> of (E x) T').
-of/if : of (exp/if Test True False) T
-	 <- of Test ty/bool
-	 <- of True T
-	 <- of False T.
-
-
-%% Type preservation
-ty_preserv : ev E E' -> of E T -> of E' T -> type.
-%mode ty_preserv +EV +TP1 -TP2.
-- : ty_preserv ev/nat of/nat of/nat.
-- : ty_preserv ev/bool of/bool of/bool.
-- : ty_preserv ev/lambda (of/lambda E) (of/lambda E).
-- : ty_preserv (ev/apply D3 D2 D1) (of/apply T2 T1) T3'
-     <- ty_preserv D1 T1 (of/lambda T1')
-     <- ty_preserv D2 T2 T2'
-     <- ty_preserv D3 (T1' V2 T2') T3'.
-- : ty_preserv (ev/if/t TrueC Test) (of/if DFalse DTrue DTest) T
-     <- ty_preserv TrueC DTrue T.
-- : ty_preserv (ev/if/f FalseC Test) (of/if DFalse DTrue DTest) T
-     <- ty_preserv FalseC DFalse T.
-
-%worlds () (ty_preserv _ _ _).
-%total E (ty_preserv E _ _).
-
 %% Type progression
 
 progression : exp -> type.
