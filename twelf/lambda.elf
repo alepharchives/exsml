@@ -8,7 +8,22 @@
 %% Introduce a very simple type system (for now)
 tp : type. %name tp T.
 tp/unit : tp.
+tp/bool : tp.
+tp/nat : tp.
+tp/char : tp.
 tp/arrow : tp -> tp -> tp.
+
+%% Special Constructors. These are nat, char, word, string, etc and
+%%  represent these in the backend.
+scon : type. %name scon SC.
+
+scon/nat : nat -> scon.
+scon/char : nat -> scon.
+scon/bool : bool -> scon.
+scon/unit : scon.
+%% ... There are more here, but we don't need it. We only need enough
+%% to show that the type system is safe and thus we can utilize a
+%% small set of Scons to show this.
 
 %% Introduce lambda expressions of natural numbers
 exp : tp -> type. %name exp E.
@@ -40,10 +55,11 @@ value : exp T -> type.
 value/scon : value (exp/scon _).
 value/lambda : value (exp/lambda [x] E x).
 
-%% Primitive evaluation contexts. This defines a context which is static while
-%%  evaluation happens "in the hole" (which is a lambda in this game :)
-%% I first saw this idea when it was presented by Andrzej Filinski in a Twelf-course.
-%% The cleverness is that we split "boring" evaluation from where the real stuff happens.
+%% Primitive evaluation contexts. This defines a context which is
+%%  static while evaluation happens "in the hole" (which is a lambda
+%%  in this game :) I first saw this idea when it was presented by
+%%  Andrzej Filinski in a Twelf-course.  The cleverness is that we
+%%  split "boring" evaluation from where the real stuff happens.
 pctx : (exp T -> exp T') -> type.
 
 pctx/apply-1 : pctx ([x : exp (tp/arrow T1 T2)] exp/apply x E2).
