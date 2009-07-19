@@ -15,12 +15,12 @@ tp/arrow : tp -> tp -> tp.
 
 %% Special Constructors. These are nat, char, word, string, etc and
 %%  represent these in the backend.
-scon : type. %name scon SC.
+scon : tp -> type. %name scon SC.
 
-scon/nat : nat -> scon.
-scon/char : nat -> scon.
-scon/bool : bool -> scon.
-scon/unit : scon.
+scon/nat : nat -> scon tp/nat.
+scon/char : nat -> scon tp/char.
+scon/bool : bool -> scon tp/bool.
+scon/unit : scon tp/unit.
 %% ... There are more here, but we don't need it. We only need enough
 %% to show that the type system is safe and thus we can utilize a
 %% small set of Scons to show this.
@@ -32,17 +32,17 @@ exp-list : type. %name exp-list EL.
 exp-list/nil : exp-list.
 exp-list/cons : exp T -> exp-list -> exp-list.
 
-exp/scon : scon -> exp T.
+exp/scon : scon T -> exp T.
 exp/lambda : (exp T -> exp T') -> exp (tp/arrow T T').
 exp/letrec : (exp T -> exp T) -> exp T.
 exp/let : exp T -> (exp T -> exp T') -> exp T'.
 exp/apply  : exp (tp/arrow T T') -> exp T -> exp T'.
-exp/if : exp T -> exp T -> exp T -> exp T.
+exp/if : exp tp/bool -> exp T -> exp T -> exp T.
 exp/seq : exp T -> exp T -> exp T.
-exp/andalso : exp T -> exp T -> exp T.
-exp/orelse : exp T -> exp T -> exp T.
-exp/unspec : exp T.
-exp/while : exp T -> exp T -> exp T.
+exp/andalso : exp tp/bool -> exp tp/bool -> exp tp/bool.
+exp/orelse : exp tp/bool -> exp tp/bool -> exp tp/bool.
+exp/unspec : exp tp/unit.
+exp/while : exp tp/bool -> exp T -> exp tp/unit.
 exp/prim : primitive -> exp-list -> exp T.
 
 %% Shortcuts for later work, should probably be moved to somewhere else.
