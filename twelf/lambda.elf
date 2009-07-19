@@ -11,6 +11,7 @@ tp/unit : tp.
 tp/bool : tp.
 tp/nat : tp.
 tp/char : tp.
+tp/ref : tp -> tp.
 tp/arrow : tp -> tp -> tp.
 
 %% Special Constructors. These are nat, char, word, string, etc and
