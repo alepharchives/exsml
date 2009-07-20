@@ -195,6 +195,20 @@ progress-good_seq : progress-good E -> progress-good (exp/seq E E2) -> type.
 %worlds () (progress-good_seq _ _).
 %total E (progress-good_seq E _).
 
+%% Lemma on let
+progress-good_let : progress-good E -> progress-good (exp/let E ([x] B x)) -> type.
+%mode +{T : tp} +{T' : tp} +{E : exp T} +{B : exp T -> exp T'}
+      +{G : progress-good E} -{G' : progress-good (exp/let E [x : exp T] B x)}
+          progress-good_let G G'.
+
+- : progress-good_let (progress-good/value VP)
+     (progress-good/step (step/let VP)).
+- : progress-good_let (progress-good/step SP)
+     (progress-good/step (step/ctx SP pctx/let)).
+%worlds () (progress-good_let _ _).
+%total E (progress-good_let E _).
+
+
 progress : {E} progress-good E -> type.
 %mode progress +E -G.
 
@@ -212,6 +226,9 @@ progress : {E} progress-good E -> type.
 - : progress (exp/seq E E2) GP'
      <- progress E GP
      <- progress-good_seq GP GP'.
+- : progress (exp/let E E2) GP'
+     <- progress E GP
+     <- progress-good_let GP GP'.
 
 
 %%worlds () (progress _ _).
