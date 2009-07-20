@@ -272,7 +272,7 @@ int rev_pointers_64(value64 * p, mlsize_t size)
 
   q = p + size;
   while (p < q) {
-    Reverse_int64(p);
+    Reverse_int64_t(p);
     hd = (header_t)(p->lsw);
     if (p->msw != 0) return -1;
     p++;
@@ -287,7 +287,7 @@ int rev_pointers_64(value64 * p, mlsize_t size)
       break;
     default:
       for( ; n > 0; n --, p++) {
-        Reverse_int64(p);
+        Reverse_int64_t(p);
       }
     }
   }
