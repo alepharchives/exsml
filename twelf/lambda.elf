@@ -72,7 +72,7 @@ value/lambda : value (exp/lambda [x] E x).
 pctx : (exp T -> exp T') -> type.
 
 pctx/apply-1 : pctx ([x : exp (tp/arrow T1 T2)] exp/apply x E2).
-pctx/apply-2 : pctx ([x : exp (tp/arrow T1 T2)] exp/apply V x)
+pctx/apply-2 : pctx ([x : exp T1] exp/apply V x)
 		<- value V.
 
 pctx/seq-1 : pctx ([x] exp/seq x E2).
@@ -208,7 +208,6 @@ progress-good_let : progress-good E -> progress-good (exp/let E ([x] B x)) -> ty
 %worlds () (progress-good_let _ _).
 %total E (progress-good_let E _).
 
-
 progress : {E} progress-good E -> type.
 %mode progress +E -G.
 
@@ -229,7 +228,6 @@ progress : {E} progress-good E -> type.
 - : progress (exp/let E E2) GP'
      <- progress E GP
      <- progress-good_let GP GP'.
-
 
 %%worlds () (progress _ _).
 %%total E (progress E _).
