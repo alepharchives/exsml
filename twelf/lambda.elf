@@ -43,7 +43,7 @@ exp/letrec : (exp T -> exp T) -> exp T.
 exp/let : exp T -> (exp T -> exp T') -> exp T'.
 exp/apply  : exp (tp/arrow T T') -> exp T -> exp T'.
 exp/if : exp tp/bool -> exp T -> exp T -> exp T.
-exp/seq : exp T -> exp T -> exp T.
+exp/seq : exp T -> exp T' -> exp T'.
 exp/andalso : exp tp/bool -> exp tp/bool -> exp tp/bool.
 exp/orelse : exp tp/bool -> exp tp/bool -> exp tp/bool.
 exp/unspec : exp tp/unit.
@@ -130,7 +130,7 @@ sto_do : stepsto E V
 
 %%% Progress theorem
 
-%% Factoring of values and steps
+%% Factoring of values and steps, used in the progress theorem for output factoring.
 progress-good : exp T -> type.
 progress-good/value : progress-good V
 		       <- value V.
@@ -144,9 +144,9 @@ progress-good_if : progress-good E -> progress-good (exp/if E E1 E2) -> type.
 		   progress-good_if G G'.
 
 - : progress-good_if (progress-good/value VP)
-       (progress-good/step (step/if-t)).
+       (progress-good/step step/if-t).
 - : progress-good_if (progress-good/value VP)
-       (progress-good/step (step/if-f)).
+       (progress-good/step step/if-f).
 - : progress-good_if (progress-good/step SP)
        (progress-good/step (step/ctx SP pctx/if-tst)).
 %worlds () (progress-good_if _ _).
@@ -159,9 +159,9 @@ progress-good_andalso : progress-good E -> progress-good (exp/andalso E E2) -> t
             progress-good_andalso G G'.
 
 - : progress-good_andalso (progress-good/value VP)
-     (progress-good/step (step/andalso-1)).
+     (progress-good/step step/andalso-1).
 - : progress-good_andalso (progress-good/value VP)
-     (progress-good/step (step/andalso-2)).
+     (progress-good/step step/andalso-2).
 - : progress-good_andalso (progress-good/step SP)
      (progress-good/step (step/ctx SP pctx/andalso-1)).
 %worlds () (progress-good_andalso _ _).
@@ -174,13 +174,26 @@ progress-good_orelse : progress-good E -> progress-good (exp/orelse E E2) -> typ
             progress-good_orelse G G'.
 
 - : progress-good_orelse (progress-good/value VP)
-     (progress-good/step (step/orelse-1)).
+     (progress-good/step step/orelse-1).
 - : progress-good_orelse (progress-good/value VP)
-     (progress-good/step (step/orelse-2)).
+     (progress-good/step step/orelse-2).
 - : progress-good_orelse (progress-good/step SP)
      (progress-good/step (step/ctx SP pctx/orelse-1)).
 %worlds () (progress-good_orelse _ _).
 %total E (progress-good_orelse E _).
+
+%% Lemma on sequence
+progress-good_seq : progress-good E -> progress-good (exp/seq E E2) -> type.
+%mode +{T : tp} +{T' : tp} +{E : exp T} +{E2 : exp T'}
+      +{G : progress-good E} -{G' : progress-good (exp/seq E E2)}
+          progress-good_seq G G'.
+
+- : progress-good_seq (progress-good/value VP)
+     (progress-good/step (step/seq VP)).
+- : progress-good_seq (progress-good/step SP)
+     (progress-good/step (step/ctx SP pctx/seq-1)).
+%worlds () (progress-good_seq _ _).
+%total E (progress-good_seq E _).
 
 progress : {E} progress-good E -> type.
 %mode progress +E -G.
@@ -196,6 +209,10 @@ progress : {E} progress-good E -> type.
 - : progress (exp/orelse E E2) GP'
      <- progress E GP
      <- progress-good_orelse GP GP'.
+- : progress (exp/seq E E2) GP'
+     <- progress E GP
+     <- progress-good_seq GP GP'.
+
 
 %%worlds () (progress _ _).
 %%total E (progress E _).
