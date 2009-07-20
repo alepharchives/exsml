@@ -17,6 +17,16 @@ run() {
     fi
 }
 
+configure=false
+
+while getopts cd: OPT ; do
+    case "$OPT" in
+        c)
+            configure=true
+            ;;
+    esac
+done
+
 generate_changelog
 run mkdir -p config
 run libtoolize --copy --force --automake
@@ -24,3 +34,7 @@ run aclocal
 run autoheader
 run autoconf
 run automake -a --copy
+
+if $configure ; then
+    ./configure
+fi
