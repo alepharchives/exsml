@@ -5,6 +5,8 @@
 %%  convert the following development into a De-Bruijn indexed variant
 %%  while preserving the types.
 
+%%% *** TYPE SYSTEM ***
+
 %% Introduce a very simple type system (for now)
 tp : type. %name tp T.
 tp/unit : tp.
@@ -13,6 +15,8 @@ tp/nat : tp.
 tp/char : tp.
 tp/ref : tp -> tp.
 tp/arrow : tp -> tp -> tp.
+
+%%% *** SYNTAX ***
 
 %% Special Constructors. These are nat, char, word, string, etc and
 %%  represent these in the backend.
@@ -46,6 +50,8 @@ exp/unspec : exp tp/unit.
 exp/while : exp tp/bool -> exp T -> exp tp/unit.
 exp/prim : primitive -> exp-list -> exp T.
 
+%%% *** VALUES ***
+
 %% Shortcuts for later work, should probably be moved to somewhere else.
 v_true = (exp/scon (scon/bool true)).
 v_false = (exp/scon (scon/bool false)).
@@ -55,6 +61,8 @@ v_unit = (exp/scon scon/unit).
 value : exp T -> type.
 value/scon : value (exp/scon _).
 value/lambda : value (exp/lambda [x] E x).
+
+%%% *** SEMANTICS ***
 
 %% Primitive evaluation contexts. This defines a context which is
 %%  static while evaluation happens "in the hole" (which is a lambda
@@ -118,19 +126,76 @@ sto_do : stepsto E V
 	  <- steps E V
 	  <- value V.
 
+%%% *** PROPERTIES ***
+
+%%% Progress theorem
+
+%% Factoring of values and steps
 progress-good : exp T -> type.
 progress-good/value : progress-good V
 		       <- value V.
 progress-good/step : progress-good E
 		      <- step E E'.
 
+%% Lemma on if-expressions
+progress-good_if : progress-good E -> progress-good (exp/if E E1 E2) -> type.
+%mode +{T : tp} +{E : exp tp/bool} +{E1: exp T} +{E2: exp T}
+      +{G : progress-good E} -{G' : progress-good (exp/if E E1 E2)}
+		   progress-good_if G G'.
 
+- : progress-good_if (progress-good/value VP)
+       (progress-good/step (step/if-t)).
+- : progress-good_if (progress-good/value VP)
+       (progress-good/step (step/if-f)).
+- : progress-good_if (progress-good/step SP)
+       (progress-good/step (step/ctx SP pctx/if-tst)).
+%worlds () (progress-good_if _ _).
+%total E (progress-good_if E _).
+
+%% Lemma on andalso
+progress-good_andalso : progress-good E -> progress-good (exp/andalso E E2) -> type.
+%mode +{E : exp tp/bool} +{E2 : exp tp/bool}
+      +{G : progress-good E} -{G' : progress-good (exp/andalso E E2)}
+            progress-good_andalso G G'.
+
+- : progress-good_andalso (progress-good/value VP)
+     (progress-good/step (step/andalso-1)).
+- : progress-good_andalso (progress-good/value VP)
+     (progress-good/step (step/andalso-2)).
+- : progress-good_andalso (progress-good/step SP)
+     (progress-good/step (step/ctx SP pctx/andalso-1)).
+%worlds () (progress-good_andalso _ _).
+%total E (progress-good_andalso E _).
+
+%% Lemma on orelse
+progress-good_orelse : progress-good E -> progress-good (exp/orelse E E2) -> type.
+%mode +{E : exp tp/bool} +{E2 : exp tp/bool}
+      +{G : progress-good E} -{G' : progress-good (exp/orelse E E2)}
+            progress-good_orelse G G'.
+
+- : progress-good_orelse (progress-good/value VP)
+     (progress-good/step (step/orelse-1)).
+- : progress-good_orelse (progress-good/value VP)
+     (progress-good/step (step/orelse-2)).
+- : progress-good_orelse (progress-good/step SP)
+     (progress-good/step (step/ctx SP pctx/orelse-1)).
+%worlds () (progress-good_orelse _ _).
+%total E (progress-good_orelse E _).
 
 progress : {E} progress-good E -> type.
 %mode progress +E -G.
 
 - : progress (exp/scon S) (progress-good/value value/scon).
 - : progress (exp/lambda [x] E x) (progress-good/value value/lambda).
+- : progress (exp/if E E1 E2) GP'
+     <- progress E GP
+     <- progress-good_if GP GP'.
+- : progress (exp/andalso E E2) GP'
+     <- progress E GP
+     <- progress-good_andalso GP GP'.
+- : progress (exp/orelse E E2) GP'
+     <- progress E GP
+     <- progress-good_orelse GP GP'.
 
 %%worlds () (progress _ _).
 %%total E (progress E _).
