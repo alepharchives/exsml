@@ -46,9 +46,11 @@ exp/if : exp tp/bool -> exp T -> exp T -> exp T.
 exp/seq : exp T -> exp T' -> exp T'.
 exp/andalso : exp tp/bool -> exp tp/bool -> exp tp/bool.
 exp/orelse : exp tp/bool -> exp tp/bool -> exp tp/bool.
-exp/unspec : exp tp/unit.
+%% At the moment I don't need unspec
+%% exp/unspec : exp tp/unit.
 exp/while : exp tp/bool -> exp T -> exp tp/unit.
-exp/prim : primitive -> exp-list -> exp T.
+%% No need for primitives yet
+%% exp/prim : primitive -> exp-list -> exp T.
 
 %%% *** VALUES ***
 
@@ -108,8 +110,9 @@ step/orelse-2  : step (exp/orelse v_false E2) E2.
 
 step/while : step (exp/while T B) (exp/if T (exp/seq B (exp/while T B)) v_unit).
 
-step/primitive : step (exp/prim P EL) R
-		  <- ev-primitive P EL R.
+%% Comment primitives for now
+%% step/primitive : step (exp/prim P EL) R
+%% 		  <- ev-primitive P EL R.
 
 %% Iterated step relation for completeness
 steps : exp T -> exp T -> type.
@@ -208,6 +211,24 @@ progress-good_let : progress-good E -> progress-good (exp/let E ([x] B x)) -> ty
 %worlds () (progress-good_let _ _).
 %total E (progress-good_let E _).
 
+%% Lemma on apply
+progress-good_apply : progress-good E1 -> progress-good E2
+		         -> progress-good (exp/apply E1 E2) -> type.
+%mode +{T : tp} +{T' : tp} +{E1 : exp (tp/arrow T T')} +{E2 : exp T}
+      +{G : progress-good E1} +{G' : progress-good E2}
+      -{G'' : progress-good (exp/apply E1 E2)}
+      progress-good_apply G G' G''.
+
+- : progress-good_apply (progress-good/step SP) _
+     (progress-good/step (step/ctx SP pctx/apply-1)).
+- : progress-good_apply (progress-good/value VP) (progress-good/step SP)
+     (progress-good/step (step/ctx SP (pctx/apply-2 VP))).
+- : progress-good_apply (progress-good/value VP1) (progress-good/value VP2)
+     (progress-good/step (step/app-lam VP2)).
+
+%worlds () (progress-good_apply _ _ _).
+%total E (progress-good_apply E _ _).
+
 progress : {E} progress-good E -> type.
 %mode progress +E -G.
 
@@ -228,9 +249,15 @@ progress : {E} progress-good E -> type.
 - : progress (exp/let E E2) GP'
      <- progress E GP
      <- progress-good_let GP GP'.
+- : progress (exp/apply E1 E2) GP
+     <- progress E1 GP1
+     <- progress E2 GP2
+     <- progress-good_apply GP1 GP2 GP.
+- : progress (exp/while T B) (progress-good/step step/while).
+- : progress (exp/letrec [x] E1 x) (progress-good/step step/letrec).
 
-%%worlds () (progress _ _).
-%%total E (progress E _).
+%worlds () (progress _ _).
+%total E (progress E _).
 
 
 
