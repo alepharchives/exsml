@@ -7,9 +7,22 @@ nat/s : nat -> nat.
 z = nat/z.
 s = nat/s.
 
-plus : nat -> nat -> nat -> type.
-plus/z : plus z N N.
-plus/s : plus (s K1) X (s K2)
-	  <- plus K1 X K2.
+nat_plus : nat -> nat -> nat -> type.
+nat_plus/z : nat_plus z N N.
+nat_plus/s : nat_plus (s K1) X (s K2)
+	  <- nat_plus K1 X K2.
+
+nat_mone : nat -> nat -> nat -> type.
+nat_mone/z-1 : nat_mone z N z.
+nat_mone/z-2 : nat_mone N z N.
+nat_mone/s   : nat_mone (s K1) (s K2) R
+	    <- nat_mone K1 K2 R.
+
+nat_lt : nat -> nat -> bool -> type.
+nat_lt-zz : nat_lt z z false.
+nat_lt-zs : nat_lt z (s _) true.
+nat_lt-sz : nat_lt (s _) z false.
+nat_lt-ss : nat_lt (s K1) (s K1) R
+	     <- nat_lt K1 K2 R.
 
 
