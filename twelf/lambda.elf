@@ -103,6 +103,13 @@ value-option : type.
 value-option/none : value-option.
 value-option/some : (value E) -> value-option.
 
+%% Lists are values when all elements in it are
+value-list : exp-list -> type.
+value-list/nil : value-list exp-list/nil.
+value-list/cons : value-list (exp-list/cons V R)
+		   <- value V
+		   <- value-list R.
+
 %%% *** STORES ***
 %% Definition of a cell store.
 
@@ -142,10 +149,12 @@ pctx/andalso-1 : pctx ([x] exp/andalso x E2).
 pctx/orelse-1  : pctx ([x] exp/orelse x E2).
 pctx/let       : pctx ([x] exp/let x B).
 
+%% Evaluation of primitive values
+ev-prim : primitive -> exp-list -> exp T -> type.
+
 %% Introduce a (small-step) evaluation form
 step : exp T -> exp T -> type.
-%% Primitives are evaluated by this rule.
-ev-primitive : primitive -> exp-list -> exp T -> type.
+step-list : exp-list -> exp-list -> type.
 
 step/ctx : step (EC E) (EC E')
 	    <- pctx EC
@@ -167,10 +176,19 @@ step/orelse-1  : step (exp/orelse v_true _) v_true.
 step/orelse-2  : step (exp/orelse v_false E2) E2.
 
 step/while : step (exp/while T B) (exp/if T (exp/seq B (exp/while T B)) v_unit).
+step/arg : step (exp/prim P _ _ EL) (exp/prim P _ _ EL')
+	    <- step-list EL EL'.
+step/prim : step (exp/prim P _ _ VL) R
+	     <- value-list VL
+	     <- ev-prim P VL R.
 
-%% Comment primitives for now
-%% step/primitive : step (exp/prim P EL) R
-%% 		  <- ev-primitive P EL R.
+%% Left to right evaluation of expression lists.
+step-list/nil : step-list exp-list/nil exp-list/nil.
+step-list/cons-v : step-list (exp-list/cons V R) (exp-list/cons V R')
+		    <- value V
+		    <- step-list R R'.
+step-list/cons-e : step-list (exp-list/cons E R) (exp-list/cons E' R)
+		    <- step E E'.
 
 %% Iterated step relation for completeness
 steps : exp T -> exp T -> type.
