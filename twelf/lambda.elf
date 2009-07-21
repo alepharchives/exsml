@@ -16,6 +16,18 @@ tp/char : tp.
 tp/ref : tp -> tp.
 tp/arrow : tp -> tp -> tp.
 
+%% what is the return type of a statement?
+tp-return : tp -> tp -> type.
+%mode tp-return +T -T'.
+
+tp-return/unit : tp-return tp/unit tp/unit.
+tp-return/bool : tp-return tp/bool tp/bool.
+tp-return/nat  : tp-return tp/nat  tp/nat.
+tp-return/char : tp-return tp/char tp/char.
+tp-return/ref  : tp-return (tp/ref T) (tp/ref T).
+tp-return/arrow : tp-return (tp/arrow T1 T2) T
+		   <- tp-return T2 T.
+
 %%% *** SYNTAX ***
 
 %% Special Constructors. These are nat, char, word, string, etc and
@@ -54,7 +66,6 @@ primitive-tp/bool-eq  : primitive-tp primitive/bool-eq (tp/arrow (tp/arrow tp/bo
 primitive-tp/ref-lookup : primitive-tp primitive/ref-lookup (tp/arrow (tp/ref T) T).
 primitive-tp/ref-assign : primitive-tp primitive/ref-assign (tp/arrow (tp/arrow (tp/ref T) T) tp/unit).
 
-
 %% Introduce lambda expressions of natural numbers
 exp : tp -> type. %name exp E.
 exp-list : type. %name exp-list EL.
@@ -74,7 +85,7 @@ exp/orelse : exp tp/bool -> exp tp/bool -> exp tp/bool.
 %% At the moment I don't need unspec
 %% exp/unspec : exp tp/unit.
 exp/while : exp tp/bool -> exp T -> exp tp/unit.
-%%exp/prim : primitive -> exp-list -> exp T.
+exp/prim : {P : primitive} primitive-tp P T -> tp-return T T' -> exp-list -> exp T'.
 
 %%% *** VALUES ***
 
@@ -303,8 +314,8 @@ progress : {E} progress-good E -> type.
 - : progress (exp/while T B) (progress-good/step step/while).
 - : progress (exp/letrec [x] E1 x) (progress-good/step step/letrec).
 
-%worlds () (progress _ _).
-%total E (progress E _).
+%%worlds () (progress _ _).
+%%total E (progress E _).
 
 
 
