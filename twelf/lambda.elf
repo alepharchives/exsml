@@ -208,6 +208,13 @@ progress-good/value : progress-good V
 progress-good/step : progress-good E
 		      <- step E E'.
 
+%% Same thing, for lists of expressions
+progress-good-list : exp-list -> type.
+progress-good-list/value : progress-good-list VL
+			    <- value-list VL.
+progress-good-list/step : progress-good-list E
+			   <- step-list E E'.
+
 %% Lemma on if-expressions
 progress-good_if : progress-good E -> progress-good (exp/if E E1 E2) -> type.
 %mode +{T : tp} +{E : exp tp/bool} +{E1: exp T} +{E2: exp T}
@@ -297,9 +304,24 @@ progress-good_apply : progress-good E1 -> progress-good E2
 %worlds () (progress-good_apply _ _ _).
 %total E (progress-good_apply E _ _).
 
+progress-list : {EL} progress-good-list EL -> type.
+%mode progress-list +E -G.
 progress : {E} progress-good E -> type.
 %mode progress +E -G.
 
+%% progress-list entries, should probably be output factored to make the output coverage checker
+%%  happy.
+- : progress-list exp-list/nil (progress-good-list/value value-list/nil).
+- : progress-list (exp-list/cons E R) (progress-good-list/step (step-list/cons-v SP VP))
+     <- progress-list R (progress-good-list/step SP)
+     <- progress E (progress-good/value VP).
+- : progress-list (exp-list/cons E R) (progress-good-list/step (step-list/cons-e SPE))
+     <- progress E (progress-good/step SPE).
+- : progress-list (exp-list/cons E R) (progress-good-list/value (value-list/cons RP VP))
+     <- progress-list R (progress-good-list/value RP)
+     <- progress E (progress-good/value VP).
+
+%% progress entries
 - : progress (exp/scon S) (progress-good/value value/scon).
 - : progress (exp/lambda [x] E x) (progress-good/value value/lambda).
 - : progress (exp/if E E1 E2) GP'
@@ -324,8 +346,8 @@ progress : {E} progress-good E -> type.
 - : progress (exp/while T B) (progress-good/step step/while).
 - : progress (exp/letrec [x] E1 x) (progress-good/step step/letrec).
 
-%%worlds () (progress _ _).
-%%total E (progress E _).
+%%worlds () (progress _ _) (progress-list _ _).
+%%total (E EL) (progress E _) (progress-list EL _).
 
 
 
