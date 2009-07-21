@@ -45,26 +45,16 @@ scon/ref : nat -> scon (tp/ref T).
 %% small set of Scons to show this.
 
 %% Primitive operations in the language.
-primitive : type.
+%% The first type is the argument type, the latter the return type.
+primitive : tp -> tp -> type.
 
-primitive/nat-plus : primitive.
-primitive/nat-mone : primitive.
-primitive/nat-lt  : primitive.
-primitive/bool-not : primitive.
-primitive/bool-eq : primitive.
-primitive/ref-lookup : primitive.
-primitive/ref-assign : primitive.
-
-%% Type of various primitive operations.
-primitive-tp : primitive -> tp -> type.
-
-primitive-tp/nat-plus : primitive-tp primitive/nat-plus (tp/arrow (tp/arrow tp/nat tp/nat) tp/nat).
-primitive-tp/nat-mone : primitive-tp primitive/nat-mone (tp/arrow (tp/arrow tp/nat tp/nat) tp/nat).
-primitive-tp/nat-lt   : primitive-tp primitive/nat-lt (tp/arrow (tp/arrow tp/nat tp/nat) tp/nat).
-primitive-tp/bool-not : primitive-tp primitive/bool-not (tp/arrow tp/bool tp/bool).
-primitive-tp/bool-eq  : primitive-tp primitive/bool-eq (tp/arrow (tp/arrow tp/bool tp/bool) tp/bool).
-primitive-tp/ref-lookup : primitive-tp primitive/ref-lookup (tp/arrow (tp/ref T) T).
-primitive-tp/ref-assign : primitive-tp primitive/ref-assign (tp/arrow (tp/arrow (tp/ref T) T) tp/unit).
+primitive/nat-plus : primitive (tp/arrow tp/nat tp/nat) tp/nat.
+primitive/nat-mone : primitive (tp/arrow tp/nat tp/nat) tp/nat.
+primitive/nat-lt  : primitive  (tp/arrow tp/nat tp/nat) tp/nat.
+primitive/bool-not : primitive tp/bool tp/bool.
+primitive/bool-eq : primitive  (tp/arrow tp/bool tp/bool) tp/bool.
+primitive/ref-lookup : primitive (tp/ref T) T.
+primitive/ref-assign : primitive (tp/arrow (tp/ref T) T) tp/unit.
 
 %% Introduce lambda expressions of natural numbers
 exp : tp -> type. %name exp E.
@@ -85,7 +75,7 @@ exp/orelse : exp tp/bool -> exp tp/bool -> exp tp/bool.
 %% At the moment I don't need unspec
 %% exp/unspec : exp tp/unit.
 exp/while : exp tp/bool -> exp T -> exp tp/unit.
-exp/prim : {P : primitive} primitive-tp P T -> tp-return T T' -> exp-list -> exp T'.
+exp/prim : {P : primitive T RT} exp-list -> exp RT.
 
 %%% *** VALUES ***
 
@@ -150,7 +140,7 @@ pctx/orelse-1  : pctx ([x] exp/orelse x E2).
 pctx/let       : pctx ([x] exp/let x B).
 
 %% Evaluation of primitive values
-ev-prim : primitive -> exp-list -> exp T -> type.
+ev-prim : primitive T T' -> exp-list -> exp T' -> type.
 
 %% Introduce a (small-step) evaluation form
 step : exp T -> exp T -> type.
@@ -176,9 +166,9 @@ step/orelse-1  : step (exp/orelse v_true _) v_true.
 step/orelse-2  : step (exp/orelse v_false E2) E2.
 
 step/while : step (exp/while T B) (exp/if T (exp/seq B (exp/while T B)) v_unit).
-step/arg : step (exp/prim P _ _ EL) (exp/prim P _ _ EL')
+step/arg : step (exp/prim P EL) (exp/prim P EL')
 	    <- step-list EL EL'.
-step/prim : step (exp/prim P _ _ VL) R
+step/prim : step (exp/prim P VL) R
 	     <- value-list VL
 	     <- ev-prim P VL R.
 
