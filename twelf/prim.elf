@@ -1,7 +1,0 @@
-%% Primitive operations in the language.
-primitive : type.
-
-primitive/nat-plus : primitive.
-primitive/nat-mone : primitive.
-primitive/nat-lt  : primitive.
-

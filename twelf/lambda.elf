@@ -26,9 +26,20 @@ scon/nat : nat -> scon tp/nat.
 scon/char : nat -> scon tp/char.
 scon/bool : bool -> scon tp/bool.
 scon/unit : scon tp/unit.
+scon/ref : nat -> scon (tp/ref T).
+
 %% ... There are more here, but we don't need it. We only need enough
 %% to show that the type system is safe and thus we can utilize a
 %% small set of Scons to show this.
+
+%% Primitive operations in the language.
+primitive : type.
+
+primitive/nat-plus : primitive.
+primitive/nat-mone : primitive.
+primitive/nat-lt  : primitive.
+primitive/ref-lookup : primitive.
+primitive/ref-assign : primitive.
 
 %% Introduce lambda expressions of natural numbers
 exp : tp -> type. %name exp E.
@@ -49,8 +60,7 @@ exp/orelse : exp tp/bool -> exp tp/bool -> exp tp/bool.
 %% At the moment I don't need unspec
 %% exp/unspec : exp tp/unit.
 exp/while : exp tp/bool -> exp T -> exp tp/unit.
-%% No need for primitives yet
-%% exp/prim : primitive -> exp-list -> exp T.
+%%exp/prim : primitive -> exp-list -> exp T.
 
 %%% *** VALUES ***
 
