@@ -59,6 +59,8 @@ primitive/ref-assign : primitive (tp/arrow (tp/ref T) T) tp/unit.
 %% Introduce lambda expressions of natural numbers
 exp : tp -> type. %name exp E.
 exp-list : type. %name exp-list EL.
+%%% Types for expression lists.
+exp-list-tp : exp-list -> tp -> type.
 
 exp-list/nil : exp-list.
 exp-list/cons : exp T -> exp-list -> exp-list.
@@ -75,7 +77,7 @@ exp/orelse : exp tp/bool -> exp tp/bool -> exp tp/bool.
 %% At the moment I don't need unspec
 %% exp/unspec : exp tp/unit.
 exp/while : exp tp/bool -> exp T -> exp tp/unit.
-exp/prim : {P : primitive T RT} exp-list -> exp RT.
+exp/prim : {P : primitive T RT} {EL : exp-list} exp-list-tp EL T -> exp RT.
 
 %%% *** VALUES ***
 
@@ -166,9 +168,9 @@ step/orelse-1  : step (exp/orelse v_true _) v_true.
 step/orelse-2  : step (exp/orelse v_false E2) E2.
 
 step/while : step (exp/while T B) (exp/if T (exp/seq B (exp/while T B)) v_unit).
-step/arg : step (exp/prim P EL) (exp/prim P EL')
+step/arg : step (exp/prim P EL _) (exp/prim P EL' _)
 	    <- step-list EL EL'.
-step/prim : step (exp/prim P VL) R
+step/prim : step (exp/prim P VL _) R
 	     <- value-list VL
 	     <- ev-prim P VL R.
 
