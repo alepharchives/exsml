@@ -3,3 +3,10 @@
 bool : type. %name bool B.
 true : bool.
 false : bool.
+
+bool_not : bool -> bool -> type.
+bool_not-t : bool_not true false.
+bool_not-f : bool_not false true.
+
+bool_eq : bool -> bool -> bool -> type.
+bool_eq-refl : bool_eq B B true.
