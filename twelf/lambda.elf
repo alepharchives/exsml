@@ -64,6 +64,29 @@ value : exp T -> type.
 value/scon : value (exp/scon _).
 value/lambda : value (exp/lambda [x] E x).
 
+value-option : type.
+value-option/none : value-option.
+value-option/some : (value E) -> value-option.
+
+%%% *** STORES ***
+%% Definition of a cell store.
+
+store : type.
+store/nil : store.
+store/cons : nat -> (value E) -> store -> store.
+
+store_lookup : store -> nat -> value-option -> type.
+store_lookup/not-there : store_lookup store/nil _ value-option/none.
+store_lookup/found     : store_lookup (store/cons N V _) N (value-option/some V).
+store_lookup/search    : store_lookup (store/cons N V R) N' R'
+			  <- store_lookup R N' R'.
+
+store_insert : store -> nat -> value E -> store -> type.
+store_insert/not-there : store_insert store/nil N V (store/cons N V store/nil).
+store_insert/found     : store_insert (store/cons N V' R) N V (store/cons N V R).
+store_insert/search    : store_insert (store/cons N' _ R) N V R'
+			  <- store_insert R N V R'.
+
 %%% *** SEMANTICS ***
 
 %% Primitive evaluation contexts. This defines a context which is
