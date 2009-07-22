@@ -1,5 +1,9 @@
 TODO List for Exsml
 
+o [jlouis] Figure out why 32 bit interning fails at intern.c:388
+   Spray with assertions and prints and clean up the code at this
+   point.
+
 o [jlouis] Why is the big-array.sml test accessing the disk like mad?
 
 o [jlouis] What does Lshared and Lassign do?
