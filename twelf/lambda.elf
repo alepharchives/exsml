@@ -307,6 +307,21 @@ progress-good_apply : progress-good E1 -> progress-good E2
 %worlds () (progress-good_apply _ _ _).
 %total E (progress-good_apply E _ _).
 
+%% Lemmas for progress lists, one for the 'one' case and one for the 'cons' case
+progress-good-list_one : progress-good E1
+			  -> progress-good-list (exp-list/one E1)
+			  -> type.
+%mode +{T : tp} +{E1 : exp T}
+      +{G : progress-good E1} -{G' : progress-good-list (exp-list/one E1)}
+      progress-good-list_one G G'.
+- : progress-good-list_one (progress-good/value VP)
+     (progress-good-list/value (value-list/one VP)).
+- : progress-good-list_one (progress-good/step SP)
+     (progress-good-list/step (step-list/one-s SP)).
+
+%worlds () (progress-good-list_one _ _).
+%total E (progress-good-list_one E _).
+
 progress-list : {EL} progress-good-list EL -> type.
 %mode progress-list +EL -G.
 progress : {E} progress-good E -> type.
@@ -314,12 +329,9 @@ progress : {E} progress-good E -> type.
 
 %% progress-list entries, should probably be output factored to make the output coverage checker
 %%  happy.
-- : progress-list (exp-list/one E) (progress-good-list/value (value-list/one VP))
-     <- progress E (progress-good/value VP).
-- : progress-list (exp-list/one E) (progress-good-list/step (step-list/one-s SP))
-     <- progress E (progress-good/step SP).
-- : progress-list (exp-list/one E) (progress-good-list/step (step-list/one-v VP))
-     <- progress E (progress-good/value VP).
+- : progress-list (exp-list/one E) GP'
+     <- progress E GP
+     <- progress-good-list_one GP GP'.
 - : progress-list (exp-list/cons E R) (progress-good-list/step (step-list/cons-v SP VP))
      <- progress-list R (progress-good-list/step SP)
      <- progress E (progress-good/value VP).
