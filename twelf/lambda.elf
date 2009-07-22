@@ -64,6 +64,13 @@ exp-list : tp -> type. %name exp-list EL.
 exp-list/one : exp T -> exp-list T.
 exp-list/cons : exp T -> exp-list T' -> exp-list (tp/arrow T T').
 
+%% Operations on expression lists
+exp-list_split : exp-list (tp/arrow T T') -> exp T -> exp-list T' -> type.
+exp-list_split-1 : exp-list_split (exp-list/cons E R) E R.
+
+exp-list_fetch : exp-list T -> exp T -> type.
+exp-list_fetch-1 : exp-list_fetch (exp-list/one E) E.
+
 exp/scon : scon T -> exp T.
 exp/lambda : (exp T -> exp T') -> exp (tp/arrow T T').
 exp/letrec : (exp T -> exp T) -> exp T.
@@ -83,6 +90,8 @@ exp/prim : primitive T RT -> exp-list T -> exp RT.
 %% Shortcuts for later work, should probably be moved to somewhere else.
 v_true = (exp/scon (scon/bool true)).
 v_false = (exp/scon (scon/bool false)).
+v_nat = [n] (exp/scon (scon/nat n)).
+v_bool = [b] (exp/scon (scon/bool b)).
 v_unit = (exp/scon scon/unit).
 
 %% Values in the language.
@@ -143,6 +152,25 @@ pctx/let       : pctx ([x] exp/let x B).
 
 %% Evaluation of primitive values
 ev-prim : primitive T T' -> exp-list T -> exp T' -> type.
+ev-prim/nat-plus : ev-prim primitive/nat-plus EL (v_nat N3)
+		    <- exp-list_split EL (exp/scon (scon/nat N1)) EL'
+		    <- exp-list_fetch EL' (exp/scon (scon/nat N2))
+		    <- nat_plus N1 N2 N3.
+ev-prim/nat-mone : ev-prim primitive/nat-mone EL (v_nat N3)
+		    <- exp-list_split EL (exp/scon (scon/nat N1)) EL'
+		    <- exp-list_fetch EL' (exp/scon (scon/nat N2))
+		    <- nat_mone N1 N2 N3.
+ev-prim/nat-lt : ev-prim primitive/nat-lt EL (v_bool B)
+		    <- exp-list_split EL (exp/scon (scon/nat N1)) EL'
+		    <- exp-list_fetch EL' (exp/scon (scon/nat N2))
+		    <- nat_lt N1 N2 B.
+ev-prim/bool-not : ev-prim primitive/bool-not EL (v_bool B')
+		    <- exp-list_fetch EL (exp/scon (scon/bool B))
+		    <- bool_not B B'.
+ev-prim/bool-eq : ev-prim primitive/bool-eq EL (v_bool B3)
+		   <- exp-list_split EL (exp/scon (scon/bool B1)) EL'
+		   <- exp-list_fetch EL' (exp/scon (scon/bool B2))
+		   <- bool_eq B1 B2 B3.
 
 %% Introduce a (small-step) evaluation form
 step : exp T -> exp T -> type.
