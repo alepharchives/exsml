@@ -58,12 +58,11 @@ primitive/ref-assign : primitive (tp/arrow (tp/ref T) T) tp/unit.
 
 %% Introduce lambda expressions of natural numbers
 exp : tp -> type. %name exp E.
-exp-list : type. %name exp-list EL.
+exp-list : tp -> type. %name exp-list EL.
 %%% Types for expression lists.
-exp-list-tp : exp-list -> tp -> type.
 
-exp-list/nil : exp-list.
-exp-list/cons : exp T -> exp-list -> exp-list.
+exp-list/one : exp T -> exp-list T.
+exp-list/cons : exp T -> exp-list T' -> exp-list (tp/arrow T T').
 
 exp/scon : scon T -> exp T.
 exp/lambda : (exp T -> exp T') -> exp (tp/arrow T T').
@@ -77,7 +76,7 @@ exp/orelse : exp tp/bool -> exp tp/bool -> exp tp/bool.
 %% At the moment I don't need unspec
 %% exp/unspec : exp tp/unit.
 exp/while : exp tp/bool -> exp T -> exp tp/unit.
-exp/prim : {P : primitive T RT} {EL : exp-list} exp-list-tp EL T -> exp RT.
+exp/prim : primitive T RT -> exp-list T -> exp RT.
 
 %%% *** VALUES ***
 
@@ -96,8 +95,9 @@ value-option/none : value-option.
 value-option/some : (value E) -> value-option.
 
 %% Lists are values when all elements in it are
-value-list : exp-list -> type.
-value-list/nil : value-list exp-list/nil.
+value-list : exp-list T -> type.
+value-list/one : value-list (exp-list/one V)
+		  <- value V.
 value-list/cons : value-list (exp-list/cons V R)
 		   <- value V
 		   <- value-list R.
@@ -142,11 +142,11 @@ pctx/orelse-1  : pctx ([x] exp/orelse x E2).
 pctx/let       : pctx ([x] exp/let x B).
 
 %% Evaluation of primitive values
-ev-prim : primitive T T' -> exp-list -> exp T' -> type.
+ev-prim : primitive T T' -> exp-list T -> exp T' -> type.
 
 %% Introduce a (small-step) evaluation form
 step : exp T -> exp T -> type.
-step-list : exp-list -> exp-list -> type.
+step-list : exp-list T -> exp-list T -> type.
 
 step/ctx : step (EC E) (EC E')
 	    <- pctx EC
@@ -168,14 +168,17 @@ step/orelse-1  : step (exp/orelse v_true _) v_true.
 step/orelse-2  : step (exp/orelse v_false E2) E2.
 
 step/while : step (exp/while T B) (exp/if T (exp/seq B (exp/while T B)) v_unit).
-step/arg : step (exp/prim P EL _) (exp/prim P EL' _)
+step/arg : step (exp/prim P EL) (exp/prim P EL')
 	    <- step-list EL EL'.
-step/prim : step (exp/prim P VL _) R
+step/prim : step (exp/prim P VL) R
 	     <- value-list VL
 	     <- ev-prim P VL R.
 
 %% Left to right evaluation of expression lists.
-step-list/nil : step-list exp-list/nil exp-list/nil.
+step-list/one-v : step-list (exp-list/one V) (exp-list/one V)
+		   <- value V.
+step-list/one-s : step-list (exp-list/one E) (exp-list/one E')
+		   <- step E E'.
 step-list/cons-v : step-list (exp-list/cons V R) (exp-list/cons V R')
 		    <- value V
 		    <- step-list R R'.
@@ -209,7 +212,7 @@ progress-good/step : progress-good E
 		      <- step E E'.
 
 %% Same thing, for lists of expressions
-progress-good-list : exp-list -> type.
+progress-good-list : exp-list T -> type.
 progress-good-list/value : progress-good-list VL
 			    <- value-list VL.
 progress-good-list/step : progress-good-list E
@@ -305,13 +308,18 @@ progress-good_apply : progress-good E1 -> progress-good E2
 %total E (progress-good_apply E _ _).
 
 progress-list : {EL} progress-good-list EL -> type.
-%mode progress-list +E -G.
+%mode progress-list +EL -G.
 progress : {E} progress-good E -> type.
 %mode progress +E -G.
 
 %% progress-list entries, should probably be output factored to make the output coverage checker
 %%  happy.
-- : progress-list exp-list/nil (progress-good-list/value value-list/nil).
+- : progress-list (exp-list/one E) (progress-good-list/value (value-list/one VP))
+     <- progress E (progress-good/value VP).
+- : progress-list (exp-list/one E) (progress-good-list/step (step-list/one-s SP))
+     <- progress E (progress-good/step SP).
+- : progress-list (exp-list/one E) (progress-good-list/step (step-list/one-v VP))
+     <- progress E (progress-good/value VP).
 - : progress-list (exp-list/cons E R) (progress-good-list/step (step-list/cons-v SP VP))
      <- progress-list R (progress-good-list/step SP)
      <- progress E (progress-good/value VP).
