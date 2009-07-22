@@ -50,11 +50,11 @@ primitive : tp -> tp -> type.
 
 primitive/nat-plus : primitive (tp/arrow tp/nat tp/nat) tp/nat.
 primitive/nat-mone : primitive (tp/arrow tp/nat tp/nat) tp/nat.
-primitive/nat-lt  : primitive  (tp/arrow tp/nat tp/nat) tp/nat.
+primitive/nat-lt  : primitive  (tp/arrow tp/nat tp/nat) tp/bool.
 primitive/bool-not : primitive tp/bool tp/bool.
 primitive/bool-eq : primitive  (tp/arrow tp/bool tp/bool) tp/bool.
-primitive/ref-lookup : primitive (tp/ref T) T.
-primitive/ref-assign : primitive (tp/arrow (tp/ref T) T) tp/unit.
+%%primitive/ref-lookup : primitive (tp/ref T) T.
+%%primitive/ref-assign : primitive (tp/arrow (tp/ref T) T) tp/unit.
 
 %% Introduce lambda expressions of natural numbers
 exp : tp -> type. %name exp E.
