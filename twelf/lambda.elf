@@ -322,6 +322,25 @@ progress-good-list_one : progress-good E1
 %worlds () (progress-good-list_one _ _).
 %total E (progress-good-list_one E _).
 
+progress-good-list_cons : progress-good E
+			   -> progress-good-list EL
+			   -> progress-good-list (exp-list/cons E EL) -> type.
+%mode +{T : tp} +{T' : tp} +{E : exp T} +{EL : exp-list T'}
+      +{G : progress-good E} +{G' : progress-good-list EL}
+      -{G'' : progress-good-list (exp-list/cons E EL)}
+      progress-good-list_cons G G' G''.
+
+- : progress-good-list_cons (progress-good/value VP)
+     (progress-good-list/value VLP)
+     (progress-good-list/value (value-list/cons VLP VP)).
+- : progress-good-list_cons (progress-good/step SP) _
+     (progress-good-list/step (step-list/cons-e SP)).
+- : progress-good-list_cons (progress-good/value VP)
+     (progress-good-list/step SLP)
+     (progress-good-list/step (step-list/cons-v SLP VP)).
+%worlds () (progress-good-list_cons _ _ _).
+%total E (progress-good-list_cons E _ _).
+
 progress-list : {EL} progress-good-list EL -> type.
 %mode progress-list +EL -G.
 progress : {E} progress-good E -> type.
@@ -332,14 +351,10 @@ progress : {E} progress-good E -> type.
 - : progress-list (exp-list/one E) GP'
      <- progress E GP
      <- progress-good-list_one GP GP'.
-- : progress-list (exp-list/cons E R) (progress-good-list/step (step-list/cons-v SP VP))
-     <- progress-list R (progress-good-list/step SP)
-     <- progress E (progress-good/value VP).
-- : progress-list (exp-list/cons E R) (progress-good-list/step (step-list/cons-e SPE))
-     <- progress E (progress-good/step SPE).
-- : progress-list (exp-list/cons E R) (progress-good-list/value (value-list/cons RP VP))
-     <- progress-list R (progress-good-list/value RP)
-     <- progress E (progress-good/value VP).
+- : progress-list (exp-list/cons E R) GP''
+     <- progress E GP
+     <- progress-list R GP'
+     <- progress-good-list_cons GP GP' GP''.
 
 %% progress entries
 - : progress (exp/scon S) (progress-good/value value/scon).
