@@ -5,8 +5,10 @@ true : bool.
 false : bool.
 
 bool_not : bool -> bool -> type.
+%mode bool_not +B1 -B2.
 bool_not-t : bool_not true false.
 bool_not-f : bool_not false true.
 
 bool_eq : bool -> bool -> bool -> type.
+%mode bool_eq +B1 +B2 -B3.
 bool_eq-refl : bool_eq B B true.
