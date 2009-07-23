@@ -66,9 +66,11 @@ exp-list/cons : exp T -> exp-list T' -> exp-list (tp/arrow T T').
 
 %% Operations on expression lists
 exp-list_split : exp-list (tp/arrow T T') -> exp T -> exp-list T' -> type.
+%mode exp-list_split +EL -E -EL'.
 exp-list_split-1 : exp-list_split (exp-list/cons E R) E R.
 
 exp-list_fetch : exp-list T -> exp T -> type.
+%mode exp-list_fetch +EL -E.
 exp-list_fetch-1 : exp-list_fetch (exp-list/one E) E.
 
 exp/scon : scon T -> exp T.
@@ -152,6 +154,7 @@ pctx/let       : pctx ([x] exp/let x B).
 
 %% Evaluation of primitive values
 ev-prim : primitive T T' -> exp-list T -> exp T' -> type.
+%mode ev-prim +P +EL -R.
 ev-prim/nat-plus : ev-prim primitive/nat-plus EL (v_nat N3)
 		    <- exp-list_split EL (exp/scon (scon/nat N1)) EL'
 		    <- exp-list_fetch EL' (exp/scon (scon/nat N2))
