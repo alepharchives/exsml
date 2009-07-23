@@ -234,13 +234,13 @@ sto_do : stepsto E V
 %%% *** PROPERTIES ***
 
 %%% Primitive evaluation always produces values.
-prim-ev-canonical-soundness : ev-prim P EL V -> value V -> type.
-%mode prim-ev-canonical-soundness +P -V.
+ev-prim-canonical-soundness : ev-prim P EL V -> value V -> type.
+%mode ev-prim-canonical-soundness +P -V.
 
-- : prim-ev-canonical-soundness EP value/scon.
+- : ev-prim-canonical-soundness EP value/scon.
 
-%worlds () (prim-ev-canonical-soundness _ _).
-%total E (prim-ev-canonical-soundness E _).
+%worlds () (ev-prim-canonical-soundness _ _).
+%total E (ev-prim-canonical-soundness E _).
 
 
 %%% Progress theorem
