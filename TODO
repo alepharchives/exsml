@@ -1,8 +1,12 @@
 TODO List for Exsml
 
 o [jlouis] Figure out why 32 bit interning fails at intern.c:388
-   Spray with assertions and prints and clean up the code at this
-   point.
+   The problem manifests itself in a failed sign conversion. To
+   advance we should check if the mosmlcode has the very same problem
+   we are experiencing. Next, we should check if the code produced is
+   the right one.
+
+   We could also try to write a smaller example which fails.
 
 o [jlouis] Why is the big-array.sml test accessing the disk like mad?
 
